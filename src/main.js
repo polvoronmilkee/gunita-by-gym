@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import { SceneManager } from "./managers/SceneManager.js";
 import { BootScene } from "./scenes/BootScene.js";
 import { PreloadScene } from "./scenes/PreloadScene.js";
-import { MainMenuScene } from "./scenes/MainMenuScene.js";
 import { CampoLunanScene } from "./scenes/CampoLunanScene.js";
 import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
@@ -11,7 +10,6 @@ import { PauseScene } from "./scenes/PauseScene.js";
 const sceneManager = new SceneManager([
   BootScene,
   PreloadScene,
-  MainMenuScene,
   CampoLunanScene,
   MemoryScene,
   UIScene,
@@ -43,6 +41,53 @@ const config = {
   scene: sceneManager.build(),
 };
 
-const game = new Phaser.Game(config);
+let game = null;
 
-sceneManager.bindGame(game);
+function setMenuVisible(visible) {
+  const menuScreen = document.getElementById("menu-screen");
+  if (!menuScreen) {
+    return;
+  }
+
+  menuScreen.classList.toggle("hidden", !visible);
+}
+
+function setGameVisible(visible) {
+  const gameShell = document.getElementById("game-shell");
+  if (!gameShell) {
+    return;
+  }
+
+  gameShell.classList.toggle("hidden", !visible);
+}
+
+function startGame() {
+  setGameVisible(true);
+
+  requestAnimationFrame(() => {
+    setMenuVisible(false);
+  });
+
+  if (!game) {
+    game = new Phaser.Game(config);
+    sceneManager.bindGame(game);
+  } else {
+    game.canvas?.focus?.();
+  }
+}
+
+window.startGunitaGame = startGame;
+window.returnToGunitaMenu = () => {
+  if (game) {
+    game.destroy(true);
+    game = null;
+  }
+
+  setGameVisible(false);
+  requestAnimationFrame(() => {
+    setMenuVisible(true);
+  });
+};
+
+document.getElementById("start-journey")?.addEventListener("click", startGame);
+

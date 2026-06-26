@@ -32,7 +32,7 @@ export class CampoLunanScene extends Phaser.Scene {
     });
 
     this.input.keyboard.on("keydown-BACKSPACE", () => {
-      this.scene.start("MainMenuScene");
+      window.returnToGunitaMenu?.();
     });
   }
 

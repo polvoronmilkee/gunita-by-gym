@@ -37,48 +37,32 @@ export class MenuButton {
 
   handlePointerOver() {
     this.scene.tweens.add({
-      targets: this.container,
-      scaleX: 1.012,
-      scaleY: 1.012,
-      duration: 220,
-      ease: "Sine.easeOut",
-    });
-
-    this.scene.tweens.add({
       targets: this.glow,
       alpha: 0.22,
-      duration: 220,
+      duration: 120,
       ease: "Sine.easeOut",
     });
 
     this.scene.tweens.add({
       targets: this.background,
       fillAlpha: 1,
-      duration: 220,
+      duration: 120,
       ease: "Sine.easeOut",
     });
   }
 
   handlePointerOut() {
     this.scene.tweens.add({
-      targets: this.container,
-      scaleX: 1,
-      scaleY: 1,
-      duration: 220,
-      ease: "Sine.easeOut",
-    });
-
-    this.scene.tweens.add({
       targets: this.glow,
       alpha: 0.08,
-      duration: 220,
+      duration: 120,
       ease: "Sine.easeOut",
     });
 
     this.scene.tweens.add({
       targets: this.background,
       fillAlpha: 0.92,
-      duration: 220,
+      duration: 120,
       ease: "Sine.easeOut",
     });
   }

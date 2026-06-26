@@ -13,7 +13,7 @@ export class HudOverlay {
     });
 
     this.backButton = new MenuButton(scene, 1168, 38, 150, "Back", () => {
-      scene.scene.start("MainMenuScene");
+      window.returnToGunitaMenu?.();
     });
 
     this.container.add(this.label);

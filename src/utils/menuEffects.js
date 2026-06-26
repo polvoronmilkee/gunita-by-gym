@@ -11,14 +11,8 @@ export function createMenuBackdrop(scene) {
   const moonGlow = scene.add.circle(width * 0.73, height * 0.22, 150, GUNITA_THEME.purpleLight, 0.1);
   const moon = scene.add.circle(width * 0.73, height * 0.22, 72, GUNITA_THEME.purplePale, 0.18);
 
-  scene.tweens.add({
-    targets: [moonGlow, moon],
-    y: "-=8",
-    duration: 5200,
-    yoyo: true,
-    repeat: -1,
-    ease: "Sine.easeInOut",
-  });
+  scene.add.circle(width * 0.73, height * 0.22, 96, GUNITA_THEME.purplePale, 0.05);
+  scene.add.circle(width * 0.73, height * 0.22, 132, GUNITA_THEME.purpleLight, 0.03);
 }
 
 export function createAtmosphericFog(scene, count = 16) {
@@ -35,18 +29,6 @@ export function createAtmosphericFog(scene, count = 16) {
 
     fogLayer.add(fog);
 
-    scene.tweens.add({
-      targets: fog,
-      x: fog.x + Phaser.Math.Between(-40, 40),
-      y: fog.y + Phaser.Math.Between(-18, 18),
-      alpha: Phaser.Math.FloatBetween(0.01, 0.035),
-      scale: Phaser.Math.FloatBetween(0.95, 1.15),
-      duration: Phaser.Math.Between(5000, 10000),
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
-      delay: index * 180,
-    });
   }
 
   return fogLayer;
@@ -66,18 +48,6 @@ export function createFloatingLights(scene, count = 8) {
 
     lights.add(light);
 
-    scene.tweens.add({
-      targets: light,
-      y: light.y + Phaser.Math.Between(-24, 24),
-      x: light.x + Phaser.Math.Between(-16, 16),
-      alpha: Phaser.Math.FloatBetween(0.22, 0.72),
-      scale: Phaser.Math.FloatBetween(0.85, 1.18),
-      duration: Phaser.Math.Between(2800, 5200),
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
-      delay: index * 220,
-    });
   }
 
   return lights;
