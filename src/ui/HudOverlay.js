@@ -1,4 +1,5 @@
 import { MenuButton } from "./MenuButton.js";
+import { GUNITA_THEME } from "../utils/theme.js";
 
 export class HudOverlay {
   constructor(scene) {
@@ -6,12 +7,12 @@ export class HudOverlay {
     this.container = scene.add.container(0, 0).setScrollFactor(0);
 
     this.label = scene.add.text(20, 20, "", {
-      fontFamily: "Arial, Helvetica, sans-serif",
-      fontSize: "18px",
-      color: "#d6dbe8",
+      fontFamily: "'VT323', monospace",
+      fontSize: "24px",
+      color: "#e8d8f8",
     });
 
-    this.backButton = new MenuButton(scene, 1188, 42, 148, "Back", () => {
+    this.backButton = new MenuButton(scene, 1168, 38, 150, "Back", () => {
       scene.scene.start("MainMenuScene");
     });
 
@@ -24,5 +25,9 @@ export class HudOverlay {
 
   setBackVisible(visible) {
     this.backButton.setVisible(visible);
+  }
+
+  setStatusVisible(visible) {
+    this.label.setVisible(visible);
   }
 }

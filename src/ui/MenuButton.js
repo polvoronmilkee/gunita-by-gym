@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { GUNITA_THEME } from "../utils/theme.js";
 
 export class MenuButton {
   constructor(scene, x, y, width, label, onClick) {
@@ -9,16 +10,16 @@ export class MenuButton {
 
     this.container = scene.add.container(x, y);
 
-    this.glow = scene.add.rectangle(0, 0, width + 18, this.height + 12, 0xf3e7c2, 0.08);
-    this.glow.setStrokeStyle(1, 0xf3e7c2, 0.15);
+    this.glow = scene.add.rectangle(0, 0, width + 18, this.height + 12, GUNITA_THEME.purpleLight, 0.06);
+    this.glow.setStrokeStyle(1, GUNITA_THEME.purpleLight, 0.16);
 
-    this.background = scene.add.rectangle(0, 0, width, this.height, 0x101827, 0.92);
-    this.background.setStrokeStyle(2, 0x67708a, 0.9);
+    this.background = scene.add.rectangle(0, 0, width, this.height, GUNITA_THEME.bg2, 0.92);
+    this.background.setStrokeStyle(2, GUNITA_THEME.purple, 0.9);
 
     this.label = scene.add.text(0, 0, label, {
-      fontFamily: "Arial, Helvetica, sans-serif",
-      fontSize: "20px",
-      color: "#f6efdb",
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "10px",
+      color: "#e0c8ff",
       align: "center",
     }).setOrigin(0.5);
 
@@ -37,23 +38,23 @@ export class MenuButton {
   handlePointerOver() {
     this.scene.tweens.add({
       targets: this.container,
-      scaleX: 1.02,
-      scaleY: 1.02,
-      duration: 150,
+      scaleX: 1.012,
+      scaleY: 1.012,
+      duration: 220,
       ease: "Sine.easeOut",
     });
 
     this.scene.tweens.add({
       targets: this.glow,
       alpha: 0.22,
-      duration: 150,
+      duration: 220,
       ease: "Sine.easeOut",
     });
 
     this.scene.tweens.add({
       targets: this.background,
       fillAlpha: 1,
-      duration: 150,
+      duration: 220,
       ease: "Sine.easeOut",
     });
   }
@@ -63,21 +64,21 @@ export class MenuButton {
       targets: this.container,
       scaleX: 1,
       scaleY: 1,
-      duration: 150,
+      duration: 220,
       ease: "Sine.easeOut",
     });
 
     this.scene.tweens.add({
       targets: this.glow,
       alpha: 0.08,
-      duration: 150,
+      duration: 220,
       ease: "Sine.easeOut",
     });
 
     this.scene.tweens.add({
       targets: this.background,
       fillAlpha: 0.92,
-      duration: 150,
+      duration: 220,
       ease: "Sine.easeOut",
     });
   }

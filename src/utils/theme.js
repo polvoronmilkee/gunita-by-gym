@@ -1,0 +1,18 @@
+export const GUNITA_THEME = {
+  bg: 0x0a0a14,
+  bg2: 0x12121e,
+  bg3: 0x1a1a2e,
+  purpleDark: 0x1e0a3c,
+  purple: 0x4a1e8a,
+  purpleMid: 0x7c3fcf,
+  purpleLight: 0xb57fee,
+  purplePale: 0xe0c8ff,
+  gold: 0xf0c060,
+  goldDark: 0xa07830,
+  teal: 0x2dd4bf,
+  tealDark: 0x0f766e,
+  red: 0xe55c5c,
+  text: 0xe8d8f8,
+  textDim: 0x9880b8,
+  overlay: 0x0b1020,
+};
