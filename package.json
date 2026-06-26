@@ -2,7 +2,6 @@
   "name": "gunita-by-gym",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "vite",
@@ -14,13 +13,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "phaser": "^4.2.0"
+    "phaser": "^3.90.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",

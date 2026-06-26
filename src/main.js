@@ -1,49 +1,38 @@
 import Phaser from "phaser";
+import { SceneManager } from "./managers/SceneManager.js";
+import { BootScene } from "./scenes/BootScene.js";
+import { PreloadScene } from "./scenes/PreloadScene.js";
+import { MainMenuScene } from "./scenes/MainMenuScene.js";
+import { CampoLunanScene } from "./scenes/CampoLunanScene.js";
+import { MemoryScene } from "./scenes/MemoryScene.js";
+import { UIScene } from "./scenes/UIScene.js";
+import { PauseScene } from "./scenes/PauseScene.js";
 
-class MainScene extends Phaser.Scene {
-  constructor() {
-    super("MainScene");
-  }
-
-  preload() {
-    // Load assets here
-    this.load.image(
-      "logo",
-      "https://labs.phaser.io/assets/sprites/phaser3-logo.png",
-    );
-  }
-
-  create() {
-    const logo = this.add.image(400, 300, "logo");
-
-    this.add
-      .text(400, 450, "Welcome to Gunita by Gym", {
-        fontSize: "32px",
-        fill: "#fff",
-      })
-      .setOrigin(0.5);
-
-    this.tweens.add({
-      targets: logo,
-      y: 350,
-      duration: 2000,
-      ease: "Power2",
-      yoyo: true,
-      loop: -1,
-    });
-  }
-
-  update() {
-    // Game loop
-  }
-}
+const sceneManager = new SceneManager([
+  BootScene,
+  PreloadScene,
+  MainMenuScene,
+  CampoLunanScene,
+  MemoryScene,
+  UIScene,
+  PauseScene,
+]);
 
 const config = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
   parent: "game-container",
-  scene: MainScene,
+  backgroundColor: "#0b1020",
+  pixelArt: true,
+  render: {
+    antialias: false,
+    roundPixels: true,
+  },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: 1280,
+    height: 720,
+  },
   physics: {
     default: "arcade",
     arcade: {
@@ -51,6 +40,9 @@ const config = {
       debug: false,
     },
   },
+  scene: sceneManager.build(),
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+sceneManager.bindGame(game);
