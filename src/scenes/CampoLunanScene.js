@@ -19,6 +19,7 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.hud = new HudOverlay(this);
     this.hud.setStatus("WASD/Arrow Keys to move | P pause | M memory");
+    this.hud.setBackVisible(true);
 
     this.input.keyboard.on("keydown-P", () => {
       this.scene.launch("PauseScene");
@@ -28,6 +29,10 @@ export class CampoLunanScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-M", () => {
       this.scene.launch("MemoryScene");
       this.scene.pause();
+    });
+
+    this.input.keyboard.on("keydown-BACKSPACE", () => {
+      this.scene.start("MainMenuScene");
     });
   }
 

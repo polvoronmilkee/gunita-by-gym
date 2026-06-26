@@ -1,3 +1,5 @@
+import { MenuButton } from "./MenuButton.js";
+
 export class HudOverlay {
   constructor(scene) {
     this.scene = scene;
@@ -9,10 +11,18 @@ export class HudOverlay {
       color: "#d6dbe8",
     });
 
+    this.backButton = new MenuButton(scene, 1188, 42, 148, "Back", () => {
+      scene.scene.start("MainMenuScene");
+    });
+
     this.container.add(this.label);
   }
 
   setStatus(text) {
     this.label.setText(text);
+  }
+
+  setBackVisible(visible) {
+    this.backButton.setVisible(visible);
   }
 }
