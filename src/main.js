@@ -25,6 +25,9 @@ const config = {
     antialias: false,
     roundPixels: true,
   },
+  dom: {
+    createContainer: true,
+  },
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -89,6 +92,7 @@ window.returnToGunitaMenu = () => {
   });
 };
 
-document.getElementById("continue-journey")?.addEventListener("click", startGame);
+document
+  .getElementById("continue-journey")
+  ?.addEventListener("click", startGame);
 document.getElementById("start-reaping")?.addEventListener("click", startGame);
-

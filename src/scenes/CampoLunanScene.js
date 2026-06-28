@@ -212,9 +212,21 @@ export class CampoLunanScene extends Phaser.Scene {
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(4); // keep your zoom if you want
 
-    this.hud = new HudOverlay(this);
-    this.hud.setStatus("WASD / ARROWS TO MOVE   P PAUSE   M MEMORY");
+    this.hud = new HudOverlay(this, {
+      status: "WASD / ARROWS TO MOVE   P PAUSE   M MEMORY",
+      onBack: () => window.returnToGunitaMenu?.(),
+      onPause: () => {
+        this.scene.launch("PauseScene");
+        this.scene.pause();
+      },
+      onMemory: () => {
+        this.scene.launch("MemoryScene");
+        this.scene.pause();
+      },
+    });
     this.hud.setBackVisible(true);
+    this.hud.setPauseVisible(true);
+    this.hud.setMemoryVisible(true);
 
     this.input.keyboard.on("keydown-P", () => {
       this.scene.launch("PauseScene");

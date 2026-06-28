@@ -1,0 +1,72 @@
+.campo-lunan-hud {
+  width: min(92vw, 460px);
+  pointer-events: none;
+  user-select: none;
+  font-family: "VT323", monospace;
+  color: #efe4ff;
+}
+
+.campo-lunan-hud__panel {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  border: 1px solid rgba(176, 126, 255, 0.34);
+  border-radius: 16px;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(7, 10, 18, 0.88)),
+    radial-gradient(
+      circle at top left,
+      rgba(152, 128, 184, 0.16),
+      transparent 58%
+    );
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+
+.campo-lunan-hud__status {
+  font-size: clamp(22px, 2vw, 32px);
+  line-height: 1.05;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(224, 200, 255, 0.2);
+}
+
+.campo-lunan-hud__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.campo-lunan-hud__button {
+  appearance: none;
+  min-width: 104px;
+  padding: 10px 14px;
+  border: 1px solid rgba(176, 126, 255, 0.42);
+  border-radius: 12px;
+  background: rgba(12, 16, 28, 0.92);
+  color: #efe4ff;
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(8px, 0.8vw, 11px);
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    border-color 140ms ease,
+    background-color 140ms ease,
+    color 140ms ease;
+}
+
+.campo-lunan-hud__button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(45, 212, 191, 0.72);
+  background: rgba(18, 24, 40, 0.98);
+  color: #ffffff;
+}
+
+.campo-lunan-hud__button:active {
+  transform: translateY(1px);
+}
