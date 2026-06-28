@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { CameraSystem } from "../systems/CameraSystem.js";
 import { HudOverlay } from "../ui/HudOverlay.js";
 import { Player } from "../entities/Player.js";
+import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
 
 export class CampoLunanScene extends Phaser.Scene {
   constructor() {
@@ -9,13 +10,26 @@ export class CampoLunanScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.rectangle(640, 360, 1280, 720, 0x132238);
+    this.worldWidth = 1280;
+    this.worldHeight = 720;
+
+    this.add
+      .tileSprite(
+        0,
+        0,
+        this.worldWidth,
+        this.worldHeight,
+        GROUND_TILE_TEXTURE_KEY,
+      )
+      .setOrigin(0)
+      .setDepth(-2);
 
     this.player = new Player(this, 320, 360);
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    CameraSystem.configureMainCamera(this, 2000, 1400);
+    CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
+    this.cameras.main.setZoom(2);
 
     this.hud = new HudOverlay(this);
     this.hud.setStatus("WASD / ARROWS TO MOVE   P PAUSE   M MEMORY");

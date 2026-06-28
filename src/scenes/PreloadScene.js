@@ -1,4 +1,8 @@
 import Phaser from "phaser";
+import {
+  GROUND_TILE_TEXTURE_KEY,
+  GROUND_TILE_TEXTURE_URL,
+} from "../utils/groundTiles.js";
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -16,8 +20,7 @@ export class PreloadScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    this.load.setBaseURL("https://labs.phaser.io");
-    this.load.image("placeholder-tile", "assets/sprites/grass.jpg");
+    this.load.image(GROUND_TILE_TEXTURE_KEY, GROUND_TILE_TEXTURE_URL);
   }
 
   create() {

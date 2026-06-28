@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 export class Player {
   constructor(scene, x, y) {
-    this.sprite = scene.add.rectangle(x, y, 28, 42, 0xd8c38f);
+    this.sprite = scene.add.rectangle(x, y, 32, 42, 0xd8c38f);
     scene.physics.add.existing(this.sprite);
 
     this.sprite.setStrokeStyle(2, 0x5b4636, 0.9);
