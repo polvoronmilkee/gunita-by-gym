@@ -89,13 +89,16 @@ export class CampoLunanScene extends Phaser.Scene {
   }
 
   create() {
-    this.worldWidth = 1280;
-    this.worldHeight = 720;
+    const baseWorldWidth = 1280;
+    const baseWorldHeight = 720;
 
     // ---- GROUND WITH BORDERS ----
     const tileSize = 32; // Adjust to your tile's actual pixel size
-    const cols = Math.ceil(this.worldWidth / tileSize);
-    const rows = Math.ceil(this.worldHeight / tileSize);
+    const cols = Math.ceil(baseWorldWidth / tileSize);
+    const rows = Math.ceil(baseWorldHeight / tileSize);
+
+    this.worldWidth = cols * tileSize;
+    this.worldHeight = rows * tileSize;
 
     // 1. Fill the interior with the center tile
     const interior = this.add.tileSprite(
