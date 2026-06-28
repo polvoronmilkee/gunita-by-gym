@@ -89,5 +89,6 @@ window.returnToGunitaMenu = () => {
   });
 };
 
-document.getElementById("start-journey")?.addEventListener("click", startGame);
+document.getElementById("continue-journey")?.addEventListener("click", startGame);
+document.getElementById("start-reaping")?.addEventListener("click", startGame);
 
