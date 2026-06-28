@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 import playersRouter from "./routes/players.js";
 import gamestateRouter from "./routes/gamestate.js";
 import inventoryRouter from "./routes/inventory.js";
-import dialogueRouter from "./routes/dialogue.js";
+import riddlesRouter from "./routes/riddles.js";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ app.get("/", (req, res) => {
 app.use("/players", playersRouter);
 app.use("/gamestate", gamestateRouter);
 app.use("/inventory", inventoryRouter);
-app.use("/dialogue", dialogueRouter);
+app.use("/riddles", riddlesRouter);
 
 // Start Server
 app.listen(PORT, () => {
