@@ -18,7 +18,9 @@ export class Player {
       this.sprite.setStrokeStyle(2, 0x5b4636, 0.9);
     }
 
-    const body = this.sprite.body;
+    this.scene = scene;
+this.dashKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+const body = this.sprite.body;
     body.setCollideWorldBounds(true);
     body.setDrag(1000, 1000);
     body.setMaxVelocity(220, 220);
@@ -26,7 +28,8 @@ export class Player {
   }
 
   update(cursors) {
-    const speed = 160;
+    const baseSpeed = 160;
+    const speed = (this.dashKey && this.dashKey.isDown) ? baseSpeed * 1.5 : baseSpeed;
     const body = this.sprite.body;
     if (!body) return;
 
