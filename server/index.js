@@ -1,41 +1,34 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { createClient } from "@supabase/supabase-js";
+
+// Import Routes
+import playersRouter from "./routes/players.js";
+import gamestateRouter from "./routes/gamestate.js";
+import inventoryRouter from "./routes/inventory.js";
+import riddlesRouter from "./routes/riddles.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Supabase setup
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseKey) {
-  console.warn("Missing Supabase environment variables. Check your .env file.");
-}
-
-const supabase = createClient(supabaseUrl || "", supabaseKey || "");
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// API Routes
-app.get("/api/status", (req, res) => {
-  res.json({ status: "Server is running", timestamp: new Date() });
+// Health Check Endpoint
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "Server is running", timestamp: new Date() });
 });
 
-// Example route using Supabase
-app.get("/api/data", async (req, res) => {
-  try {
-    // Example: const { data, error } = await supabase.from('your_table').select('*');
-    res.json({ message: "Ready to connect to Supabase" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Mount Routes
+app.use("/players", playersRouter);
+app.use("/gamestate", gamestateRouter);
+app.use("/inventory", inventoryRouter);
+app.use("/riddles", riddlesRouter);
 
+// Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

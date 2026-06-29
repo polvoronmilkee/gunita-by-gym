@@ -2,4 +2,7 @@ node_modules
 .env
 dist
 .DS_Store
+agent/
+agents/
+.agents/
 gunita-by-gym/
