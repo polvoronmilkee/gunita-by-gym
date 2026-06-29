@@ -1,4 +1,8 @@
 .campo-lunan-hud {
+  position: absolute;
+  top: 20px;
+  left: 130px;
+  z-index: 1000;
   width: min(92vw, 460px);
   pointer-events: none;
   user-select: none;

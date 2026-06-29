@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { CameraSystem } from "../systems/CameraSystem.js";
 import { HudOverlay } from "../ui/HudOverlay.js";
+import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
 
@@ -240,6 +241,21 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-BACKSPACE", () => {
       window.returnToGunitaMenu?.();
+    });
+
+    // Instantiate Dialogue Box to showcase scale
+    this.dialogue = new DialogueBox(this, {
+      speaker: "Vino",
+      text: "Where am I? This place... Campo Lunan. It feels familiar yet distant. (Click box to test)",
+      onComplete: () => {
+        console.log("Dialogue box clicked!");
+        // Switch text or hide/show to show interactivity
+        if (this.dialogue.nameTag.textContent === "Vino") {
+          this.dialogue.showText("???", "Be careful Vino. The memories of this place can be heavy...");
+        } else {
+          this.dialogue.showText("Vino", "Who said that? Is someone there?");
+        }
+      }
     });
   }
 

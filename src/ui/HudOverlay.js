@@ -52,11 +52,9 @@ export class HudOverlay {
     this.panel.append(this.status, this.buttonRow);
     this.root.append(this.panel);
 
-    this.domElement = scene.add
-      .dom(20, 20, this.root)
-      .setOrigin(0)
-      .setScrollFactor(0)
-      .setDepth(1000);
+    // Mount it directly into the game container to avoid camera scaling/positioning issues
+    const container = document.getElementById("game-container") || document.body;
+    container.appendChild(this.root);
 
     this.handleShutdown = () => this.destroy();
     scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown);

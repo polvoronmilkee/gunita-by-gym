@@ -95,4 +95,7 @@ window.returnToGunitaMenu = () => {
 document
   .getElementById("continue-journey")
   ?.addEventListener("click", startGame);
+document
+  .getElementById("enter-campo-lunan")
+  ?.addEventListener("click", startGame);
 document.getElementById("start-reaping")?.addEventListener("click", startGame);
