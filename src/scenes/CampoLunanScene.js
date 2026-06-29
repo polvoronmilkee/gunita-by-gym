@@ -157,7 +157,7 @@ export class CampoLunanScene extends Phaser.Scene {
         start: 0,
         end: 4,
       }),
-      frameRate: 8,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -168,7 +168,7 @@ export class CampoLunanScene extends Phaser.Scene {
         start: 0,
         end: 4,
       }), // assuming 5 frames too
-      frameRate: 8,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -179,7 +179,7 @@ export class CampoLunanScene extends Phaser.Scene {
         start: 0,
         end: 4,
       }), // assuming 5 frames too
-      frameRate: 8,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -190,7 +190,7 @@ export class CampoLunanScene extends Phaser.Scene {
         start: 0,
         end: 4,
       }), // assuming 5 frames too
-      frameRate: 8,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -201,7 +201,7 @@ export class CampoLunanScene extends Phaser.Scene {
         start: 0,
         end: 4,
       }), // assuming 5 frames too
-      frameRate: 8,
+      frameRate: 5,
       repeat: -1,
     });
 

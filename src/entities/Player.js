@@ -19,8 +19,14 @@ export class Player {
     }
 
     this.scene = scene;
-this.dashKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
-const body = this.sprite.body;
+    this.dashKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    this.wasd = scene.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+    const body = this.sprite.body;
     body.setCollideWorldBounds(true);
     body.setDrag(1000, 1000);
     body.setMaxVelocity(220, 220);
@@ -35,13 +41,17 @@ const body = this.sprite.body;
 
     body.setVelocity(0);
 
+    const leftDown = (cursors?.left?.isDown) || this.wasd.left.isDown;
+    const rightDown = (cursors?.right?.isDown) || this.wasd.right.isDown;
+    const upDown = (cursors?.up?.isDown) || this.wasd.up.isDown;
+    const downDown = (cursors?.down?.isDown) || this.wasd.down.isDown;
+
     // Movement
-    if (cursors.left.isDown) body.setVelocityX(-speed);
-    else if (cursors.right.isDown) body.setVelocityX(speed);
+    if (leftDown) body.setVelocityX(-speed);
+    else if (rightDown) body.setVelocityX(speed);
 
-    if (cursors.up.isDown) body.setVelocityY(-speed);
-    else if (cursors.down.isDown) body.setVelocityY(speed);
-
+    if (upDown) body.setVelocityY(-speed);
+    else if (downDown) body.setVelocityY(speed);
 
     body.velocity.normalize().scale(speed);
 
@@ -49,25 +59,25 @@ const body = this.sprite.body;
     if (this.sprite.type === "Sprite") {
       const isMoving = body.velocity.length() > 0;
 
-      if (isMoving && cursors.up.isDown) {
+      if (isMoving && upDown) {
         // Play moving-up animation when moving up
         if (this.sprite.scene.anims.exists("vino-moving-up")) {
           this.sprite.play("vino-moving-up", true);
         }
 
-      } else if (isMoving && cursors.down.isDown) {
+      } else if (isMoving && downDown) {
         // Play moving-down animation when moving down
         if (this.sprite.scene.anims.exists("vino-moving-down")) {
           this.sprite.play("vino-moving-down", true);
         }
 
-      } else if (isMoving && cursors.left.isDown) {
+      } else if (isMoving && leftDown) {
         // Play moving-left animation when moving left
         if (this.sprite.scene.anims.exists("vino-moving-left")) {
           this.sprite.play("vino-moving-left", true);
         }
 
-      } else if (isMoving && cursors.right.isDown) {
+      } else if (isMoving && rightDown) {
         // Play moving-right animation when moving right        
         if (this.sprite.scene.anims.exists("vino-moving-right")) {
           this.sprite.play("vino-moving-right", true);
