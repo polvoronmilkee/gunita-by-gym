@@ -4,6 +4,8 @@ import { HudOverlay } from "../ui/HudOverlay.js";
 import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
+import { getCache, setCache } from "../save.js";
+import { saveGameState, loadGameState } from "../utils/api.js";
 
 export class CampoLunanScene extends Phaser.Scene {
   constructor() {
@@ -206,17 +208,52 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.player = new Player(this, 320, 360);
+    // Retrieve coordinates from local cache immediately, default to (320, 360)
+    const cache = getCache();
+    const spawnX = (cache && cache.position_x !== undefined) ? cache.position_x : 320;
+    const spawnY = (cache && cache.position_y !== undefined) ? cache.position_y : 360;
+
+    this.player = new Player(this, spawnX, spawnY);
     this.cursors = this.input.keyboard.createCursorKeys();
 
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(4); // keep your zoom if you want
 
+    // Background verify cache with Supabase
+    if (cache && cache.player_id) {
+      loadGameState(cache.player_id)
+        .then(serverState => {
+          if (serverState && (serverState.position_x !== cache.position_x || serverState.position_y !== cache.position_y)) {
+            console.log("Supabase coordinates differ from cache. Snapping player to match server...");
+            
+            this.player.sprite.setPosition(serverState.position_x, serverState.position_y);
+            
+            const freshCache = getCache();
+            if (freshCache) {
+              setCache({
+                ...freshCache,
+                position_x: serverState.position_x,
+                position_y: serverState.position_y,
+                current_world: serverState.current_world || freshCache.current_world,
+                current_area: serverState.current_area || freshCache.current_area
+              });
+            }
+          }
+        })
+        .catch(err => {
+          console.warn("Background coordinates validation failed:", err.message);
+        });
+    }
+
     this.hud = new HudOverlay(this, {
       status: "WASD / ARROWS TO MOVE   P PAUSE   M MEMORY",
-      onBack: () => window.returnToGunitaMenu?.(),
-      onPause: () => {
+      onBack: async () => {
+        await this.saveProgress();
+        window.returnToGunitaMenu?.();
+      },
+      onPause: async () => {
+        await this.saveProgress();
         this.scene.launch("PauseScene");
         this.scene.pause();
       },
@@ -229,7 +266,8 @@ export class CampoLunanScene extends Phaser.Scene {
     this.hud.setPauseVisible(true);
     this.hud.setMemoryVisible(true);
 
-    this.input.keyboard.on("keydown-P", () => {
+    this.input.keyboard.on("keydown-P", async () => {
+      await this.saveProgress();
       this.scene.launch("PauseScene");
       this.scene.pause();
     });
@@ -239,24 +277,65 @@ export class CampoLunanScene extends Phaser.Scene {
       this.scene.pause();
     });
 
-    this.input.keyboard.on("keydown-BACKSPACE", () => {
+    this.input.keyboard.on("keydown-BACKSPACE", async () => {
+      await this.saveProgress();
       window.returnToGunitaMenu?.();
     });
 
+    // Autosave timer: updates cache instantly and saves to server every 5 seconds
+    this.time.addEvent({
+      delay: 5000,
+      callback: this.saveProgress,
+      callbackScope: this,
+      loop: true
+    });
+
     // Instantiate Dialogue Box to showcase scale
+    const dialogues = [
+      { speaker: "Vino", text: "Where am I? This place... Campo Lunan. It feels familiar yet distant." },
+      { speaker: "???", text: "Be careful, Vino. The memories of this place can be heavy..." },
+      { speaker: "Vino", text: "Who said that? Is someone there?" }
+    ];
+    let currentStep = 0;
+
     this.dialogue = new DialogueBox(this, {
-      speaker: "Vino",
-      text: "Where am I? This place... Campo Lunan. It feels familiar yet distant. (Click box to test)",
+      speaker: dialogues[0].speaker,
+      text: dialogues[0].text,
       onComplete: () => {
-        console.log("Dialogue box clicked!");
-        // Switch text or hide/show to show interactivity
-        if (this.dialogue.nameTag.textContent === "Vino") {
-          this.dialogue.showText("???", "Be careful Vino. The memories of this place can be heavy...");
+        currentStep++;
+        if (currentStep < dialogues.length) {
+          const next = dialogues[currentStep];
+          this.dialogue.showText(next.speaker, next.text);
         } else {
-          this.dialogue.showText("Vino", "Who said that? Is someone there?");
+          this.dialogue.hide();
         }
       }
     });
+  }
+
+  async saveProgress() {
+    const cache = getCache();
+    if (!cache || !cache.player_id || !this.player?.sprite) return;
+
+    const state = {
+      current_world: "Lunan",
+      current_area: "Campo Lunan",
+      position_x: Math.round(this.player.sprite.x),
+      position_y: Math.round(this.player.sprite.y)
+    };
+
+    // Update local cache immediately
+    setCache({
+      ...cache,
+      ...state
+    });
+
+    // Save/sync with Supabase backend in the background
+    try {
+      await saveGameState(cache.player_id, state);
+    } catch (err) {
+      console.error("Autosave database sync failed:", err.message);
+    }
   }
 
   update() {

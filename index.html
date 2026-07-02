@@ -165,6 +165,174 @@
         );
         z-index: 6;
       }
+
+      /* Gunita Themed Codenames Modal */
+      .gunita-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 5, 12, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 1;
+        transition: opacity 200ms ease;
+      }
+
+      .gunita-modal-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .gunita-modal {
+        background: #000000;
+        border: 4px solid #ffffff;
+        padding: 6px;
+        box-shadow: 
+          0 8px 0 -4px #000000, 
+          0 12px 24px rgba(0, 0, 0, 0.8),
+          0 0 15px rgba(176, 126, 255, 0.3);
+        width: min(90vw, 420px);
+        box-sizing: border-box;
+        font-family: 'Press Start 2P', monospace;
+        position: relative;
+      }
+
+      .gunita-modal__close-x {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 200ms ease;
+        line-height: 1;
+        padding: 4px;
+        z-index: 10;
+      }
+
+      .gunita-modal__close-x:hover {
+        color: #ff5555;
+        text-shadow: 0 0 5px #ff5555;
+      }
+
+      .gunita-modal__btn--confirm-centered {
+        appearance: none;
+        border: 2px solid rgba(124, 63, 207, 0.35);
+        background: rgba(5, 5, 12, 0.75);
+        color: #d0e8ff;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        padding: 12px 0;
+        width: 60%;
+        cursor: pointer;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        transition: all 200ms ease;
+        user-select: none;
+        margin-top: 6px;
+      }
+
+      .gunita-modal__btn--confirm-centered:hover {
+        border-color: var(--teal);
+        color: #ffffff;
+        background: rgba(12, 12, 24, 0.85);
+        text-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
+      }
+
+      .gunita-modal__inner {
+        border: 3px solid #ffffff;
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+      }
+
+      .gunita-modal__title {
+        color: #b57fee; /* Purple accent */
+        font-size: clamp(10px, 1vw, 14px);
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 0 0 8px 0;
+      }
+
+      .gunita-modal__input {
+        width: 90%;
+        background: #000000;
+        border: 3px solid #ffffff;
+        color: #ffffff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 14px;
+        padding: 10px;
+        text-align: center;
+        outline: none;
+        text-transform: uppercase;
+      }
+
+      .gunita-modal__input:focus {
+        border-color: var(--teal);
+        color: #2dd4bf; /* Mint/cyan accent on focus */
+      }
+
+      .gunita-modal__actions {
+        display: flex;
+        width: 100%;
+        gap: 12px;
+        justify-content: center;
+        margin-top: 6px;
+      }
+
+      .gunita-modal__btn {
+        appearance: none;
+        border: 2px solid rgba(124, 63, 207, 0.35);
+        background: rgba(5, 5, 12, 0.75);
+        color: #d0e8ff;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        padding: 12px 0;
+        width: 45%;
+        cursor: pointer;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        transition: all 200ms ease;
+        user-select: none;
+      }
+
+      .gunita-modal__btn:hover {
+        border-color: var(--teal);
+        color: #ffffff;
+        background: rgba(12, 12, 24, 0.85);
+        text-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
+      }
+
+      .gunita-modal__cancel-link {
+        font-family: 'Press Start 2P', monospace;
+        font-size: 10px;
+        color: #ff5555;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: underline;
+        margin-top: 4px;
+      }
+
+      .gunita-modal__cancel-link:hover {
+        text-shadow: 0 0 5px #ff5555;
+      }
+
+      .gunita-modal__error {
+        font-family: 'VT323', monospace;
+        font-size: 20px;
+        color: #ff5c5c;
+        min-height: 24px;
+        text-align: center;
+        margin-top: 4px;
+      }
     </style>
   </head>
   <body>
@@ -184,6 +352,36 @@
             <button class="menu-btn" id="tale-untold">ENTER CAMPO LUNAN</button>
             <button class="menu-btn" id="menu-guide">SURVIVAL GUIDE</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Continue Journey Modal Overlay (Gunita Theme) -->
+    <div id="continue-journey-modal" class="gunita-modal-overlay hidden">
+      <div class="gunita-modal">
+        <!-- Close (X) button in top-right -->
+        <button id="continue-modal-close-btn" class="gunita-modal__close-x">X</button>
+        <div class="gunita-modal__inner">
+          <h2 class="gunita-modal__title">CONTINUE JOURNEY</h2>
+          <input type="text" id="continue-username-input" class="gunita-modal__input" placeholder="ENTER CODENAME" maxlength="15" />
+          <!-- Confirm button in middle bottom -->
+          <button id="continue-modal-confirm-btn" class="gunita-modal__btn--confirm-centered">CONFIRM</button>
+          <div id="continue-modal-error" class="gunita-modal__error"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Journey Modal Overlay (Gunita Theme) -->
+    <div id="new-journey-modal" class="gunita-modal-overlay hidden">
+      <div class="gunita-modal">
+        <div class="gunita-modal__inner">
+          <h2 class="gunita-modal__title">START NEW JOURNEY</h2>
+          <input type="text" id="new-username-input" class="gunita-modal__input" placeholder="ENTER CODENAME" maxlength="15" />
+          <div class="gunita-modal__actions">
+            <button id="new-modal-confirm-btn" class="gunita-modal__btn">CONFIRM</button>
+            <button id="new-modal-cancel-btn" class="gunita-modal__btn">CANCEL</button>
+          </div>
+          <div id="new-modal-error" class="gunita-modal__error"></div>
         </div>
       </div>
     </div>
