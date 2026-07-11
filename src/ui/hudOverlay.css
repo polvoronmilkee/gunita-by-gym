@@ -10,6 +10,44 @@
   color: #efe4ff;
 }
 
+.campo-lunan-hud__audio-controls {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 1002;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.campo-lunan-hud__audio-btn {
+  appearance: none;
+  border: 2px solid rgba(124, 63, 207, 0.35);
+  background: rgba(5, 5, 12, 0.75);
+  color: #d0e8ff;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  transition: all 200ms ease;
+}
+
+.campo-lunan-hud__audio-btn:hover {
+  border-color: rgba(45, 212, 191, 0.72);
+  background: rgba(18, 24, 40, 0.98);
+  box-shadow:
+    0 0 15px rgba(45, 212, 191, 0.3),
+    inset 0 0 10px rgba(45, 212, 191, 0.1);
+  transform: translateY(-2px);
+}
+
+.campo-lunan-hud__audio-btn:active {
+  transform: translateY(1px);
+}
+
 .campo-lunan-hud__panel {
   pointer-events: auto;
   display: flex;

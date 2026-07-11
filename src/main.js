@@ -7,6 +7,7 @@ import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
+import { MenuAudioController } from "./ui/MenuAudioController.js";
 import { getCache, setCache, clearCache } from "./save.js";
 import { loginPlayer, signupPlayer, loadGameState } from "./utils/api.js";
 
@@ -61,6 +62,12 @@ const loadingScreen = new LoadingScreen({
   hint: "Please wait",
 });
 const menuScreen = document.getElementById("menu-screen");
+const menuMusicToggle = document.getElementById("menu-music-toggle");
+const menuSfxToggle = document.getElementById("menu-sfx-toggle");
+const menuAudioController = new MenuAudioController({
+  musicButton: menuMusicToggle,
+  sfxButton: menuSfxToggle,
+});
 
 function preloadImage(src) {
   return new Promise((resolve) => {
@@ -127,6 +134,10 @@ function setMenuVisible(visible) {
   }
 
   menuScreen.classList.toggle("hidden", !visible);
+
+  if (visible) {
+    menuAudioController.resumeMusicIfEnabled();
+  }
 }
 
 function setGameVisible(visible) {
@@ -151,6 +162,8 @@ function startGame() {
   requestAnimationFrame(() => {
     setMenuVisible(false);
   });
+
+  menuAudioController.stopMusic();
 
   if (!game) {
     game = new Phaser.Game(config);

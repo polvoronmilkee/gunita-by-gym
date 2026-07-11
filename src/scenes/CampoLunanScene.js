@@ -6,6 +6,7 @@ import { Player } from "../entities/Player.js";
 import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState } from "../utils/api.js";
+import { AudioManager } from "../utils/audioManager.js";
 
 export class CampoLunanScene extends Phaser.Scene {
   constructor() {
@@ -213,7 +214,12 @@ export class CampoLunanScene extends Phaser.Scene {
     const spawnX = (cache && cache.position_x !== undefined) ? cache.position_x : 320;
     const spawnY = (cache && cache.position_y !== undefined) ? cache.position_y : 360;
 
-    this.player = new Player(this, spawnX, spawnY);
+    this.audioManager = new AudioManager(this);
+
+    this.player = new Player(this, spawnX, spawnY, {
+      onDashStart: () => this.audioManager.playDashSfx(),
+      onDirectionChange: () => this.audioManager.playVinoMoveSfx(),
+    });
     this.cursors = this.input.keyboard.createCursorKeys();
 
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
@@ -247,7 +253,8 @@ export class CampoLunanScene extends Phaser.Scene {
     }
 
     this.hud = new HudOverlay(this, {
-      status: "WASD / ARROWS TO MOVE   P PAUSE   M MEMORY",
+      status: "WASD / ARROWS MOVE   SHIFT DASH   P PAUSE   M MEMORY",
+      onButtonPress: () => this.audioManager.playButtonSfx(),
       onBack: async () => {
         await this.saveProgress();
         window.returnToGunitaMenu?.();
@@ -261,6 +268,10 @@ export class CampoLunanScene extends Phaser.Scene {
         this.scene.launch("MemoryScene");
         this.scene.pause();
       },
+      onToggleMusic: () => this.audioManager.toggleMusic(),
+      onToggleSfx: () => this.audioManager.toggleSfx(),
+      musicEnabled: this.audioManager.musicEnabled,
+      sfxEnabled: this.audioManager.sfxEnabled,
     });
     this.hud.setBackVisible(true);
     this.hud.setPauseVisible(true);

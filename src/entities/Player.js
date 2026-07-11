@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 export class Player {
-  constructor(scene, x, y) {
+  constructor(scene, x, y, options = {}) {
     const textureExists = scene.textures.exists("vino-idle");
 
     if (textureExists) {
@@ -19,6 +19,10 @@ export class Player {
     }
 
     this.scene = scene;
+    this.onDashStart = options.onDashStart ?? (() => {});
+    this.onDirectionChange = options.onDirectionChange ?? (() => {});
+    this.wasDashing = false;
+    this.currentDirection = null;
     this.dashKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
     this.wasd = scene.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -35,7 +39,8 @@ export class Player {
 
   update(cursors) {
     const baseSpeed = 160;
-    const speed = (this.dashKey && this.dashKey.isDown) ? baseSpeed * 1.5 : baseSpeed;
+    const isDashHeld = Boolean(this.dashKey && this.dashKey.isDown);
+    const speed = isDashHeld ? baseSpeed * 1.5 : baseSpeed;
     const body = this.sprite.body;
     if (!body) return;
 
@@ -45,6 +50,23 @@ export class Player {
     const rightDown = (cursors?.right?.isDown) || this.wasd.right.isDown;
     const upDown = (cursors?.up?.isDown) || this.wasd.up.isDown;
     const downDown = (cursors?.down?.isDown) || this.wasd.down.isDown;
+    const hasMovementInput = leftDown || rightDown || upDown || downDown;
+
+    let nextDirection = null;
+    if (upDown) nextDirection = "up";
+    else if (downDown) nextDirection = "down";
+    else if (leftDown) nextDirection = "left";
+    else if (rightDown) nextDirection = "right";
+
+    if (nextDirection !== this.currentDirection && nextDirection !== null) {
+      this.onDirectionChange(nextDirection);
+    }
+    this.currentDirection = nextDirection;
+
+    if (isDashHeld && hasMovementInput && !this.wasDashing) {
+      this.onDashStart();
+    }
+    this.wasDashing = isDashHeld && hasMovementInput;
 
     // Movement
     if (leftDown) body.setVelocityX(-speed);

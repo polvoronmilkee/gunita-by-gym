@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import "./hudOverlay.css";
 
-const DEFAULT_STATUS = "WASD / ARROWS TO MOVE   P PAUSE   M MEMORY";
+const DEFAULT_STATUS = "WASD / ARROWS MOVE   SHIFT DASH   P PAUSE   M MEMORY";
 
 function createButton(label, className, onClick) {
   const button = document.createElement("button");
@@ -15,9 +15,12 @@ function createButton(label, className, onClick) {
 export class HudOverlay {
   constructor(scene, options = {}) {
     this.scene = scene;
+    this.onButtonPress = options.onButtonPress ?? (() => {});
     this.onBack = options.onBack ?? (() => window.returnToGunitaMenu?.());
     this.onPause = options.onPause ?? (() => {});
     this.onMemory = options.onMemory ?? (() => {});
+    this.onToggleMusic = options.onToggleMusic ?? (() => true);
+    this.onToggleSfx = options.onToggleSfx ?? (() => true);
 
     this.root = document.createElement("div");
     this.root.className = "campo-lunan-hud";
@@ -31,6 +34,9 @@ export class HudOverlay {
 
     this.buttonRow = document.createElement("div");
     this.buttonRow.className = "campo-lunan-hud__buttons";
+
+    this.audioControls = document.createElement("div");
+    this.audioControls.className = "campo-lunan-hud__audio-controls";
 
     this.backButton = createButton(
       "BACK",
@@ -47,10 +53,33 @@ export class HudOverlay {
       "campo-lunan-hud__button",
       this.onMemory,
     );
+    this.musicButton = createButton(
+      options.musicEnabled === false ? "🔇" : "🎵",
+      "campo-lunan-hud__audio-btn",
+      () => {
+        this.onButtonPress();
+        const isEnabled = this.onToggleMusic();
+        this.setMusicEnabled(isEnabled);
+      },
+    );
+    this.sfxButton = createButton(
+      options.sfxEnabled === false ? "🔇" : "🔊",
+      "campo-lunan-hud__audio-btn",
+      () => {
+        this.onButtonPress();
+        const isEnabled = this.onToggleSfx();
+        this.setSfxEnabled(isEnabled);
+      },
+    );
+
+    this.backButton.addEventListener("click", () => this.onButtonPress());
+    this.pauseButton.addEventListener("click", () => this.onButtonPress());
+    this.memoryButton.addEventListener("click", () => this.onButtonPress());
 
     this.buttonRow.append(this.backButton, this.pauseButton, this.memoryButton);
+    this.audioControls.append(this.sfxButton, this.musicButton);
     this.panel.append(this.status, this.buttonRow);
-    this.root.append(this.panel);
+    this.root.append(this.audioControls, this.panel);
 
     // Mount it directly into the game container to avoid camera scaling/positioning issues
     const container = document.getElementById("game-container") || document.body;
@@ -75,6 +104,24 @@ export class HudOverlay {
 
   setMemoryVisible(visible) {
     this.memoryButton.hidden = !visible;
+  }
+
+  setMusicEnabled(enabled) {
+    this.musicButton.textContent = enabled ? "🎵" : "🔇";
+    this.musicButton.title = enabled ? "MUSIC ON" : "MUSIC OFF";
+    this.musicButton.setAttribute(
+      "aria-label",
+      enabled ? "Music on" : "Music off",
+    );
+  }
+
+  setSfxEnabled(enabled) {
+    this.sfxButton.textContent = enabled ? "🔊" : "🔇";
+    this.sfxButton.title = enabled ? "SFX ON" : "SFX OFF";
+    this.sfxButton.setAttribute(
+      "aria-label",
+      enabled ? "Sound effects on" : "Sound effects off",
+    );
   }
 
   destroy() {
