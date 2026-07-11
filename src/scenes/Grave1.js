@@ -392,17 +392,28 @@ export class Grave1 extends Phaser.Scene {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         layer.setDepth(topDepth);
-        // Automatically set collision for all placed tiles in these top layers
-        layer.setCollisionByExclusion([-1]);
-        this.physics.add.collider(this.player.sprite, layer);
+        // Do NOT automatically set collision on buildings or overlays
+        // We will rely on the Tiled "collisions" object layer instead
+        // to give finer control over house collisions.
         topDepth++;
       }
     });
 
-    // Add collider for the water layer created earlier
+    // Add collider for the water layer, but remove collision where there is a bridge
     const waterLayerData = map.getLayer("water");
+    const bridgeLayerData = map.getLayer("bridge");
     if (waterLayerData && waterLayerData.tilemapLayer) {
-        this.physics.add.collider(this.player.sprite, waterLayerData.tilemapLayer);
+      if (bridgeLayerData && bridgeLayerData.tilemapLayer) {
+        // Iterate over all tiles in the water layer
+        waterLayerData.tilemapLayer.forEachTile((tile) => {
+          // If there is a bridge tile at this same coordinate, disable collision for the water
+          const bridgeTile = bridgeLayerData.tilemapLayer.getTileAt(tile.x, tile.y, true);
+          if (bridgeTile && bridgeTile.index !== -1) {
+            tile.setCollision(false, false, false, false, false);
+          }
+        });
+      }
+      this.physics.add.collider(this.player.sprite, waterLayerData.tilemapLayer);
     }
 
     // Load static collisions from Tiled
@@ -423,14 +434,14 @@ export class Grave1 extends Phaser.Scene {
     this.npcs = this.physics.add.staticGroup();
     const npcPlacements = [
       { key: "debt-collector", x: 500, y: 400 },
-      { key: "old-fisherman", x: 820, y: 880 },
-      { key: "old-wife", x: 300, y: 480 },
+      { key: "old-fisherman", x: 920, y: 780 }, // Moved from water to land
+      { key: "old-wife", x: 380, y: 480 },
       { key: "random-guy", x: 1100, y: 600 },
       { key: "random-woman", x: 1150, y: 620 },
       { key: "school-girl", x: 950, y: 520 },
-      { key: "sick-wife", x: 420, y: 460 },
-      { key: "young-daughter", x: 330, y: 490 },
-      { key: "young-fisherman", x: 860, y: 1000 },
+      { key: "sick-wife", x: 450, y: 460 },
+      { key: "young-daughter", x: 400, y: 490 },
+      { key: "young-fisherman", x: 950, y: 800 }, // Moved from water to land
       { key: "young-kid", x: 980, y: 530 }
     ];
 
@@ -452,7 +463,7 @@ export class Grave1 extends Phaser.Scene {
           repeat: -1
         });
       }
-      npc.anims.play(animKey, true);
+      npc.setFrame(0); // Set to default frame (face down) instead of spinning
     });
 
     this.physics.add.collider(this.player.sprite, this.npcs);
@@ -573,7 +584,21 @@ export class Grave1 extends Phaser.Scene {
         const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
         this.startDialogueSequence(steps);
       } else if (!this.dialogueActive && this.nearNpc) {
-        const npcKey = this.closestNpc.texture.key;
+        const npc = this.closestNpc;
+        const npcKey = npc.texture.key;
+        
+        // Stop spinning and face the player
+        npc.anims.stop();
+        const dx = this.player.x - npc.x;
+        const dy = this.player.y - npc.y;
+        npc.setFrame(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 1) : (dy > 0 ? 0 : 3));
+        const animKey = npcKey.replace("npc-", "npc-anim-");
+
+        // Helper to run the original callback without resuming the spinning animation
+        const playAnimAndCall = (originalCb) => () => {
+          if (originalCb) originalCb();
+        };
+
         if (npcKey === "npc-old-fisherman") {
           if (!this.oldFishermanInteracted) {
             const initialList = this.cache.json.get("old-fisherman-initial");
@@ -581,7 +606,7 @@ export class Grave1 extends Phaser.Scene {
             
             this.startDialogueSequence([
               { speaker: "Old Fisherman", text: text }
-            ], () => {
+            ], playAnimAndCall(() => {
               if (!this.fragmentSpawned) {
                 this.fragmentSpawned = true;
                 this.oldFishermanInteracted = true;
@@ -594,18 +619,18 @@ export class Grave1 extends Phaser.Scene {
                   { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
                 ]);
               }
-            });
+            }));
           } else {
             const initialList = this.cache.json.get("old-fisherman-initial");
             const text = initialList[Math.floor(Math.random() * initialList.length)];
             this.startDialogueSequence([
               { speaker: "Old Fisherman", text: text }
-            ]);
+            ], playAnimAndCall());
           }
         } else {
           this.startDialogueSequence([
             { speaker: "Villager", text: "(They are staring into the distance, lost in forgotten memories...)" }
-          ]);
+          ], playAnimAndCall());
         }
       }
     };
