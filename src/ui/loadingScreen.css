@@ -1,0 +1,77 @@
+.gunita-loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 18px;
+  z-index: 50;
+  background:
+    radial-gradient(circle at center, rgba(33, 59, 92, 0.45), rgba(5, 5, 12, 0.98) 62%),
+    linear-gradient(180deg, rgba(10, 12, 24, 0.98), rgba(4, 5, 10, 0.98));
+  color: #eef6ff;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: opacity 260ms ease;
+}
+
+.gunita-loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gunita-loading-screen__title {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(12px, 1.6vw, 20px);
+  text-align: center;
+  text-shadow: 0 0 16px rgba(74, 234, 255, 0.35);
+}
+
+.gunita-loading-screen__subtitle {
+  font-size: clamp(18px, 2.6vw, 34px);
+  line-height: 1;
+  color: #cfe7ff;
+  text-shadow: 0 0 18px rgba(181, 127, 238, 0.3);
+}
+
+.gunita-loading-screen__bar {
+  width: min(58vw, 460px);
+  height: 10px;
+  border: 1px solid rgba(181, 127, 238, 0.4);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(10, 14, 24, 0.9);
+  box-shadow: 0 0 18px rgba(74, 234, 255, 0.15);
+}
+
+.gunita-loading-screen__bar::before {
+  content: "";
+  display: block;
+  width: 42%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(45, 212, 191, 0.18), rgba(45, 212, 191, 0.95), rgba(224, 200, 255, 0.55));
+  box-shadow: 0 0 20px rgba(45, 212, 191, 0.5);
+  animation: loadingBarSweep 1.6s ease-in-out infinite;
+}
+
+.gunita-loading-screen__hint {
+  font-size: 18px;
+  color: rgba(238, 246, 255, 0.72);
+}
+
+@keyframes loadingBarSweep {
+  0% {
+    transform: translateX(-45%);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(75%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(205%);
+    opacity: 0.5;
+  }
+}
