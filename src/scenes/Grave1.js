@@ -18,6 +18,9 @@ export class Grave1 extends Phaser.Scene {
     this.load.json("grave1-dialogues", "src/assets/data/dialogues/grave1/intro.json");
     this.load.json("random-guy-before", "src/assets/data/dialogues/grave1/random-guy/before-fragments.json");
     this.load.json("random-guy-completed", "src/assets/data/dialogues/grave1/random-guy/completed.json");
+    this.load.json("old-fisherman-initial", "src/assets/data/dialogues/grave1/old-fisherman/initial.json");
+    this.load.json("riddle-fish-basket", "src/assets/data/dialogues/fragments-riddles/fish-basket.json");
+    this.load.json("completed-fish-basket", "src/assets/data/dialogues/fragments-completed/fish-basket.json");
 
     // Load individual standalone ground tiles to preserve original tileset sizes
     const mappings = {
@@ -90,7 +93,7 @@ export class Grave1 extends Phaser.Scene {
       { key: "random-woman", file: "random-woman.png", fw: 32, fh: 42 },
       { key: "school-girl", file: "school-girl.png", fw: 32, fh: 42 },
       { key: "sick-wife", file: "sick-wife.png", fw: 32, fh: 42 },
-      { key: "young-daughter", file: "young-daughter.png", fw: 32, fh: 42 },
+      { key: "young-daughter", file: "old-daughter.png", fw: 32, fh: 42 },
       { key: "young-fisherman", file: "young-fisherman.png", fw: 32, fh: 42 },
       { key: "young-kid", file: "young-kid.png", fw: 32, fh: 42 }
     ];
@@ -100,6 +103,7 @@ export class Grave1 extends Phaser.Scene {
       });
     });
     this.load.image("fragment-main", "src/assets/grave1-elements/fragment-main.png");
+    this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
     // Load player animations sheets
     this.load.spritesheet(
@@ -362,7 +366,7 @@ export class Grave1 extends Phaser.Scene {
     // Camera Configuration
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
-    this.cameras.main.setZoom(1);
+    this.cameras.main.setZoom(4);
 
     // Build top layers (drawn above the player)
     const topLayerNames = [
@@ -442,6 +446,8 @@ export class Grave1 extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, this.npcs);
     this.fragmentSpawned = false;
     this.randomGuyFragmentCollected = false;
+    this.oldFishermanInteracted = false;
+    this.riddleSolved = false;
 
     // Sync database position if available
     if (cache && cache.player_id) {
@@ -522,39 +528,70 @@ export class Grave1 extends Phaser.Scene {
       if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
       } else if (!this.dialogueActive && this.nearFragment) {
-        if (this.fragment) {
-          this.fragment.destroy();
+        if (!this.riddleSolved) {
+          const riddleData = this.cache.json.get("riddle-fish-basket");
+          const randomRiddle = riddleData.riddles[Math.floor(Math.random() * riddleData.riddles.length)];
+
+          this.showRiddleUI(randomRiddle, () => {
+            // Correct Answer!
+            this.riddleSolved = true;
+            const fragmentX = this.fragment.x;
+            const fragmentY = this.fragment.y;
+            this.fragment.destroy();
+            this.fragment = null;
+
+            // Spawn the fish-basket
+            this.fishBasket = this.physics.add.sprite(fragmentX, fragmentY, "fish-basket");
+            this.fishBasket.setDepth(1);
+
+            this.startDialogueSequence([
+              { speaker: "Vino", text: "Correct! The crystal shatters and takes the form of a weathered Fish Basket!" }
+            ]);
+          }, () => {
+            // Incorrect Answer!
+            this.startDialogueSequence([
+              { speaker: "Vino", text: "That answer doesn't seem right... I should try again." }
+            ]);
+          });
         }
-        this.randomGuyFragmentCollected = true;
-        this.startDialogueSequence([
-          { speaker: "Vino", text: "I found the memory fragment! This should help the villager remember." }
-        ]);
+      } else if (!this.dialogueActive && this.nearFishBasket) {
+        const completedData = this.cache.json.get("completed-fish-basket");
+        const interactions = completedData.interactions;
+        const randomInteraction = interactions[Math.floor(Math.random() * interactions.length)];
+        const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
+        this.startDialogueSequence(steps);
       } else if (!this.dialogueActive && this.nearNpc) {
         const npcKey = this.closestNpc.texture.key;
-        if (npcKey === "npc-random-guy") {
-          if (this.randomGuyFragmentCollected) {
-            const completedDialogues = this.cache.json.get("random-guy-completed");
-            const text = completedDialogues[Math.floor(Math.random() * completedDialogues.length)];
+        if (npcKey === "npc-old-fisherman") {
+          if (!this.oldFishermanInteracted) {
+            const initialList = this.cache.json.get("old-fisherman-initial");
+            const text = initialList[Math.floor(Math.random() * initialList.length)];
+            
             this.startDialogueSequence([
-              { speaker: "Random Guy", text: text }
-            ]);
+              { speaker: "Old Fisherman", text: text }
+            ], () => {
+              if (!this.fragmentSpawned) {
+                this.fragmentSpawned = true;
+                this.oldFishermanInteracted = true;
+                const fragmentPos = this.getNearestLandCoordinate(this.closestNpc.x + 50, this.closestNpc.y + 50, map);
+                this.fragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
+                this.fragment.setDepth(1);
+                
+                this.startDialogueSequence([
+                  { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
+                ]);
+              }
+            });
           } else {
-            const beforeDialogues = this.cache.json.get("random-guy-before");
-            const text = beforeDialogues[Math.floor(Math.random() * beforeDialogues.length)];
+            const initialList = this.cache.json.get("old-fisherman-initial");
+            const text = initialList[Math.floor(Math.random() * initialList.length)];
             this.startDialogueSequence([
-              { speaker: "Random Guy", text: text }
+              { speaker: "Old Fisherman", text: text }
             ]);
-
-            if (!this.fragmentSpawned) {
-              this.fragmentSpawned = true;
-              const fragmentPos = this.getNearestLandCoordinate(this.closestNpc.x + 40, this.closestNpc.y + 40, map);
-              this.fragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
-              this.fragment.setDepth(1);
-            }
           }
         } else {
           this.startDialogueSequence([
-            { speaker: "Villager", text: "..." }
+            { speaker: "Villager", text: "(They are staring into the distance, lost in forgotten memories...)" }
           ]);
         }
       }
@@ -612,7 +649,7 @@ export class Grave1 extends Phaser.Scene {
     ];
   }
 
-  startDialogueSequence(dialogueSteps) {
+  startDialogueSequence(dialogueSteps, onFinished = null) {
     if (!dialogueSteps || dialogueSteps.length === 0) return;
 
     this.currentDialogueSteps = dialogueSteps;
@@ -633,6 +670,9 @@ export class Grave1 extends Phaser.Scene {
               this.dialogue.hide();
             }
             this.dialogueActive = false;
+            if (typeof onFinished === 'function') {
+              onFinished();
+            }
           }
         }
       });
@@ -647,6 +687,9 @@ export class Grave1 extends Phaser.Scene {
             this.dialogue.hide();
           }
           this.dialogueActive = false;
+          if (typeof onFinished === 'function') {
+            onFinished();
+          }
         }
       };
       this.dialogue.showText(this.currentDialogueSteps[0].speaker, this.currentDialogueSteps[0].text);
@@ -710,17 +753,28 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
+    let nearFishBasket = false;
+    if (this.fishBasket && this.fishBasket.active) {
+      const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.fishBasket.x, this.fishBasket.y);
+      if (dist < 60) {
+        nearFishBasket = true;
+      }
+    }
+
     this.nearNpc = nearNpc;
     this.closestNpc = closestNpc;
     this.nearFragment = nearFragment;
+    this.nearFishBasket = nearFishBasket;
 
     if (nearFragment) {
-      this.hud.setStatus("PRESS [E] OR [SPACE] TO COLLECT MEMORY FRAGMENT");
+      this.hud.setStatus("PRESS [E] OR [SPACE] TO SOLVE RIDDLE");
+    } else if (nearFishBasket) {
+      this.hud.setStatus("PRESS [E] OR [SPACE] TO INSPECT FISH BASKET");
     } else if (nearNpc) {
-      if (closestNpc.texture.key === "npc-random-guy") {
-        this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK TO RANDOM GUY");
+      if (closestNpc.texture.key === "npc-old-fisherman") {
+        this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK TO OLD FISHERMAN");
       } else {
-        this.hud.setStatus("PRESS [E] OR [SPACE] TO INTERACT");
+        this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK");
       }
     } else {
       this.hud.setStatus("WASD / ARROWS TO MOVE   P PAUSE   M MEMORY");
@@ -749,5 +803,109 @@ export class Grave1 extends Phaser.Scene {
       }
     }
     return { x: startX, y: startY };
+  }
+
+  showRiddleUI(riddleData, onCorrect, onIncorrect) {
+    this.dialogueActive = true;
+    if (this.player && this.player.sprite && this.player.sprite.body) {
+      this.player.sprite.body.setVelocity(0);
+      if (this.player.sprite.anims.isPlaying) {
+        this.player.sprite.anims.stop();
+      }
+    }
+
+    // Modal Background Overlay
+    const modalBg = document.createElement("div");
+    modalBg.style.position = "absolute";
+    modalBg.style.top = "0";
+    modalBg.style.left = "0";
+    modalBg.style.width = "100%";
+    modalBg.style.height = "100%";
+    modalBg.style.background = "rgba(0,0,0,0.7)";
+    modalBg.style.zIndex = "1002";
+    modalBg.style.display = "flex";
+    modalBg.style.justifyContent = "center";
+    modalBg.style.alignItems = "center";
+
+    // Dialog structure similar to DialogueBox but centered and larger
+    const overlay = document.createElement("div");
+    overlay.className = "gunita-dialogue";
+    overlay.style.position = "relative";
+    overlay.style.bottom = "auto";
+    overlay.style.left = "auto";
+    overlay.style.transform = "none";
+    overlay.style.width = "min(90vw, 550px)";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+
+    const inner = document.createElement("div");
+    inner.className = "gunita-dialogue__inner";
+    inner.style.display = "flex";
+    inner.style.flexDirection = "column";
+    inner.style.gap = "20px";
+    inner.style.padding = "20px";
+
+    const title = document.createElement("div");
+    title.className = "gunita-dialogue__name";
+    title.textContent = "Memory Riddle";
+    inner.appendChild(title);
+
+    const question = document.createElement("div");
+    question.className = "gunita-dialogue__message";
+    question.style.fontSize = "12px";
+    question.style.lineHeight = "1.8";
+    question.textContent = riddleData.question;
+    inner.appendChild(question);
+
+    const choicesContainer = document.createElement("div");
+    choicesContainer.style.display = "grid";
+    choicesContainer.style.gridTemplateColumns = "1fr";
+    choicesContainer.style.gap = "10px";
+    choicesContainer.style.marginTop = "10px";
+
+    riddleData.choices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.textContent = choice;
+      btn.style.background = "#000000";
+      btn.style.color = "#ffffff";
+      btn.style.border = "3px solid #ffffff";
+      btn.style.padding = "10px";
+      btn.style.fontFamily = "'Press Start 2P', monospace";
+      btn.style.fontSize = "9px";
+      btn.style.cursor = "pointer";
+      btn.style.boxSizing = "border-box";
+      btn.style.textTransform = "uppercase";
+      btn.style.textAlign = "left";
+      btn.style.transition = "all 0.1s ease";
+
+      btn.addEventListener("mouseenter", () => {
+        btn.style.background = "#b07eff"; // Purple glow
+        btn.style.color = "#000000";
+        btn.style.borderColor = "#b07eff";
+      });
+      btn.addEventListener("mouseleave", () => {
+        btn.style.background = "#000000";
+        btn.style.color = "#ffffff";
+        btn.style.borderColor = "#ffffff";
+      });
+
+      btn.addEventListener("click", () => {
+        modalBg.remove();
+        this.dialogueActive = false;
+        if (choice === riddleData.answer) {
+          onCorrect();
+        } else {
+          onIncorrect();
+        }
+      });
+      choicesContainer.appendChild(btn);
+    });
+
+    inner.appendChild(choicesContainer);
+    overlay.appendChild(inner);
+    modalBg.appendChild(overlay);
+
+    const container = document.getElementById("game-container") || document.body;
+    container.appendChild(modalBg);
   }
 }

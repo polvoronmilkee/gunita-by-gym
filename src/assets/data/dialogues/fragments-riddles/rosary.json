@@ -1,0 +1,25 @@
+{
+  "artifact": "Rosary",
+  "riddles": [
+    {
+      "question": "Before facing the waves, many hold me while whispering a prayer. What am I?",
+      "choices": ["Rosary", "Compass", "Anchor", "Fishing Hook"],
+      "answer": "Rosary"
+    },
+    {
+      "question": "I am not a weapon, yet I bring courage through faith. What am I?",
+      "choices": ["Rosary", "Knife", "Lantern", "Fishing Net"],
+      "answer": "Rosary"
+    },
+    {
+      "question": "Families hold me close when asking for protection. What am I?",
+      "choices": ["Rosary", "Basket", "Paddle", "Shell"],
+      "answer": "Rosary"
+    },
+    {
+      "question": "Small beads tied together, carried with hope into uncertain days. What am I?",
+      "choices": ["Rosary", "Necklace", "Bracelet", "Fishing Rope"],
+      "answer": "Rosary"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "artifact": "Red Weather Warning Flag",
+  "riddles": [
+    {
+      "question": "I am raised before danger arrives, warning everyone to stay ashore. What am I?",
+      "choices": ["Red Weather Flag", "Church Bell", "Lighthouse", "Anchor"],
+      "answer": "Red Weather Flag"
+    },
+    {
+      "question": "Ignoring me may lead a sailor into great danger. What am I?",
+      "choices": ["Red Weather Flag", "Boat Paddle", "Fishing Hook", "Compass"],
+      "answer": "Red Weather Flag"
+    },
+    {
+      "question": "When I wave in the wind, fishermen know the sea is angry. What am I?",
+      "choices": ["Red Weather Flag", "Fishing Net", "Lantern", "Shell"],
+      "answer": "Red Weather Flag"
+    },
+    {
+      "question": "The village watches me before every journey at sea. What am I?",
+      "choices": ["Red Weather Flag", "Rosary", "Boat", "Basket"],
+      "answer": "Red Weather Flag"
+    }
+  ]
+}

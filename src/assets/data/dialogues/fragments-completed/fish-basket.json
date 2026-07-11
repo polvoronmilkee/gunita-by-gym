@@ -1,0 +1,26 @@
+{
+  "artifact": "Fish Basket",
+  "interactions": [
+    {
+      "speaker": "Echo",
+      "dialogues": [
+        "The crystal has taken the shape of an old fish basket.",
+        "For generations of Filipino fishermen, a basket like this carried more than the day's catch—it carried the hope of feeding a family."
+      ]
+    },
+    {
+      "speaker": "Echo",
+      "dialogues": [
+        "A weathered fish basket rests before you.",
+        "Every woven strand tells a story of honest labor, perseverance, and the quiet sacrifices made for loved ones."
+      ]
+    },
+    {
+      "speaker": "Vino",
+      "dialogues": [
+        "This basket may seem ordinary...",
+        "But in many coastal communities, it represents a parent's promise to always provide, no matter how uncertain the sea becomes."
+      ]
+    }
+  ]
+}

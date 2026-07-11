@@ -1,0 +1,25 @@
+{
+  "artifact": "Daughter's Drawing",
+  "riddles": [
+    {
+      "question": "Drawn with crayons and love, I hold a child's happiest memory. What am I?",
+      "choices": ["Daughter's Drawing", "School Book", "Photo", "Letter"],
+      "answer": "Daughter's Drawing"
+    },
+    {
+      "question": "I show a family smiling beneath the sun, hoping tomorrow will be just as bright. What am I?",
+      "choices": ["Daughter's Drawing", "Painting", "Map", "Journal"],
+      "answer": "Daughter's Drawing"
+    },
+    {
+      "question": "Though made of paper, I carry a father's greatest treasure. What am I?",
+      "choices": ["Daughter's Drawing", "Rosary", "Letter", "Flag"],
+      "answer": "Daughter's Drawing"
+    },
+    {
+      "question": "A child created me to remember the people she loved most. What am I?",
+      "choices": ["Daughter's Drawing", "Homework", "Book", "Certificate"],
+      "answer": "Daughter's Drawing"
+    }
+  ]
+}

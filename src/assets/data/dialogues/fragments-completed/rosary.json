@@ -1,0 +1,26 @@
+{
+  "artifact": "Rosary",
+  "interactions": [
+    {
+      "speaker": "Echo",
+      "dialogues": [
+        "The crystal becomes a worn rosary.",
+        "Many Filipino families begin uncertain journeys with prayer, placing hope in faith before taking their first step."
+      ]
+    },
+    {
+      "speaker": "Echo",
+      "dialogues": [
+        "These beads have witnessed countless whispered prayers.",
+        "Faith did not calm the waves—it gave people the strength to face them."
+      ]
+    },
+    {
+      "speaker": "Vino",
+      "dialogues": [
+        "Someone held this tightly before sailing.",
+        "Sometimes the strongest anchor is not made of iron, but of faith."
+      ]
+    }
+  ]
+}

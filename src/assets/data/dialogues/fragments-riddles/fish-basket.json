@@ -1,0 +1,25 @@
+{
+  "artifact": "Fish Basket",
+  "riddles": [
+    {
+      "question": "Every morning I leave empty, hoping to return full. What am I?",
+      "choices": ["Fishing Basket", "Wooden Boat", "Fishing Net", "Lantern"],
+      "answer": "Fishing Basket"
+    },
+    {
+      "question": "I carry today's catch from the sea back to the family. What am I?",
+      "choices": ["Fishing Basket", "Bucket", "Sack of Rice", "Wooden Crate"],
+      "answer": "Fishing Basket"
+    },
+    {
+      "question": "Without me, a fisher has nowhere to keep the day's harvest. What am I?",
+      "choices": ["Fishing Basket", "Paddle", "Anchor", "Rope"],
+      "answer": "Fishing Basket"
+    },
+    {
+      "question": "I begin the day empty and end it with hope. What am I?",
+      "choices": ["Fishing Basket", "Lantern", "Hat", "Compass"],
+      "answer": "Fishing Basket"
+    }
+  ]
+}

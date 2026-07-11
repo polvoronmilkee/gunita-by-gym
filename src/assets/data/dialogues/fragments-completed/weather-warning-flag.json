@@ -1,0 +1,26 @@
+{
+  "artifact": "Red Weather Warning Flag",
+  "interactions": [
+    {
+      "speaker": "Echo",
+      "dialogues": [
+        "The crystal transforms into a faded red warning flag.",
+        "For coastal villages, respecting this warning was never a sign of fear—it was a sign of wisdom and respect for nature."
+      ]
+    },
+    {
+      "speaker": "Echo",
+      "dialogues": [
+        "The sea provides life, but it also demands humility.",
+        "Generations of fishermen learned that no harvest is worth risking a life."
+      ]
+    },
+    {
+      "speaker": "Vino",
+      "dialogues": [
+        "This flag protected an entire village.",
+        "Sometimes true courage means knowing when not to challenge the sea."
+      ]
+    }
+  ]
+}
