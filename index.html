@@ -41,6 +41,58 @@
         transition: opacity 420ms ease;
       }
 
+      .menu-light-orb,
+      .menu-light-rim {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .menu-light-orb {
+        background:
+          radial-gradient(circle at 52% 44%, rgba(74, 234, 255, 0.26) 0%, rgba(74, 234, 255, 0.14) 16%, rgba(74, 234, 255, 0.04) 32%, transparent 58%),
+          radial-gradient(circle at 55% 48%, rgba(255, 255, 255, 0.08) 0%, transparent 18%);
+        filter: blur(18px);
+        mix-blend-mode: screen;
+        opacity: 0.75;
+        animation: menuLightPulse 6.5s ease-in-out infinite;
+      }
+
+      .menu-light-rim {
+        background:
+          radial-gradient(circle at 52% 48%, transparent 44%, rgba(120, 220, 255, 0.12) 52%, transparent 67%),
+          radial-gradient(circle at 49% 39%, rgba(255, 255, 255, 0.05) 0%, transparent 22%);
+        filter: blur(12px);
+        mix-blend-mode: screen;
+        opacity: 0.55;
+        animation: menuLightDrift 10s ease-in-out infinite;
+      }
+
+      @keyframes menuLightPulse {
+        0%,
+        100% {
+          opacity: 0.55;
+          transform: scale(0.98);
+        }
+        50% {
+          opacity: 0.9;
+          transform: scale(1.04);
+        }
+      }
+
+      @keyframes menuLightDrift {
+        0%,
+        100% {
+          opacity: 0.45;
+          transform: translate3d(-0.6%, -0.3%, 0);
+        }
+        50% {
+          opacity: 0.72;
+          transform: translate3d(0.8%, 0.5%, 0);
+        }
+      }
+
       #menu-screen.hidden {
         opacity: 0;
         pointer-events: none;
@@ -338,7 +390,9 @@
   <body>
     <div class="scanlines"></div>
 
-    <div id="menu-screen">
+    <div id="menu-screen" class="hidden">
+      <div class="menu-light-orb" aria-hidden="true"></div>
+      <div class="menu-light-rim" aria-hidden="true"></div>
       <div class="menu-container">
         <!-- Tagline bottom-left -->
         <img class="menu-tagline" src="/src/assets/main-menu/tagline.png" alt="The dead have stories to tell. Will you listen?" />

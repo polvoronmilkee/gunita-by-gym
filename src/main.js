@@ -6,8 +6,15 @@ import { CampoLunanScene } from "./scenes/CampoLunanScene.js";
 import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
+import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { getCache, setCache, clearCache } from "./save.js";
 import { loginPlayer, signupPlayer, loadGameState } from "./utils/api.js";
+
+const menuAssetUrls = [
+  "/src/assets/main-menu/main-menu-bg.png",
+  "/src/assets/main-menu/tagline.png",
+  "/src/assets/main-menu/gunita-text-glowing-2.png",
+];
 
 const sceneManager = new SceneManager([
   BootScene,
@@ -47,6 +54,32 @@ const config = {
 };
 
 let game = null;
+
+const loadingScreen = new LoadingScreen({
+  title: "Loading Memories",
+  subtitle: "Preparing the Echoes",
+  hint: "Please wait",
+});
+const menuScreen = document.getElementById("menu-screen");
+
+function preloadImage(src) {
+  return new Promise((resolve) => {
+    const image = new Image();
+
+    image.onload = () => resolve({ src, ok: true });
+    image.onerror = () => resolve({ src, ok: false });
+    image.src = src;
+  });
+}
+
+async function initializeMenuScreen() {
+  await Promise.all(menuAssetUrls.map((src) => preloadImage(src)));
+
+  loadingScreen.hide();
+  menuScreen?.classList.remove("hidden");
+}
+
+initializeMenuScreen();
 
 const continueModal = document.getElementById("continue-journey-modal");
 const continueInput = document.getElementById("continue-username-input");
@@ -89,7 +122,6 @@ function hideNewModal() {
 }
 
 function setMenuVisible(visible) {
-  const menuScreen = document.getElementById("menu-screen");
   if (!menuScreen) {
     return;
   }
@@ -107,6 +139,13 @@ function setGameVisible(visible) {
 }
 
 function startGame() {
+  loadingScreen.setContent({
+    title: "Entering Campo Lunan",
+    subtitle: "Awakening the Echoes",
+    hint: "Please wait",
+  });
+  loadingScreen.show();
+
   setGameVisible(true);
 
   requestAnimationFrame(() => {
@@ -116,6 +155,9 @@ function startGame() {
   if (!game) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
+    game.events.once("campo-lunan-ready", () => {
+      loadingScreen.hide();
+    });
   } else {
     game.canvas?.focus?.();
   }

@@ -1,6 +1,6 @@
 # Gunita: Reaper of Echoes
 
-> *The dead have stories to tell. Will you listen?*
+> _The dead have stories to tell. Will you listen?_
 
 Gunita: Reaper of Echoes is a browser-based 2D narrative adventure built with Phaser.js and Vite. You play as Vino, a newly appointed Echo Reaper, as you investigate forgotten memories trapped within Campo Lunan, solve AI-generated riddles, and restore Philippine-inspired stories to peace.
 
@@ -24,13 +24,13 @@ Campo Lunan -> Choose a grave -> Enter a memory world -> Explore -> Use Echo -> 
 
 ## Controls
 
-| Key | Action |
-| --- | --- |
-| W A S D / Arrow Keys | Move |
-| E | Interact |
-| Space | Use Echo Ability |
-| Esc | Pause |
-| Mouse | UI Interaction |
+| Key                  | Action           |
+| -------------------- | ---------------- |
+| W A S D / Arrow Keys | Move             |
+| E                    | Interact         |
+| Space                | Use Echo Ability |
+| Esc                  | Pause            |
+| Mouse                | UI Interaction   |
 
 ## How To Play
 
