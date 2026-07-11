@@ -461,7 +461,7 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     });
 
-    this.game.events.emit("campo-lunan-ready");
+    this.game.events.emit("game-ready");
   }
 
   async saveProgress() {

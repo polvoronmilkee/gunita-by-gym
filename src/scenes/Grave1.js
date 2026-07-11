@@ -486,6 +486,8 @@ export class Grave1 extends Phaser.Scene {
         this.dialogue.onComplete();
       }
     });
+
+    this.game.events.emit("game-ready");
   }
 
   async saveProgress() {

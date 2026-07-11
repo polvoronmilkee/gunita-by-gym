@@ -202,11 +202,12 @@ function startGame() {
   if (!game) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
-    game.events.once("campo-lunan-ready", () => {
+    game.events.once("game-ready", () => {
       loadingScreen.hide();
     });
   } else {
     game.canvas?.focus?.();
+    loadingScreen.hide();
   }
 }
 
