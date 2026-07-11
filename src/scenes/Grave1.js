@@ -30,6 +30,7 @@ export class Grave1 extends Phaser.Scene {
     this.load.image('weather-warning-flag', 'src/assets/grave1-elements/fragments-uncovered/weather-flag-warning.png');
     this.load.image('rosary', 'src/assets/grave1-elements/fragments-uncovered/rosary.png');
     this.load.image('daughters-drawing', 'src/assets/grave1-elements/fragments-uncovered/daughters-drawing.png');
+    this.load.json('final-riddle', 'src/assets/data/dialogues/grave-1-final-riddle/final-riddle.json');
 
 
     // Load individual standalone ground tiles to preserve original tileset sizes
@@ -113,8 +114,8 @@ export class Grave1 extends Phaser.Scene {
       });
     });
     this.load.spritesheet("fragment-main", "src/assets/grave1-elements/fragment-main.png", {
-      frameWidth: 32,
-      frameHeight: 32
+      frameWidth: 16,
+      frameHeight: 16
     });
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
@@ -597,10 +598,7 @@ export class Grave1 extends Phaser.Scene {
             this.currentArtifactKey = null;
             this.storyStage++;
             if (this.storyStage === 5) {
-                this.startDialogueSequence([
-                  { speaker: "Vino", text: "The fog seems to be lifting... All the memories are restored." },
-                  { speaker: "Mang Tomas", text: "Thank you... for remembering me." }
-                ]);
+                this.startFinalRiddleSequence();
             }
         });
       } else if (!this.dialogueActive && this.nearNpc) {
@@ -650,6 +648,176 @@ export class Grave1 extends Phaser.Scene {
               { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
           ]);
       });
+  }
+
+  startFinalRiddleSequence() {
+    const finalRiddleData = this.cache.json.get("final-riddle");
+    if (!finalRiddleData) {
+      console.error("Failed to load final-riddle.json");
+      return;
+    }
+    this.startDialogueSequence(finalRiddleData.introDialogue, () => {
+      this.askFinalRiddleQuestion(0);
+    });
+  }
+
+  askFinalRiddleQuestion(index) {
+    const finalRiddleData = this.cache.json.get("final-riddle");
+    const questions = finalRiddleData.questions;
+
+    if (index >= questions.length) {
+      this.startDialogueSequence(finalRiddleData.correctDialogue, () => {
+        this.showFinalEndingModal();
+      });
+      return;
+    }
+
+    const currentQ = questions[index];
+    this.showRiddleUI({
+      question: `Question ${index + 1} of ${questions.length}:\n\n${currentQ.question}`,
+      choices: currentQ.choices,
+      answer: currentQ.answer
+    }, () => {
+      this.startDialogueSequence([
+        { speaker: "Echo", text: "Correct. The memories align further." }
+      ], () => {
+        this.askFinalRiddleQuestion(index + 1);
+      });
+    }, () => {
+      this.startDialogueSequence([
+        { speaker: "Echo", text: "That is incorrect. The fog grows thick... Let us reflect and try again." }
+      ], () => {
+        this.askFinalRiddleQuestion(index);
+      });
+    });
+  }
+
+  showFinalEndingModal() {
+    this.dialogueActive = true;
+    if (this.player && this.player.sprite && this.player.sprite.body) {
+      this.player.sprite.body.setVelocity(0);
+      if (this.player.sprite.anims.isPlaying) {
+        this.player.sprite.anims.stop();
+      }
+    }
+
+    const modalBg = document.createElement("div");
+    modalBg.style.position = "absolute";
+    modalBg.style.top = "0";
+    modalBg.style.left = "0";
+    modalBg.style.width = "100%";
+    modalBg.style.height = "100%";
+    modalBg.style.background = "radial-gradient(circle, rgba(20,10,35,0.95) 0%, rgba(5,5,10,0.98) 100%)";
+    modalBg.style.zIndex = "2000";
+    modalBg.style.display = "flex";
+    modalBg.style.justifyContent = "center";
+    modalBg.style.alignItems = "center";
+    modalBg.style.fontFamily = "'Press Start 2P', monospace";
+    modalBg.style.color = "#ffffff";
+    modalBg.style.padding = "20px";
+    modalBg.style.boxSizing = "border-box";
+
+    const contentBox = document.createElement("div");
+    contentBox.style.maxWidth = "600px";
+    contentBox.style.background = "rgba(15, 10, 25, 0.85)";
+    contentBox.style.border = "4px solid #b07eff";
+    contentBox.style.borderRadius = "8px";
+    contentBox.style.padding = "30px";
+    contentBox.style.boxShadow = "0 0 25px rgba(176, 126, 255, 0.4)";
+    contentBox.style.display = "flex";
+    contentBox.style.flexDirection = "column";
+    contentBox.style.alignItems = "center";
+    contentBox.style.textAlign = "center";
+    contentBox.style.gap = "20px";
+
+    const trophy = document.createElement("div");
+    trophy.style.fontSize = "40px";
+    trophy.style.animation = "bounce 1.5s infinite alternate";
+    trophy.textContent = "🏆";
+    contentBox.appendChild(trophy);
+
+    const styleSheet = document.createElement("style");
+    styleSheet.type = "text/css";
+    styleSheet.innerText = `
+      @keyframes bounce {
+        from { transform: translateY(0px); }
+        to { transform: translateY(-10px); }
+      }
+    `;
+    document.head.appendChild(styleSheet);
+
+    const title = document.createElement("h1");
+    title.style.fontSize = "16px";
+    title.style.color = "#b07eff";
+    title.style.textShadow = "0 0 10px rgba(176,126,255,0.8)";
+    title.style.margin = "0";
+    title.textContent = "CONGRATULATIONS, VINO!";
+    contentBox.appendChild(title);
+
+    const subtitle = document.createElement("h2");
+    subtitle.style.fontSize = "10px";
+    subtitle.style.color = "#4be3ac";
+    subtitle.style.margin = "0";
+    subtitle.textContent = "You have given justice to Mang Tomas' death!";
+    contentBox.appendChild(subtitle);
+
+    const message = document.createElement("p");
+    message.style.fontSize = "9px";
+    message.style.lineHeight = "1.8";
+    message.style.color = "#dddddd";
+    message.style.textAlign = "justify";
+    message.style.margin = "0";
+    message.innerHTML = `
+      Mang Tomas was not just a fisherman; he was a husband, a father, and a man of deep faith. 
+      In the face of a devastating storm, he put the safety of others before himself. 
+      <br/><br/>
+      His legacy teaches us the value of <strong>Bayanihan</strong> (communal unity), 
+      <strong>Pakikipagkapwa-tao</strong> (shared empathy), and the enduring power of family. 
+      Through your journey, you have reminded the village that the true measure of a person's life 
+      is not in fame or wealth, but in the love and sacrifice they leave behind.
+    `;
+    contentBox.appendChild(message);
+
+    const returnBtn = document.createElement("button");
+    returnBtn.textContent = "RETURN TO MENU";
+    returnBtn.style.background = "#4be3ac";
+    returnBtn.style.color = "#000000";
+    returnBtn.style.border = "none";
+    returnBtn.style.padding = "12px 25px";
+    returnBtn.style.fontSize = "10px";
+    returnBtn.style.fontFamily = "'Press Start 2P', monospace";
+    returnBtn.style.cursor = "pointer";
+    returnBtn.style.borderRadius = "4px";
+    returnBtn.style.boxShadow = "0 4px 0px #2a9b73";
+    returnBtn.style.transition = "transform 0.1s";
+
+    returnBtn.addEventListener("mouseenter", () => {
+      returnBtn.style.background = "#6effcb";
+    });
+    returnBtn.addEventListener("mouseleave", () => {
+      returnBtn.style.background = "#4be3ac";
+    });
+    returnBtn.addEventListener("mousedown", () => {
+      returnBtn.style.transform = "translateY(2px)";
+      returnBtn.style.boxShadow = "0 2px 0px #2a9b73";
+    });
+    returnBtn.addEventListener("mouseup", () => {
+      returnBtn.style.transform = "translateY(0px)";
+      returnBtn.style.boxShadow = "0 4px 0px #2a9b73";
+    });
+
+    returnBtn.addEventListener("click", async () => {
+      modalBg.remove();
+      this.dialogueActive = false;
+      await this.saveProgress();
+      window.returnToGunitaMenu?.();
+    });
+
+    contentBox.appendChild(returnBtn);
+    modalBg.appendChild(contentBox);
+
+    const container = document.getElementById("game-container") || document.body;
+    container.appendChild(modalBg);
   }
 
   generateAIDialogues() {
