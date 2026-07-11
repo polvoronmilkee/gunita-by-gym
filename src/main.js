@@ -241,6 +241,10 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
   showNewModal();
 });
 
+document.getElementById("tale-untold")?.addEventListener("click", () => {
+  startGame("MemoryScene");
+});
+
 guideButton?.addEventListener("click", () => {
   showGuide();
 });
