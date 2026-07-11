@@ -6,7 +6,10 @@
     <title>Gunita: Reaper of Echoes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --bg: #0a0a14;
@@ -34,7 +37,8 @@
         position: fixed;
         inset: 0;
         overflow: hidden;
-        background: #05050c url('/src/assets/main-menu/main-menu-bg.png') no-repeat center center;
+        background: #05050c url("/src/assets/main-menu/main-menu-bg.png")
+          no-repeat center center;
         background-size: cover;
         z-index: 5;
         opacity: 1;
@@ -51,8 +55,18 @@
 
       .menu-light-orb {
         background:
-          radial-gradient(circle at 52% 44%, rgba(74, 234, 255, 0.26) 0%, rgba(74, 234, 255, 0.14) 16%, rgba(74, 234, 255, 0.04) 32%, transparent 58%),
-          radial-gradient(circle at 55% 48%, rgba(255, 255, 255, 0.08) 0%, transparent 18%);
+          radial-gradient(
+            circle at 52% 44%,
+            rgba(74, 234, 255, 0.26) 0%,
+            rgba(74, 234, 255, 0.14) 16%,
+            rgba(74, 234, 255, 0.04) 32%,
+            transparent 58%
+          ),
+          radial-gradient(
+            circle at 55% 48%,
+            rgba(255, 255, 255, 0.08) 0%,
+            transparent 18%
+          );
         filter: blur(18px);
         mix-blend-mode: screen;
         opacity: 0.75;
@@ -61,8 +75,17 @@
 
       .menu-light-rim {
         background:
-          radial-gradient(circle at 52% 48%, transparent 44%, rgba(120, 220, 255, 0.12) 52%, transparent 67%),
-          radial-gradient(circle at 49% 39%, rgba(255, 255, 255, 0.05) 0%, transparent 22%);
+          radial-gradient(
+            circle at 52% 48%,
+            transparent 44%,
+            rgba(120, 220, 255, 0.12) 52%,
+            transparent 67%
+          ),
+          radial-gradient(
+            circle at 49% 39%,
+            rgba(255, 255, 255, 0.05) 0%,
+            transparent 22%
+          );
         filter: blur(12px);
         mix-blend-mode: screen;
         opacity: 0.55;
@@ -150,7 +173,7 @@
         margin-right: 7%;
         flex-direction: column;
         gap: clamp(8px, 1.2vh, 16px);
-        margin-top: 15%
+        margin-top: 15%;
       }
 
       .menu-audio-controls {
@@ -212,7 +235,7 @@
         color: #ffffff;
         background: rgba(12, 12, 24, 0.85);
         text-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
-        box-shadow: 
+        box-shadow:
           0 0 15px rgba(45, 212, 191, 0.3),
           inset 0 0 10px rgba(45, 212, 191, 0.1);
         transform: translateY(-2px);
@@ -277,13 +300,13 @@
         background: #000000;
         border: 4px solid #ffffff;
         padding: 6px;
-        box-shadow: 
-          0 8px 0 -4px #000000, 
+        box-shadow:
+          0 8px 0 -4px #000000,
           0 12px 24px rgba(0, 0, 0, 0.8),
           0 0 15px rgba(176, 126, 255, 0.3);
         width: min(90vw, 420px);
         box-sizing: border-box;
-        font-family: 'Press Start 2P', monospace;
+        font-family: "Press Start 2P", monospace;
         position: relative;
       }
 
@@ -294,7 +317,7 @@
         background: none;
         border: none;
         color: #ffffff;
-        font-family: 'Press Start 2P', monospace;
+        font-family: "Press Start 2P", monospace;
         font-size: 16px;
         cursor: pointer;
         transition: all 200ms ease;
@@ -355,7 +378,7 @@
         background: #000000;
         border: 3px solid #ffffff;
         color: #ffffff;
-        font-family: 'Press Start 2P', monospace;
+        font-family: "Press Start 2P", monospace;
         font-size: 14px;
         padding: 10px;
         text-align: center;
@@ -400,7 +423,7 @@
       }
 
       .gunita-modal__cancel-link {
-        font-family: 'Press Start 2P', monospace;
+        font-family: "Press Start 2P", monospace;
         font-size: 10px;
         color: #ff5555;
         background: none;
@@ -415,12 +438,215 @@
       }
 
       .gunita-modal__error {
-        font-family: 'VT323', monospace;
+        font-family: "VT323", monospace;
         font-size: 20px;
         color: #ff5c5c;
         min-height: 24px;
         text-align: center;
         margin-top: 4px;
+      }
+
+      .guide-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(4, 6, 14, 0.86);
+        transition: opacity 220ms ease;
+      }
+
+      .guide-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .guide-shell {
+        width: min(1100px, 95vw);
+        height: min(760px, 92vh);
+        border: 2px solid rgba(160, 127, 236, 0.45);
+        border-radius: 16px;
+        background:
+          linear-gradient(180deg, rgba(8, 12, 22, 0.98), rgba(5, 8, 15, 0.98)),
+          radial-gradient(
+            circle at top right,
+            rgba(45, 212, 191, 0.08),
+            transparent 40%
+          );
+        box-shadow:
+          0 28px 64px rgba(0, 0, 0, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        overflow: hidden;
+      }
+
+      .guide-nav {
+        padding: 20px 14px;
+        border-right: 1px solid rgba(148, 163, 184, 0.22);
+        background: linear-gradient(
+          180deg,
+          rgba(14, 20, 34, 0.95),
+          rgba(9, 13, 24, 0.95)
+        );
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .guide-nav__title {
+        margin: 4px 8px 6px;
+        color: #d8cfff;
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        line-height: 1.3;
+        letter-spacing: 0.05em;
+      }
+
+      .guide-nav__divider {
+        margin: 0 8px 10px;
+        border-bottom: 1px dashed rgba(148, 163, 184, 0.38);
+      }
+
+      .guide-nav__button {
+        appearance: none;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        background: transparent;
+        color: #d8ddf0;
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        text-align: left;
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: all 180ms ease;
+      }
+
+      .guide-nav__button:hover {
+        border-color: rgba(82, 207, 192, 0.4);
+        background: rgba(32, 43, 68, 0.5);
+        color: #ffffff;
+      }
+
+      .guide-nav__button.is-active {
+        border-color: rgba(82, 207, 192, 0.65);
+        background: rgba(34, 50, 82, 0.68);
+        color: #ffffff;
+        text-shadow: 0 0 9px rgba(45, 212, 191, 0.35);
+      }
+
+      .guide-content {
+        position: relative;
+        padding: 22px 28px;
+        overflow: hidden;
+      }
+
+      .guide-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        appearance: none;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(14, 19, 33, 0.92);
+        color: #f8faff;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .guide-close:hover {
+        border-color: rgba(82, 207, 192, 0.7);
+      }
+
+      .guide-tab {
+        display: none;
+        height: 100%;
+        overflow: auto;
+        padding: 4px 6px 6px 0;
+      }
+
+      .guide-tab.is-active {
+        display: block;
+      }
+
+      .guide-tab h2 {
+        margin: 0 0 14px;
+        color: #ffffff;
+        font-family: "Press Start 2P", monospace;
+        font-size: 15px;
+        line-height: 1.4;
+      }
+
+      .guide-tab h3 {
+        margin: 20px 0 10px;
+        color: #a7f3d0;
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+      }
+
+      .guide-tab p,
+      .guide-tab li,
+      .guide-tab blockquote,
+      .guide-tab table {
+        font-family: "VT323", monospace;
+        color: #dfe7ff;
+        font-size: 26px;
+        line-height: 1.2;
+      }
+
+      .guide-tab ul {
+        margin: 8px 0 12px;
+        padding-left: 24px;
+      }
+
+      .guide-tab li {
+        margin-bottom: 6px;
+      }
+
+      .guide-tab blockquote {
+        margin: 10px 0;
+        padding: 10px 14px;
+        border-left: 3px solid rgba(82, 207, 192, 0.65);
+        background: rgba(15, 23, 42, 0.5);
+      }
+
+      .guide-controls {
+        border-collapse: collapse;
+        width: min(620px, 100%);
+      }
+
+      .guide-controls th,
+      .guide-controls td {
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        padding: 8px 10px;
+        text-align: left;
+      }
+
+      .guide-controls th {
+        color: #99f6e4;
+      }
+
+      .guide-divider {
+        margin: 16px 0;
+        border-bottom: 1px dashed rgba(148, 163, 184, 0.38);
+      }
+
+      @media (max-width: 900px) {
+        .guide-shell {
+          grid-template-columns: 1fr;
+          grid-template-rows: 250px 1fr;
+        }
+
+        .guide-nav {
+          border-right: none;
+          border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+          overflow: auto;
+        }
       }
     </style>
   </head>
@@ -431,18 +657,40 @@
       <div class="menu-light-orb" aria-hidden="true"></div>
       <div class="menu-light-rim" aria-hidden="true"></div>
       <div class="menu-audio-controls" aria-label="Audio controls">
-        <button class="menu-audio-btn" id="menu-sfx-toggle" type="button" aria-label="Sound effects toggle" title="SFX"></button>
-        <button class="menu-audio-btn" id="menu-music-toggle" type="button" aria-label="Music toggle" title="MUSIC"></button>
+        <button
+          class="menu-audio-btn"
+          id="menu-sfx-toggle"
+          type="button"
+          aria-label="Sound effects toggle"
+          title="SFX"
+        ></button>
+        <button
+          class="menu-audio-btn"
+          id="menu-music-toggle"
+          type="button"
+          aria-label="Music toggle"
+          title="MUSIC"
+        ></button>
       </div>
       <div class="menu-container">
         <!-- Tagline bottom-left -->
-        <img class="menu-tagline" src="/src/assets/main-menu/tagline.png" alt="The dead have stories to tell. Will you listen?" />
+        <img
+          class="menu-tagline"
+          src="/src/assets/main-menu/tagline.png"
+          alt="The dead have stories to tell. Will you listen?"
+        />
 
         <!-- Logo and buttons top-right -->
         <div class="right-panel">
-          <img class="menu-logo" src="/src/assets/main-menu/gunita-text-glowing-2.png" alt="GUNITA: The Reaper of Echoes" />
+          <img
+            class="menu-logo"
+            src="/src/assets/main-menu/gunita-text-glowing-2.png"
+            alt="GUNITA: The Reaper of Echoes"
+          />
           <div class="menu-buttons">
-            <button class="menu-btn" id="continue-journey">CONTINUE JOURNEY</button>
+            <button class="menu-btn" id="continue-journey">
+              CONTINUE JOURNEY
+            </button>
             <button class="menu-btn" id="enter-campo-lunan">START AGAIN</button>
             <button class="menu-btn" id="tale-untold">ENTER CAMPO LUNAN</button>
             <button class="menu-btn" id="menu-guide">SURVIVAL GUIDE</button>
@@ -455,12 +703,25 @@
     <div id="continue-journey-modal" class="gunita-modal-overlay hidden">
       <div class="gunita-modal">
         <!-- Close (X) button in top-right -->
-        <button id="continue-modal-close-btn" class="gunita-modal__close-x">X</button>
+        <button id="continue-modal-close-btn" class="gunita-modal__close-x">
+          X
+        </button>
         <div class="gunita-modal__inner">
           <h2 class="gunita-modal__title">CONTINUE JOURNEY</h2>
-          <input type="text" id="continue-username-input" class="gunita-modal__input" placeholder="ENTER CODENAME" maxlength="15" />
+          <input
+            type="text"
+            id="continue-username-input"
+            class="gunita-modal__input"
+            placeholder="ENTER CODENAME"
+            maxlength="15"
+          />
           <!-- Confirm button in middle bottom -->
-          <button id="continue-modal-confirm-btn" class="gunita-modal__btn--confirm-centered">CONFIRM</button>
+          <button
+            id="continue-modal-confirm-btn"
+            class="gunita-modal__btn--confirm-centered"
+          >
+            CONFIRM
+          </button>
           <div id="continue-modal-error" class="gunita-modal__error"></div>
         </div>
       </div>
@@ -471,13 +732,330 @@
       <div class="gunita-modal">
         <div class="gunita-modal__inner">
           <h2 class="gunita-modal__title">START NEW JOURNEY</h2>
-          <input type="text" id="new-username-input" class="gunita-modal__input" placeholder="ENTER CODENAME" maxlength="15" />
+          <input
+            type="text"
+            id="new-username-input"
+            class="gunita-modal__input"
+            placeholder="ENTER CODENAME"
+            maxlength="15"
+          />
           <div class="gunita-modal__actions">
-            <button id="new-modal-confirm-btn" class="gunita-modal__btn">CONFIRM</button>
-            <button id="new-modal-cancel-btn" class="gunita-modal__btn">CANCEL</button>
+            <button id="new-modal-confirm-btn" class="gunita-modal__btn">
+              CONFIRM
+            </button>
+            <button id="new-modal-cancel-btn" class="gunita-modal__btn">
+              CANCEL
+            </button>
           </div>
           <div id="new-modal-error" class="gunita-modal__error"></div>
         </div>
+      </div>
+    </div>
+
+    <div
+      id="survival-guide-overlay"
+      class="guide-overlay hidden"
+      aria-hidden="true"
+    >
+      <div
+        class="guide-shell"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="guide-main-title"
+      >
+        <nav class="guide-nav" aria-label="Survival Guide Sections">
+          <h2 class="guide-nav__title">📖 Survival Guide</h2>
+          <div class="guide-nav__divider"></div>
+          <button class="guide-nav__button is-active" data-guide-tab="about">
+            ► About
+          </button>
+          <button class="guide-nav__button" data-guide-tab="story">
+            ► Story
+          </button>
+          <button class="guide-nav__button" data-guide-tab="mission">
+            ► Mission
+          </button>
+          <button class="guide-nav__button" data-guide-tab="controls">
+            ► Controls
+          </button>
+          <button class="guide-nav__button" data-guide-tab="how-to-play">
+            ► How to Play
+          </button>
+          <button class="guide-nav__button" data-guide-tab="mechanics">
+            ► Mechanics
+          </button>
+          <button class="guide-nav__button" data-guide-tab="tips">
+            ► Tips
+          </button>
+          <button class="guide-nav__button" data-guide-tab="team">
+            ► Team
+          </button>
+          <button class="guide-nav__button" data-guide-tab="credits">
+            ► Credits
+          </button>
+        </nav>
+        <section class="guide-content">
+          <button
+            id="survival-guide-close"
+            class="guide-close"
+            type="button"
+            aria-label="Close guide"
+          >
+            X
+          </button>
+
+          <article class="guide-tab is-active" data-guide-content="about">
+            <h2 id="guide-main-title">About the Game</h2>
+            <p>
+              <strong>Gunita: Reaper of Echoes</strong> is an AI-powered
+              narrative adventure that brings Philippine history and culture to
+              life through exploration, investigation, and storytelling.
+            </p>
+            <p>
+              As <strong>Vino</strong>, the newly appointed
+              <strong>Echo Reaper</strong>, you journey into fragmented memories
+              to uncover forgotten stories, restore lost artifacts, and guide
+              wandering souls toward peace.
+            </p>
+            <p>
+              Every restored memory helps preserve Philippine heritage for
+              future generations.
+            </p>
+          </article>
+
+          <article class="guide-tab" data-guide-content="story">
+            <h2>Story</h2>
+            <p>
+              Long ago, every story that shaped the nation was preserved within
+              the <strong>TALA</strong>, the Hall of Remembrance.
+            </p>
+            <p>
+              As generations passed, traditions faded, legends disappeared, and
+              countless memories were forgotten.
+            </p>
+            <p>
+              Now those forgotten stories survive only as restless souls
+              wandering <strong>Campo Lunan</strong>.
+            </p>
+            <p>
+              You are <strong>Vino</strong>, an Echo Reaper entrusted with
+              restoring these lost memories before they vanish forever.
+            </p>
+          </article>
+
+          <article class="guide-tab" data-guide-content="mission">
+            <h2>Your Mission</h2>
+            <p>For every soul:</p>
+            <ul>
+              <li>Enter its Memory World</li>
+              <li>Explore the environment</li>
+              <li>Collect every Memory Fragment</li>
+              <li>Solve AI-generated riddles</li>
+              <li>Restore forgotten artifacts</li>
+              <li>Discover the truth behind the soul's story</li>
+              <li>Help the soul find peace</li>
+            </ul>
+            <blockquote>
+              <strong
+                >You're not here to defeat monsters. You're here to
+                remember.</strong
+              >
+            </blockquote>
+          </article>
+
+          <article class="guide-tab" data-guide-content="controls">
+            <h2>Controls</h2>
+            <table class="guide-controls">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>W A S D / Arrow Keys</td>
+                  <td>Move</td>
+                </tr>
+                <tr>
+                  <td>Shift</td>
+                  <td>Dash</td>
+                </tr>
+                <tr>
+                  <td>E</td>
+                  <td>Interact</td>
+                </tr>
+                <tr>
+                  <td>Space</td>
+                  <td>Echo Ability</td>
+                </tr>
+                <tr>
+                  <td>Esc / P</td>
+                  <td>Pause Menu</td>
+                </tr>
+                <tr>
+                  <td>Mouse</td>
+                  <td>UI Navigation</td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="guide-tab" data-guide-content="how-to-play">
+            <h2>How to Play</h2>
+            <h3>Step 1</h3>
+            <p>
+              Explore <strong>Campo Lunan</strong>. Choose a glowing grave to
+              investigate.
+            </p>
+            <div class="guide-divider"></div>
+            <h3>Step 2</h3>
+            <p>
+              Enter the Memory World. Search every area carefully. Hidden paths
+              may contain important memories.
+            </p>
+            <div class="guide-divider"></div>
+            <h3>Step 3</h3>
+            <p>
+              Use the <strong>Echo Ability (Space)</strong>. Echo reveals nearby
+              Memory Fragments. Watch for glowing signals.
+            </p>
+            <div class="guide-divider"></div>
+            <h3>Step 4</h3>
+            <p>
+              Interact with a Memory Fragment and answer the AI-generated riddle
+              correctly.
+            </p>
+            <p>
+              <strong>Correct Answer:</strong> Restore the artifact and learn
+              part of the soul's story.
+            </p>
+            <p>
+              <strong>Wrong Answer:</strong> Lose Essence, the Fragment
+              relocates, and you must search again.
+            </p>
+            <div class="guide-divider"></div>
+            <h3>Step 5</h3>
+            <p>
+              Collect every Memory Fragment. Only then can the soul's true story
+              be revealed.
+            </p>
+          </article>
+
+          <article class="guide-tab" data-guide-content="mechanics">
+            <h2>Game Mechanics</h2>
+            <h3>Echo</h3>
+            <p>
+              Your supernatural ability. Detects nearby hidden memories and
+              clues. Use it often.
+            </p>
+            <h3>Memory Fragments</h3>
+            <p>
+              Scattered pieces of forgotten history. Each restored fragment
+              reveals artifacts, dialogue, story clues, and historical context.
+            </p>
+            <h3>Essence</h3>
+            <p>Your spiritual connection to the Memory World.</p>
+            <p>
+              Lose Essence by incorrect answers, environmental hazards, and
+              investigation mistakes.
+            </p>
+            <p>
+              If Essence reaches <strong>0</strong>, the Memory World collapses
+              and the investigation restarts.
+            </p>
+            <h3>Sentimos</h3>
+            <p>Crystallized emotions scattered throughout Memory Worlds.</p>
+            <p>
+              Collect them to purchase healing items, hint items, and cosmetics
+              from <strong>Aling Sisa's Tindahan</strong>.
+            </p>
+          </article>
+
+          <article class="guide-tab" data-guide-content="tips">
+            <h2>Tips for New Reapers</h2>
+            <ul>
+              <li>Explore every corner.</li>
+              <li>Use Echo frequently.</li>
+              <li>Read dialogue carefully.</li>
+              <li>Observe your surroundings.</li>
+              <li>Every clue matters.</li>
+              <li>Do not rush your answers.</li>
+              <li>Every artifact tells part of the story.</li>
+            </ul>
+          </article>
+
+          <article class="guide-tab" data-guide-content="team">
+            <h2>Meet the Team</h2>
+            <h3><strong>We are Team GYM!</strong></h3>
+            <p>
+              Gian Gamir Umadhay
+            </p>
+            <p>
+              Yna Chloe Veñegas
+            </p>
+            <p>
+              Sophia Marielle Mendoza
+            </p>
+            <div class="guide-divider"></div>
+            <p>Developed for <strong>AI Game On 2026</strong></p>
+            <blockquote>
+              <strong
+                >Giving Our History a New Heartbeat through the Intelligence of
+                Tomorrow.</strong
+              >
+            </blockquote>
+          </article>
+
+          <article class="guide-tab" data-guide-content="credits">
+            <h2>Credits</h2>
+            <h3>Background Music</h3>
+            <p><strong>Stories Untold</strong></p>
+            <p>Composed by <strong>Alexander Nakarada</strong></p>
+            <p>
+              Website:
+              <a
+                href="http://www.serpentsoundstudios.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                >www.serpentsoundstudios.com</a
+              >
+            </p>
+            <p>Promoted by <strong>Music Fellows</strong></p>
+            <p>
+              <a
+                href="http://bit.ly/MF_official"
+                target="_blank"
+                rel="noopener noreferrer"
+                >http://bit.ly/MF_official</a
+              >
+            </p>
+            <p>
+              Licensed under
+              <strong
+                >Creative Commons Attribution 4.0 International (CC BY
+                4.0)</strong
+              >
+            </p>
+            <p>
+              <a
+                href="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >https://creativecommons.org/licenses/by/4.0/</a
+              >
+            </p>
+            <div class="guide-divider"></div>
+            <h3>Thank You</h3>
+            <p>
+              Thank you for helping preserve the stories, traditions, and
+              memories that shaped our nation.
+            </p>
+            <blockquote>
+              <strong>The dead have stories to tell. Will you listen?</strong>
+            </blockquote>
+          </article>
+        </section>
       </div>
     </div>
 

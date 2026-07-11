@@ -95,14 +95,21 @@ export class AudioManager {
     };
 
     try {
-      window.localStorage.setItem(AUDIO_SETTINGS.storageKey, JSON.stringify(state));
+      window.localStorage.setItem(
+        AUDIO_SETTINGS.storageKey,
+        JSON.stringify(state),
+      );
     } catch {
       // Ignore storage failures in restricted/private contexts.
     }
   }
 
   playCurrentTrack() {
-    if (!this.musicEnabled || this.musicTracks.length === 0 || this.isDestroyed) {
+    if (
+      !this.musicEnabled ||
+      this.musicTracks.length === 0 ||
+      this.isDestroyed
+    ) {
       return;
     }
 
@@ -116,11 +123,16 @@ export class AudioManager {
   }
 
   handleTrackComplete() {
-    if (!this.musicEnabled || this.musicTracks.length === 0 || this.isDestroyed) {
+    if (
+      !this.musicEnabled ||
+      this.musicTracks.length === 0 ||
+      this.isDestroyed
+    ) {
       return;
     }
 
-    this.currentTrackIndex = (this.currentTrackIndex + 1) % this.musicTracks.length;
+    this.currentTrackIndex =
+      (this.currentTrackIndex + 1) % this.musicTracks.length;
     this.persistState();
     this.playCurrentTrack();
   }

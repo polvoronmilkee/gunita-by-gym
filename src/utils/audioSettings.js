@@ -23,15 +23,22 @@ export const AUDIO_SETTINGS = {
   sfx: {
     button: {
       key: "sfx-button",
-      path: new URL("../assets/sounds/sound-effects/button.mp3", import.meta.url).href,
+      path: new URL(
+        "../assets/sounds/sound-effects/button.mp3",
+        import.meta.url,
+      ).href,
     },
     dash: {
       key: "sfx-dash",
-      path: new URL("../assets/sounds/sound-effects/dash.mp3", import.meta.url).href,
+      path: new URL("../assets/sounds/sound-effects/dash.mp3", import.meta.url)
+        .href,
     },
     vinoMove: {
       key: "sfx-vino-move",
-      path: new URL("../assets/sounds/sound-effects/vino-move.mp3", import.meta.url).href,
+      path: new URL(
+        "../assets/sounds/sound-effects/vino-move.mp3",
+        import.meta.url,
+      ).href,
     },
   },
 };

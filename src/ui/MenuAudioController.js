@@ -33,7 +33,8 @@ export class MenuAudioController {
     this.buttonSfx.volume = AUDIO_SETTINGS.volume.button;
 
     this.handleTrackEnded = () => {
-      this.currentTrackIndex = (this.currentTrackIndex + 1) % this.musicTracks.length;
+      this.currentTrackIndex =
+        (this.currentTrackIndex + 1) % this.musicTracks.length;
       this.persistState();
       this.playCurrentTrack();
     };
@@ -84,7 +85,10 @@ export class MenuAudioController {
     };
 
     try {
-      window.localStorage.setItem(AUDIO_SETTINGS.storageKey, JSON.stringify(state));
+      window.localStorage.setItem(
+        AUDIO_SETTINGS.storageKey,
+        JSON.stringify(state),
+      );
     } catch {
       // Ignore storage write failures.
     }
@@ -108,7 +112,7 @@ export class MenuAudioController {
       }
 
       const clickedMenuControl = target.closest(
-        ".menu-btn, .gunita-modal__btn, .gunita-modal__btn--confirm-centered, .gunita-modal__close-x, .gunita-modal__cancel-link",
+        ".menu-btn, .gunita-modal__btn, .gunita-modal__btn--confirm-centered, .gunita-modal__close-x, .gunita-modal__cancel-link, .guide-nav__button, .guide-close",
       );
 
       if (!clickedMenuControl) {
@@ -181,7 +185,8 @@ export class MenuAudioController {
       return;
     }
 
-    const nextTrack = this.musicTracks[this.currentTrackIndex] ?? this.musicTracks[0];
+    const nextTrack =
+      this.musicTracks[this.currentTrackIndex] ?? this.musicTracks[0];
     if (!nextTrack) {
       return;
     }

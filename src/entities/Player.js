@@ -12,7 +12,9 @@ export class Player {
         this.sprite.play("vino-idle");
       }
     } else {
-      console.warn("Asset 'vino-idle' failed to load. Falling back to rectangle.");
+      console.warn(
+        "Asset 'vino-idle' failed to load. Falling back to rectangle.",
+      );
       this.sprite = scene.add.rectangle(x, y, 32, 42, 0xd8c38f);
       scene.physics.add.existing(this.sprite);
       this.sprite.setStrokeStyle(2, 0x5b4636, 0.9);
@@ -23,12 +25,14 @@ export class Player {
     this.onDirectionChange = options.onDirectionChange ?? (() => {});
     this.wasDashing = false;
     this.currentDirection = null;
-    this.dashKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
+    this.dashKey = scene.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SHIFT,
+    );
     this.wasd = scene.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       left: Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D
+      right: Phaser.Input.Keyboard.KeyCodes.D,
     });
     const body = this.sprite.body;
     body.setCollideWorldBounds(true);
@@ -46,10 +50,10 @@ export class Player {
 
     body.setVelocity(0);
 
-    const leftDown = (cursors?.left?.isDown) || this.wasd.left.isDown;
-    const rightDown = (cursors?.right?.isDown) || this.wasd.right.isDown;
-    const upDown = (cursors?.up?.isDown) || this.wasd.up.isDown;
-    const downDown = (cursors?.down?.isDown) || this.wasd.down.isDown;
+    const leftDown = cursors?.left?.isDown || this.wasd.left.isDown;
+    const rightDown = cursors?.right?.isDown || this.wasd.right.isDown;
+    const upDown = cursors?.up?.isDown || this.wasd.up.isDown;
+    const downDown = cursors?.down?.isDown || this.wasd.down.isDown;
     const hasMovementInput = leftDown || rightDown || upDown || downDown;
 
     let nextDirection = null;
@@ -86,21 +90,18 @@ export class Player {
         if (this.sprite.scene.anims.exists("vino-moving-up")) {
           this.sprite.play("vino-moving-up", true);
         }
-
       } else if (isMoving && downDown) {
         // Play moving-down animation when moving down
         if (this.sprite.scene.anims.exists("vino-moving-down")) {
           this.sprite.play("vino-moving-down", true);
         }
-
       } else if (isMoving && leftDown) {
         // Play moving-left animation when moving left
         if (this.sprite.scene.anims.exists("vino-moving-left")) {
           this.sprite.play("vino-moving-left", true);
         }
-
       } else if (isMoving && rightDown) {
-        // Play moving-right animation when moving right        
+        // Play moving-right animation when moving right
         if (this.sprite.scene.anims.exists("vino-moving-right")) {
           this.sprite.play("vino-moving-right", true);
         }
@@ -113,6 +114,10 @@ export class Player {
     }
   }
 
-  get x() { return this.sprite.x; }
-  get y() { return this.sprite.y; }
+  get x() {
+    return this.sprite.x;
+  }
+  get y() {
+    return this.sprite.y;
+  }
 }

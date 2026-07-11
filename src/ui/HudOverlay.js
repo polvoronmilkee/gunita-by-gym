@@ -82,7 +82,8 @@ export class HudOverlay {
     this.root.append(this.audioControls, this.panel);
 
     // Mount it directly into the game container to avoid camera scaling/positioning issues
-    const container = document.getElementById("game-container") || document.body;
+    const container =
+      document.getElementById("game-container") || document.body;
     container.appendChild(this.root);
 
     this.handleShutdown = () => this.destroy();

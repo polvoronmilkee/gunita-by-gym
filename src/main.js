@@ -91,7 +91,9 @@ initializeMenuScreen();
 const continueModal = document.getElementById("continue-journey-modal");
 const continueInput = document.getElementById("continue-username-input");
 const continueError = document.getElementById("continue-modal-error");
-const continueConfirmBtn = document.getElementById("continue-modal-confirm-btn");
+const continueConfirmBtn = document.getElementById(
+  "continue-modal-confirm-btn",
+);
 const continueCloseBtn = document.getElementById("continue-modal-close-btn");
 
 const newModal = document.getElementById("new-journey-modal");
@@ -99,6 +101,36 @@ const newInput = document.getElementById("new-username-input");
 const newError = document.getElementById("new-modal-error");
 const newConfirmBtn = document.getElementById("new-modal-confirm-btn");
 const newCancelBtn = document.getElementById("new-modal-cancel-btn");
+const guideButton = document.getElementById("menu-guide");
+const guideOverlay = document.getElementById("survival-guide-overlay");
+const guideCloseButton = document.getElementById("survival-guide-close");
+const guideTabButtons = Array.from(
+  document.querySelectorAll(".guide-nav__button"),
+);
+const guideTabPanels = Array.from(document.querySelectorAll(".guide-tab"));
+
+function setGuideTab(tabId) {
+  guideTabButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.guideTab === tabId);
+  });
+
+  guideTabPanels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.guideContent === tabId);
+  });
+}
+
+function showGuide() {
+  if (!guideOverlay) return;
+  guideOverlay.classList.remove("hidden");
+  guideOverlay.setAttribute("aria-hidden", "false");
+  setGuideTab("about");
+}
+
+function hideGuide() {
+  if (!guideOverlay) return;
+  guideOverlay.classList.add("hidden");
+  guideOverlay.setAttribute("aria-hidden", "true");
+}
 
 function showContinueModal() {
   if (!continueModal) return;
@@ -206,6 +238,36 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
   showNewModal();
 });
 
+guideButton?.addEventListener("click", () => {
+  showGuide();
+});
+
+guideCloseButton?.addEventListener("click", () => {
+  hideGuide();
+});
+
+guideOverlay?.addEventListener("click", (event) => {
+  if (event.target === guideOverlay) {
+    hideGuide();
+  }
+});
+
+guideTabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setGuideTab(button.dataset.guideTab ?? "about");
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (
+    event.key === "Escape" &&
+    guideOverlay &&
+    !guideOverlay.classList.contains("hidden")
+  ) {
+    hideGuide();
+  }
+});
+
 // Continue Modal Listeners
 continueCloseBtn?.addEventListener("click", hideContinueModal);
 
@@ -219,14 +281,19 @@ continueConfirmBtn?.addEventListener("click", async () => {
   try {
     if (continueError) continueError.textContent = "LOGGING IN...";
     const player = await loginPlayer(username);
-    
+
     // Attempt to load existing game state from server
     let state;
     try {
       state = await loadGameState(player.id);
     } catch (e) {
       console.warn("No gamestate found on server, using defaults", e);
-      state = { current_world: "Lunan", current_area: "Campo Lunan", position_x: 320, position_y: 360 };
+      state = {
+        current_world: "Lunan",
+        current_area: "Campo Lunan",
+        position_x: 320,
+        position_y: 360,
+      };
     }
 
     const currentCache = getCache();
@@ -241,7 +308,7 @@ continueConfirmBtn?.addEventListener("click", async () => {
       current_world: state.current_world || "Lunan",
       current_area: state.current_area || "Campo Lunan",
       position_x: state.position_x !== undefined ? state.position_x : 320,
-      position_y: state.position_y !== undefined ? state.position_y : 360
+      position_y: state.position_y !== undefined ? state.position_y : 360,
     });
 
     hideContinueModal();
@@ -266,12 +333,12 @@ newConfirmBtn?.addEventListener("click", async () => {
   try {
     if (newError) newError.textContent = "REGISTERING...";
     const player = await signupPlayer(username);
-    
+
     const defaultState = {
       current_world: "Lunan",
       current_area: "Campo Lunan",
       position_x: 320,
-      position_y: 360
+      position_y: 360,
     };
 
     const currentCache = getCache();
@@ -283,7 +350,7 @@ newConfirmBtn?.addEventListener("click", async () => {
       player_id: player.id,
       username: player.username,
       inventory_id: player.inventory_id,
-      ...defaultState
+      ...defaultState,
     });
 
     hideNewModal();
