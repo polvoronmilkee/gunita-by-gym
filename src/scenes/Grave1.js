@@ -425,6 +425,7 @@ export class Grave1 extends Phaser.Scene {
     this.hud.setPauseVisible(true);
     this.hud.setMemoryVisible(true);
 
+    // Keyboard bindings for pausing, memory screen, and menu exit
     this.input.keyboard.on("keydown-P", async () => {
       await this.saveProgress();
       this.scene.launch("PauseScene");
@@ -449,13 +450,14 @@ export class Grave1 extends Phaser.Scene {
       loop: true
     });
 
-    // Start-up dialogue
+    // Start-up dialogue for Grave 1 (The Last Fisherman)
     const dialogues = [
-      { speaker: "Vino", text: "This... this is a graveyard. It feels cold and heavy here." },
-      { speaker: "???", text: "The grave of memories holds the key to the past..." },
-      { speaker: "Vino", text: "Whose grave is this? Let me look around." }
+      { speaker: "Vino", text: "I can smell the sea salt... and feel a chilling breeze. We have entered the forgotten memory world." },
+      { speaker: "???", text: "This is Mateo's memory, Vino. A world frozen in time. The black fog of oblivion covers the paths." },
+      { speaker: "Vino", text: "I must look for clues and talk to the villagers to reconstruct the truth." }
     ];
     let currentStep = 0;
+    this.dialogueActive = true;
 
     this.dialogue = new DialogueBox(this, {
       speaker: dialogues[0].speaker,
@@ -467,7 +469,21 @@ export class Grave1 extends Phaser.Scene {
           this.dialogue.showText(next.speaker, next.text);
         } else {
           this.dialogue.hide();
+          this.dialogueActive = false;
         }
+      }
+    });
+
+    // Advance dialogue with key down events
+    this.input.keyboard.on("keydown-E", () => {
+      if (this.dialogueActive) {
+        this.dialogue.onComplete();
+      }
+    });
+
+    this.input.keyboard.on("keydown-SPACE", () => {
+      if (this.dialogueActive) {
+        this.dialogue.onComplete();
       }
     });
   }
@@ -496,6 +512,16 @@ export class Grave1 extends Phaser.Scene {
   }
 
   update() {
+    if (this.dialogueActive) {
+      if (this.player && this.player.sprite && this.player.sprite.body) {
+        this.player.sprite.body.setVelocity(0);
+        if (this.player.sprite.anims.isPlaying) {
+          this.player.sprite.anims.stop();
+        }
+      }
+      return;
+    }
+
     this.player.update(this.cursors);
   }
 }

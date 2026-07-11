@@ -248,6 +248,27 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     });
 
+    // Scan for Grave 1 positions on the map
+    this.grave1Positions = [];
+    const grave1Tilesets = map.tilesets.filter(ts => ts.name && ts.name.includes("Grave 1"));
+    grave1Tilesets.forEach(ts => {
+      const gid = ts.firstgid;
+      const topLayer = map.getLayer("top");
+      if (topLayer && topLayer.data) {
+        for (let y = 0; y < map.height; y++) {
+          for (let x = 0; x < map.width; x++) {
+            const tile = map.getTileAt(x, y, true, "top");
+            if (tile && tile.index === gid) {
+              this.grave1Positions.push({
+                x: x * 32 + 16,
+                y: y * 32 + 16
+              });
+            }
+          }
+        }
+      }
+    });
+
     // Background verify cache with Supabase
     if (cache && cache.player_id) {
       loadGameState(cache.player_id)
@@ -350,6 +371,7 @@ export class CampoLunanScene extends Phaser.Scene {
       { speaker: "Vino", text: "Who said that? Is someone there?" },
     ];
     let currentStep = 0;
+    this.dialogueActive = true;
 
     this.dialogue = new DialogueBox(this, {
       speaker: dialogues[0].speaker,
@@ -361,8 +383,82 @@ export class CampoLunanScene extends Phaser.Scene {
           this.dialogue.showText(next.speaker, next.text);
         } else {
           this.dialogue.hide();
+          this.dialogueActive = false;
         }
       },
+    });
+
+    const triggerGraveDialogue = () => {
+      this.dialogueActive = true;
+      if (this.player && this.player.sprite && this.player.sprite.body) {
+        this.player.sprite.body.setVelocity(0);
+        if (this.player.sprite.anims.isPlaying) {
+          this.player.sprite.anims.stop();
+        }
+      }
+      
+      let step = 0;
+      const steps = [
+        { speaker: "Tombstone", text: "Grave I\nAng Huling Mangingisda\nThe Last Fisherman" },
+        { speaker: "Memory", text: "\"The sea remembers... but the village does not.\"" },
+        { speaker: "Campo Lunan", text: "A forgotten fisherman waits beyond these echoes. Discover the memories he left behind and reveal the truth hidden beneath the waves." },
+        { speaker: "Campo Lunan", text: "Will you answer the sea's call?" },
+        { speaker: "Grave I", text: "▶ Enter the Memory (Click dialogue box or press E to Enter, ESC to Cancel)" }
+      ];
+
+      const runDialogue = () => {
+        if (step < steps.length) {
+          const current = steps[step];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            step++;
+            if (step < steps.length) {
+              runDialogue();
+            } else {
+              this.dialogue.hide();
+              this.dialogueActive = false;
+              
+              // Set the area cache to Grave 1 before transitioning
+              const cache = getCache();
+              if (cache) {
+                setCache({
+                  ...cache,
+                  current_area: "Grave 1",
+                  position_x: 300,
+                  position_y: 600
+                });
+              }
+              
+              import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
+                TransitionSystem.fadeToScene(this, "Grave1");
+              });
+            }
+          });
+        }
+      };
+
+      runDialogue();
+    };
+
+    // Keyboard bindings for dialogue & interaction
+    this.input.keyboard.on("keydown-E", () => {
+      if (this.dialogueActive) {
+        this.dialogue.onComplete();
+      } else if (this.isNearGrave) {
+        triggerGraveDialogue();
+      }
+    });
+
+    this.input.keyboard.on("keydown-SPACE", () => {
+      if (this.dialogueActive) {
+        this.dialogue.onComplete();
+      }
+    });
+
+    this.input.keyboard.on("keydown-ESC", () => {
+      if (this.dialogueActive) {
+        this.dialogue.hide();
+        this.dialogueActive = false;
+      }
     });
 
     this.game.events.emit("campo-lunan-ready");
@@ -394,6 +490,36 @@ export class CampoLunanScene extends Phaser.Scene {
   }
 
   update() {
+    if (this.dialogueActive) {
+      if (this.player && this.player.sprite && this.player.sprite.body) {
+        this.player.sprite.body.setVelocity(0);
+        if (this.player.sprite.anims.isPlaying) {
+          this.player.sprite.anims.stop();
+        }
+      }
+      return;
+    }
+
     this.player.update(this.cursors);
+
+    // Proximity check for Grave 1
+    let nearGrave = false;
+    let nearestDist = Infinity;
+    if (this.grave1Positions && this.grave1Positions.length > 0) {
+      for (const pos of this.grave1Positions) {
+        const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, pos.x, pos.y);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+        }
+      }
+    }
+
+    if (nearestDist < 30) {
+      nearGrave = true;
+      this.hud.setStatus("PRESS [E] TO INSPECT MATEO'S GRAVE");
+    } else {
+      this.hud.setStatus("WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY");
+    }
+    this.isNearGrave = nearGrave;
   }
 }
