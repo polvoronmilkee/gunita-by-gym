@@ -16,6 +16,8 @@ export class Grave1 extends Phaser.Scene {
     this.load.json("grave1-map", "src/assets/world1/gunita2.tmj");
 
     this.load.json("grave1-dialogues", "src/assets/data/dialogues/grave1/intro.json");
+    this.load.json("random-guy-before", "src/assets/data/dialogues/grave1/random-guy/before-fragments.json");
+    this.load.json("random-guy-completed", "src/assets/data/dialogues/grave1/random-guy/completed.json");
 
     // Load individual standalone ground tiles to preserve original tileset sizes
     const mappings = {
@@ -79,6 +81,25 @@ export class Grave1 extends Phaser.Scene {
     uniqueImages.forEach(img => {
       this.load.image(img, `src/assets/world1/${img}`);
     });
+
+    const npcImages = [
+      { key: "debt-collector", file: "debt-collector.png", fw: 32, fh: 42 },
+      { key: "old-fisherman", file: "old-fisherman.png", fw: 32, fh: 42 },
+      { key: "old-wife", file: "old-wife.png", fw: 32, fh: 42 },
+      { key: "random-guy", file: "random-guy.png", fw: 32, fh: 42 },
+      { key: "random-woman", file: "random-woman.png", fw: 32, fh: 42 },
+      { key: "school-girl", file: "school-girl.png", fw: 32, fh: 42 },
+      { key: "sick-wife", file: "sick-wife.png", fw: 32, fh: 42 },
+      { key: "young-daughter", file: "young-daughter.png", fw: 32, fh: 42 },
+      { key: "young-fisherman", file: "young-fisherman.png", fw: 32, fh: 42 },
+      { key: "young-kid", file: "young-kid.png", fw: 32, fh: 42 }
+    ];
+    npcImages.forEach(npc => {
+      this.load.spritesheet(`npc-${npc.key}`, `src/assets/grave1-elements/characters/${npc.file}`, {
+        frameWidth: npc.fw, frameHeight: npc.fh
+      });
+    });
+    this.load.image("fragment-main", "src/assets/grave1-elements/fragment-main.png");
 
     // Load player animations sheets
     this.load.spritesheet(
@@ -341,7 +362,7 @@ export class Grave1 extends Phaser.Scene {
     // Camera Configuration
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
-    this.cameras.main.setZoom(4);
+    this.cameras.main.setZoom(1);
 
     // Build top layers (drawn above the player)
     const topLayerNames = [
@@ -381,6 +402,46 @@ export class Grave1 extends Phaser.Scene {
       });
     }
     this.physics.add.collider(this.player.sprite, obstacles);
+
+    // Spawn NPCs at designated land coordinates
+    this.npcs = this.physics.add.staticGroup();
+    const npcPlacements = [
+      { key: "debt-collector", x: 500, y: 400 },
+      { key: "old-fisherman", x: 820, y: 880 },
+      { key: "old-wife", x: 300, y: 480 },
+      { key: "random-guy", x: 1100, y: 600 },
+      { key: "random-woman", x: 1150, y: 620 },
+      { key: "school-girl", x: 950, y: 520 },
+      { key: "sick-wife", x: 420, y: 460 },
+      { key: "young-daughter", x: 330, y: 490 },
+      { key: "young-fisherman", x: 860, y: 900 },
+      { key: "young-kid", x: 980, y: 530 }
+    ];
+
+    npcPlacements.forEach(placement => {
+      const pos = this.getNearestLandCoordinate(placement.x, placement.y, map);
+      const npc = this.npcs.create(pos.x, pos.y, `npc-${placement.key}`);
+      npc.setDepth(1);
+      if (npc.body) {
+        npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
+        npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
+      }
+
+      const animKey = `npc-anim-${placement.key}`;
+      if (!this.anims.exists(animKey)) {
+        this.anims.create({
+          key: animKey,
+          frames: this.anims.generateFrameNumbers(`npc-${placement.key}`, { start: 0, end: 3 }),
+          frameRate: 4,
+          repeat: -1
+        });
+      }
+      npc.anims.play(animKey, true);
+    });
+
+    this.physics.add.collider(this.player.sprite, this.npcs);
+    this.fragmentSpawned = false;
+    this.randomGuyFragmentCollected = false;
 
     // Sync database position if available
     if (cache && cache.player_id) {
@@ -457,17 +518,50 @@ export class Grave1 extends Phaser.Scene {
     this.startDialogueWithAI();
 
     // Advance dialogue with key down events
-    this.input.keyboard.on("keydown-E", () => {
+    const handleInteract = () => {
       if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
-      }
-    });
+      } else if (!this.dialogueActive && this.nearFragment) {
+        if (this.fragment) {
+          this.fragment.destroy();
+        }
+        this.randomGuyFragmentCollected = true;
+        this.startDialogueSequence([
+          { speaker: "Vino", text: "I found the memory fragment! This should help the villager remember." }
+        ]);
+      } else if (!this.dialogueActive && this.nearNpc) {
+        const npcKey = this.closestNpc.texture.key;
+        if (npcKey === "npc-random-guy") {
+          if (this.randomGuyFragmentCollected) {
+            const completedDialogues = this.cache.json.get("random-guy-completed");
+            const text = completedDialogues[Math.floor(Math.random() * completedDialogues.length)];
+            this.startDialogueSequence([
+              { speaker: "Random Guy", text: text }
+            ]);
+          } else {
+            const beforeDialogues = this.cache.json.get("random-guy-before");
+            const text = beforeDialogues[Math.floor(Math.random() * beforeDialogues.length)];
+            this.startDialogueSequence([
+              { speaker: "Random Guy", text: text }
+            ]);
 
-    this.input.keyboard.on("keydown-SPACE", () => {
-      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
-        this.dialogue.onComplete();
+            if (!this.fragmentSpawned) {
+              this.fragmentSpawned = true;
+              const fragmentPos = this.getNearestLandCoordinate(this.closestNpc.x + 40, this.closestNpc.y + 40, map);
+              this.fragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
+              this.fragment.setDepth(1);
+            }
+          }
+        } else {
+          this.startDialogueSequence([
+            { speaker: "Villager", text: "..." }
+          ]);
+        }
       }
-    });
+    };
+
+    this.input.keyboard.on("keydown-E", handleInteract);
+    this.input.keyboard.on("keydown-SPACE", handleInteract);
 
     this.game.events.emit("game-ready");
   }
@@ -593,6 +687,67 @@ export class Grave1 extends Phaser.Scene {
       return;
     }
 
+    let nearNpc = false;
+    let closestNpc = null;
+    let minDist = 60;
+
+    if (this.npcs) {
+      this.npcs.getChildren().forEach(npc => {
+        const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, npc.x, npc.y);
+        if (dist < minDist) {
+          minDist = dist;
+          closestNpc = npc;
+          nearNpc = true;
+        }
+      });
+    }
+
+    let nearFragment = false;
+    if (this.fragment && this.fragment.active) {
+      const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.fragment.x, this.fragment.y);
+      if (dist < 60) {
+        nearFragment = true;
+      }
+    }
+
+    this.nearNpc = nearNpc;
+    this.closestNpc = closestNpc;
+    this.nearFragment = nearFragment;
+
+    if (nearFragment) {
+      this.hud.setStatus("PRESS [E] OR [SPACE] TO COLLECT MEMORY FRAGMENT");
+    } else if (nearNpc) {
+      if (closestNpc.texture.key === "npc-random-guy") {
+        this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK TO RANDOM GUY");
+      } else {
+        this.hud.setStatus("PRESS [E] OR [SPACE] TO INTERACT");
+      }
+    } else {
+      this.hud.setStatus("WASD / ARROWS TO MOVE   P PAUSE   M MEMORY");
+    }
+
     this.player.update(this.cursors);
+  }
+
+  getNearestLandCoordinate(startX, startY, map) {
+    let tileX = Math.floor(startX / 32);
+    let tileY = Math.floor(startY / 32);
+
+    for (let r = 0; r < 10; r++) {
+      for (let dx = -r; dx <= r; dx++) {
+        for (let dy = -r; dy <= r; dy++) {
+          if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
+          let checkX = tileX + dx;
+          let checkY = tileY + dy;
+          if (checkX >= 0 && checkX < map.width && checkY >= 0 && checkY < map.height) {
+            const waterTile = map.getTileAt(checkX, checkY, true, "water");
+            if (!waterTile || waterTile.index === -1) {
+              return { x: checkX * 32 + 16, y: checkY * 32 + 16 };
+            }
+          }
+        }
+      }
+    }
+    return { x: startX, y: startY };
   }
 }
