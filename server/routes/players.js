@@ -41,15 +41,15 @@ router.post("/", async (req, res) => {
 
     if (inventoryError) throw inventoryError;
 
-    // 4. Create gamestate for the player with default coordinates (320, 360)
+    // 4. Create gamestate for the player with default coordinates (300, 600) for Grave 1
     const { error: gamestateError } = await supabase
       .from("gamestate")
       .insert({
         player_id: player.id,
         current_world: "Lunan",
-        current_area: "Campo Lunan",
-        position_x: 320,
-        position_y: 360
+        current_area: "Grave 1",
+        position_x: 300,
+        position_y: 600
       });
 
     if (gamestateError) throw gamestateError;

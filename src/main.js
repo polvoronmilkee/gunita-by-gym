@@ -3,6 +3,7 @@ import { SceneManager } from "./managers/SceneManager.js";
 import { BootScene } from "./scenes/BootScene.js";
 import { PreloadScene } from "./scenes/PreloadScene.js";
 import { CampoLunanScene } from "./scenes/CampoLunanScene.js";
+import { Grave1 } from "./scenes/Grave1.js";
 import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
@@ -13,6 +14,7 @@ const sceneManager = new SceneManager([
   BootScene,
   PreloadScene,
   CampoLunanScene,
+  Grave1,
   MemoryScene,
   UIScene,
   PauseScene,
@@ -171,7 +173,7 @@ continueConfirmBtn?.addEventListener("click", async () => {
       state = await loadGameState(player.id);
     } catch (e) {
       console.warn("No gamestate found on server, using defaults", e);
-      state = { current_world: "Lunan", current_area: "Campo Lunan", position_x: 320, position_y: 360 };
+      state = { current_world: "Lunan", current_area: "Grave 1", position_x: 300, position_y: 600 };
     }
 
     const currentCache = getCache();
@@ -214,9 +216,9 @@ newConfirmBtn?.addEventListener("click", async () => {
     
     const defaultState = {
       current_world: "Lunan",
-      current_area: "Campo Lunan",
-      position_x: 320,
-      position_y: 360
+      current_area: "Grave 1",
+      position_x: 300,
+      position_y: 600
     };
 
     const currentCache = getCache();
