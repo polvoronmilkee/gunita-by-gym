@@ -216,9 +216,9 @@ newConfirmBtn?.addEventListener("click", async () => {
     
     const defaultState = {
       current_world: "Lunan",
-      current_area: "Grave 1",
-      position_x: 300,
-      position_y: 600
+      current_area: "Campo Lunan",
+      position_x: 320,
+      position_y: 360
     };
 
     const currentCache = getCache();

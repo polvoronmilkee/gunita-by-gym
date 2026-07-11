@@ -293,6 +293,12 @@ export class Grave1 extends Phaser.Scene {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         layer.setDepth(depth);
+        // Automatically set collision for the water layer
+        if (layerName === "water") {
+          layer.setCollisionByExclusion([-1]);
+          // Wait, player isn't created yet at this point! We'll just set the property, 
+          // and add the collider AFTER the player is created.
+        }
         depth++;
       }
     });
@@ -347,9 +353,18 @@ export class Grave1 extends Phaser.Scene {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         layer.setDepth(topDepth);
+        // Automatically set collision for all placed tiles in these top layers
+        layer.setCollisionByExclusion([-1]);
+        this.physics.add.collider(this.player.sprite, layer);
         topDepth++;
       }
     });
+
+    // Add collider for the water layer created earlier
+    const waterLayerData = map.getLayer("water");
+    if (waterLayerData && waterLayerData.tilemapLayer) {
+        this.physics.add.collider(this.player.sprite, waterLayerData.tilemapLayer);
+    }
 
     // Load static collisions from Tiled
     const obstacles = this.physics.add.staticGroup();
