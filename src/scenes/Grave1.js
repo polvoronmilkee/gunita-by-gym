@@ -102,7 +102,10 @@ export class Grave1 extends Phaser.Scene {
         frameWidth: npc.fw, frameHeight: npc.fh
       });
     });
-    this.load.image("fragment-main", "src/assets/grave1-elements/fragment-main.png");
+    this.load.spritesheet("fragment-main", "src/assets/grave1-elements/fragment-main.png", {
+      frameWidth: 32,
+      frameHeight: 32
+    });
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
     // Load player animations sheets
@@ -354,6 +357,15 @@ export class Grave1 extends Phaser.Scene {
       }
     });
 
+    if (!this.anims.exists("fragment-anim")) {
+      this.anims.create({
+        key: "fragment-anim",
+        frames: this.anims.generateFrameNumbers("fragment-main"),
+        frameRate: 6,
+        repeat: -1
+      });
+    }
+
     // Retrieve position from cache
     const cache = getCache();
     const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 300;
@@ -366,7 +378,7 @@ export class Grave1 extends Phaser.Scene {
     // Camera Configuration
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
-    this.cameras.main.setZoom(4);
+    this.cameras.main.setZoom(1);
 
     // Build top layers (drawn above the player)
     const topLayerNames = [
@@ -418,7 +430,7 @@ export class Grave1 extends Phaser.Scene {
       { key: "school-girl", x: 950, y: 520 },
       { key: "sick-wife", x: 420, y: 460 },
       { key: "young-daughter", x: 330, y: 490 },
-      { key: "young-fisherman", x: 860, y: 900 },
+      { key: "young-fisherman", x: 860, y: 1000 },
       { key: "young-kid", x: 980, y: 530 }
     ];
 
@@ -576,6 +588,7 @@ export class Grave1 extends Phaser.Scene {
                 const fragmentPos = this.getNearestLandCoordinate(this.closestNpc.x + 50, this.closestNpc.y + 50, map);
                 this.fragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
                 this.fragment.setDepth(1);
+                this.fragment.play("fragment-anim");
                 
                 this.startDialogueSequence([
                   { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
