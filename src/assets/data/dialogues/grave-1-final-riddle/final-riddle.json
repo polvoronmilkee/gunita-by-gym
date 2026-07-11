@@ -1,0 +1,112 @@
+{
+  "introDialogue": [
+    {
+      "speaker": "Echo",
+      "text": "You have restored every Memory Fragment."
+    },
+    {
+      "speaker": "Echo",
+      "text": "The objects have returned... but memories alone cannot restore a soul."
+    },
+    {
+      "speaker": "Echo",
+      "text": "To free Mang Tomas, you must understand the values his life left behind."
+    },
+    {
+      "speaker": "Mang Tomas",
+      "text": "Tell me... what did my story truly mean?"
+    }
+  ],
+  "questions": [
+    {
+      "question": "What Filipino value best guided Mang Tomas throughout his life?",
+      "choices": [
+        "Greed",
+        "Love and Sacrifice for Family",
+        "Pride",
+        "Fame"
+      ],
+      "answer": "Love and Sacrifice for Family"
+    },
+    {
+      "question": "The Fish Basket, Rosary, Warning Flag, and Daughter's Drawing together remind us that a meaningful life is built upon...",
+      "choices": [
+        "Wealth and Success",
+        "Family, Faith, Honest Work, and Respect for Nature",
+        "Strength and Competition",
+        "Luck and Fortune"
+      ],
+      "answer": "Family, Faith, Honest Work, and Respect for Nature"
+    },
+    {
+      "question": "Why is Mang Tomas remembered as a true Filipino hero?",
+      "choices": [
+        "He became the richest fisherman in the village.",
+        "He put the well-being of others before himself.",
+        "He ignored the elders to prove his courage.",
+        "He wanted people to remember his name."
+      ],
+      "answer": "He put the well-being of others before himself."
+    },
+    {
+      "question": "What lesson does the sea teach in Mang Tomas' story?",
+      "choices": [
+        "The sea exists to be conquered.",
+        "Nature should be respected because it both gives and takes life.",
+        "Storms are meant to be challenged.",
+        "Only skilled fishermen survive."
+      ],
+      "answer": "Nature should be respected because it both gives and takes life."
+    },
+    {
+      "question": "Before sailing, Mang Tomas paused to pray with his rosary. What Filipino value does this represent?",
+      "choices": [
+        "Superstition",
+        "Faith and Trust in God",
+        "Fear",
+        "Tradition without meaning"
+      ],
+      "answer": "Faith and Trust in God"
+    },
+    {
+      "question": "The Daughter's Drawing reminds us that Mang Tomas' greatest treasure was...",
+      "choices": [
+        "His boat",
+        "His catch",
+        "His family",
+        "His reputation"
+      ],
+      "answer": "His family"
+    },
+    {
+      "question": "The villagers eventually remembered Mang Tomas because...",
+      "choices": [
+        "Every act of kindness deserves to be remembered.",
+        "He became famous.",
+        "He found the biggest catch.",
+        "He defeated the storm."
+      ],
+      "answer": "Every act of kindness deserves to be remembered."
+    },
+    {
+      "question": "What is the heart of Mang Tomas' story?",
+      "choices": [
+        "Success comes from taking risks.",
+        "A person's legacy is measured by love, sacrifice, and the lives they touch.",
+        "Money solves every problem.",
+        "Only strong people become heroes."
+      ],
+      "answer": "A person's legacy is measured by love, sacrifice, and the lives they touch."
+    }
+  ],
+  "correctDialogue": [
+    {
+      "speaker": "Mang Tomas",
+      "text": "Yes... you've remembered not only my story, but the values I lived by."
+    },
+    {
+      "speaker": "Echo",
+      "text": "The spirit of our heritage lives on through every memory we choose to keep."
+    }
+  ]
+}
