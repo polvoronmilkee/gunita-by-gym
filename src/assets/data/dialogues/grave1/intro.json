@@ -1,0 +1,28 @@
+{
+  "dialogues": [
+    {
+      "speaker": "Vino",
+      "variants": [
+        "I can smell the sea salt... and feel a chilling breeze. We have entered the forgotten memory world.",
+        "The salt air and the cold wind… we've stepped into a memory frozen in time.",
+        "This place reeks of the sea and regret. The memory is strong here."
+      ]
+    },
+    {
+      "speaker": "Echo",
+      "variants": [
+        "This is Mang Tomas' memory, Vino. A world frozen in time. The black fog of oblivion covers the paths.",
+        "You stand in Mang Tomas' past. Time has stopped. The black fog hides the truth.",
+        "Mang Tomas' memories are trapped here. Shadows of oblivion block the way."
+      ]
+    },
+    {
+      "speaker": "Vino",
+      "variants": [
+        "I must look for clues and talk to the villagers to reconstruct the truth.",
+        "I need to gather pieces of the past. The villagers hold the answers.",
+        "To uncover what happened, I must speak with the people of this memory."
+      ]
+    }
+  ]
+}

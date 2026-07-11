@@ -516,7 +516,7 @@ export class CampoLunanScene extends Phaser.Scene {
 
     if (nearestDist < 30) {
       nearGrave = true;
-      this.hud.setStatus("PRESS [E] TO INSPECT MATEO'S GRAVE");
+      this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
     } else {
       this.hud.setStatus("WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY");
     }

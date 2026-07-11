@@ -15,6 +15,8 @@ export class Grave1 extends Phaser.Scene {
     // Load the Tiled map JSON file
     this.load.json("grave1-map", "src/assets/world1/gunita2.tmj");
 
+    this.load.json("grave1-dialogues", "src/assets/data/dialogues/grave1/intro.json");
+
     // Load individual standalone ground tiles to preserve original tileset sizes
     const mappings = {
       "water": "watertile.png",
@@ -451,43 +453,110 @@ export class Grave1 extends Phaser.Scene {
     });
 
     // Start-up dialogue for Grave 1 (The Last Fisherman)
-    const dialogues = [
-      { speaker: "Vino", text: "I can smell the sea salt... and feel a chilling breeze. We have entered the forgotten memory world." },
-      { speaker: "???", text: "This is Mateo's memory, Vino. A world frozen in time. The black fog of oblivion covers the paths." },
-      { speaker: "Vino", text: "I must look for clues and talk to the villagers to reconstruct the truth." }
-    ];
-    let currentStep = 0;
     this.dialogueActive = true;
-
-    this.dialogue = new DialogueBox(this, {
-      speaker: dialogues[0].speaker,
-      text: dialogues[0].text,
-      onComplete: () => {
-        currentStep++;
-        if (currentStep < dialogues.length) {
-          const next = dialogues[currentStep];
-          this.dialogue.showText(next.speaker, next.text);
-        } else {
-          this.dialogue.hide();
-          this.dialogueActive = false;
-        }
-      }
-    });
+    this.startDialogueWithAI();
 
     // Advance dialogue with key down events
     this.input.keyboard.on("keydown-E", () => {
-      if (this.dialogueActive) {
+      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
       }
     });
 
     this.input.keyboard.on("keydown-SPACE", () => {
-      if (this.dialogueActive) {
+      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
       }
     });
 
     this.game.events.emit("game-ready");
+  }
+
+  generateAIDialogues() {
+    console.log("[AI] Attempting to generate dialogues...");
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error("AI generation timed out or failed."));
+      }, 500); 
+    });
+  }
+
+  async startDialogueWithAI() {
+    try {
+      await this.generateAIDialogues();
+    } catch (error) {
+      console.log("[AI] Failed to generate dialogue:", error.message);
+      this.startDialogueFromJSON();
+    }
+  }
+
+  startDialogueFromJSON() {
+    console.log("[JSON] Attempting to load JSON fallback dialogue...");
+    const cachedDialogues = this.cache.json.get("grave1-dialogues");
+    
+    if (!cachedDialogues || !cachedDialogues.dialogues) {
+      console.log("[Fallback] JSON missing or invalid. Using hardcoded dialogues.");
+      this.startDialogueSequence(this.getHardcodedDialogues());
+      return;
+    }
+
+    console.log("[JSON] Successfully loaded JSON dialogue. Selecting random variants.");
+    const sequence = cachedDialogues.dialogues.map(item => {
+      const variants = item.variants || ["..."];
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+      return { speaker: item.speaker, text: randomVariant };
+    });
+
+    this.startDialogueSequence(sequence);
+  }
+
+  getHardcodedDialogues() {
+    return [
+      { speaker: "Vino", text: "I can smell the sea salt... and feel a chilling breeze. We have entered the forgotten memory world." },
+      { speaker: "???", text: "This is Mang Tomas' memory, Vino. A world frozen in time. The black fog of oblivion covers the paths." },
+      { speaker: "Vino", text: "I must look for clues and talk to the villagers to reconstruct the truth." }
+    ];
+  }
+
+  startDialogueSequence(dialogueSteps) {
+    if (!dialogueSteps || dialogueSteps.length === 0) return;
+
+    this.currentDialogueSteps = dialogueSteps;
+    this.currentStep = 0;
+    this.dialogueActive = true;
+
+    if (!this.dialogue) {
+      this.dialogue = new DialogueBox(this, {
+        speaker: this.currentDialogueSteps[0].speaker,
+        text: this.currentDialogueSteps[0].text,
+        onComplete: () => {
+          this.currentStep++;
+          if (this.currentStep < this.currentDialogueSteps.length) {
+            const next = this.currentDialogueSteps[this.currentStep];
+            this.dialogue.showText(next.speaker, next.text);
+          } else {
+            if (this.dialogue && typeof this.dialogue.hide === 'function') {
+              this.dialogue.hide();
+            }
+            this.dialogueActive = false;
+          }
+        }
+      });
+    } else {
+      this.dialogue.onComplete = () => {
+        this.currentStep++;
+        if (this.currentStep < this.currentDialogueSteps.length) {
+          const next = this.currentDialogueSteps[this.currentStep];
+          this.dialogue.showText(next.speaker, next.text);
+        } else {
+          if (this.dialogue && typeof this.dialogue.hide === 'function') {
+            this.dialogue.hide();
+          }
+          this.dialogueActive = false;
+        }
+      };
+      this.dialogue.showText(this.currentDialogueSteps[0].speaker, this.currentDialogueSteps[0].text);
+    }
   }
 
   async saveProgress() {
