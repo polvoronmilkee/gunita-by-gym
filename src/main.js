@@ -3,6 +3,7 @@ import { SceneManager } from "./managers/SceneManager.js";
 import { BootScene } from "./scenes/BootScene.js";
 import { PreloadScene } from "./scenes/PreloadScene.js";
 import { CampoLunanScene } from "./scenes/CampoLunanScene.js";
+import { Grave1 } from "./scenes/Grave1.js";
 import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
@@ -21,6 +22,7 @@ const sceneManager = new SceneManager([
   BootScene,
   PreloadScene,
   CampoLunanScene,
+  Grave1,
   MemoryScene,
   UIScene,
   PauseScene,

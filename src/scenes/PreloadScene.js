@@ -3,6 +3,7 @@ import {
   GROUND_TILE_TEXTURE_KEY,
   GROUND_TILE_TEXTURE_URL,
 } from "../utils/groundTiles.js";
+import { getCache } from "../save.js";
 import { AUDIO_SETTINGS } from "../utils/audioSettings.js";
 
 export class PreloadScene extends Phaser.Scene {
@@ -39,6 +40,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("CampoLunanScene");
+    const cache = getCache();
+    const currentArea = cache?.current_area;
+    if (currentArea === "Grave 1" || currentArea === "Grave1") {
+      this.scene.start("Grave1");
+    } else {
+      this.scene.start("CampoLunanScene");
+    }
   }
 }
