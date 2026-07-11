@@ -1,7 +1,8 @@
 import Phaser from "phaser";
 import "./hudOverlay.css";
 
-const DEFAULT_STATUS = "WASD / ARROWS MOVE   SHIFT DASH   P PAUSE   M MEMORY";
+const DEFAULT_STATUS =
+  "WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY";
 
 function createButton(label, className, onClick) {
   const button = document.createElement("button");
@@ -30,7 +31,7 @@ export class HudOverlay {
 
     this.status = document.createElement("div");
     this.status.className = "campo-lunan-hud__status";
-    this.status.textContent = options.status ?? DEFAULT_STATUS;
+    this.status.textContent = DEFAULT_STATUS;
 
     this.buttonRow = document.createElement("div");
     this.buttonRow.className = "campo-lunan-hud__buttons";
