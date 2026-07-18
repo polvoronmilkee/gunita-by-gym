@@ -1,114 +1,38 @@
-.campo-lunan-hud {
+/* Retro-themed Floating Pause Button */
+
+.gunita-pause-btn {
   position: absolute;
-  top: 20px;
-  left: 130px;
+  top: 30px;
+  left: 140px;
   z-index: 1000;
-  width: min(92vw, 460px);
-  pointer-events: none;
-  user-select: none;
-  font-family: "VT323", monospace;
-  color: #efe4ff;
-}
-
-.campo-lunan-hud__audio-controls {
-  position: fixed;
-  top: 18px;
-  left: 18px;
-  z-index: 1002;
-  display: flex;
-  gap: 8px;
-  pointer-events: auto;
-}
-
-.campo-lunan-hud__audio-btn {
   appearance: none;
-  border: 2px solid rgba(124, 63, 207, 0.35);
-  background: rgba(5, 5, 12, 0.75);
-  color: #d0e8ff;
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-  transition: all 200ms ease;
-}
-
-.campo-lunan-hud__audio-btn:hover {
-  border-color: rgba(45, 212, 191, 0.72);
-  background: rgba(18, 24, 40, 0.98);
-  box-shadow:
-    0 0 15px rgba(45, 212, 191, 0.3),
-    inset 0 0 10px rgba(45, 212, 191, 0.1);
-  transform: translateY(-2px);
-}
-
-.campo-lunan-hud__audio-btn:active {
-  transform: translateY(1px);
-}
-
-.campo-lunan-hud__panel {
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 14px 16px 16px;
-  border: 1px solid rgba(176, 126, 255, 0.34);
-  border-radius: 16px;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(7, 10, 18, 0.88)),
-    radial-gradient(
-      circle at top left,
-      rgba(152, 128, 184, 0.16),
-      transparent 58%
-    );
-  box-shadow:
-    0 12px 30px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(8px);
-}
-
-.campo-lunan-hud__status {
-  font-size: clamp(22px, 2vw, 32px);
-  line-height: 1.05;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-shadow: 0 0 8px rgba(224, 200, 255, 0.2);
-}
-
-.campo-lunan-hud__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.campo-lunan-hud__button {
-  appearance: none;
-  min-width: 104px;
-  padding: 10px 14px;
-  border: 1px solid rgba(176, 126, 255, 0.42);
-  border-radius: 12px;
-  background: rgba(12, 16, 28, 0.92);
-  color: #efe4ff;
-  font-family: "Press Start 2P", monospace;
-  font-size: clamp(8px, 0.8vw, 11px);
-  line-height: 1.2;
-  cursor: pointer;
-  transition:
-    transform 140ms ease,
-    border-color 140ms ease,
-    background-color 140ms ease,
-    color 140ms ease;
-}
-
-.campo-lunan-hud__button:hover {
-  transform: translateY(-1px);
-  border-color: rgba(45, 212, 191, 0.72);
-  background: rgba(18, 24, 40, 0.98);
+  background: #000000;
+  border: 2px solid #ffffff;
   color: #ffffff;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 
+    0 4px 0 -2px #000000, 
+    0 6px 12px rgba(0, 0, 0, 0.4);
+  transition: all 150ms ease;
+  outline: none;
+  pointer-events: auto;
+  user-select: none;
 }
 
-.campo-lunan-hud__button:active {
+.gunita-pause-btn:hover {
+  border-color: #2dd4bf;
+  color: #2dd4bf;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 rgba(45, 212, 191, 0.2);
+}
+
+.gunita-pause-btn:active {
   transform: translateY(1px);
 }

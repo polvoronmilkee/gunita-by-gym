@@ -1,0 +1,70 @@
+/* Retro Dialogue-Style Floating Interaction Prompt */
+
+.interaction-prompt-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  animation: prompt-float 1.2s ease-in-out infinite alternate;
+  user-select: none;
+  opacity: 0.65;
+}
+
+.interaction-prompt {
+  background: #000000;
+  border: 1px solid #ffffff;
+  padding: 1px;
+  box-shadow: 
+    0 1px 0 -0.5px #000000, 
+    0 2px 4px rgba(0, 0, 0, 0.6);
+  image-rendering: pixelated;
+  white-space: nowrap;
+}
+
+.interaction-prompt__inner {
+  border: 1px solid #ffffff;
+  padding: 0px 2px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-sizing: border-box;
+}
+
+.interaction-prompt__key {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 7px;
+  height: 7px;
+  background: #000000;
+  border: 1px solid #ffffff;
+  color: #2dd4bf; /* Gunita cyan/mint accent matching the speaker name tag */
+  font-family: 'Press Start 2P', monospace;
+  font-size: 4px;
+  font-weight: bold;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.interaction-prompt__divider {
+  width: 1px;
+  height: 4px;
+  background: #ffffff;
+}
+
+.interaction-prompt__label {
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+@keyframes prompt-float {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-5px);
+  }
+}

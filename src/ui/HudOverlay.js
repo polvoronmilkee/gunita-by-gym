@@ -1,90 +1,25 @@
 import Phaser from "phaser";
 import "./hudOverlay.css";
 
-const DEFAULT_STATUS =
-  "WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY";
-
-function createButton(label, className, onClick) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = className;
-  button.textContent = label;
-  button.addEventListener("click", onClick);
-  return button;
-}
-
 export class HudOverlay {
   constructor(scene, options = {}) {
     this.scene = scene;
     this.onButtonPress = options.onButtonPress ?? (() => {});
-    this.onBack = options.onBack ?? (() => window.returnToGunitaMenu?.());
     this.onPause = options.onPause ?? (() => {});
-    this.onMemory = options.onMemory ?? (() => {});
-    this.onToggleMusic = options.onToggleMusic ?? (() => true);
-    this.onToggleSfx = options.onToggleSfx ?? (() => true);
 
-    this.root = document.createElement("div");
-    this.root.className = "campo-lunan-hud";
+    // Create a simple, clean, floating retro pause button
+    this.root = document.createElement("button");
+    this.root.type = "button";
+    this.root.className = "gunita-pause-btn";
+    this.root.textContent = "⏸";
+    this.root.title = "Pause Game";
 
-    this.panel = document.createElement("div");
-    this.panel.className = "campo-lunan-hud__panel";
+    this.root.addEventListener("click", () => {
+      this.onButtonPress();
+      this.onPause();
+    });
 
-    this.status = document.createElement("div");
-    this.status.className = "campo-lunan-hud__status";
-    this.status.textContent = DEFAULT_STATUS;
-
-    this.buttonRow = document.createElement("div");
-    this.buttonRow.className = "campo-lunan-hud__buttons";
-
-    this.audioControls = document.createElement("div");
-    this.audioControls.className = "campo-lunan-hud__audio-controls";
-
-    this.backButton = createButton(
-      "BACK",
-      "campo-lunan-hud__button",
-      this.onBack,
-    );
-    this.pauseButton = createButton(
-      "PAUSE",
-      "campo-lunan-hud__button",
-      this.onPause,
-    );
-    this.memoryButton = createButton(
-      "MEMORY",
-      "campo-lunan-hud__button",
-      this.onMemory,
-    );
-    this.musicButton = createButton(
-      options.musicEnabled === false ? "🔇" : "🎵",
-      "campo-lunan-hud__audio-btn",
-      () => {
-        this.onButtonPress();
-        const isEnabled = this.onToggleMusic();
-        this.setMusicEnabled(isEnabled);
-      },
-    );
-    this.sfxButton = createButton(
-      options.sfxEnabled === false ? "🔇" : "🔊",
-      "campo-lunan-hud__audio-btn",
-      () => {
-        this.onButtonPress();
-        const isEnabled = this.onToggleSfx();
-        this.setSfxEnabled(isEnabled);
-      },
-    );
-
-    this.backButton.addEventListener("click", () => this.onButtonPress());
-    this.pauseButton.addEventListener("click", () => this.onButtonPress());
-    this.memoryButton.addEventListener("click", () => this.onButtonPress());
-
-    this.buttonRow.append(this.backButton, this.pauseButton, this.memoryButton);
-    this.audioControls.append(this.sfxButton, this.musicButton);
-    this.panel.append(this.status, this.buttonRow);
-    this.root.append(this.audioControls, this.panel);
-
-    // Mount it directly into the game container to avoid camera scaling/positioning issues
-    const container =
-      document.getElementById("game-container") || document.body;
+    const container = document.getElementById("game-container") || document.body;
     container.appendChild(this.root);
 
     this.handleShutdown = () => this.destroy();
@@ -93,37 +28,27 @@ export class HudOverlay {
   }
 
   setStatus(text) {
-    this.status.textContent = text;
+    // Empty stub to prevent breaking scene calls
   }
 
   setBackVisible(visible) {
-    this.backButton.hidden = !visible;
+    // Empty stub to prevent breaking scene calls
   }
 
   setPauseVisible(visible) {
-    this.pauseButton.hidden = !visible;
+    this.root.style.display = visible ? "flex" : "none";
   }
 
   setMemoryVisible(visible) {
-    this.memoryButton.hidden = !visible;
+    // Empty stub to prevent breaking scene calls
   }
 
   setMusicEnabled(enabled) {
-    this.musicButton.textContent = enabled ? "🎵" : "🔇";
-    this.musicButton.title = enabled ? "MUSIC ON" : "MUSIC OFF";
-    this.musicButton.setAttribute(
-      "aria-label",
-      enabled ? "Music on" : "Music off",
-    );
+    // Empty stub to prevent breaking scene calls
   }
 
   setSfxEnabled(enabled) {
-    this.sfxButton.textContent = enabled ? "🔊" : "🔇";
-    this.sfxButton.title = enabled ? "SFX ON" : "SFX OFF";
-    this.sfxButton.setAttribute(
-      "aria-label",
-      enabled ? "Sound effects on" : "Sound effects off",
-    );
+    // Empty stub to prevent breaking scene calls
   }
 
   destroy() {
@@ -132,7 +57,6 @@ export class HudOverlay {
     }
 
     this.destroyed = true;
-    this.domElement?.destroy();
     this.root?.remove();
   }
 }

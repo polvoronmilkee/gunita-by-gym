@@ -3,6 +3,7 @@ import { CameraSystem } from "../systems/CameraSystem.js";
 import { HudOverlay } from "../ui/HudOverlay.js";
 import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
+import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState } from "../utils/api.js";
@@ -316,13 +317,13 @@ export class CampoLunanScene extends Phaser.Scene {
         await this.saveProgress();
         window.returnToGunitaMenu?.();
       },
-      onPause: async () => {
-        await this.saveProgress();
-        this.scene.launch("PauseScene");
+      onPause: () => {
+        this.saveProgress();
+        this.scene.launch("PauseScene", { parentScene: this });
         this.scene.pause();
       },
       onMemory: () => {
-        this.scene.launch("MemoryScene");
+        this.scene.launch("MemoryScene", { parentScene: this });
         this.scene.pause();
       },
       onToggleMusic: () => this.audioManager.toggleMusic(),
@@ -330,18 +331,20 @@ export class CampoLunanScene extends Phaser.Scene {
       musicEnabled: this.audioManager.musicEnabled,
       sfxEnabled: this.audioManager.sfxEnabled,
     });
-    this.hud.setBackVisible(true);
+    this.hud.setBackVisible(false);
     this.hud.setPauseVisible(true);
-    this.hud.setMemoryVisible(true);
+    this.hud.setMemoryVisible(false);
 
-    this.input.keyboard.on("keydown-P", async () => {
-      await this.saveProgress();
-      this.scene.launch("PauseScene");
+    this.interactionPrompt = new InteractionPrompt(this);
+
+    this.input.keyboard.on("keydown-P", () => {
+      this.saveProgress();
+      this.scene.launch("PauseScene", { parentScene: this });
       this.scene.pause();
     });
 
     this.input.keyboard.on("keydown-M", () => {
-      this.scene.launch("MemoryScene");
+      this.scene.launch("MemoryScene", { parentScene: this });
       this.scene.pause();
     });
 
@@ -458,6 +461,10 @@ export class CampoLunanScene extends Phaser.Scene {
       if (this.dialogueActive) {
         this.dialogue.hide();
         this.dialogueActive = false;
+      } else {
+        this.saveProgress();
+        this.scene.launch("PauseScene", { parentScene: this });
+        this.scene.pause();
       }
     });
 
@@ -497,6 +504,9 @@ export class CampoLunanScene extends Phaser.Scene {
           this.player.sprite.anims.stop();
         }
       }
+      if (this.interactionPrompt) {
+        this.interactionPrompt.hide();
+      }
       return;
     }
 
@@ -505,11 +515,13 @@ export class CampoLunanScene extends Phaser.Scene {
     // Proximity check for Grave 1
     let nearGrave = false;
     let nearestDist = Infinity;
+    let closestGravePos = null;
     if (this.grave1Positions && this.grave1Positions.length > 0) {
       for (const pos of this.grave1Positions) {
         const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, pos.x, pos.y);
         if (dist < nearestDist) {
           nearestDist = dist;
+          closestGravePos = pos;
         }
       }
     }
@@ -517,8 +529,14 @@ export class CampoLunanScene extends Phaser.Scene {
     if (nearestDist < 30) {
       nearGrave = true;
       this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
+      if (this.interactionPrompt && closestGravePos) {
+        this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE");
+      }
     } else {
       this.hud.setStatus("WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY");
+      if (this.interactionPrompt) {
+        this.interactionPrompt.hide();
+      }
     }
     this.isNearGrave = nearGrave;
   }

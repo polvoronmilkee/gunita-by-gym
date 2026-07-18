@@ -6,6 +6,10 @@ export class MemoryScene extends Phaser.Scene {
     super("MemoryScene");
   }
 
+  init(data) {
+    this.parentScene = data?.parentScene;
+  }
+
   create() {
     this.add.rectangle(640, 360, 1280, 720, 0x1e1a2d, 0.98);
     createPanel(this, 640, 360, 880, 420, 0x0f172a, 0.96);
@@ -18,7 +22,11 @@ export class MemoryScene extends Phaser.Scene {
 
     this.input.keyboard.once("keydown-ESC", () => {
       this.scene.stop();
-      this.scene.resume("CampoLunanScene");
+      if (this.parentScene) {
+        this.scene.resume(this.parentScene.scene.key);
+      } else {
+        this.scene.resume("CampoLunanScene");
+      }
     });
   }
 }

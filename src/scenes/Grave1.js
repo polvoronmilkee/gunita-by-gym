@@ -3,6 +3,7 @@ import { CameraSystem } from "../systems/CameraSystem.js";
 import { HudOverlay } from "../ui/HudOverlay.js";
 import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
+import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState } from "../utils/api.js";
 
@@ -515,29 +516,39 @@ export class Grave1 extends Phaser.Scene {
         await this.saveProgress();
         window.returnToGunitaMenu?.();
       },
-      onPause: async () => {
-        await this.saveProgress();
-        this.scene.launch("PauseScene");
+      onPause: () => {
+        this.saveProgress();
+        this.scene.launch("PauseScene", { parentScene: this });
         this.scene.pause();
       },
       onMemory: () => {
-        this.scene.launch("MemoryScene");
+        this.scene.launch("MemoryScene", { parentScene: this });
         this.scene.pause();
       },
     });
-    this.hud.setBackVisible(true);
+    this.hud.setBackVisible(false);
     this.hud.setPauseVisible(true);
-    this.hud.setMemoryVisible(true);
+    this.hud.setMemoryVisible(false);
+
+    this.interactionPrompt = new InteractionPrompt(this);
 
     // Keyboard bindings for pausing, memory screen, and menu exit
-    this.input.keyboard.on("keydown-P", async () => {
-      await this.saveProgress();
-      this.scene.launch("PauseScene");
+    this.input.keyboard.on("keydown-P", () => {
+      this.saveProgress();
+      this.scene.launch("PauseScene", { parentScene: this });
       this.scene.pause();
     });
 
+    this.input.keyboard.on("keydown-ESC", () => {
+      if (!this.dialogueActive) {
+        this.saveProgress();
+        this.scene.launch("PauseScene", { parentScene: this });
+        this.scene.pause();
+      }
+    });
+
     this.input.keyboard.on("keydown-M", () => {
-      this.scene.launch("MemoryScene");
+      this.scene.launch("MemoryScene", { parentScene: this });
       this.scene.pause();
     });
 
@@ -963,6 +974,9 @@ export class Grave1 extends Phaser.Scene {
           this.player.sprite.anims.stop();
         }
       }
+      if (this.interactionPrompt) {
+        this.interactionPrompt.hide();
+      }
       return;
     }
 
@@ -1004,12 +1018,24 @@ export class Grave1 extends Phaser.Scene {
 
     if (nearFragment) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO SOLVE RIDDLE");
+      if (this.interactionPrompt && this.currentFragment) {
+        this.interactionPrompt.show(this.currentFragment, "E", "SOLVE RIDDLE");
+      }
     } else if (nearArtifact) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO INSPECT ARTIFACT");
+      if (this.interactionPrompt && this.currentArtifact) {
+        this.interactionPrompt.show(this.currentArtifact, "E", "INSPECT ARTIFACT");
+      }
     } else if (nearNpc) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK");
+      if (this.interactionPrompt && this.closestNpc) {
+        this.interactionPrompt.show(this.closestNpc, "E", "TALK");
+      }
     } else {
       this.hud.setStatus("WASD / ARROWS TO MOVE   P PAUSE   M MEMORY");
+      if (this.interactionPrompt) {
+        this.interactionPrompt.hide();
+      }
     }
 
         this.player.update(this.cursors);
