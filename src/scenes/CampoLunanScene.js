@@ -4,9 +4,10 @@ import { HudOverlay } from "../ui/HudOverlay.js";
 import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
+import { MapOverlay } from "../ui/MapOverlay.js";
 import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
 import { getCache, setCache } from "../save.js";
-import { saveGameState, loadGameState } from "../utils/api.js";
+import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
 
 export class CampoLunanScene extends Phaser.Scene {
@@ -335,7 +336,11 @@ export class CampoLunanScene extends Phaser.Scene {
     this.hud.setPauseVisible(true);
     this.hud.setMemoryVisible(false);
 
+    const mapCache = getCache();
+    this.exploredChunks = new Set(mapCache?.explored_chunks || []);
+
     this.interactionPrompt = new InteractionPrompt(this);
+    syncOfflineData();
 
     this.input.keyboard.on("keydown-P", () => {
       this.saveProgress();
@@ -346,6 +351,57 @@ export class CampoLunanScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-M", () => {
       this.scene.launch("MemoryScene", { parentScene: this });
       this.scene.pause();
+    });
+
+    this.mapOverlay = new MapOverlay(this);
+
+    // Setup minimap camera perfectly centered within the 500x400 modal
+    const { width, height } = this.scale;
+    const modalWidth = 500;
+    const modalHeight = 400;
+    this.minimapCamera = this.cameras.add((width - modalWidth) / 2, (height - modalHeight) / 2, modalWidth, modalHeight)
+        .setZoom(0.6)
+        .setName("minimap")
+        .setVisible(false);
+
+    this.minimapCamera.setBounds(0, 0, this.worldWidth, this.worldHeight);
+    this.minimapCamera.startFollow(this.player.sprite);
+
+    // Phaser-based screen dimming so the minimap stays bright
+    this.dimGraphics = this.add.graphics();
+    this.dimGraphics.fillStyle(0x000000, 0.7);
+    this.dimGraphics.fillRect(0, 0, width, height);
+    this.dimGraphics.setScrollFactor(0);
+    this.dimGraphics.setDepth(998);
+    this.dimGraphics.setVisible(false);
+    this.minimapCamera.ignore(this.dimGraphics);
+
+    this.minimapFow = this.add.graphics();
+    this.minimapFow.setDepth(999);
+    // Hide FoW from main camera so game view is normal
+    this.cameras.main.ignore(this.minimapFow);
+
+    this.minimapPlayerDot = this.add.graphics();
+    this.minimapPlayerDot.setDepth(1000);
+    this.cameras.main.ignore(this.minimapPlayerDot);
+
+    this.input.keyboard.on("keydown-TAB", (event) => {
+      event.preventDefault();
+      if (!this.minimapCamera.visible) {
+        this.lastExploredChunksSize = 0; // Force immediate redraw in update()
+        this.dimGraphics.setVisible(true);
+        this.minimapCamera.setVisible(true);
+        this.mapOverlay.show("CAMPO LUNAN");
+      }
+    });
+
+    this.input.keyboard.on("keyup-TAB", (event) => {
+      event.preventDefault();
+      if (this.minimapCamera.visible) {
+        this.dimGraphics.setVisible(false);
+        this.minimapCamera.setVisible(false);
+        this.mapOverlay.hide();
+      }
     });
 
     this.input.keyboard.on("keydown-BACKSPACE", async () => {
@@ -480,6 +536,7 @@ export class CampoLunanScene extends Phaser.Scene {
       current_area: "Campo Lunan",
       position_x: Math.round(this.player.sprite.x),
       position_y: Math.round(this.player.sprite.y),
+      explored_chunks: Array.from(this.exploredChunks || [])
     };
 
     // Update local cache immediately
@@ -491,12 +548,41 @@ export class CampoLunanScene extends Phaser.Scene {
     // Save/sync with Supabase backend in the background
     try {
       await saveGameState(cache.player_id, state);
+      syncOfflineData();
     } catch (err) {
       console.error("Autosave database sync failed:", err.message);
     }
   }
 
   update() {
+    // Track explored chunks
+    if (this.player && this.player.sprite) {
+      const chunkX = Math.floor(this.player.sprite.x / 320);
+      const chunkY = Math.floor(this.player.sprite.y / 320);
+      this.exploredChunks.add(`${chunkX},${chunkY}`);
+    }
+
+    if (this.minimapCamera && this.minimapCamera.visible) {
+      if (this.minimapPlayerDot && this.player && this.player.sprite) {
+          this.minimapPlayerDot.clear();
+          this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
+          this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 12);
+      }
+      
+      if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {
+          this.lastExploredChunksSize = this.exploredChunks.size;
+          this.minimapFow.clear();
+          this.minimapFow.fillStyle(0x222222, 1);
+          for (let cx = -30; cx < 80; cx++) {
+              for (let cy = -30; cy < 80; cy++) {
+                  if (!this.exploredChunks.has(`${cx},${cy}`)) {
+                      this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
+                  }
+              }
+          }
+      }
+    }
+
     if (this.dialogueActive) {
       if (this.player && this.player.sprite && this.player.sprite.body) {
         this.player.sprite.body.setVelocity(0);
