@@ -37,3 +37,17 @@ export function clearCache() {
     console.error("Failed to clear cache:", e);
   }
 }
+
+export function getEssence() {
+  const cache = getCache();
+  if (cache && cache.essence !== undefined) {
+    return cache.essence;
+  }
+  return 5; // Default max essence
+}
+
+export function setEssence(value) {
+  const cache = getCache() || {};
+  cache.essence = value;
+  setCache(cache);
+}

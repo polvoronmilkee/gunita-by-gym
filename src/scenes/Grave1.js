@@ -5,8 +5,9 @@ import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
-import { getCache, setCache } from "../save.js";
-import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
+import { getCache, setCache, getEssence, setEssence } from "../save.js";
+import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
+import characterData from "../data/characters.json";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -649,8 +650,8 @@ export class Grave1 extends Phaser.Scene {
             dialogueText = "Correct! The crystal becomes a child's Drawing.";
         }
         
-        const randomRiddle = riddleData.riddles[Math.floor(Math.random() * riddleData.riddles.length)];
-        this.showRiddleUI(randomRiddle, () => {
+        const riddlesToPass = riddleData.riddles || riddleData;
+        this.startFragmentChallenge(riddlesToPass, () => {
             const fragmentX = this.currentFragment.x;
             const fragmentY = this.currentFragment.y;
             this.currentFragment.destroy();
@@ -1148,8 +1149,11 @@ export class Grave1 extends Phaser.Scene {
     return { x: startX, y: startY };
   }
 
-  showRiddleUI(riddleData, onCorrect, onIncorrect) {
+  startFragmentChallenge(riddleData, onCorrect, onIncorrect) {
     this.dialogueActive = true;
+    if (this.interactionPrompt) {
+      this.interactionPrompt.hide();
+    }
     if (this.player && this.player.sprite && this.player.sprite.body) {
       this.player.sprite.body.setVelocity(0);
       if (this.player.sprite.anims.isPlaying) {
@@ -1157,132 +1161,47 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-    // Modal Background Overlay
-    const modalBg = document.createElement("div");
-    modalBg.style.position = "absolute";
-    modalBg.style.top = "0";
-    modalBg.style.left = "0";
-    modalBg.style.width = "100%";
-    modalBg.style.height = "100%";
-    modalBg.style.background = "rgba(0,0,0,0.7)";
-    modalBg.style.zIndex = "1002";
-    modalBg.style.display = "flex";
-    modalBg.style.justifyContent = "center";
-    modalBg.style.alignItems = "center";
-
-    // Dialog structure similar to DialogueBox but centered and larger
-    const overlay = document.createElement("div");
-    overlay.className = "gunita-dialogue";
-    overlay.style.position = "relative";
-    overlay.style.bottom = "auto";
-    overlay.style.left = "auto";
-    overlay.style.transform = "none";
-    overlay.style.width = "min(90vw, 550px)";
-    overlay.style.display = "flex";
-    overlay.style.flexDirection = "column";
-
-    const inner = document.createElement("div");
-    inner.className = "gunita-dialogue__inner";
-    inner.style.display = "flex";
-    inner.style.flexDirection = "column";
-    inner.style.gap = "20px";
-    inner.style.padding = "20px";
-
-    const title = document.createElement("div");
-    title.className = "gunita-dialogue__name";
-    title.textContent = "Memory Riddle";
-    inner.appendChild(title);
-
-    const question = document.createElement("div");
-    question.className = "gunita-dialogue__message";
-    question.style.fontSize = "12px";
-    question.style.lineHeight = "1.8";
-    question.textContent = riddleData.question;
-    inner.appendChild(question);
-
-    const timerDuration = 6000;
-    const timerContainer = document.createElement("div");
-    timerContainer.style.width = "100%";
-    timerContainer.style.height = "12px";
-    timerContainer.style.background = "#000000";
-    timerContainer.style.border = "2px solid #ffffff";
-    timerContainer.style.boxSizing = "border-box";
-    timerContainer.style.marginTop = "10px";
-    timerContainer.style.position = "relative";
+    const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
     
-    const timerBar = document.createElement("div");
-    timerBar.style.height = "100%";
-    timerBar.style.background = "#2dd4bf";
-    timerBar.style.width = "100%";
-    timerBar.style.transition = `width ${timerDuration}ms linear`;
-    
-    timerContainer.appendChild(timerBar);
-    inner.appendChild(timerContainer);
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        timerBar.style.width = "0%";
-      });
-    });
-
-    const timeoutId = setTimeout(() => {
-      if (this.dialogueActive) {
-        modalBg.remove();
-        this.dialogueActive = false;
-        onIncorrect();
-      }
-    }, timerDuration);
-
-    const choicesContainer = document.createElement("div");
-    choicesContainer.style.display = "grid";
-    choicesContainer.style.gridTemplateColumns = "1fr";
-    choicesContainer.style.gap = "10px";
-    choicesContainer.style.marginTop = "10px";
-
-    riddleData.choices.forEach(choice => {
-      const btn = document.createElement("button");
-      btn.textContent = choice;
-      btn.style.background = "#000000";
-      btn.style.color = "#ffffff";
-      btn.style.border = "3px solid #ffffff";
-      btn.style.padding = "10px";
-      btn.style.fontFamily = "'Press Start 2P', monospace";
-      btn.style.fontSize = "9px";
-      btn.style.cursor = "pointer";
-      btn.style.boxSizing = "border-box";
-      btn.style.textTransform = "uppercase";
-      btn.style.textAlign = "left";
-      btn.style.transition = "all 0.1s ease";
-
-      btn.addEventListener("mouseenter", () => {
-        btn.style.background = "#b07eff"; // Purple glow
-        btn.style.color = "#000000";
-        btn.style.borderColor = "#b07eff";
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.background = "#000000";
-        btn.style.color = "#ffffff";
-        btn.style.borderColor = "#ffffff";
-      });
-
-      btn.addEventListener("click", () => {
-        clearTimeout(timeoutId);
-        modalBg.remove();
-        this.dialogueActive = false;
-        if (choice === riddleData.answer) {
-          onCorrect();
-        } else {
-          onIncorrect();
+    this.scene.pause();
+    this.scene.launch('BulletHellScene', {
+        riddleData: riddleData,
+        soulName: data.name,
+        dodgeLines: data.dodge_lines,
+        onComplete: () => {
+            this.dialogueActive = false;
+            this.scene.stop('BulletHellScene');
+            this.scene.resume();
+            onCorrect();
+        },
+        onDeath: async () => {
+            this.dialogueActive = false;
+            this.scene.stop('BulletHellScene');
+            this.scene.resume();
+            
+            const cache = getCache();
+            if (cache && cache.player_id) {
+                await resetPlayerRiddles(cache.player_id);
+            }
+            setEssence(5); // reset essence
+            
+            // Show Death Screen then transition
+            const blackScreen = this.add.graphics();
+            blackScreen.fillStyle(0x000000, 1);
+            blackScreen.fillRect(0, 0, this.scale.width, this.scale.height);
+            blackScreen.setDepth(9999);
+            blackScreen.setScrollFactor(0);
+            
+            const deathText = this.add.text(this.scale.width/2, this.scale.height/2, "THE ECHOES CONSUMED YOU", {
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "16px",
+                color: "#ff4444"
+            }).setOrigin(0.5).setDepth(10000).setScrollFactor(0);
+            
+            this.time.delayedCall(3000, () => {
+                this.scene.start('CampoLunanScene');
+            });
         }
-      });
-      choicesContainer.appendChild(btn);
     });
-
-    inner.appendChild(choicesContainer);
-    overlay.appendChild(inner);
-    modalBg.appendChild(overlay);
-
-    const container = document.getElementById("game-container") || document.body;
-    container.appendChild(modalBg);
   }
 }

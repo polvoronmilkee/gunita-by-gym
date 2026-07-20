@@ -1,0 +1,14 @@
+{
+  "fisherman": {
+    "name": "The Fisherman",
+    "grave_key": "fisherman",
+    "area_key": "fisherman_area1",
+    "total_riddles": 3,
+    "dodge_lines": [
+      "You don't remember me that easily...",
+      "The sea does not forgive the forgetful.",
+      "Try again. The tide waits for no one."
+    ]
+  }
+}
+

@@ -237,3 +237,26 @@ export async function syncOfflineData() {
     }
   }
 }
+
+/**
+ * Reset player riddles upon death.
+ */
+export async function resetPlayerRiddles(playerId) {
+  const online = await isServerOnline();
+  if (online && !playerId.startsWith("local_")) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/riddles/${playerId}`, {
+        method: "DELETE"
+      });
+      if (!response.ok) {
+        console.warn("Failed to reset riddles on server");
+      }
+    } catch (err) {
+      console.warn("Error resetting riddles on server:", err);
+    }
+  }
+  
+  // No local state reset needed for now, assuming server reset is primary
+  // or that local gamestate will be overridden upon new run.
+}
+
