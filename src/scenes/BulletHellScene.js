@@ -35,9 +35,11 @@ export class BulletHellScene extends Phaser.Scene {
     this.onCompleteCallback = data.onComplete;
     this.onDeathCallback = data.onDeath;
 
-    this.crystalHP = 5;
+    this.crystalHP = 6;
+    this.maxCrystalHP = 6;
     this.soulHP = 5;
     this.retryAttempt = 0;
+    this.hasSeenPhase2NewPattern = false;
     this.state = "INIT";
   }
 
@@ -189,10 +191,10 @@ export class BulletHellScene extends Phaser.Scene {
       color: "#2dd4bf"
     }).setOrigin(0.5);
 
-    // 5 Crystal HP Icons
+    // 6 Crystal HP Icons
     this.crystalIcons = [];
-    for (let i = 0; i < 5; i++) {
-      const icon = this.add.sprite(centerX - 60 + i * 30, 50, "fragment-main");
+    for (let i = 0; i < 6; i++) {
+      const icon = this.add.sprite(centerX - 75 + i * 30, 50, "fragment-main");
       icon.setScale(1.2);
       this.crystalIcons.push(icon);
     }
@@ -232,7 +234,7 @@ export class BulletHellScene extends Phaser.Scene {
   }
 
   updateCrystalHPUI() {
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       if (i < this.crystalHP) {
         this.crystalIcons[i].setTint(0x2dd4bf); // Glowing cyan intact
         this.crystalIcons[i].setAlpha(1.0);
@@ -733,11 +735,16 @@ export class BulletHellScene extends Phaser.Scene {
     });
   }
 
+  getCurrentPhase() {
+    if (this.crystalHP >= 4) return 1; // Phase 1: HP 6, 5, 4 (Half or more crystals)
+    if (this.crystalHP >= 2) return 2; // Phase 2: HP 3, 2 (Below half crystals)
+    return 3;                          // Phase 3: HP 1 (Desperation state)
+  }
+
   startDodgePhase() {
     this.cleanupProjectiles();
     this.state = "DODGE";
-    const patternAttempt = (5 - this.crystalHP) + 1 + this.retryAttempt;
-    this.startPatternsForAttempt(patternAttempt);
+    this.startPatternsForPhase();
   }
 
   drawSoul() {
@@ -751,42 +758,84 @@ export class BulletHellScene extends Phaser.Scene {
     this.soul.strokeTriangle(-4, 2, 4, 2, 0, -8);
   }
 
-  // --- DODGE PATTERNS SWITCHER (SINGLE CLEAN PATTERN PER ATTEMPT) ---
-  startPatternsForAttempt(attemptNum) {
+  // --- DYNAMIC 3-PHASE PATTERN DISPATCHER ---
+  startPatternsForPhase() {
     this.patternTimers = [];
     this.projectiles = this.bullets;
 
-    const patternIndex = ((attemptNum - 1) % 6) + 1;
+    const phase = this.getCurrentPhase();
 
-    if (patternIndex === 1) {
+    if (phase === 1) {
+      // Phase 1 (HP 6, 5, 4): Random 1 of 3 core patterns
+      const pool1 = [1, 2, 5];
+      const choice = Phaser.Utils.Array.GetRandom(pool1);
+      this.executePattern(choice);
+    } else if (phase === 2) {
+      // Phase 2 (HP 3, 2): Unlocks 2 new patterns (3: SweepingLaser, 4: ShrinkingGrid)
+      let choice;
+      if (!this.hasSeenPhase2NewPattern) {
+        const newPool = [3, 4];
+        choice = Phaser.Utils.Array.GetRandom(newPool);
+        this.hasSeenPhase2NewPattern = true;
+      } else {
+        const pool2 = [1, 2, 3, 4, 5];
+        choice = Phaser.Utils.Array.GetRandom(pool2);
+      }
+      this.executePattern(choice);
+    } else if (phase === 3) {
+      // Phase 3 (HP 1): Desperation State!
+      // Extended Dodge Timer (12.5s)
+      this.phaseTimer = 12500;
+      this.maxPhaseTimer = 12500;
+
+      // Visual Cue: Crystal pulses deep red
+      this.crystalEnemy.setTint(0xff1111);
+
+      // Select 2 non-conflicting patterns to fire simultaneously
+      const comboPairs = [
+        [1, 2], // CircleBlast + WaveGrid
+        [1, 4], // CircleBlast + ShrinkingGrid
+        [2, 3], // WaveGrid + SweepingLaser
+        [3, 5], // SweepingLaser + SpotlightBurst
+        [2, 5]  // WaveGrid + SpotlightBurst
+      ];
+      const pair = Phaser.Utils.Array.GetRandom(comboPairs);
+      this.executePattern(pair[0]);
+      this.executePattern(pair[1]);
+    }
+  }
+
+  executePattern(patternId) {
+    if (patternId === 1) {
       this.fireCircleBlast();
       this.patternTimers.push(this.time.delayedCall(2000, () => this.fireCircleBlast()));
       this.patternTimers.push(this.time.delayedCall(4000, () => this.fireCircleBlast()));
       this.patternTimers.push(this.time.delayedCall(6000, () => this.fireCircleBlast()));
       this.patternTimers.push(this.time.delayedCall(8000, () => this.fireCircleBlast()));
-    } else if (patternIndex === 2) {
+      if (this.getCurrentPhase() === 3) {
+        this.patternTimers.push(this.time.delayedCall(10000, () => this.fireCircleBlast()));
+      }
+    } else if (patternId === 2) {
       this.fireWaveGrid();
-    } else if (patternIndex === 3) {
+    } else if (patternId === 3) {
       this.patternTimers.push(this.time.delayedCall(500,  () => this.fireSweepingLaser(false)));
       this.patternTimers.push(this.time.delayedCall(2500, () => this.fireSweepingLaser(false)));
       this.patternTimers.push(this.time.delayedCall(4500, () => this.fireSweepingLaser(false)));
       this.patternTimers.push(this.time.delayedCall(6500, () => this.fireSweepingLaser(false)));
       this.patternTimers.push(this.time.delayedCall(8500, () => this.fireSweepingLaser(false)));
-    } else if (patternIndex === 4) {
+      if (this.getCurrentPhase() === 3) {
+        this.patternTimers.push(this.time.delayedCall(10500, () => this.fireSweepingLaser(false)));
+      }
+    } else if (patternId === 4) {
       this.fireShrinkingGrid();
       this.patternTimers.push(this.time.delayedCall(4800, () => this.fireShrinkingGrid()));
-    } else if (patternIndex === 5) {
+    } else if (patternId === 5) {
       this.fireSpotlightBurst();
-    } else if (patternIndex === 6) {
-      this.patternTimers.push(this.time.delayedCall(500,  () => this.fireSweepingLaser(false)));
-      this.patternTimers.push(this.time.delayedCall(2500, () => this.fireSweepingLaser(false)));
-      this.patternTimers.push(this.time.delayedCall(4500, () => this.fireSweepingLaser(false)));
-      this.patternTimers.push(this.time.delayedCall(6500, () => this.fireSweepingLaser(false)));
-      this.patternTimers.push(this.time.delayedCall(8500, () => this.fireSweepingLaser(false)));
     }
   }
 
   // --- PATTERN METHODS ---
+  // Pattern 1: Spiral Ring Burst (Option 1A)
   fireCircleBlast() {
     if (this.state !== "DODGE") return;
     const count = 15;
@@ -794,12 +843,12 @@ export class BulletHellScene extends Phaser.Scene {
     const centerX = this.crystalEnemy.x;
     const centerY = this.crystalEnemy.y;
     const ringBullets = [];
-    const formTime = 250;
+    const formTime = 300;
 
     for (let i = 0; i < count; i++) {
       this.patternTimers.push(this.time.delayedCall(i * (formTime / count), () => {
         if (this.state !== "DODGE") return;
-        const angle = i * ((2 * Math.PI) / count);
+        const angle = i * ((2 * Math.PI) / count) + (Math.PI / 4); // Spiral angle offset
         const bx = centerX + radius * Math.cos(angle);
         const by = centerY + radius * Math.sin(angle);
 
@@ -809,7 +858,7 @@ export class BulletHellScene extends Phaser.Scene {
       }));
     }
 
-    this.patternTimers.push(this.time.delayedCall(formTime, () => {
+    this.patternTimers.push(this.time.delayedCall(formTime + 50, () => {
       if (this.state !== "DODGE" || !this.soul) return;
       const targetX = this.soul.x;
       const targetY = this.soul.y;
@@ -825,201 +874,305 @@ export class BulletHellScene extends Phaser.Scene {
     }));
   }
 
+  // Pattern 2: Accelerating Sine Waves (Option 2B)
   fireWaveGrid() {
     if (this.state !== "DODGE") return;
     const arenaX = this.arena.x;
     const arenaY = this.arena.y;
     const arenaW = this.arena.w;
 
-    const count1 = 8;
-    const step1 = arenaW / (count1 + 1);
-
-    const spawnWave = (speed, count, shift = 0) => {
+    const spawnSineWave = (speed, count, phaseOffset = 0) => {
       if (this.state !== "DODGE") return;
       const step = arenaW / (count + 1);
       for (let i = 1; i <= count; i++) {
-        this.bullets.push({ x: arenaX + step * i + shift, y: arenaY, vx: 0, vy: speed, radius: 5 });
+        // Skip 2 positions per wave to create readable gaps
+        if (i === 3 || i === 7) continue;
+        const baseX = arenaX + step * i;
+        const sineShift = Math.sin(i * 0.8 + phaseOffset) * 12;
+        this.bullets.push({
+          x: baseX + sineShift,
+          y: arenaY,
+          vx: Math.cos(phaseOffset) * 15,
+          vy: speed,
+          radius: 5
+        });
       }
     };
 
-    spawnWave(90, 8);
-    this.patternTimers.push(this.time.delayedCall(1800, () => spawnWave(120, 9, 8)));
-    this.patternTimers.push(this.time.delayedCall(3600, () => spawnWave(150, 10, -5)));
-    this.patternTimers.push(this.time.delayedCall(5400, () => spawnWave(170, 11, 4)));
-    this.patternTimers.push(this.time.delayedCall(7200, () => spawnWave(190, 12, 0)));
-    this.patternTimers.push(this.time.delayedCall(8800, () => spawnWave(200, 12, -8)));
+    spawnSineWave(90, 10, 0);
+    this.patternTimers.push(this.time.delayedCall(1600, () => spawnSineWave(120, 10, 1.2)));
+    this.patternTimers.push(this.time.delayedCall(3200, () => spawnSineWave(150, 10, 2.4)));
+    this.patternTimers.push(this.time.delayedCall(4800, () => spawnSineWave(170, 10, 3.6)));
+    this.patternTimers.push(this.time.delayedCall(6400, () => spawnSineWave(190, 10, 4.8)));
+    this.patternTimers.push(this.time.delayedCall(8000, () => spawnSineWave(210, 10, 6.0)));
   }
 
-  fireSweepingLaser(noWarning = false) {
+  // Pattern 3: Continuous Sweeping Lasers (Max 2 active lasers at a time, plane alternating)
+  fireSingleLaserSweep(directionIndex, onCompleteCallback) {
     if (this.state !== "DODGE") return;
-    const side = Phaser.Math.Between(0, 3);
-    let isVerticalLaser = side === 0 || side === 1;
+    const { x, y, w, h } = this.arena;
+    const isVertical = (directionIndex === 0 || directionIndex === 1);
+    let startX, startY, endX, endY, laserW, laserH, warnX, warnY, warnW, warnH;
 
-    let startX, startY, endX, endY, warnX, warnY, warnW, warnH, laserW, laserH;
-
-    if (side === 0) {
-      startX = this.arena.x; startY = this.arena.y;
-      endX = this.arena.x + this.arena.w / 2 - 10; endY = this.arena.y;
-      warnX = this.arena.x; warnY = this.arena.y; warnW = this.arena.w / 2; warnH = this.arena.h;
-      laserW = 20; laserH = this.arena.h;
-    } else if (side === 1) {
-      startX = this.arena.x + this.arena.w - 20; startY = this.arena.y;
-      endX = this.arena.x + this.arena.w / 2 - 10; endY = this.arena.y;
-      warnX = this.arena.x + this.arena.w / 2; warnY = this.arena.y; warnW = this.arena.w / 2; warnH = this.arena.h;
-      laserW = 20; laserH = this.arena.h;
-    } else if (side === 2) {
-      startX = this.arena.x; startY = this.arena.y;
-      endX = this.arena.x; endY = this.arena.y + this.arena.h / 2 - 10;
-      warnX = this.arena.x; warnY = this.arena.y; warnW = this.arena.w; warnH = this.arena.h / 2;
-      laserW = this.arena.w; laserH = 20;
-    } else {
-      startX = this.arena.x; startY = this.arena.y + this.arena.h - 20;
-      endX = this.arena.x; endY = this.arena.y + this.arena.h / 2 - 10;
-      warnX = this.arena.x; warnY = this.arena.y + this.arena.h / 2; warnW = this.arena.w; warnH = this.arena.h / 2;
-      laserW = this.arena.w; laserH = 20;
+    if (directionIndex === 0) { // TOP -> Center
+      startX = x; startY = y;
+      endX = x; endY = y + h / 2 - 8;
+      laserW = w; laserH = 16;
+      warnX = x; warnY = y; warnW = w; warnH = h / 2;
+    } else if (directionIndex === 1) { // BOTTOM -> Center
+      startX = x; startY = y + h - 16;
+      endX = x; endY = y + h / 2 - 8;
+      laserW = w; laserH = 16;
+      warnX = x; warnY = y + h / 2; warnW = w; warnH = h / 2;
+    } else if (directionIndex === 2) { // LEFT -> Center
+      startX = x; startY = y;
+      endX = x + w / 2 - 8; endY = y;
+      laserW = 16; laserH = h;
+      warnX = x; warnY = y; warnW = w / 2; warnH = h;
+    } else { // RIGHT -> Center
+      startX = x + w - 16; startY = y;
+      endX = x + w / 2 - 8; endY = y;
+      laserW = 16; laserH = h;
+      warnX = x + w / 2; warnY = y; warnW = w / 2; warnH = h;
     }
 
-    const fire = () => {
+    const warn = this.add.graphics();
+    warn.fillStyle(0xffffff, 0.3);
+    warn.fillRect(warnX, warnY, warnW, warnH);
+    this.activeWarnings.push(warn);
+
+    this.patternTimers.push(this.time.delayedCall(600, () => {
+      if (warn && warn.active) warn.destroy();
       if (this.state !== "DODGE") return;
-      const laser = { x: startX, y: startY, w: laserW, h: laserH, graphics: this.add.graphics(), life: 1000 };
+
+      const laser = { x: startX, y: startY, w: laserW, h: laserH, graphics: this.add.graphics(), life: 2500 };
       this.lasers.push(laser);
 
       this.tweens.add({
         targets: laser,
         x: endX,
         y: endY,
-        duration: 1000,
+        duration: 2200,
+        ease: 'Sine.easeInOut',
         onUpdate: () => {
           if (!laser.graphics || !laser.graphics.active) return;
           laser.graphics.clear();
           laser.graphics.fillStyle(0xb57fee, 1);
           laser.graphics.fillRect(laser.x, laser.y, laser.w, laser.h);
           laser.graphics.fillStyle(0xffffff, 0.9);
-          if (isVerticalLaser) {
-            laser.graphics.fillRect(laser.x + 6, laser.y, 8, laser.h);
+          if (isVertical) {
+            laser.graphics.fillRect(laser.x, laser.y + 4, laser.w, 8);
           } else {
-            laser.graphics.fillRect(laser.x, laser.y + 6, laser.w, 8);
+            laser.graphics.fillRect(laser.x + 4, laser.y, 8, laser.h);
           }
-        }
-      });
-    };
-
-    if (noWarning) {
-      fire();
-    } else {
-      const warn = this.add.graphics();
-      warn.fillStyle(0xffffff, 0.3);
-      warn.fillRect(warnX, warnY, warnW, warnH);
-      this.activeWarnings.push(warn);
-
-      this.patternTimers.push(this.time.delayedCall(700, () => {
-        if (warn && warn.active) warn.destroy();
-        fire();
-      }));
-    }
-  }
-
-  // --- ATTEMPT 4: SHRINKING GRID ---
-  fireShrinkingGrid() {
-    if (this.state !== "DODGE") return;
-    const { x, y, w, h } = this.arena;
-    const width = w;
-    const height = h;
-    const centerX = x + width / 2;
-    const centerY = y + height / 2;
-    const stopOffset = 40;  // 80px safe zone total
-
-    // 0.7s Warning lines along all 4 walls
-    const warnRect = this.add.graphics();
-    warnRect.lineStyle(4, 0xffffff, 0.4);
-    warnRect.strokeRect(x, y, width, height);
-    this.activeWarnings.push(warnRect);
-
-    this.patternTimers.push(this.time.delayedCall(700, () => {
-      if (warnRect && warnRect.active) warnRect.destroy();
-      if (this.state !== "DODGE") return;
-
-      const topLaser    = this.add.rectangle(centerX,   y,          width,  4, 0xb57fee);
-      const bottomLaser = this.add.rectangle(centerX,   y + height, width,  4, 0xb57fee);
-      const leftLaser   = this.add.rectangle(x,         centerY,    4, height, 0xb57fee);
-      const rightLaser  = this.add.rectangle(x + width, centerY,    4, height, 0xb57fee);
-
-      this.activeLasers = [topLaser, bottomLaser, leftLaser, rightLaser];
-
-      this.tweens.add({ targets: topLaser,    y: centerY - stopOffset, duration: 2500, ease: 'Sine.easeInOut' });
-      this.tweens.add({ targets: bottomLaser, y: centerY + stopOffset, duration: 2500, ease: 'Sine.easeInOut' });
-      this.tweens.add({ targets: leftLaser,   x: centerX - stopOffset, duration: 2500, ease: 'Sine.easeInOut' });
-      this.tweens.add({
-        targets: rightLaser,
-        x: centerX + stopOffset,
-        duration: 2500,
-        ease: 'Sine.easeInOut',
+        },
         onComplete: () => {
-          this.patternTimers.push(this.time.delayedCall(2000, () => {
-            [topLaser, bottomLaser, leftLaser, rightLaser].forEach(l => {
-              if (l && l.active) {
-                this.tweens.killTweensOf(l);
-                l.destroy();
-              }
-            });
-            this.activeLasers = [];
+          this.patternTimers.push(this.time.delayedCall(200, () => {
+            if (laser.graphics && laser.graphics.active) laser.graphics.destroy();
+            const idx = this.lasers.indexOf(laser);
+            if (idx > -1) this.lasers.splice(idx, 1);
+            if (onCompleteCallback) onCompleteCallback();
           }));
         }
       });
     }));
   }
 
-  // --- ATTEMPT 5: SPOTLIGHT BURST ---
+  fireSweepingLaser() {
+    if (this.state !== "DODGE") return;
+    const verticalDirs = [0, 1];   // TOP, BOTTOM
+    const horizontalDirs = [2, 3]; // LEFT, RIGHT
+
+    let totalSpawned = 0;
+    const maxTotalLasers = 10;
+    let currentPlane = (this.lastLaserPlane === "vertical") ? "horizontal" : "vertical";
+
+    const spawnNextLaser = () => {
+      if (this.state !== "DODGE" || totalSpawned >= maxTotalLasers) return;
+
+      totalSpawned++;
+      const planeForThisLaser = currentPlane;
+      currentPlane = (currentPlane === "vertical") ? "horizontal" : "vertical";
+
+      const pool = (planeForThisLaser === "vertical") ? verticalDirs : horizontalDirs;
+      const dir = Phaser.Utils.Array.GetRandom(pool);
+      this.lastLaserPlane = planeForThisLaser;
+
+      this.fireSingleLaserSweep(dir, () => {
+        // When this laser disappears, spawn the next one!
+        spawnNextLaser();
+      });
+    };
+
+    // Spawn Laser 1
+    spawnNextLaser();
+
+    // Spawn Laser 2 staggered by 600ms (max 2 active lasers concurrently)
+    this.patternTimers.push(this.time.delayedCall(600, () => {
+      spawnNextLaser();
+    }));
+  }
+
+  // Pattern 4: Dynamic Safe Zone Shrinking Grid (Clean Arena Bounds)
+  fireShrinkingGrid() {
+    if (this.state !== "DODGE") return;
+    const { x, y, w, h } = this.arena;
+
+    // Randomize safe zone position each time
+    const safeZoneTargets = [
+      { cx: x + w * 0.3, cy: y + h * 0.3 }, // Top-Left
+      { cx: x + w * 0.7, cy: y + h * 0.3 }, // Top-Right
+      { cx: x + w * 0.3, cy: y + h * 0.7 }, // Bottom-Left
+      { cx: x + w * 0.7, cy: y + h * 0.7 }, // Bottom-Right
+      { cx: x + w * 0.5, cy: y + h * 0.5 }  // Center
+    ];
+    const target = Phaser.Utils.Array.GetRandom(safeZoneTargets);
+    const stopOffset = 40; // 80px safe zone size
+
+    // 0.7s Warning outline
+    const warnRect = this.add.graphics();
+    warnRect.lineStyle(3, 0xffffff, 0.4);
+    warnRect.strokeRect(x, y, w, h);
+    this.activeWarnings.push(warnRect);
+
+    this.patternTimers.push(this.time.delayedCall(700, () => {
+      if (warnRect && warnRect.active) warnRect.destroy();
+      if (this.state !== "DODGE") return;
+
+      const gridState = {
+        topY: y,
+        bottomY: y + h,
+        leftX: x,
+        rightX: x + w,
+        life: 4500
+      };
+
+      const gridGraphics = this.add.graphics();
+      gridState.graphics = gridGraphics;
+      this.lasers.push(gridState);
+
+      this.tweens.add({
+        targets: gridState,
+        topY: target.cy - stopOffset,
+        bottomY: target.cy + stopOffset,
+        leftX: target.cx - stopOffset,
+        rightX: target.cx + stopOffset,
+        duration: 2500,
+        ease: 'Sine.easeInOut',
+        onUpdate: () => {
+          if (!gridGraphics || !gridGraphics.active) return;
+          gridGraphics.clear();
+
+          const tY = Math.max(y, gridState.topY);
+          const bY = Math.min(y + h, gridState.bottomY);
+          const lX = Math.max(x, gridState.leftX);
+          const rX = Math.min(x + w, gridState.rightX);
+
+          // Top laser band
+          gridGraphics.fillStyle(0xb57fee, 0.85);
+          gridGraphics.fillRect(x, y, w, Math.max(0, tY - y));
+          gridGraphics.fillStyle(0xffffff, 0.9);
+          gridGraphics.fillRect(x, Math.max(y, tY - 4), w, 4);
+
+          // Bottom laser band
+          gridGraphics.fillStyle(0xb57fee, 0.85);
+          gridGraphics.fillRect(x, bY, w, Math.max(0, (y + h) - bY));
+          gridGraphics.fillStyle(0xffffff, 0.9);
+          gridGraphics.fillRect(x, bY, w, 4);
+
+          // Left laser band
+          gridGraphics.fillStyle(0xb57fee, 0.85);
+          gridGraphics.fillRect(x, y, Math.max(0, lX - x), h);
+          gridGraphics.fillStyle(0xffffff, 0.9);
+          gridGraphics.fillRect(Math.max(x, lX - 4), y, 4, h);
+
+          // Right laser band
+          gridGraphics.fillStyle(0xb57fee, 0.85);
+          gridGraphics.fillRect(rX, y, Math.max(0, (x + w) - rX), h);
+          gridGraphics.fillStyle(0xffffff, 0.9);
+          gridGraphics.fillRect(rX, y, 4, h);
+        }
+      });
+    }));
+  }
+
+  // Pattern 5: Tracking Spotlight Follower (Option 5B + Exclamation Mark & Extended Lock-Down)
   fireSpotlightBurst() {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
-    const width = w;
-    const height = h;
-    const padding = 40;
+    const padding = 30;
 
     const fireSpot = () => {
-      if (this.state !== "DODGE") return;
-      const spotX = x + padding + Math.random() * (width - padding * 2);
-      const spotY = y + padding + Math.random() * (height - padding * 2);
+      if (this.state !== "DODGE" || !this.soul) return;
 
-      const warning = this.add.circle(spotX, spotY, 30, 0xffffff, 0);
-      warning.setStrokeStyle(2, 0xffffff, 0.4);
+      const warning = this.add.circle(this.soul.x, this.soul.y, 30, 0xffffff, 0);
+      warning.setStrokeStyle(2, 0xffffff, 0.5);
       this.activeWarnings.push(warning);
 
+      const exclText = this.add.text(this.soul.x, this.soul.y, "!", {
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: "16px",
+        color: "#ffffff"
+      }).setOrigin(0.5);
+      this.activeWarnings.push(exclText);
+
+      // Smoothly track player soul position for 1.8s
       this.tweens.add({
         targets: warning,
-        scaleX: 1.3,
-        scaleY: 1.3,
-        duration: 400,
-        yoyo: true,
-        repeat: 1,
+        duration: 1800,
+        onUpdate: () => {
+          if (warning && warning.active && this.soul) {
+            warning.x = Phaser.Math.Clamp(this.soul.x, x + padding, x + w - padding);
+            warning.y = Phaser.Math.Clamp(this.soul.y, y + padding, y + h - padding);
+            if (exclText && exclText.active) {
+              exclText.setPosition(warning.x, warning.y);
+            }
+          }
+        },
         onComplete: () => {
-          if (warning && warning.active) warning.destroy();
-          if (this.state !== "DODGE") return;
-          const angles = [0, 45, 90, 135, 180, 225, 270, 315];
-          angles.forEach(deg => {
-            const rad = Phaser.Math.DegToRad(deg);
-            const bullet = {
-              x: spotX,
-              y: spotY,
-              vx: Math.cos(rad) * 160,
-              vy: Math.sin(rad) * 160,
-              radius: 4
-            };
-            this.bullets.push(bullet);
+          if (!warning || !warning.active) return;
+          const lockedX = warning.x;
+          const lockedY = warning.y;
+
+          // Lock down red warning ring + red exclamation mark for 900ms
+          warning.setStrokeStyle(3, 0xff4444, 0.9);
+          warning.setFillStyle(0xff0000, 0.15);
+          if (exclText && exclText.active) {
+            exclText.setColor("#ff4444");
+            exclText.setPosition(lockedX, lockedY);
+          }
+
+          this.tweens.add({
+            targets: [warning, exclText],
+            scaleX: 1.3,
+            scaleY: 1.3,
+            duration: 900,
+            onComplete: () => {
+              if (warning && warning.active) warning.destroy();
+              if (exclText && exclText.active) exclText.destroy();
+              if (this.state !== "DODGE") return;
+
+              // Detonate into 8-directional radial burst
+              const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+              angles.forEach(deg => {
+                const rad = Phaser.Math.DegToRad(deg);
+                this.bullets.push({
+                  x: lockedX,
+                  y: lockedY,
+                  vx: Math.cos(rad) * 170,
+                  vy: Math.sin(rad) * 170,
+                  radius: 4
+                });
+              });
+            }
           });
         }
       });
     };
 
     fireSpot();
-    this.patternTimers.push(this.time.delayedCall(1200, fireSpot));
-    this.patternTimers.push(this.time.delayedCall(2400, fireSpot));
-    this.patternTimers.push(this.time.delayedCall(3600, fireSpot));
-    this.patternTimers.push(this.time.delayedCall(4800, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(3000, fireSpot));
     this.patternTimers.push(this.time.delayedCall(6000, fireSpot));
-    this.patternTimers.push(this.time.delayedCall(7200, fireSpot));
-    this.patternTimers.push(this.time.delayedCall(8400, fireSpot));
   }
 
   cleanupProjectiles() {
@@ -1157,18 +1310,35 @@ export class BulletHellScene extends Phaser.Scene {
         });
       }
 
-      // Laser Physics & AABB Collision
+      // Laser Physics & Collision
       for (let i = this.lasers.length - 1; i >= 0; i--) {
         const l = this.lasers[i];
         l.life -= delta;
 
-        const testX = Math.max(l.x, Math.min(this.soul.x, l.x + l.w));
-        const testY = Math.max(l.y, Math.min(this.soul.y, l.y + l.h));
+        // 1. Shrinking Grid safe zone collision check
+        if (l.leftX !== undefined && l.rightX !== undefined && l.topY !== undefined && l.bottomY !== undefined) {
+          const isInsideSafeZone = (
+            this.soul.x >= l.leftX &&
+            this.soul.x <= l.rightX &&
+            this.soul.y >= l.topY &&
+            this.soul.y <= l.bottomY
+          );
 
-        const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, testX, testY);
-        if (dist < this.soulRadius) {
-          this.triggerHit();
-          return;
+          if (!isInsideSafeZone && (l.leftX > this.arena.x + 4)) {
+            this.triggerHit();
+            return;
+          }
+        }
+        // 2. Standard sweeping laser rectangle AABB collision check
+        else if (l.x !== undefined && l.y !== undefined && l.w !== undefined && l.h !== undefined) {
+          const testX = Math.max(l.x, Math.min(this.soul.x, l.x + l.w));
+          const testY = Math.max(l.y, Math.min(this.soul.y, l.y + l.h));
+
+          const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, testX, testY);
+          if (dist < this.soulRadius) {
+            this.triggerHit();
+            return;
+          }
         }
 
         if (l.life <= 0) {

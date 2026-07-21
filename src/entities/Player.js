@@ -90,29 +90,36 @@ export class Player {
       const isMoving = body.velocity.length() > 0;
 
       if (isMoving && upDown) {
-        // Play moving-up animation when moving up
+        this.lastDirection = "up";
         if (this.sprite.scene.anims.exists("vino-moving-up")) {
           this.sprite.play("vino-moving-up", true);
         }
       } else if (isMoving && downDown) {
-        // Play moving-down animation when moving down
+        this.lastDirection = "down";
         if (this.sprite.scene.anims.exists("vino-moving-down")) {
           this.sprite.play("vino-moving-down", true);
         }
       } else if (isMoving && leftDown) {
-        // Play moving-left animation when moving left
+        this.lastDirection = "left";
         if (this.sprite.scene.anims.exists("vino-moving-left")) {
           this.sprite.play("vino-moving-left", true);
         }
       } else if (isMoving && rightDown) {
-        // Play moving-right animation when moving right
+        this.lastDirection = "right";
         if (this.sprite.scene.anims.exists("vino-moving-right")) {
           this.sprite.play("vino-moving-right", true);
         }
       } else if (!isMoving) {
-        // Idle when standing still
-        if (this.sprite.scene.anims.exists("vino-idle")) {
-          this.sprite.play("vino-idle", true);
+        // Idle when standing still - preserve facing direction
+        if (this.lastDirection === "down") {
+          if (this.sprite.scene.anims.exists("vino-idle")) {
+            this.sprite.play("vino-idle", true);
+          }
+        } else {
+          // Stop animation on first frame of last moved direction so Vino stays facing Up, Left, or Right
+          if (this.sprite.anims.isPlaying) {
+            this.sprite.anims.stop();
+          }
         }
       }
     }
