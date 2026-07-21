@@ -185,7 +185,7 @@ function setGameVisible(visible) {
   gameShell.classList.toggle("hidden", !visible);
 }
 
-function startGame() {
+function startGame(initialScene) {
   loadingScreen.setContent({
     title: "Entering Campo Lunan",
     subtitle: "Awakening the Echoes",
@@ -201,6 +201,12 @@ function startGame() {
 
   menuAudioController.stopMusic();
 
+  if (initialScene) {
+    window.initialScene = initialScene;
+  } else {
+    window.initialScene = null;
+  }
+
   if (!game) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
@@ -208,6 +214,17 @@ function startGame() {
       loadingScreen.hide();
     });
   } else {
+    if (initialScene) {
+      sceneManager.start(initialScene);
+    } else {
+      const cache = getCache();
+      const currentArea = cache?.current_area;
+      if (currentArea === "Grave 1" || currentArea === "Grave1") {
+        sceneManager.start("Grave1");
+      } else {
+        sceneManager.start("CampoLunanScene");
+      }
+    }
     game.canvas?.focus?.();
     loadingScreen.hide();
   }
@@ -244,7 +261,7 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
 });
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
-  startGame("MemoryScene");
+  startGame("CampoLunanScene");
 });
 
 guideButton?.addEventListener("click", () => {
