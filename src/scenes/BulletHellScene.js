@@ -94,6 +94,8 @@ export class BulletHellScene extends Phaser.Scene {
     // Group / Container setups
     this.bullets = [];
     this.lasers = [];
+    this.activeLasers = [];
+    this.activeWarnings = [];
     this.patternTimers = [];
 
     // Keyboard controls
@@ -704,6 +706,7 @@ export class BulletHellScene extends Phaser.Scene {
   }
 
   prepareDodgePhase() {
+    this.cleanupProjectiles();
     this.state = "DODGE_WAIT";
     this.setChoiceButtonsState("GREYED");
     this.dialogueText.setVisible(false);
@@ -731,6 +734,7 @@ export class BulletHellScene extends Phaser.Scene {
   }
 
   startDodgePhase() {
+    this.cleanupProjectiles();
     this.state = "DODGE";
     const patternAttempt = (5 - this.crystalHP) + 1 + this.retryAttempt;
     this.startPatternsForAttempt(patternAttempt);
@@ -747,39 +751,38 @@ export class BulletHellScene extends Phaser.Scene {
     this.soul.strokeTriangle(-4, 2, 4, 2, 0, -8);
   }
 
-  // --- DODGE PATTERNS SWITCHER ---
+  // --- DODGE PATTERNS SWITCHER (SINGLE CLEAN PATTERN PER ATTEMPT) ---
   startPatternsForAttempt(attemptNum) {
     this.patternTimers = [];
+    this.projectiles = this.bullets;
 
-    if (attemptNum === 1) {
+    const patternIndex = ((attemptNum - 1) % 6) + 1;
+
+    if (patternIndex === 1) {
       this.fireCircleBlast();
-      this.patternTimers.push(this.time.delayedCall(2200, () => this.fireCircleBlast()));
-      this.patternTimers.push(this.time.delayedCall(4400, () => this.fireCircleBlast()));
-      this.patternTimers.push(this.time.delayedCall(6600, () => this.fireCircleBlast()));
-    } else if (attemptNum === 2) {
+      this.patternTimers.push(this.time.delayedCall(2000, () => this.fireCircleBlast()));
+      this.patternTimers.push(this.time.delayedCall(4000, () => this.fireCircleBlast()));
+      this.patternTimers.push(this.time.delayedCall(6000, () => this.fireCircleBlast()));
+      this.patternTimers.push(this.time.delayedCall(8000, () => this.fireCircleBlast()));
+    } else if (patternIndex === 2) {
       this.fireWaveGrid();
-    } else if (attemptNum === 3) {
-      this.patternTimers.push(this.time.delayedCall(1500, () => this.fireSweepingLaser(false)));
+    } else if (patternIndex === 3) {
+      this.patternTimers.push(this.time.delayedCall(500,  () => this.fireSweepingLaser(false)));
+      this.patternTimers.push(this.time.delayedCall(2500, () => this.fireSweepingLaser(false)));
       this.patternTimers.push(this.time.delayedCall(4500, () => this.fireSweepingLaser(false)));
-      this.patternTimers.push(this.time.delayedCall(7500, () => this.fireSweepingLaser(false)));
-    } else if (attemptNum === 4) {
-      this.fireCrossSweep();
-      this.patternTimers.push(this.time.delayedCall(4500, () => this.fireCrossSweep()));
-    } else if (attemptNum === 5) {
-      this.fireLaserGrid();
-      this.patternTimers.push(this.time.delayedCall(4500, () => this.fireLaserGrid()));
-    } else if (attemptNum === 6) {
-      this.fireLaserCage();
-      this.patternTimers.push(this.time.delayedCall(4500, () => this.fireLaserCage()));
-    } else if (attemptNum === 7) {
-      this.fireLaserRain();
-      this.patternTimers.push(this.time.delayedCall(4000, () => this.fireLaserRain()));
-      this.patternTimers.push(this.time.delayedCall(7500, () => this.fireLaserRain()));
-    } else {
-      this.fireCircleBlast();
-      this.patternTimers.push(this.time.delayedCall(2000, () => this.fireCrossSweep()));
-      this.patternTimers.push(this.time.delayedCall(5000, () => this.fireLaserCage()));
-      this.patternTimers.push(this.time.delayedCall(7500, () => this.fireLaserRain()));
+      this.patternTimers.push(this.time.delayedCall(6500, () => this.fireSweepingLaser(false)));
+      this.patternTimers.push(this.time.delayedCall(8500, () => this.fireSweepingLaser(false)));
+    } else if (patternIndex === 4) {
+      this.fireShrinkingGrid();
+      this.patternTimers.push(this.time.delayedCall(4800, () => this.fireShrinkingGrid()));
+    } else if (patternIndex === 5) {
+      this.fireSpotlightBurst();
+    } else if (patternIndex === 6) {
+      this.patternTimers.push(this.time.delayedCall(500,  () => this.fireSweepingLaser(false)));
+      this.patternTimers.push(this.time.delayedCall(2500, () => this.fireSweepingLaser(false)));
+      this.patternTimers.push(this.time.delayedCall(4500, () => this.fireSweepingLaser(false)));
+      this.patternTimers.push(this.time.delayedCall(6500, () => this.fireSweepingLaser(false)));
+      this.patternTimers.push(this.time.delayedCall(8500, () => this.fireSweepingLaser(false)));
     }
   }
 
@@ -791,7 +794,7 @@ export class BulletHellScene extends Phaser.Scene {
     const centerX = this.crystalEnemy.x;
     const centerY = this.crystalEnemy.y;
     const ringBullets = [];
-    const formTime = 200;
+    const formTime = 250;
 
     for (let i = 0; i < count; i++) {
       this.patternTimers.push(this.time.delayedCall(i * (formTime / count), () => {
@@ -830,26 +833,21 @@ export class BulletHellScene extends Phaser.Scene {
 
     const count1 = 8;
     const step1 = arenaW / (count1 + 1);
-    for (let i = 1; i <= count1; i++) {
-      this.bullets.push({ x: arenaX + step1 * i, y: arenaY, vx: 0, vy: 80, radius: 5 });
-    }
 
-    this.patternTimers.push(this.time.delayedCall(1800, () => {
+    const spawnWave = (speed, count, shift = 0) => {
       if (this.state !== "DODGE") return;
-      const step2 = arenaW / (count1 + 1);
-      for (let i = 0; i <= count1; i++) {
-        this.bullets.push({ x: arenaX + step2 * (i + 0.5), y: arenaY, vx: 0, vy: 120, radius: 5 });
+      const step = arenaW / (count + 1);
+      for (let i = 1; i <= count; i++) {
+        this.bullets.push({ x: arenaX + step * i + shift, y: arenaY, vx: 0, vy: speed, radius: 5 });
       }
+    };
 
-      this.patternTimers.push(this.time.delayedCall(2200, () => {
-        if (this.state !== "DODGE") return;
-        const count3 = 12;
-        const step3 = arenaW / (count3 + 1);
-        for (let j = 1; j <= count3; j++) {
-          this.bullets.push({ x: arenaX + step3 * j, y: arenaY, vx: 0, vy: 170, radius: 5 });
-        }
-      }));
-    }));
+    spawnWave(90, 8);
+    this.patternTimers.push(this.time.delayedCall(1800, () => spawnWave(120, 9, 8)));
+    this.patternTimers.push(this.time.delayedCall(3600, () => spawnWave(150, 10, -5)));
+    this.patternTimers.push(this.time.delayedCall(5400, () => spawnWave(170, 11, 4)));
+    this.patternTimers.push(this.time.delayedCall(7200, () => spawnWave(190, 12, 0)));
+    this.patternTimers.push(this.time.delayedCall(8800, () => spawnWave(200, 12, -8)));
   }
 
   fireSweepingLaser(noWarning = false) {
@@ -912,177 +910,160 @@ export class BulletHellScene extends Phaser.Scene {
       const warn = this.add.graphics();
       warn.fillStyle(0xffffff, 0.3);
       warn.fillRect(warnX, warnY, warnW, warnH);
+      this.activeWarnings.push(warn);
 
-      this.patternTimers.push(this.time.delayedCall(500, () => {
-        warn.destroy();
+      this.patternTimers.push(this.time.delayedCall(700, () => {
+        if (warn && warn.active) warn.destroy();
         fire();
       }));
     }
   }
 
-  fireCrossSweep() {
+  // --- ATTEMPT 4: SHRINKING GRID ---
+  fireShrinkingGrid() {
     if (this.state !== "DODGE") return;
-    const cx = this.arena.x + this.arena.w / 2;
-    const leftStartX = this.arena.x;
-    const rightStartX = this.arena.x + this.arena.w - 6;
+    const { x, y, w, h } = this.arena;
+    const width = w;
+    const height = h;
+    const centerX = x + width / 2;
+    const centerY = y + height / 2;
+    const stopOffset = 40;  // 80px safe zone total
 
-    const warnLeft = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(leftStartX, this.arena.y, 6, this.arena.h);
-    const warnRight = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(rightStartX, this.arena.y, 6, this.arena.h);
+    // 0.7s Warning lines along all 4 walls
+    const warnRect = this.add.graphics();
+    warnRect.lineStyle(4, 0xffffff, 0.4);
+    warnRect.strokeRect(x, y, width, height);
+    this.activeWarnings.push(warnRect);
 
-    this.patternTimers.push(this.time.delayedCall(500, () => {
-      warnLeft.destroy(); warnRight.destroy();
+    this.patternTimers.push(this.time.delayedCall(700, () => {
+      if (warnRect && warnRect.active) warnRect.destroy();
       if (this.state !== "DODGE") return;
 
-      const leftLaser = { x: leftStartX, y: this.arena.y, w: 6, h: this.arena.h, graphics: this.add.graphics(), life: 3000 };
-      const rightLaser = { x: rightStartX, y: this.arena.y, w: 6, h: this.arena.h, graphics: this.add.graphics(), life: 3000 };
-      this.lasers.push(leftLaser, rightLaser);
+      const topLaser    = this.add.rectangle(centerX,   y,          width,  4, 0xb57fee);
+      const bottomLaser = this.add.rectangle(centerX,   y + height, width,  4, 0xb57fee);
+      const leftLaser   = this.add.rectangle(x,         centerY,    4, height, 0xb57fee);
+      const rightLaser  = this.add.rectangle(x + width, centerY,    4, height, 0xb57fee);
 
-      this.tweens.add({ targets: leftLaser, x: cx - 40, duration: 2000, onUpdate: () => this.drawPurpleLaser(leftLaser) });
-      this.tweens.add({ targets: rightLaser, x: cx + 40 - 6, duration: 2000, onUpdate: () => this.drawPurpleLaser(rightLaser) });
+      this.activeLasers = [topLaser, bottomLaser, leftLaser, rightLaser];
 
-      this.patternTimers.push(this.time.delayedCall(2000, () => {
-        if (this.state !== "DODGE") return;
-        const warnCenter = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(cx - 10, this.arena.y, 20, this.arena.h);
-
-        this.patternTimers.push(this.time.delayedCall(300, () => {
-          warnCenter.destroy();
-          if (this.state !== "DODGE") return;
-          const centerLaser = { x: cx - 10, y: this.arena.y, w: 20, h: this.arena.h, graphics: this.add.graphics(), life: 600 };
-          this.drawPurpleLaser(centerLaser);
-          this.lasers.push(centerLaser);
-          leftLaser.life = 600; rightLaser.life = 600;
-        }));
-      }));
-    }));
-  }
-
-  drawPurpleLaser(l) {
-    if (!l.graphics || !l.graphics.active) return;
-    l.graphics.clear();
-    l.graphics.fillStyle(0xb57fee, 1);
-    l.graphics.fillRect(l.x, l.y, l.w, l.h);
-    l.graphics.fillStyle(0xffffff, 0.9);
-    if (l.w >= 6) {
-      const innerW = Math.max(2, l.w - 4);
-      l.graphics.fillRect(l.x + (l.w - innerW) / 2, l.y, innerW, l.h);
-    }
-  }
-
-  fireLaserGrid() {
-    if (this.state !== "DODGE") return;
-    const cellW = this.arena.w / 3;
-    const cellH = this.arena.h / 3;
-
-    const h1 = { x: this.arena.x, y: this.arena.y + cellH - 2, w: this.arena.w, h: 4, graphics: this.add.graphics(), life: 2000 };
-    const h2 = { x: this.arena.x, y: this.arena.y + cellH * 2 - 2, w: this.arena.w, h: 4, graphics: this.add.graphics(), life: 2000 };
-    this.drawLaserRect(h1, 0xb57fee);
-    this.drawLaserRect(h2, 0xb57fee);
-    this.lasers.push(h1, h2);
-
-    this.patternTimers.push(this.time.delayedCall(500, () => {
-      if (this.state !== "DODGE") return;
-      const v1 = { x: this.arena.x + cellW - 2, y: this.arena.y, w: 4, h: this.arena.h, graphics: this.add.graphics(), life: 1500 };
-      const v2 = { x: this.arena.x + cellW * 2 - 2, y: this.arena.y, w: 4, h: this.arena.h, graphics: this.add.graphics(), life: 1500 };
-      this.drawLaserRect(v1, 0xb57fee);
-      this.drawLaserRect(v2, 0xb57fee);
-      this.lasers.push(v1, v2);
-    }));
-
-    this.patternTimers.push(this.time.delayedCall(1500, () => {
-      if (this.state !== "DODGE") return;
-      const safeIndex = Phaser.Math.Between(0, 8);
-      const safeRow = Math.floor(safeIndex / 3);
-      const safeCol = safeIndex % 3;
-
-      const safeGraphic = this.add.graphics();
-      safeGraphic.fillStyle(0x2dd4bf, 0.3);
-      safeGraphic.fillRect(this.arena.x + safeCol * cellW, this.arena.y + safeRow * cellH, cellW, cellH);
-
-      this.patternTimers.push(this.time.delayedCall(500, () => {
-        safeGraphic.destroy();
-        if (this.state !== "DODGE") return;
-        h1.life = 0; h2.life = 0;
-
-        for (let r = 0; r < 3; r++) {
-          for (let c = 0; c < 3; c++) {
-            if (r === safeRow && c === safeCol) continue;
-            const cx = this.arena.x + (c + 0.5) * cellW;
-            const cy = this.arena.y + (r + 0.5) * cellH;
-            const dirs = [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }];
-            dirs.forEach(d => {
-              this.bullets.push({ x: cx, y: cy, vx: d.x * 200, vy: d.y * 200, radius: 4 });
-            });
-          }
-        }
-      }));
-    }));
-  }
-
-  drawLaserRect(l, color = 0xb57fee) {
-    if (!l.graphics || !l.graphics.active) return;
-    l.graphics.clear();
-    l.graphics.fillStyle(color, 1);
-    l.graphics.fillRect(l.x, l.y, l.w, l.h);
-  }
-
-  fireLaserCage() {
-    if (this.state !== "DODGE" || !this.soul) return;
-
-    const topWarn = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(this.arena.x, this.arena.y, this.arena.w, 4);
-    const bottomWarn = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(this.arena.x, this.arena.y + this.arena.h - 4, this.arena.w, 4);
-    const leftWarn = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(this.arena.x, this.arena.y, 4, this.arena.h);
-    const rightWarn = this.add.graphics().fillStyle(0xffffff, 0.3).fillRect(this.arena.x + this.arena.w - 4, this.arena.y, 4, this.arena.h);
-
-    this.patternTimers.push(this.time.delayedCall(500, () => {
-      topWarn.destroy(); bottomWarn.destroy(); leftWarn.destroy(); rightWarn.destroy();
-      if (this.state !== "DODGE" || !this.soul) return;
-
-      const targetX = this.soul.x;
-      const targetY = this.soul.y;
-
-      const topL = { x: this.arena.x, y: this.arena.y, w: this.arena.w, h: 4, graphics: this.add.graphics(), life: 2000 };
-      const bottomL = { x: this.arena.x, y: this.arena.y + this.arena.h - 4, w: this.arena.w, h: 4, graphics: this.add.graphics(), life: 2000 };
-      const leftL = { x: this.arena.x, y: this.arena.y, w: 4, h: this.arena.h, graphics: this.add.graphics(), life: 2000 };
-      const rightL = { x: this.arena.x + this.arena.w - 4, y: this.arena.y, w: 4, h: this.arena.h, graphics: this.add.graphics(), life: 2000 };
-
-      this.lasers.push(topL, bottomL, leftL, rightL);
-      [topL, bottomL, leftL, rightL].forEach(l => this.drawLaserRect(l, 0xb57fee));
-
-      this.tweens.add({ targets: topL, y: targetY - 30, duration: 1500, ease: "Sine.easeIn", onUpdate: () => this.drawLaserRect(topL, 0xb57fee) });
-      this.tweens.add({ targets: bottomL, y: targetY + 30, duration: 1500, ease: "Sine.easeIn", onUpdate: () => this.drawLaserRect(bottomL, 0xb57fee) });
-      this.tweens.add({ targets: leftL, x: targetX - 30, duration: 1500, ease: "Sine.easeIn", onUpdate: () => this.drawLaserRect(leftL, 0xb57fee) });
+      this.tweens.add({ targets: topLaser,    y: centerY - stopOffset, duration: 2500, ease: 'Sine.easeInOut' });
+      this.tweens.add({ targets: bottomLaser, y: centerY + stopOffset, duration: 2500, ease: 'Sine.easeInOut' });
+      this.tweens.add({ targets: leftLaser,   x: centerX - stopOffset, duration: 2500, ease: 'Sine.easeInOut' });
       this.tweens.add({
-        targets: rightL,
-        x: targetX + 30,
-        duration: 1500,
-        ease: "Sine.easeIn",
-        onUpdate: () => this.drawLaserRect(rightL, 0xb57fee),
+        targets: rightLaser,
+        x: centerX + stopOffset,
+        duration: 2500,
+        ease: 'Sine.easeInOut',
         onComplete: () => {
-          if (this.state !== "DODGE") return;
-          topL.life = 0; bottomL.life = 0; leftL.life = 0; rightL.life = 0;
-
-          const angles = [0, 45, 90, 135, 180, 225, 270, 315];
-          angles.forEach(deg => {
-            const rad = Phaser.Math.DegToRad(deg);
-            this.bullets.push({ x: targetX, y: targetY, vx: Math.cos(rad) * 250, vy: Math.sin(rad) * 250, radius: 5 });
-          });
+          this.patternTimers.push(this.time.delayedCall(2000, () => {
+            [topLaser, bottomLaser, leftLaser, rightLaser].forEach(l => {
+              if (l && l.active) {
+                this.tweens.killTweensOf(l);
+                l.destroy();
+              }
+            });
+            this.activeLasers = [];
+          }));
         }
       });
     }));
   }
 
-  fireLaserRain() {
+  // --- ATTEMPT 5: SPOTLIGHT BURST ---
+  fireSpotlightBurst() {
     if (this.state !== "DODGE") return;
-    const delays = [0, 300, 600, 900, 1200, 1400, 1550, 1650];
-    delays.forEach(delay => {
-      this.patternTimers.push(this.time.delayedCall(delay, () => {
-        if (this.state !== "DODGE") return;
-        const rx = Phaser.Math.Between(this.arena.x + 10, this.arena.x + this.arena.w - 10);
-        const laser = { x: rx - 2, y: this.arena.y, w: 4, h: this.arena.h, graphics: this.add.graphics(), life: 400 };
-        this.drawLaserRect(laser, 0x2dd4bf);
-        this.lasers.push(laser);
-      }));
-    });
+    const { x, y, w, h } = this.arena;
+    const width = w;
+    const height = h;
+    const padding = 40;
+
+    const fireSpot = () => {
+      if (this.state !== "DODGE") return;
+      const spotX = x + padding + Math.random() * (width - padding * 2);
+      const spotY = y + padding + Math.random() * (height - padding * 2);
+
+      const warning = this.add.circle(spotX, spotY, 30, 0xffffff, 0);
+      warning.setStrokeStyle(2, 0xffffff, 0.4);
+      this.activeWarnings.push(warning);
+
+      this.tweens.add({
+        targets: warning,
+        scaleX: 1.3,
+        scaleY: 1.3,
+        duration: 400,
+        yoyo: true,
+        repeat: 1,
+        onComplete: () => {
+          if (warning && warning.active) warning.destroy();
+          if (this.state !== "DODGE") return;
+          const angles = [0, 45, 90, 135, 180, 225, 270, 315];
+          angles.forEach(deg => {
+            const rad = Phaser.Math.DegToRad(deg);
+            const bullet = {
+              x: spotX,
+              y: spotY,
+              vx: Math.cos(rad) * 160,
+              vy: Math.sin(rad) * 160,
+              radius: 4
+            };
+            this.bullets.push(bullet);
+          });
+        }
+      });
+    };
+
+    fireSpot();
+    this.patternTimers.push(this.time.delayedCall(1200, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(2400, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(3600, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(4800, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(6000, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(7200, fireSpot));
+    this.patternTimers.push(this.time.delayedCall(8400, fireSpot));
+  }
+
+  cleanupProjectiles() {
+    if (this.patternTimers && this.patternTimers.length > 0) {
+      this.patternTimers.forEach(t => {
+        if (t) {
+          if (typeof t.remove === 'function') t.remove();
+          else if (typeof t.destroy === 'function') t.destroy();
+        }
+      });
+      this.patternTimers = [];
+    }
+    if (this.activeWarnings && this.activeWarnings.length > 0) {
+      this.activeWarnings.forEach(w => {
+        if (w && w.active) {
+          this.tweens.killTweensOf(w);
+          w.destroy();
+        }
+      });
+      this.activeWarnings = [];
+    }
+    if (this.activeLasers && this.activeLasers.length > 0) {
+      this.activeLasers.forEach(l => {
+        if (l && l.active) {
+          this.tweens.killTweensOf(l);
+          l.destroy();
+        }
+      });
+      this.activeLasers = [];
+    }
+    if (this.lasers && this.lasers.length > 0) {
+      this.lasers.forEach(l => {
+        if (l && l.graphics && l.graphics.active) {
+          this.tweens.killTweensOf(l.graphics);
+          l.graphics.destroy();
+        }
+      });
+      this.lasers = [];
+    }
+    this.bullets = [];
+    this.projectiles = this.bullets;
+    if (this.bulletGraphics) {
+      this.bulletGraphics.clear();
+    }
   }
 
   // --- UPDATE LOOP & COLLISIONS ---
@@ -1100,6 +1081,7 @@ export class BulletHellScene extends Phaser.Scene {
 
       if (this.phaseTimer <= 0) {
         // Dodge survived! Return to riddle with reduced timer
+        this.cleanupProjectiles();
         this.retryAttempt++;
         this.dialogueText.setVisible(false);
         this.questionText.setVisible(false);
@@ -1160,6 +1142,21 @@ export class BulletHellScene extends Phaser.Scene {
         }
       }
 
+      // Active Lasers Collision
+      if (this.activeLasers) {
+        this.activeLasers.forEach(laser => {
+          if (!laser || !laser.active) return;
+          // Horizontal laser (width > height)
+          if (laser.width > laser.height) {
+            if (Math.abs(this.soul.y - laser.y) < 6) this.triggerHit();
+          }
+          // Vertical laser (height > width)
+          else {
+            if (Math.abs(this.soul.x - laser.x) < 6) this.triggerHit();
+          }
+        });
+      }
+
       // Laser Physics & AABB Collision
       for (let i = this.lasers.length - 1; i >= 0; i--) {
         const l = this.lasers[i];
@@ -1185,6 +1182,7 @@ export class BulletHellScene extends Phaser.Scene {
   }
 
   triggerHit() {
+    this.cleanupProjectiles();
     this.state = "HIT_PAUSE";
 
     // Deduct Soul HP
