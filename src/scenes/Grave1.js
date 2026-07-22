@@ -15,8 +15,8 @@ export class Grave1 extends Phaser.Scene {
   }
 
   preload() {
-    // Load the Tiled map JSON file
-    this.load.json("grave1-map", "src/assets/world1/gunita2.tmj");
+    // Load the Tiled map JSON file from grave1-v2
+    this.load.json("grave1-map", "src/assets/grave1-v2/gunita grave1.tmj");
 
     this.load.json("grave1-dialogues", "src/assets/data/dialogues/grave1/intro.json");
     this.load.json("random-guy-before", "src/assets/data/dialogues/grave1/random-guy/before-fragments.json");
@@ -35,68 +35,25 @@ export class Grave1 extends Phaser.Scene {
     this.load.image('daughters-drawing', 'src/assets/grave1-elements/fragments-uncovered/daughters-drawing.png');
     this.load.json('final-riddle', 'src/assets/data/dialogues/grave-1-final-riddle/final-riddle.json');
 
-
-    // Load individual standalone ground tiles to preserve original tileset sizes
+    // Mappings for grave1-v2 tilesets
     const mappings = {
-      "water": "watertile.png",
-      "grass": "grasstile.png",
-      "grasstile": "grasstile.png",
-      "ston": "stone_tile.png",
-      "stone": "stone_tile.png",
-      "grasstile1": "grasstile.png",
-      "grasspathways": "grasspath.png",
-      "sand": "sandtile.png",
-      "familyhouse": "family house.png",
-      "bridge": "bridge 1.png",
-      "shoreline house2": "house 2.png",
-      "shoreline house3": "house 3.png",
-      "signage": "signage.png",
-      "stall1": "stall1.png",
-      "stall2": "stall2.png",
-      "stall4": "stall4.png",
-      "satll3": "stall3.png",
-      "stone1": "stone1.png",
-      "stone2": "stone2.png",
-      "well": "well.png",
-      "shoreline house1": "house 1.png",
-      "barrel": "barrel.png",
-      "box": "box.png",
-      "lighthouse": "lighthouse.png",
-      "dock": "dock1.png",
-      "boat1": "boat1.png",
-      "net": "fishnet.png",
-      "stone3": "stone3.png",
-      "tree1": "tree1.png",
-      "stonepath": "stone_tile.png",
-      "tree2": "tree2.png",
-      "ropefence": "ropefence.png",
-      "stall5": "stall5.png",
-      "stall6": "stall6.png",
-      "frontfence": "fence.png",
-      "sidefence": "fence2.png",
-      "table": "table.png",
-      "crop": "crop.png",
-      "fountain": "fountain.png",
-      "mailbox": "mailbox.png",
-      "shoreline house 4": "house 4.png",
-      "shoreline house 5": "house 5.png",
-      "windmill": "windmill.png",
-      "crop1": "crop.png",
-      "crop3": "crop3.png",
-      "bush": "bush.png",
-      "bh1": "broken house1.png",
-      "broken dock": "broken dock.png",
-      "btree1": "btree1.png",
-      "btree2": "btree2.png",
-      "bh2": "broken house2.png",
-      "bh3": "broken house3.png",
-      "bh4": "broken house4.png",
-      "shipwreck": "shipwreck.png"
+      "ground": "TilesetFloor (1).png",
+      "water": "TilesetWater.png",
+      "tileset_camp": "tileset_camp.png",
+      "bahay-kubo": "bahay-kubo.png",
+      "nature": "TilesetNature.png",
+      "bridges": "Bridges.png",
+      "decor1": "decor1.png",
+      "decor2": "TilesetElement.png",
+      "stonepath-tileset": "Road2_ground.png",
+      "decor3": "decor3.png",
+      "supplies": "Supplies.png",
+      "broken-houses": "broken houses.png"
     };
 
     const uniqueImages = [...new Set(Object.values(mappings))];
     uniqueImages.forEach(img => {
-      this.load.image(img, `src/assets/world1/${img}`);
+      this.load.image(img, `src/assets/grave1-v2/${img}`);
     });
 
     const npcImages = [
@@ -179,60 +136,18 @@ export class Grave1 extends Phaser.Scene {
     const mapData = JSON.parse(JSON.stringify(cachedMap));
 
     const mappings = {
-      "water": "watertile.png",
-      "grass": "grasstile.png",
-      "grasstile": "grasstile.png",
-      "ston": "stone_tile.png",
-      "stone": "stone_tile.png",
-      "grasstile1": "grasstile.png",
-      "grasspathways": "grasspath.png",
-      "sand": "sandtile.png",
-      "familyhouse": "family house.png",
-      "bridge": "bridge 1.png",
-      "shoreline house2": "house 2.png",
-      "shoreline house3": "house 3.png",
-      "signage": "signage.png",
-      "stall1": "stall1.png",
-      "stall2": "stall2.png",
-      "stall4": "stall4.png",
-      "satll3": "stall3.png",
-      "stone1": "stone1.png",
-      "stone2": "stone2.png",
-      "well": "well.png",
-      "shoreline house1": "house 1.png",
-      "barrel": "barrel.png",
-      "box": "box.png",
-      "lighthouse": "lighthouse.png",
-      "dock": "dock1.png",
-      "boat1": "boat1.png",
-      "net": "fishnet.png",
-      "stone3": "stone3.png",
-      "tree1": "tree1.png",
-      "stonepath": "stone_tile.png",
-      "tree2": "tree2.png",
-      "ropefence": "ropefence.png",
-      "stall5": "stall5.png",
-      "stall6": "stall6.png",
-      "frontfence": "fence.png",
-      "sidefence": "fence2.png",
-      "table": "table.png",
-      "crop": "crop.png",
-      "fountain": "fountain.png",
-      "mailbox": "mailbox.png",
-      "shoreline house 4": "house 4.png",
-      "shoreline house 5": "house 5.png",
-      "windmill": "windmill.png",
-      "crop1": "crop.png",
-      "crop3": "crop3.png",
-      "bush": "bush.png",
-      "bh1": "broken house1.png",
-      "broken dock": "broken dock.png",
-      "btree1": "btree1.png",
-      "btree2": "btree2.png",
-      "bh2": "broken house2.png",
-      "bh3": "broken house3.png",
-      "bh4": "broken house4.png",
-      "shipwreck": "shipwreck.png"
+      "ground": "TilesetFloor (1).png",
+      "water": "TilesetWater.png",
+      "tileset_camp": "tileset_camp.png",
+      "bahay-kubo": "bahay-kubo.png",
+      "nature": "TilesetNature.png",
+      "bridges": "Bridges.png",
+      "decor1": "decor1.png",
+      "decor2": "TilesetElement.png",
+      "stonepath-tileset": "Road2_ground.png",
+      "decor3": "decor3.png",
+      "supplies": "Supplies.png",
+      "broken-houses": "broken houses.png"
     };
 
     mapData.tilesets = mapData.tilesets.map((ts, index) => {
@@ -327,9 +242,7 @@ export class Grave1 extends Phaser.Scene {
 
     // Build bottom layers (drawn below the player)
     const bottomLayerNames = [
-      "water", "grass", "stone", "sand", "pathway",
-      "object_bot_overlay_1", "object_bot_overlay_2", "object_bot_overlay_3", "object_bot_overlay_4",
-      "bridge"
+      "water", "grass", "sand", "sand2", "pathway", "bridge"
     ];
 
     let depth = -20;
@@ -337,11 +250,8 @@ export class Grave1 extends Phaser.Scene {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         layer.setDepth(depth);
-        // Automatically set collision for the water layer
         if (layerName === "water") {
           layer.setCollisionByExclusion([-1]);
-          // Wait, player isn't created yet at this point! We'll just set the property, 
-          // and add the collider AFTER the player is created.
         }
         depth++;
       }
@@ -380,10 +290,10 @@ export class Grave1 extends Phaser.Scene {
       });
     }
 
-    // Retrieve position from cache
+    // Retrieve position from cache or default spawn
     const cache = getCache();
-    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 300;
-    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 600;
+    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 600;
+    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 1000;
 
     this.player = new Player(this, spawnX, spawnY);
     this.player.sprite.setDepth(0);
@@ -392,13 +302,12 @@ export class Grave1 extends Phaser.Scene {
     // Camera Configuration
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
-    this.cameras.main.setZoom(4);
+    this.cameras.main.setZoom(3);
 
     // Build top layers (drawn above the player)
     const topLayerNames = [
-      "object_top _overlay_1", "obejct_top_overlay_2", "object_top_overlay_3", 
-      "object_top_overlay_4", "object_top_overlay_5", "object_top_overlay_6", 
-      "buildings", "object_top_overlay_7"
+      "objectslayer1", "objectslayer2", "objectslayer3", 
+      "objectlayer4", "familyuse", "trees", "treeslayer2"
     ];
 
     let topDepth = 1;
@@ -406,9 +315,6 @@ export class Grave1 extends Phaser.Scene {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         layer.setDepth(topDepth);
-        // Do NOT automatically set collision on buildings or overlays
-        // We will rely on the Tiled "collisions" object layer instead
-        // to give finer control over house collisions.
         topDepth++;
       }
     });
@@ -418,9 +324,7 @@ export class Grave1 extends Phaser.Scene {
     const bridgeLayerData = map.getLayer("bridge");
     if (waterLayerData && waterLayerData.tilemapLayer) {
       if (bridgeLayerData && bridgeLayerData.tilemapLayer) {
-        // Iterate over all tiles in the water layer
         waterLayerData.tilemapLayer.forEachTile((tile) => {
-          // If there is a bridge tile at this same coordinate, disable collision for the water
           const bridgeTile = bridgeLayerData.tilemapLayer.getTileAt(tile.x, tile.y, true);
           if (bridgeTile && bridgeTile.index !== -1) {
             tile.setCollision(false, false, false, false, false);
@@ -430,9 +334,9 @@ export class Grave1 extends Phaser.Scene {
       this.physics.add.collider(this.player.sprite, waterLayerData.tilemapLayer);
     }
 
-    // Load static collisions from Tiled
+    // Load static collisions from Tiled (matching both 'collsions' and 'collisions')
     const obstacles = this.physics.add.staticGroup();
-    const collisionGroup = map.getObjectLayer("collisions");
+    const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
         const x = obj.x + obj.width / 2;
