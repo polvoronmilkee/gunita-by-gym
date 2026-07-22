@@ -16,9 +16,26 @@ export class DialogueBox {
     this.scene = scene;
     this.onComplete = options.onComplete ?? (() => {});
 
+    // Determine Theme (default to obsidian in CampoLunanScene or when requested)
+    const isObsidian = options.theme === "obsidian" || 
+                       options.theme === "campo-lunan" || 
+                       scene?.scene?.key === "CampoLunanScene";
+
     // Root container
     this.root = document.createElement("div");
-    this.root.className = "gunita-dialogue";
+    this.root.className = `gunita-dialogue ${isObsidian ? "gunita-dialogue--obsidian" : ""}`;
+
+    // Gothic motifs for obsidian theme
+    if (isObsidian) {
+      const leftMotif = document.createElement("div");
+      leftMotif.className = "gunita-dialogue__gothic-motif gunita-dialogue__gothic-motif--left";
+      leftMotif.textContent = "🦇";
+      const rightMotif = document.createElement("div");
+      rightMotif.className = "gunita-dialogue__gothic-motif gunita-dialogue__gothic-motif--right";
+      rightMotif.textContent = "🦇";
+      this.root.appendChild(leftMotif);
+      this.root.appendChild(rightMotif);
+    }
 
     // Corner structures (Rivets and Anchors)
     const corners = [
@@ -33,7 +50,7 @@ export class DialogueBox {
       const rivet = document.createElement("span");
       rivet.className = "gunita-dialogue__rivet";
       cornerEl.appendChild(rivet);
-      if (c.anchor) {
+      if (c.anchor && !isObsidian) {
         const anchor = document.createElement("span");
         anchor.className = "gunita-dialogue__anchor";
         anchor.textContent = "⚓";
@@ -87,7 +104,7 @@ export class DialogueBox {
     container.appendChild(this.root);
 
     // Initial setup
-    this.showText(options.speaker ?? "Vino", options.text ?? "", this.onComplete, options.portrait);
+    this.showText(options.speaker ?? "Vino", options.text ?? "", this.onComplete, options.portrait, options.theme);
 
     // Click handler
     this.root.addEventListener("click", () => {
@@ -100,8 +117,12 @@ export class DialogueBox {
     scene.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown);
   }
 
-  showText(speaker, text, onComplete = null, portrait = null) {
+  showText(speaker, text, onComplete = null, portrait = null, theme = null) {
     this.nameTag.textContent = speaker || "Vino";
+
+    const isObsidian = theme === "obsidian" || 
+                       theme === "campo-lunan" || 
+                       this.root.classList.contains("gunita-dialogue--obsidian");
 
     // Resolve portrait
     let portraitSrc = portrait;
@@ -123,16 +144,13 @@ export class DialogueBox {
     }
 
     // Format text with keyword highlights (*keyword* or common keywords)
-    let formattedText = (text || "")
-      .replace(/\*(.*?)\*/g, '<span class="highlight">$1</span>');
-    
-    // Auto-highlight important lore keywords if not already highlighted
-    const keywordsToHighlight = ["takes", "gives", "fragment", "sea", "ocean", "harvest", "memory", "fisherman", "riddle"];
-    keywordsToHighlight.forEach(kw => {
-      const regex = new RegExp(`\\b(${kw})\\b`, "gi");
-      formattedText = formattedText.replace(regex, (match) => {
-        return `<span class="highlight">${match}</span>`;
-      });
+    let formattedText = (text || "").replace(/\*(.*?)\*/g, '<span class="highlight">$1</span>');
+
+    // Auto-highlight key phrases in ethereal blue/cyan
+    const blueKeywords = ["Fisherman", "Mangingisda", "Grave I", "Grave 1", "Campo Lunan", "The Last Fisherman", "Memory"];
+    blueKeywords.forEach(kw => {
+      const regex = new RegExp(`\\b(${kw})\\b`, "g");
+      formattedText = formattedText.replace(regex, `<span class="highlight-blue">$1</span>`);
     });
 
     this.messageText.innerHTML = formattedText;
