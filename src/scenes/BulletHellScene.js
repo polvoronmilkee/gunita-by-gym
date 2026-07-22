@@ -147,15 +147,38 @@ export class BulletHellScene extends Phaser.Scene {
     const left = this.boxCenterX - halfW;
     const top = this.boxCenterY - halfH;
 
-    // Outer fill & border
-    this.boxGraphics.fillStyle(0x000000, 1);
+    const isRiddle = (this.state === "RIDDLE" || this.state === "INIT" || this.state === "DIALOGUE");
+    const fillColor = isRiddle ? 0x1f1712 : 0x050508;
+
+    // Outer fill
+    this.boxGraphics.fillStyle(fillColor, 0.95);
     this.boxGraphics.fillRect(left, top, this.boxWidth, this.boxHeight);
-    this.boxGraphics.lineStyle(4, 0xffffff, 1);
+
+    // Ornate Metallic Outer Border
+    this.boxGraphics.lineStyle(4, 0x3c2a1e, 1);
     this.boxGraphics.strokeRect(left, top, this.boxWidth, this.boxHeight);
 
-    // Inner retro white border
-    this.boxGraphics.lineStyle(2, 0xffffff, 1);
-    this.boxGraphics.strokeRect(left + 6, top + 6, this.boxWidth - 12, this.boxHeight - 12);
+    // Bronze inner outline
+    this.boxGraphics.lineStyle(2, 0x8c6a49, 1);
+    this.boxGraphics.strokeRect(left + 5, top + 5, this.boxWidth - 10, this.boxHeight - 10);
+
+    // Light parchment inner stroke
+    this.boxGraphics.lineStyle(1, 0xbfa482, 0.6);
+    this.boxGraphics.strokeRect(left + 8, top + 8, this.boxWidth - 16, this.boxHeight - 16);
+
+    // Corner rivets (4 corners)
+    const rivets = [
+      { x: left + 6, y: top + 6 },
+      { x: left + this.boxWidth - 6, y: top + 6 },
+      { x: left + 6, y: top + this.boxHeight - 6 },
+      { x: left + this.boxWidth - 6, y: top + this.boxHeight - 6 }
+    ];
+    rivets.forEach(r => {
+      this.boxGraphics.fillStyle(0x2a1a0e, 1);
+      this.boxGraphics.fillCircle(r.x, r.y, 4);
+      this.boxGraphics.fillStyle(0xd8b878, 1);
+      this.boxGraphics.fillCircle(r.x - 1, r.y - 1, 2);
+    });
   }
 
   flashBoxColor(colorHex) {
@@ -165,12 +188,12 @@ export class BulletHellScene extends Phaser.Scene {
     const top = this.boxCenterY - halfH;
 
     this.boxGraphics.clear();
-    this.boxGraphics.fillStyle(0x000000, 1);
+    this.boxGraphics.fillStyle(0x1f1712, 0.95);
     this.boxGraphics.fillRect(left, top, this.boxWidth, this.boxHeight);
     this.boxGraphics.lineStyle(4, colorHex, 1);
     this.boxGraphics.strokeRect(left, top, this.boxWidth, this.boxHeight);
     this.boxGraphics.lineStyle(2, colorHex, 1);
-    this.boxGraphics.strokeRect(left + 6, top + 6, this.boxWidth - 12, this.boxHeight - 12);
+    this.boxGraphics.strokeRect(left + 5, top + 5, this.boxWidth - 10, this.boxHeight - 10);
 
     this.time.delayedCall(400, () => {
       this.drawBox();
@@ -357,27 +380,27 @@ export class BulletHellScene extends Phaser.Scene {
     for (let index = 0; index < 4; index++) {
       const pos = positions[index];
 
-      const btnBg = this.add.rectangle(pos.x, pos.y, 250, 38, 0x000000).setInteractive({ cursor: "pointer" });
-      btnBg.setStrokeStyle(3, 0xffffff);
+      const btnBg = this.add.rectangle(pos.x, pos.y, 250, 38, 0x25282e).setInteractive({ cursor: "pointer" });
+      btnBg.setStrokeStyle(2, 0x8c6a49);
 
       const btnText = this.add.text(pos.x, pos.y, "", {
         fontFamily: "'Press Start 2P', monospace",
         fontSize: "8px",
-        color: "#ffffff"
+        color: "#f7e8c3"
       }).setOrigin(0.5);
 
       btnBg.on("pointerover", () => {
         if (this.state !== "RIDDLE") return;
-        btnBg.setFillStyle(0xb07eff);
-        btnText.setColor("#000000");
-        btnBg.setStrokeStyle(3, 0xb07eff);
+        btnBg.setFillStyle(0x9c6c28);
+        btnText.setColor("#ffffff");
+        btnBg.setStrokeStyle(2, 0xf7e8c3);
       });
 
       btnBg.on("pointerout", () => {
         if (this.state !== "RIDDLE") return;
-        btnBg.setFillStyle(0x000000);
-        btnText.setColor("#ffffff");
-        btnBg.setStrokeStyle(3, 0xffffff);
+        btnBg.setFillStyle(0x25282e);
+        btnText.setColor("#f7e8c3");
+        btnBg.setStrokeStyle(2, 0x8c6a49);
       });
 
       btnBg.on("pointerdown", () => {

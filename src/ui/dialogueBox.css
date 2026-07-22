@@ -1,78 +1,184 @@
-/* Retro Pixel Art Dialogue Box Styling */
+/* Ornate RPG Dialogue Box Styling - Gunita Theme */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap');
+
 .gunita-dialogue {
   position: absolute;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1001;
-  width: min(90vw, 750px);
-  min-height: 120px;
-  background: #000000;
-  border: 4px solid #ffffff;
-  padding: 6px;
+  width: min(92vw, 760px);
+  min-height: 140px;
+  background: linear-gradient(135deg, #f2e7d3 0%, #e5d4b5 50%, #d9c4a3 100%);
+  border: 4px solid #3c2a1e;
+  outline: 2px solid #8c6a49;
+  border-radius: 8px;
+  padding: 10px 14px;
   box-shadow: 
-    0 8px 0 -4px #000000, 
-    0 12px 24px rgba(0, 0, 0, 0.6),
-    0 0 15px rgba(176, 126, 255, 0.25); /* Subtle purple glow from Gunita theme */
-  image-rendering: pixelated;
+    0 12px 28px rgba(0, 0, 0, 0.75),
+    inset 0 0 15px rgba(120, 85, 45, 0.25),
+    0 0 20px rgba(0, 0, 0, 0.5);
   user-select: none;
   pointer-events: auto;
-  font-family: 'Press Start 2P', monospace;
   box-sizing: border-box;
+  font-family: 'Georgia', serif;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Inner border pattern inspired by retro RPG dialogue boxes */
+/* Ornate Metallic Corners & Rivets */
+.gunita-dialogue__corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gunita-dialogue__corner--tl { top: -2px; left: -2px; border-top: 3px solid #7c5c3e; border-left: 3px solid #7c5c3e; border-top-left-radius: 6px; }
+.gunita-dialogue__corner--tr { top: -2px; right: -2px; border-top: 3px solid #7c5c3e; border-right: 3px solid #7c5c3e; border-top-right-radius: 6px; }
+.gunita-dialogue__corner--bl { bottom: -2px; left: -2px; border-bottom: 3px solid #7c5c3e; border-left: 3px solid #7c5c3e; border-bottom-left-radius: 6px; }
+.gunita-dialogue__corner--br { bottom: -2px; right: -2px; border-bottom: 3px solid #7c5c3e; border-right: 3px solid #7c5c3e; border-bottom-right-radius: 6px; }
+
+.gunita-dialogue__rivet {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: radial-gradient(circle at 35% 35%, #d8b878 0%, #684a28 70%, #2a1a0e 100%);
+  border: 1px solid #1a0f08;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.gunita-dialogue__corner--tl .gunita-dialogue__rivet { top: 3px; left: 3px; }
+.gunita-dialogue__corner--tr .gunita-dialogue__rivet { top: 3px; right: 3px; }
+.gunita-dialogue__corner--bl .gunita-dialogue__rivet { bottom: 3px; left: 3px; }
+.gunita-dialogue__corner--br .gunita-dialogue__rivet { bottom: 3px; right: 3px; }
+
+.gunita-dialogue__anchor {
+  position: absolute;
+  font-size: 11px;
+  color: #5c432b;
+  opacity: 0.75;
+}
+.gunita-dialogue__corner--tr .gunita-dialogue__anchor { top: 2px; right: 14px; }
+.gunita-dialogue__corner--br .gunita-dialogue__anchor { bottom: 2px; right: 14px; }
+
+/* Centered Metallic Pill Badge for Speaker Name */
+.gunita-dialogue__name-container {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+}
+
+.gunita-dialogue__name {
+  background: linear-gradient(180deg, #424750 0%, #25282e 60%, #17191d 100%);
+  border: 2px solid #8c6a49;
+  outline: 1px solid #2a1d13;
+  color: #f7e8c3;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 22px;
+  border-radius: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 1px 1px 2px #000;
+  white-space: nowrap;
+}
+
+/* Inner Container */
 .gunita-dialogue__inner {
-  border: 3px solid #ffffff;
+  border: 2px solid #bfa482;
+  border-radius: 4px;
   padding: 12px 16px;
-  min-height: 120px;
+  min-height: 110px;
   box-sizing: border-box;
   position: relative;
   display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Portrait Frame */
+.gunita-dialogue__portrait-frame {
+  width: 86px;
+  height: 86px;
+  min-width: 86px;
+  background: linear-gradient(135deg, #3a281c 0%, #20130a 100%);
+  border: 3px solid #8c6a49;
+  outline: 1px solid #3c2a1e;
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 0 10px #000,
+    0 3px 6px rgba(0,0,0,0.4);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.gunita-dialogue__portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* Dialogue Content Box */
+.gunita-dialogue__content {
+  flex: 1;
+  display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
-/* Retro Name/Speaker Tag hanging on the top-left border */
-.gunita-dialogue__name {
-  position: absolute;
-  top: -24px;
-  left: 8px;
-  background: #000000;
-  border: 3px solid #ffffff;
-  color: #2dd4bf; /* Gunita cyan/mint accent */
-  font-size: 12px;
-  padding: 4px 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Text message */
+/* Message Text */
 .gunita-dialogue__message {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #24170e;
+  font-weight: 500;
   margin: 0;
   padding: 0;
   word-wrap: break-word;
   white-space: pre-wrap;
 }
 
-/* Pulsing Next indicator arrow */
-.gunita-dialogue__next {
-  position: absolute;
-  bottom: 4px;
-  right: 8px;
-  font-size: 24px;
-  color: #b07eff; /* Purple accent */
-  animation: pulse-down 0.8s infinite alternate;
+/* Keyword Highlights (e.g. takes, fragment) */
+.gunita-dialogue__message .highlight,
+.gunita-dialogue__message strong,
+.gunita-dialogue__message b {
+  color: #b86616;
+  font-weight: 700;
 }
 
-@keyframes pulse-down {
+/* Pulsing Next Indicator */
+.gunita-dialogue__next {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 14px;
+  color: #9c6c28;
+  animation: pulse-gem 1s infinite alternate;
+}
+
+@keyframes pulse-gem {
   from {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
   }
   to {
-    transform: translateY(3px);
+    transform: translateY(3px) scale(1.15);
+    opacity: 1;
+    color: #d49b28;
   }
 }
