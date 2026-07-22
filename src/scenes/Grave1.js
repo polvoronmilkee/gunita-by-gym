@@ -1149,7 +1149,7 @@ export class Grave1 extends Phaser.Scene {
     return { x: startX, y: startY };
   }
 
-  startFragmentChallenge(riddleData, onCorrect, onIncorrect) {
+  startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey) {
     this.dialogueActive = true;
     if (this.interactionPrompt) {
       this.interactionPrompt.hide();
@@ -1168,6 +1168,7 @@ export class Grave1 extends Phaser.Scene {
         riddleData: riddleData,
         soulName: data.name,
         dodgeLines: data.dodge_lines,
+        bgKey: bgKey || "bg-fish-basket",
         onComplete: () => {
             this.dialogueActive = false;
             this.scene.stop('BulletHellScene');

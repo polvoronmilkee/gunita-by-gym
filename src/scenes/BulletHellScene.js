@@ -34,6 +34,7 @@ export class BulletHellScene extends Phaser.Scene {
     ];
     this.onCompleteCallback = data.onComplete;
     this.onDeathCallback = data.onDeath;
+    this.bgKey = (data && (data.bgKey || data.bgImage)) || "bg-fish-basket";
 
     this.crystalHP = 6;
     this.maxCrystalHP = 6;
@@ -41,6 +42,12 @@ export class BulletHellScene extends Phaser.Scene {
     this.retryAttempt = 0;
     this.hasSeenPhase2NewPattern = false;
     this.state = "INIT";
+  }
+
+  preload() {
+    if (!this.textures.exists("bg-fish-basket")) {
+      this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
+    }
   }
 
   getDefaultRiddles() {
@@ -80,6 +87,12 @@ export class BulletHellScene extends Phaser.Scene {
     // 1. Full-Screen Opaque Backdrop (Input Blocker)
     const bg = this.add.rectangle(centerX, height / 2, width, height, 0x050508, 1.0);
     bg.setInteractive(); // Consumes all mouse/pointer events so map behind is not clickable
+
+    const bgTextureKey = (this.bgKey && this.textures.exists(this.bgKey)) ? this.bgKey : "bg-fish-basket";
+    if (this.textures.exists(bgTextureKey)) {
+      const bgImg = this.add.image(centerX, height / 2, bgTextureKey);
+      bgImg.setDisplaySize(width, height);
+    }
 
     // 2. Box Specifications
     this.boxWidth = 440;
