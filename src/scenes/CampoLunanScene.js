@@ -482,8 +482,8 @@ export class CampoLunanScene extends Phaser.Scene {
                 setCache({
                   ...cache,
                   current_area: "Grave 1",
-                  position_x: 300,
-                  position_y: 600
+                  position_x: 1137,
+                  position_y: 550
                 });
               }
 
