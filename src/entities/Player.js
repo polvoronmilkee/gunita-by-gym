@@ -40,8 +40,8 @@ export class Player {
     body.setDrag(1000, 1000);
     body.setMaxVelocity(220, 220);
     if (this.sprite.type === "Sprite") {
-      body.setSize(80, 110);
-      body.setOffset(64, 100); 
+      body.setSize(80, 150);
+      body.setOffset(64, 60); 
     } else {
       body.setSize(24, 32);
     }
