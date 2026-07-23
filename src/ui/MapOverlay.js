@@ -17,7 +17,15 @@ export class MapOverlay {
     this.title.textContent = "AREA MAP";
     
     this.titleContainer.appendChild(this.title);
+    
+    // Location display container (positioned at top right of the map modal box)
+    this.locationBadge = document.createElement("div");
+    this.locationBadge.className = "map-location-badge";
+    this.locationBadge.innerHTML = `<span class="label">POS:</span> <span class="coords">X: 0 | Y: 0</span>`;
+    
     this.modal.appendChild(this.titleContainer);
+    this.modal.appendChild(this.locationBadge);
+
     this.root.appendChild(this.modal);
     
     const container = document.getElementById("game-container") || document.body;
@@ -28,9 +36,19 @@ export class MapOverlay {
     scene.events.once("destroy", this.handleShutdown);
   }
 
-  show(areaName) {
+  show(areaName, x = 0, y = 0) {
     this.title.textContent = `${areaName} MAP`;
+    this.updateLocation(x, y);
     this.root.classList.remove("hidden");
+  }
+
+  updateLocation(x, y) {
+    if (this.locationBadge) {
+      const coordsElem = this.locationBadge.querySelector(".coords");
+      if (coordsElem) {
+        coordsElem.textContent = `X: ${Math.round(x)} | Y: ${Math.round(y)}`;
+      }
+    }
   }
 
   hide() {

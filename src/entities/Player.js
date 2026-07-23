@@ -34,14 +34,16 @@ export class Player {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       right: Phaser.Input.Keyboard.KeyCodes.D,
     });
+
     const body = this.sprite.body;
     body.setCollideWorldBounds(true);
     body.setDrag(1000, 1000);
     body.setMaxVelocity(220, 220);
-    body.setSize(16, 16);
-    // Setting offset to push the collision box towards the feet
     if (this.sprite.type === "Sprite") {
-      body.setOffset(96, 185); 
+      body.setSize(80, 110);
+      body.setOffset(64, 100); 
+    } else {
+      body.setSize(24, 32);
     }
   }
 

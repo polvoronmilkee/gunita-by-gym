@@ -44,11 +44,13 @@ export class Grave1 extends Phaser.Scene {
       "nature": "TilesetNature.png",
       "bridges": "Bridges.png",
       "decor1": "decor1.png",
-      "decor2": "TilesetElement.png",
+      "decor2": "TilesetHouse.png",
       "stonepath-tileset": "Road2_ground.png",
       "decor3": "decor3.png",
       "supplies": "Supplies.png",
-      "broken-houses": "broken houses.png"
+      "broken-houses": "broken houses.png",
+      "house": "TilesetHouse.png",
+      "TilesetHouse": "TilesetHouse.png"
     };
 
     const uniqueImages = [...new Set(Object.values(mappings))];
@@ -143,7 +145,7 @@ export class Grave1 extends Phaser.Scene {
       "nature": "TilesetNature.png",
       "bridges": "Bridges.png",
       "decor1": "decor1.png",
-      "decor2": "TilesetElement.png",
+      "decor2": "TilesetHouse.png",
       "stonepath-tileset": "Road2_ground.png",
       "decor3": "decor3.png",
       "supplies": "Supplies.png",
@@ -292,8 +294,8 @@ export class Grave1 extends Phaser.Scene {
 
     // Retrieve position from cache or default spawn
     const cache = getCache();
-    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 600;
-    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 1000;
+    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 1137;
+    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 550;
 
     this.player = new Player(this, spawnX, spawnY);
     this.player.sprite.setDepth(0);
@@ -319,31 +321,47 @@ export class Grave1 extends Phaser.Scene {
       }
     });
 
-    // Add collider for the water layer, but remove collision where there is a bridge
-    const waterLayerData = map.getLayer("water");
-    const bridgeLayerData = map.getLayer("bridge");
-    if (waterLayerData && waterLayerData.tilemapLayer) {
-      if (bridgeLayerData && bridgeLayerData.tilemapLayer) {
-        waterLayerData.tilemapLayer.forEachTile((tile) => {
-          const bridgeTile = bridgeLayerData.tilemapLayer.getTileAt(tile.x, tile.y, true);
-          if (bridgeTile && bridgeTile.index !== -1) {
-            tile.setCollision(false, false, false, false, false);
-          }
-        });
-      }
-      this.physics.add.collider(this.player.sprite, waterLayerData.tilemapLayer);
-    }
 
-    // Load static collisions from Tiled (matching both 'collsions' and 'collisions')
+
+    // Load static collisions from Tiled (supports both Rectangles and Polygons)
     const obstacles = this.physics.add.staticGroup();
     const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
-        const x = obj.x + obj.width / 2;
-        const y = obj.y + obj.height / 2;
-        const zone = this.add.zone(x, y, obj.width, obj.height);
-        this.physics.add.existing(zone, true);
-        obstacles.add(zone);
+        if (obj.polygon && obj.polygon.length >= 3) {
+          // Process Tiled Polygons: decompose polygon edges into static rectangle colliders
+          const points = obj.polygon.map(p => ({ x: obj.x + p.x, y: obj.y + p.y }));
+          
+          for (let i = 0; i < points.length; i++) {
+            const p1 = points[i];
+            const p2 = points[(i + 1) % points.length];
+            
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const length = Math.hypot(dx, dy);
+
+            if (length > 0) {
+              const midX = (p1.x + p2.x) / 2;
+              const midY = (p1.y + p2.y) / 2;
+              const thickness = 12; // Wall thickness for polygon edges
+
+              // Create edge box zone along the polygon segment
+              const width = Math.max(thickness, Math.abs(dx));
+              const height = Math.max(thickness, Math.abs(dy));
+
+              const zone = this.add.zone(midX, midY, width, height);
+              this.physics.add.existing(zone, true);
+              obstacles.add(zone);
+            }
+          }
+        } else if (obj.width && obj.height) {
+          // Standard Tiled Rectangles
+          const x = obj.x + obj.width / 2;
+          const y = obj.y + obj.height / 2;
+          const zone = this.add.zone(x, y, obj.width, obj.height);
+          this.physics.add.existing(zone, true);
+          obstacles.add(zone);
+        }
       });
     }
     this.physics.add.collider(this.player.sprite, obstacles);
@@ -500,7 +518,7 @@ export class Grave1 extends Phaser.Scene {
         this.lastExploredChunksSize = 0; // Force immediate redraw in update()
         this.dimGraphics.setVisible(true);
         this.minimapCamera.setVisible(true);
-        this.mapOverlay.show("GRAVE I");
+        this.mapOverlay.show("GRAVE I", this.player?.sprite?.x || 0, this.player?.sprite?.y || 0);
       }
     });
 
@@ -941,6 +959,7 @@ export class Grave1 extends Phaser.Scene {
           this.minimapPlayerDot.clear();
           this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
           this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 18);
+          this.mapOverlay?.updateLocation(this.player.sprite.x, this.player.sprite.y);
       }
       
       if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {

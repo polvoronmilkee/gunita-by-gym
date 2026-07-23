@@ -234,7 +234,7 @@ export class CampoLunanScene extends Phaser.Scene {
     // Build top layers
     const topLayers = ["top", "top1", "top2"];
     let topDepth = 1;
-    
+
     // GIDs to exclude from collision (e.g. grass, non-solid ground decor)
     // firstgid is 1. grass_1 is id 9 -> GID 10. grass_2 is id 10 -> GID 11.
     const nonCollidingGIDs = [-1, 10, 11];
@@ -360,9 +360,9 @@ export class CampoLunanScene extends Phaser.Scene {
     const modalWidth = 500;
     const modalHeight = 400;
     this.minimapCamera = this.cameras.add((width - modalWidth) / 2, (height - modalHeight) / 2, modalWidth, modalHeight)
-        .setZoom(0.6)
-        .setName("minimap")
-        .setVisible(false);
+      .setZoom(0.6)
+      .setName("minimap")
+      .setVisible(false);
 
     this.minimapCamera.setBounds(0, 0, this.worldWidth, this.worldHeight);
     this.minimapCamera.startFollow(this.player.sprite);
@@ -455,7 +455,7 @@ export class CampoLunanScene extends Phaser.Scene {
           this.player.sprite.anims.stop();
         }
       }
-      
+
       let step = 0;
       const steps = [
         { speaker: "Tombstone", text: "Grave I\nAng Huling Mangingisda\nThe Last Fisherman" },
@@ -475,7 +475,7 @@ export class CampoLunanScene extends Phaser.Scene {
             } else {
               this.dialogue.hide();
               this.dialogueActive = false;
-              
+
               // Set the area cache to Grave 1 before transitioning
               const cache = getCache();
               if (cache) {
@@ -486,7 +486,7 @@ export class CampoLunanScene extends Phaser.Scene {
                   position_y: 600
                 });
               }
-              
+
               import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
                 TransitionSystem.fadeToScene(this, "Grave1");
               });
@@ -564,22 +564,22 @@ export class CampoLunanScene extends Phaser.Scene {
 
     if (this.minimapCamera && this.minimapCamera.visible) {
       if (this.minimapPlayerDot && this.player && this.player.sprite) {
-          this.minimapPlayerDot.clear();
-          this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
-          this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 12);
+        this.minimapPlayerDot.clear();
+        this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
+        this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 12);
       }
-      
+
       if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {
-          this.lastExploredChunksSize = this.exploredChunks.size;
-          this.minimapFow.clear();
-          this.minimapFow.fillStyle(0x222222, 1);
-          for (let cx = -30; cx < 80; cx++) {
-              for (let cy = -30; cy < 80; cy++) {
-                  if (!this.exploredChunks.has(`${cx},${cy}`)) {
-                      this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
-                  }
-              }
+        this.lastExploredChunksSize = this.exploredChunks.size;
+        this.minimapFow.clear();
+        this.minimapFow.fillStyle(0x222222, 1);
+        for (let cx = -30; cx < 80; cx++) {
+          for (let cy = -30; cy < 80; cy++) {
+            if (!this.exploredChunks.has(`${cx},${cy}`)) {
+              this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
+            }
           }
+        }
       }
     }
 

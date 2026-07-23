@@ -23,6 +23,7 @@
   width: 500px;
   height: 400px;
   position: relative;
+  overflow: visible;
   box-shadow: 0 10px 40px rgba(0,0,0,0.9);
   box-sizing: content-box;
 }
@@ -33,6 +34,8 @@
   left: 0;
   width: 100%;
   text-align: center;
+  pointer-events: none;
+  z-index: 10;
 }
 
 .map-title-container h2 {
@@ -42,4 +45,33 @@
   margin: 0;
   letter-spacing: 2px;
   text-shadow: 2px 2px 0 #000;
+}
+
+.map-location-badge {
+  position: absolute;
+  top: -42px;
+  right: -4px;
+  background: #0f172a;
+  border: 2px solid #00f2fe;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 242, 254, 0.4);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 10px;
+  color: #ffffff;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 20;
+  white-space: nowrap;
+}
+
+.map-location-badge .label {
+  color: #00f2fe;
+  font-weight: bold;
+}
+
+.map-location-badge .coords {
+  color: #ffffff;
 }
