@@ -298,7 +298,7 @@ export class Grave1 extends Phaser.Scene {
     const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 550;
 
     this.player = new Player(this, spawnX, spawnY);
-    this.player.sprite.setDepth(0);
+    this.player.sprite.setDepth(this.player.sprite.y);
     this.cursors = this.input.keyboard.createCursorKeys();
 
     // Camera Configuration
@@ -306,18 +306,17 @@ export class Grave1 extends Phaser.Scene {
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(3);
 
-    // Build top layers (drawn above the player)
+    // Build top layers (drawn above ground elements, but below player dynamic Y-depth unless roof level)
     const topLayerNames = [
       "objectslayer1", "objectslayer2", "objectslayer3", 
       "objectlayer4", "familyuse", "trees", "treeslayer2"
     ];
 
-    let topDepth = 1;
     topLayerNames.forEach((layerName) => {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
-        layer.setDepth(topDepth);
-        topDepth++;
+        // Keep decorative object layers behind player (depth: -1) unless specific roof overlays
+        layer.setDepth(-1);
       }
     });
 
@@ -949,6 +948,9 @@ export class Grave1 extends Phaser.Scene {
 
   update() {
     if (this.player && this.player.sprite) {
+      // Dynamic depth sorting: Vino's depth updates dynamically according to Y position so he walks in front of lower objects & behind taller objects
+      this.player.sprite.setDepth(this.player.sprite.y);
+
       const chunkX = Math.floor(this.player.sprite.x / 320);
       const chunkY = Math.floor(this.player.sprite.y / 320);
       this.exploredChunks.add(`${chunkX},${chunkY}`);

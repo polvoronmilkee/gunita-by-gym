@@ -112,16 +112,11 @@ export class Player {
           this.sprite.play("vino-moving-right", true);
         }
       } else if (!isMoving) {
-        // Idle when standing still - preserve facing direction
-        if (this.lastDirection === "down") {
-          if (this.sprite.scene.anims.exists("vino-idle")) {
-            this.sprite.play("vino-idle", true);
-          }
-        } else {
-          // Stop animation on first frame of last moved direction so Vino stays facing Up, Left, or Right
-          if (this.sprite.anims.isPlaying) {
-            this.sprite.anims.stop();
-          }
+        // Idle when standing still - default back to forward facing (vino-idle)
+        if (this.sprite.scene.anims.exists("vino-idle")) {
+          this.sprite.play("vino-idle", true);
+        } else if (this.sprite.anims.isPlaying) {
+          this.sprite.anims.stop();
         }
       }
     }
