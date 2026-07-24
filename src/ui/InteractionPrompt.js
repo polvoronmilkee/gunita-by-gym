@@ -29,7 +29,7 @@ export class InteractionPrompt {
 
     // 1. Math.round to force crisp integer pixel positions
     const x = Math.round(target.x);
-    const y = Math.round(target.y - 40);
+    const y = Math.round(target.y - 20);
 
     this.container = this.scene.add.container(x, y);
     this.container.setDepth(1000);
@@ -144,7 +144,7 @@ export class InteractionPrompt {
     if (this.container && this.activeTarget) {
       this.container.setPosition(
         Math.round(this.activeTarget.x),
-        Math.round(this.activeTarget.y - 40)
+        Math.round(this.activeTarget.y - 20)
       );
     }
   }
