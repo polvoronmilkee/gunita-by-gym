@@ -338,8 +338,8 @@ export class Grave1 extends Phaser.Scene {
     const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
-        // Skip Wasteland region object (ID 495) so it doesn't create solid collision walls around the rain area
-        if (obj.id === 495 || (obj.name && obj.name.toLowerCase() === "wasteland")) {
+        // Skip Wasteland region object (ID 499) so it doesn't create solid collision walls around the rain area
+        if (obj.id === 499 || (obj.name && obj.name.toLowerCase() === "wasteland")) {
           return;
         }
 
@@ -518,7 +518,7 @@ export class Grave1 extends Phaser.Scene {
     this.dimGraphics.setVisible(false);
     this.minimapCamera.ignore(this.dimGraphics);
 
-    // --- DYNAMIC WASTELAND / RAIN SYSTEM FROM TILED MAP (ID 495 / "Wasteland") ---
+    // --- DYNAMIC WASTELAND / RAIN SYSTEM FROM TILED MAP (ID 499 / "Wasteland") ---
     if (!this.anims.exists("rain-fall")) {
       this.anims.create({
         key: "rain-fall",
@@ -532,7 +532,7 @@ export class Grave1 extends Phaser.Scene {
     if (map.objects) {
       map.objects.forEach(layer => {
         if (layer.objects) {
-          const found = layer.objects.find(o => o.id === 495 || (o.name && o.name.toLowerCase() === "wasteland"));
+          const found = layer.objects.find(o => o.id === 499 || (o.name && o.name.toLowerCase() === "wasteland"));
           if (found) wastelandObj = found;
         }
       });
@@ -543,7 +543,7 @@ export class Grave1 extends Phaser.Scene {
       for (const name of objLayers) {
         const layer = map.getObjectLayer(name);
         if (layer && layer.objects) {
-          const found = layer.objects.find(o => o.id === 495 || (o.name && o.name.toLowerCase() === "wasteland"));
+          const found = layer.objects.find(o => o.id === 499 || (o.name && o.name.toLowerCase() === "wasteland"));
           if (found) {
             wastelandObj = found;
             break;
