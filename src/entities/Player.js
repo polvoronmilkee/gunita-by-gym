@@ -34,14 +34,16 @@ export class Player {
       left: Phaser.Input.Keyboard.KeyCodes.A,
       right: Phaser.Input.Keyboard.KeyCodes.D,
     });
+
     const body = this.sprite.body;
     body.setCollideWorldBounds(true);
     body.setDrag(1000, 1000);
     body.setMaxVelocity(220, 220);
-    body.setSize(16, 16);
-    // Setting offset to push the collision box towards the feet
     if (this.sprite.type === "Sprite") {
-      body.setOffset(96, 185); 
+      body.setSize(80, 150);
+      body.setOffset(64, 60); 
+    } else {
+      body.setSize(24, 32);
     }
   }
 
@@ -90,29 +92,31 @@ export class Player {
       const isMoving = body.velocity.length() > 0;
 
       if (isMoving && upDown) {
-        // Play moving-up animation when moving up
+        this.lastDirection = "up";
         if (this.sprite.scene.anims.exists("vino-moving-up")) {
           this.sprite.play("vino-moving-up", true);
         }
       } else if (isMoving && downDown) {
-        // Play moving-down animation when moving down
+        this.lastDirection = "down";
         if (this.sprite.scene.anims.exists("vino-moving-down")) {
           this.sprite.play("vino-moving-down", true);
         }
       } else if (isMoving && leftDown) {
-        // Play moving-left animation when moving left
+        this.lastDirection = "left";
         if (this.sprite.scene.anims.exists("vino-moving-left")) {
           this.sprite.play("vino-moving-left", true);
         }
       } else if (isMoving && rightDown) {
-        // Play moving-right animation when moving right
+        this.lastDirection = "right";
         if (this.sprite.scene.anims.exists("vino-moving-right")) {
           this.sprite.play("vino-moving-right", true);
         }
       } else if (!isMoving) {
-        // Idle when standing still
+        // Idle when standing still - default back to forward facing (vino-idle)
         if (this.sprite.scene.anims.exists("vino-idle")) {
           this.sprite.play("vino-idle", true);
+        } else if (this.sprite.anims.isPlaying) {
+          this.sprite.anims.stop();
         }
       }
     }

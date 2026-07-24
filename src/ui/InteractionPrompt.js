@@ -4,7 +4,7 @@ import Phaser from "phaser";
 export class InteractionPrompt {
   constructor(scene) {
     this.scene = scene;
-    this.element = null;
+    this.domElement = null;
     this.activeTarget = null;
     this.currentLabel = null;
 
@@ -15,7 +15,7 @@ export class InteractionPrompt {
   }
 
   show(target, key, label) {
-    // If target is already active with the same label, just update position (or skip recreate)
+    // If target is already active with the same label, just update position
     if (this.activeTarget === target && this.currentLabel === label) {
       this.updatePosition();
       return;
@@ -26,39 +26,47 @@ export class InteractionPrompt {
     this.activeTarget = target;
     this.currentLabel = label;
 
-    const x = target.x;
-    const y = target.y - 20; // Offset to float above the target
+    // Create the DOM structure
+    const wrapper = document.createElement("div");
+    wrapper.className = "interaction-prompt-container";
 
-    const htmlString = `
-      <div class="interaction-prompt-container">
-        <div class="interaction-prompt">
-          <div class="interaction-prompt__inner">
-            <div class="interaction-prompt__key">${key}</div>
-            <div class="interaction-prompt__divider"></div>
-            <div class="interaction-prompt__label">${label}</div>
-          </div>
-        </div>
-      </div>
-    `;
+    const inner = document.createElement("div");
+    inner.className = "interaction-prompt-inner";
 
-    this.element = this.scene.add.dom(x, y).createFromHTML(htmlString);
-    
-    // Disable pointer events on Phaser DOM container so it doesn't block clicks/drag/movement
-    if (this.element.node) {
-      this.element.node.style.pointerEvents = "none";
-    }
+    const keycap = document.createElement("span");
+    keycap.className = "interaction-prompt-keycap";
+    keycap.textContent = key;
+
+    const labelText = document.createElement("span");
+    labelText.className = "interaction-prompt-label";
+    labelText.textContent = label;
+
+    inner.appendChild(keycap);
+    inner.appendChild(labelText);
+    wrapper.appendChild(inner);
+
+    // Initial positioning offset (-20px above target)
+    const x = Math.round(target.x);
+    const y = Math.round(target.y - 40);
+
+    // Add DOM Element to scene
+    this.domElement = this.scene.add.dom(x, y, wrapper);
+    this.domElement.setDepth(1000);
   }
 
   updatePosition() {
-    if (this.element && this.activeTarget) {
-      this.element.setPosition(this.activeTarget.x, this.activeTarget.y - 20);
+    if (this.domElement && this.activeTarget) {
+      this.domElement.setPosition(
+        Math.round(this.activeTarget.x),
+        Math.round(this.activeTarget.y - 40)
+      );
     }
   }
 
   hide() {
-    if (this.element) {
-      this.element.destroy();
-      this.element = null;
+    if (this.domElement) {
+      this.domElement.destroy();
+      this.domElement = null;
     }
     this.activeTarget = null;
     this.currentLabel = null;

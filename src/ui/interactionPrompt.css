@@ -1,70 +1,78 @@
-/* Retro Dialogue-Style Floating Interaction Prompt */
-
+/* Base prompt container absolute overlay */
 .interaction-prompt-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
   pointer-events: none;
-  animation: prompt-float 1.2s ease-in-out infinite alternate;
-  user-select: none;
-  opacity: 0.65;
+  z-index: 1000;
+  transform: translate(-50%, -100%);
+  will-change: transform;
 }
 
-.interaction-prompt {
-  background: #000000;
-  border: 1px solid #ffffff;
-  padding: 1px;
-  box-shadow: 
-    0 1px 0 -0.5px #000000, 
-    0 2px 4px rgba(0, 0, 0, 0.6);
-  image-rendering: pixelated;
+/* Inner wrapper for smooth bobbing animation */
+.interaction-prompt-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background-color: #181d24;
+  border: 1.5px solid #3a404c;
+  outline: 1px solid #c8a86b;
+  outline-offset: -3px;
+  border-radius: 4px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.4);
+  animation: prompt-bob 0.8s ease-in-out infinite alternate;
+}
+
+/* Tooltip tail/pointer pointing downward */
+.interaction-prompt-inner::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #181d24;
+}
+
+/* Keycap button style */
+.interaction-prompt-keycap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 13px;
+  height: 12px;
+  background-color: #4a5868;
+  border-bottom: 2px solid #2d3742;
+  border-radius: 3px;
+  outline: 1px solid #00e5ff;
+  color: #ffffff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 6px;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+/* Action text label style */
+.interaction-prompt-label {
+  color: #f0ebd8;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
-.interaction-prompt__inner {
-  border: 1px solid #ffffff;
-  padding: 0px 2px;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  box-sizing: border-box;
-}
-
-.interaction-prompt__key {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 7px;
-  height: 7px;
-  background: #000000;
-  border: 1px solid #ffffff;
-  color: #2dd4bf; /* Gunita cyan/mint accent matching the speaker name tag */
-  font-family: 'Press Start 2P', monospace;
-  font-size: 4px;
-  font-weight: bold;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.interaction-prompt__divider {
-  width: 1px;
-  height: 4px;
-  background: #ffffff;
-}
-
-.interaction-prompt__label {
-  color: #ffffff;
-  font-family: 'Press Start 2P', monospace;
-  font-size: 4px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-@keyframes prompt-float {
+/* Keyframe animation replacing Phaser tween */
+@keyframes prompt-bob {
   0% {
     transform: translateY(0);
   }
   100% {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
 }

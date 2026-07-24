@@ -37,11 +37,14 @@ export class PreloadScene extends Phaser.Scene {
       AUDIO_SETTINGS.sfx.vinoMove.key,
       AUDIO_SETTINGS.sfx.vinoMove.path,
     );
+    this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
   }
 
   create() {
     const cache = getCache();
-    const currentArea = cache?.current_area;
+    const currentArea = window.initialScene || cache?.current_area;
+    window.initialScene = null;
+    
     if (currentArea === "Grave 1" || currentArea === "Grave1") {
       this.scene.start("Grave1");
     } else {

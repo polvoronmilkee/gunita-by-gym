@@ -4,8 +4,10 @@ import { HudOverlay } from "../ui/HudOverlay.js";
 import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
-import { getCache, setCache } from "../save.js";
-import { saveGameState, loadGameState } from "../utils/api.js";
+import { MapOverlay } from "../ui/MapOverlay.js";
+import { getCache, setCache, getEssence, setEssence } from "../save.js";
+import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
+import characterData from "../data/characters.json";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -13,8 +15,8 @@ export class Grave1 extends Phaser.Scene {
   }
 
   preload() {
-    // Load the Tiled map JSON file
-    this.load.json("grave1-map", "src/assets/world1/gunita2.tmj");
+    // Load the Tiled map JSON file from grave1-v2
+    this.load.json("grave1-map", "src/assets/grave1-v2/gunita grave1.tmj");
 
     this.load.json("grave1-dialogues", "src/assets/data/dialogues/grave1/intro.json");
     this.load.json("random-guy-before", "src/assets/data/dialogues/grave1/random-guy/before-fragments.json");
@@ -33,68 +35,27 @@ export class Grave1 extends Phaser.Scene {
     this.load.image('daughters-drawing', 'src/assets/grave1-elements/fragments-uncovered/daughters-drawing.png');
     this.load.json('final-riddle', 'src/assets/data/dialogues/grave-1-final-riddle/final-riddle.json');
 
-
-    // Load individual standalone ground tiles to preserve original tileset sizes
+    // Mappings for grave1-v2 tilesets
     const mappings = {
-      "water": "watertile.png",
-      "grass": "grasstile.png",
-      "grasstile": "grasstile.png",
-      "ston": "stone_tile.png",
-      "stone": "stone_tile.png",
-      "grasstile1": "grasstile.png",
-      "grasspathways": "grasspath.png",
-      "sand": "sandtile.png",
-      "familyhouse": "family house.png",
-      "bridge": "bridge 1.png",
-      "shoreline house2": "house 2.png",
-      "shoreline house3": "house 3.png",
-      "signage": "signage.png",
-      "stall1": "stall1.png",
-      "stall2": "stall2.png",
-      "stall4": "stall4.png",
-      "satll3": "stall3.png",
-      "stone1": "stone1.png",
-      "stone2": "stone2.png",
-      "well": "well.png",
-      "shoreline house1": "house 1.png",
-      "barrel": "barrel.png",
-      "box": "box.png",
-      "lighthouse": "lighthouse.png",
-      "dock": "dock1.png",
-      "boat1": "boat1.png",
-      "net": "fishnet.png",
-      "stone3": "stone3.png",
-      "tree1": "tree1.png",
-      "stonepath": "stone_tile.png",
-      "tree2": "tree2.png",
-      "ropefence": "ropefence.png",
-      "stall5": "stall5.png",
-      "stall6": "stall6.png",
-      "frontfence": "fence.png",
-      "sidefence": "fence2.png",
-      "table": "table.png",
-      "crop": "crop.png",
-      "fountain": "fountain.png",
-      "mailbox": "mailbox.png",
-      "shoreline house 4": "house 4.png",
-      "shoreline house 5": "house 5.png",
-      "windmill": "windmill.png",
-      "crop1": "crop.png",
-      "crop3": "crop3.png",
-      "bush": "bush.png",
-      "bh1": "broken house1.png",
-      "broken dock": "broken dock.png",
-      "btree1": "btree1.png",
-      "btree2": "btree2.png",
-      "bh2": "broken house2.png",
-      "bh3": "broken house3.png",
-      "bh4": "broken house4.png",
-      "shipwreck": "shipwreck.png"
+      "ground": "TilesetFloor (1).png",
+      "water": "TilesetWater.png",
+      "tileset_camp": "tileset_camp.png",
+      "bahay-kubo": "bahay-kubo.png",
+      "nature": "TilesetNature.png",
+      "bridges": "Bridges.png",
+      "decor1": "decor1.png",
+      "decor2": "TilesetHouse.png",
+      "stonepath-tileset": "Road2_ground.png",
+      "decor3": "decor3.png",
+      "supplies": "Supplies.png",
+      "broken-houses": "broken houses.png",
+      "house": "TilesetHouse.png",
+      "TilesetHouse": "TilesetHouse.png"
     };
 
     const uniqueImages = [...new Set(Object.values(mappings))];
     uniqueImages.forEach(img => {
-      this.load.image(img, `src/assets/world1/${img}`);
+      this.load.image(img, `src/assets/grave1-v2/${img}`);
     });
 
     const npcImages = [
@@ -177,60 +138,18 @@ export class Grave1 extends Phaser.Scene {
     const mapData = JSON.parse(JSON.stringify(cachedMap));
 
     const mappings = {
-      "water": "watertile.png",
-      "grass": "grasstile.png",
-      "grasstile": "grasstile.png",
-      "ston": "stone_tile.png",
-      "stone": "stone_tile.png",
-      "grasstile1": "grasstile.png",
-      "grasspathways": "grasspath.png",
-      "sand": "sandtile.png",
-      "familyhouse": "family house.png",
-      "bridge": "bridge 1.png",
-      "shoreline house2": "house 2.png",
-      "shoreline house3": "house 3.png",
-      "signage": "signage.png",
-      "stall1": "stall1.png",
-      "stall2": "stall2.png",
-      "stall4": "stall4.png",
-      "satll3": "stall3.png",
-      "stone1": "stone1.png",
-      "stone2": "stone2.png",
-      "well": "well.png",
-      "shoreline house1": "house 1.png",
-      "barrel": "barrel.png",
-      "box": "box.png",
-      "lighthouse": "lighthouse.png",
-      "dock": "dock1.png",
-      "boat1": "boat1.png",
-      "net": "fishnet.png",
-      "stone3": "stone3.png",
-      "tree1": "tree1.png",
-      "stonepath": "stone_tile.png",
-      "tree2": "tree2.png",
-      "ropefence": "ropefence.png",
-      "stall5": "stall5.png",
-      "stall6": "stall6.png",
-      "frontfence": "fence.png",
-      "sidefence": "fence2.png",
-      "table": "table.png",
-      "crop": "crop.png",
-      "fountain": "fountain.png",
-      "mailbox": "mailbox.png",
-      "shoreline house 4": "house 4.png",
-      "shoreline house 5": "house 5.png",
-      "windmill": "windmill.png",
-      "crop1": "crop.png",
-      "crop3": "crop3.png",
-      "bush": "bush.png",
-      "bh1": "broken house1.png",
-      "broken dock": "broken dock.png",
-      "btree1": "btree1.png",
-      "btree2": "btree2.png",
-      "bh2": "broken house2.png",
-      "bh3": "broken house3.png",
-      "bh4": "broken house4.png",
-      "shipwreck": "shipwreck.png"
+      "ground": "TilesetFloor (1).png",
+      "water": "TilesetWater.png",
+      "tileset_camp": "tileset_camp.png",
+      "bahay-kubo": "bahay-kubo.png",
+      "nature": "TilesetNature.png",
+      "bridges": "Bridges.png",
+      "decor1": "decor1.png",
+      "decor2": "TilesetHouse.png",
+      "stonepath-tileset": "Road2_ground.png",
+      "decor3": "decor3.png",
+      "supplies": "Supplies.png",
+      "broken-houses": "broken houses.png"
     };
 
     mapData.tilesets = mapData.tilesets.map((ts, index) => {
@@ -325,9 +244,7 @@ export class Grave1 extends Phaser.Scene {
 
     // Build bottom layers (drawn below the player)
     const bottomLayerNames = [
-      "water", "grass", "stone", "sand", "pathway",
-      "object_bot_overlay_1", "object_bot_overlay_2", "object_bot_overlay_3", "object_bot_overlay_4",
-      "bridge"
+      "water", "grass", "sand", "sand2", "pathway", "bridge"
     ];
 
     let depth = -20;
@@ -335,11 +252,8 @@ export class Grave1 extends Phaser.Scene {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         layer.setDepth(depth);
-        // Automatically set collision for the water layer
         if (layerName === "water") {
           layer.setCollisionByExclusion([-1]);
-          // Wait, player isn't created yet at this point! We'll just set the property, 
-          // and add the collider AFTER the player is created.
         }
         depth++;
       }
@@ -378,66 +292,75 @@ export class Grave1 extends Phaser.Scene {
       });
     }
 
-    // Retrieve position from cache
+    // Retrieve position from cache or default spawn
     const cache = getCache();
-    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 300;
-    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 600;
+    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 1137;
+    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 550;
 
     this.player = new Player(this, spawnX, spawnY);
-    this.player.sprite.setDepth(0);
+    this.player.sprite.setDepth(this.player.sprite.y);
     this.cursors = this.input.keyboard.createCursorKeys();
 
     // Camera Configuration
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
-    this.cameras.main.setZoom(4);
+    this.cameras.main.setZoom(3);
 
-    // Build top layers (drawn above the player)
+    // Build top layers (drawn above ground elements, but below player dynamic Y-depth unless roof level)
     const topLayerNames = [
-      "object_top _overlay_1", "obejct_top_overlay_2", "object_top_overlay_3", 
-      "object_top_overlay_4", "object_top_overlay_5", "object_top_overlay_6", 
-      "buildings", "object_top_overlay_7"
+      "objectslayer1", "objectslayer2", "objectslayer3", 
+      "objectlayer4", "familyuse", "trees", "treeslayer2"
     ];
 
-    let topDepth = 1;
     topLayerNames.forEach((layerName) => {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
-        layer.setDepth(topDepth);
-        // Do NOT automatically set collision on buildings or overlays
-        // We will rely on the Tiled "collisions" object layer instead
-        // to give finer control over house collisions.
-        topDepth++;
+        // Keep decorative object layers behind player (depth: -1) unless specific roof overlays
+        layer.setDepth(-1);
       }
     });
 
-    // Add collider for the water layer, but remove collision where there is a bridge
-    const waterLayerData = map.getLayer("water");
-    const bridgeLayerData = map.getLayer("bridge");
-    if (waterLayerData && waterLayerData.tilemapLayer) {
-      if (bridgeLayerData && bridgeLayerData.tilemapLayer) {
-        // Iterate over all tiles in the water layer
-        waterLayerData.tilemapLayer.forEachTile((tile) => {
-          // If there is a bridge tile at this same coordinate, disable collision for the water
-          const bridgeTile = bridgeLayerData.tilemapLayer.getTileAt(tile.x, tile.y, true);
-          if (bridgeTile && bridgeTile.index !== -1) {
-            tile.setCollision(false, false, false, false, false);
-          }
-        });
-      }
-      this.physics.add.collider(this.player.sprite, waterLayerData.tilemapLayer);
-    }
 
-    // Load static collisions from Tiled
+
+    // Load static collisions from Tiled (supports both Rectangles and Polygons)
     const obstacles = this.physics.add.staticGroup();
-    const collisionGroup = map.getObjectLayer("collisions");
+    const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
-        const x = obj.x + obj.width / 2;
-        const y = obj.y + obj.height / 2;
-        const zone = this.add.zone(x, y, obj.width, obj.height);
-        this.physics.add.existing(zone, true);
-        obstacles.add(zone);
+        if (obj.polygon && obj.polygon.length >= 3) {
+          // Process Tiled Polygons: decompose polygon edges into static rectangle colliders
+          const points = obj.polygon.map(p => ({ x: obj.x + p.x, y: obj.y + p.y }));
+          
+          for (let i = 0; i < points.length; i++) {
+            const p1 = points[i];
+            const p2 = points[(i + 1) % points.length];
+            
+            const dx = p2.x - p1.x;
+            const dy = p2.y - p1.y;
+            const length = Math.hypot(dx, dy);
+
+            if (length > 0) {
+              const midX = (p1.x + p2.x) / 2;
+              const midY = (p1.y + p2.y) / 2;
+              const thickness = 12; // Wall thickness for polygon edges
+
+              // Create edge box zone along the polygon segment
+              const width = Math.max(thickness, Math.abs(dx));
+              const height = Math.max(thickness, Math.abs(dy));
+
+              const zone = this.add.zone(midX, midY, width, height);
+              this.physics.add.existing(zone, true);
+              obstacles.add(zone);
+            }
+          }
+        } else if (obj.width && obj.height) {
+          // Standard Tiled Rectangles
+          const x = obj.x + obj.width / 2;
+          const y = obj.y + obj.height / 2;
+          const zone = this.add.zone(x, y, obj.width, obj.height);
+          this.physics.add.existing(zone, true);
+          obstacles.add(zone);
+        }
       });
     }
     this.physics.add.collider(this.player.sprite, obstacles);
@@ -530,7 +453,11 @@ export class Grave1 extends Phaser.Scene {
     this.hud.setPauseVisible(true);
     this.hud.setMemoryVisible(false);
 
+    const mapCache = getCache();
+    this.exploredChunks = new Set(mapCache?.explored_chunks || []);
+
     this.interactionPrompt = new InteractionPrompt(this);
+    syncOfflineData();
 
     // Keyboard bindings for pausing, memory screen, and menu exit
     this.input.keyboard.on("keydown-P", () => {
@@ -550,6 +477,57 @@ export class Grave1 extends Phaser.Scene {
     this.input.keyboard.on("keydown-M", () => {
       this.scene.launch("MemoryScene", { parentScene: this });
       this.scene.pause();
+    });
+
+    this.mapOverlay = new MapOverlay(this);
+
+    // Setup minimap camera perfectly centered within the 500x400 modal
+    const { width, height } = this.scale;
+    const modalWidth = 500;
+    const modalHeight = 400;
+    this.minimapCamera = this.cameras.add((width - modalWidth) / 2, (height - modalHeight) / 2, modalWidth, modalHeight)
+        .setZoom(0.4)
+        .setName("minimap")
+        .setVisible(false);
+
+    this.minimapCamera.setBounds(0, 0, this.worldWidth, this.worldHeight);
+    this.minimapCamera.startFollow(this.player.sprite);
+
+    // Phaser-based screen dimming so the minimap stays bright
+    this.dimGraphics = this.add.graphics();
+    this.dimGraphics.fillStyle(0x000000, 0.7);
+    this.dimGraphics.fillRect(0, 0, width, height);
+    this.dimGraphics.setScrollFactor(0);
+    this.dimGraphics.setDepth(998);
+    this.dimGraphics.setVisible(false);
+    this.minimapCamera.ignore(this.dimGraphics);
+
+    this.minimapFow = this.add.graphics();
+    this.minimapFow.setDepth(999);
+    // Hide FoW from main camera so game view is normal
+    this.cameras.main.ignore(this.minimapFow);
+
+    this.minimapPlayerDot = this.add.graphics();
+    this.minimapPlayerDot.setDepth(1000);
+    this.cameras.main.ignore(this.minimapPlayerDot);
+
+    this.input.keyboard.on("keydown-TAB", (event) => {
+      event.preventDefault();
+      if (!this.minimapCamera.visible) {
+        this.lastExploredChunksSize = 0; // Force immediate redraw in update()
+        this.dimGraphics.setVisible(true);
+        this.minimapCamera.setVisible(true);
+        this.mapOverlay.show("GRAVE I", this.player?.sprite?.x || 0, this.player?.sprite?.y || 0);
+      }
+    });
+
+    this.input.keyboard.on("keyup-TAB", (event) => {
+      event.preventDefault();
+      if (this.minimapCamera.visible) {
+        this.dimGraphics.setVisible(false);
+        this.minimapCamera.setVisible(false);
+        this.mapOverlay.hide();
+      }
     });
 
     this.input.keyboard.on("keydown-BACKSPACE", async () => {
@@ -593,8 +571,8 @@ export class Grave1 extends Phaser.Scene {
             dialogueText = "Correct! The crystal becomes a child's Drawing.";
         }
         
-        const randomRiddle = riddleData.riddles[Math.floor(Math.random() * riddleData.riddles.length)];
-        this.showRiddleUI(randomRiddle, () => {
+        const riddlesToPass = riddleData.riddles || riddleData;
+        this.startFragmentChallenge(riddlesToPass, () => {
             const fragmentX = this.currentFragment.x;
             const fragmentY = this.currentFragment.y;
             this.currentFragment.destroy();
@@ -951,7 +929,8 @@ export class Grave1 extends Phaser.Scene {
       current_world: "Lunan",
       current_area: "Grave 1",
       position_x: Math.round(this.player.sprite.x),
-      position_y: Math.round(this.player.sprite.y)
+      position_y: Math.round(this.player.sprite.y),
+      explored_chunks: Array.from(this.exploredChunks || [])
     };
 
     setCache({
@@ -961,12 +940,44 @@ export class Grave1 extends Phaser.Scene {
 
     try {
       await saveGameState(cache.player_id, state);
+      syncOfflineData();
     } catch (err) {
       console.error("Autosave database sync failed:", err.message);
     }
   }
 
   update() {
+    if (this.player && this.player.sprite) {
+      // Dynamic depth sorting: Vino's depth updates dynamically according to Y position so he walks in front of lower objects & behind taller objects
+      this.player.sprite.setDepth(this.player.sprite.y);
+
+      const chunkX = Math.floor(this.player.sprite.x / 320);
+      const chunkY = Math.floor(this.player.sprite.y / 320);
+      this.exploredChunks.add(`${chunkX},${chunkY}`);
+    }
+
+    if (this.minimapCamera && this.minimapCamera.visible) {
+      if (this.minimapPlayerDot && this.player && this.player.sprite) {
+          this.minimapPlayerDot.clear();
+          this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
+          this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 18);
+          this.mapOverlay?.updateLocation(this.player.sprite.x, this.player.sprite.y);
+      }
+      
+      if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {
+          this.lastExploredChunksSize = this.exploredChunks.size;
+          this.minimapFow.clear();
+          this.minimapFow.fillStyle(0x222222, 1);
+          for (let cx = -30; cx < 80; cx++) {
+              for (let cy = -30; cy < 80; cy++) {
+                  if (!this.exploredChunks.has(`${cx},${cy}`)) {
+                      this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
+                  }
+              }
+          }
+      }
+    }
+
     if (this.dialogueActive) {
       if (this.player && this.player.sprite && this.player.sprite.body) {
         this.player.sprite.body.setVelocity(0);
@@ -1063,8 +1074,11 @@ export class Grave1 extends Phaser.Scene {
     return { x: startX, y: startY };
   }
 
-  showRiddleUI(riddleData, onCorrect, onIncorrect) {
+  startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey) {
     this.dialogueActive = true;
+    if (this.interactionPrompt) {
+      this.interactionPrompt.hide();
+    }
     if (this.player && this.player.sprite && this.player.sprite.body) {
       this.player.sprite.body.setVelocity(0);
       if (this.player.sprite.anims.isPlaying) {
@@ -1072,98 +1086,48 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-    // Modal Background Overlay
-    const modalBg = document.createElement("div");
-    modalBg.style.position = "absolute";
-    modalBg.style.top = "0";
-    modalBg.style.left = "0";
-    modalBg.style.width = "100%";
-    modalBg.style.height = "100%";
-    modalBg.style.background = "rgba(0,0,0,0.7)";
-    modalBg.style.zIndex = "1002";
-    modalBg.style.display = "flex";
-    modalBg.style.justifyContent = "center";
-    modalBg.style.alignItems = "center";
-
-    // Dialog structure similar to DialogueBox but centered and larger
-    const overlay = document.createElement("div");
-    overlay.className = "gunita-dialogue";
-    overlay.style.position = "relative";
-    overlay.style.bottom = "auto";
-    overlay.style.left = "auto";
-    overlay.style.transform = "none";
-    overlay.style.width = "min(90vw, 550px)";
-    overlay.style.display = "flex";
-    overlay.style.flexDirection = "column";
-
-    const inner = document.createElement("div");
-    inner.className = "gunita-dialogue__inner";
-    inner.style.display = "flex";
-    inner.style.flexDirection = "column";
-    inner.style.gap = "20px";
-    inner.style.padding = "20px";
-
-    const title = document.createElement("div");
-    title.className = "gunita-dialogue__name";
-    title.textContent = "Memory Riddle";
-    inner.appendChild(title);
-
-    const question = document.createElement("div");
-    question.className = "gunita-dialogue__message";
-    question.style.fontSize = "12px";
-    question.style.lineHeight = "1.8";
-    question.textContent = riddleData.question;
-    inner.appendChild(question);
-
-    const choicesContainer = document.createElement("div");
-    choicesContainer.style.display = "grid";
-    choicesContainer.style.gridTemplateColumns = "1fr";
-    choicesContainer.style.gap = "10px";
-    choicesContainer.style.marginTop = "10px";
-
-    riddleData.choices.forEach(choice => {
-      const btn = document.createElement("button");
-      btn.textContent = choice;
-      btn.style.background = "#000000";
-      btn.style.color = "#ffffff";
-      btn.style.border = "3px solid #ffffff";
-      btn.style.padding = "10px";
-      btn.style.fontFamily = "'Press Start 2P', monospace";
-      btn.style.fontSize = "9px";
-      btn.style.cursor = "pointer";
-      btn.style.boxSizing = "border-box";
-      btn.style.textTransform = "uppercase";
-      btn.style.textAlign = "left";
-      btn.style.transition = "all 0.1s ease";
-
-      btn.addEventListener("mouseenter", () => {
-        btn.style.background = "#b07eff"; // Purple glow
-        btn.style.color = "#000000";
-        btn.style.borderColor = "#b07eff";
-      });
-      btn.addEventListener("mouseleave", () => {
-        btn.style.background = "#000000";
-        btn.style.color = "#ffffff";
-        btn.style.borderColor = "#ffffff";
-      });
-
-      btn.addEventListener("click", () => {
-        modalBg.remove();
-        this.dialogueActive = false;
-        if (choice === riddleData.answer) {
-          onCorrect();
-        } else {
-          onIncorrect();
+    const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
+    
+    this.scene.pause();
+    this.scene.launch('BulletHellScene', {
+        riddleData: riddleData,
+        soulName: data.name,
+        dodgeLines: data.dodge_lines,
+        bgKey: bgKey || "bg-fish-basket",
+        onComplete: () => {
+            this.dialogueActive = false;
+            this.scene.stop('BulletHellScene');
+            this.scene.resume();
+            onCorrect();
+        },
+        onDeath: async () => {
+            this.dialogueActive = false;
+            this.scene.stop('BulletHellScene');
+            this.scene.resume();
+            
+            const cache = getCache();
+            if (cache && cache.player_id) {
+                await resetPlayerRiddles(cache.player_id);
+            }
+            setEssence(5); // reset essence
+            
+            // Show Death Screen then transition
+            const blackScreen = this.add.graphics();
+            blackScreen.fillStyle(0x000000, 1);
+            blackScreen.fillRect(0, 0, this.scale.width, this.scale.height);
+            blackScreen.setDepth(9999);
+            blackScreen.setScrollFactor(0);
+            
+            const deathText = this.add.text(this.scale.width/2, this.scale.height/2, "THE ECHOES CONSUMED YOU", {
+                fontFamily: "'Press Start 2P', monospace",
+                fontSize: "16px",
+                color: "#ff4444"
+            }).setOrigin(0.5).setDepth(10000).setScrollFactor(0);
+            
+            this.time.delayedCall(3000, () => {
+                this.scene.start('CampoLunanScene');
+            });
         }
-      });
-      choicesContainer.appendChild(btn);
     });
-
-    inner.appendChild(choicesContainer);
-    overlay.appendChild(inner);
-    modalBg.appendChild(overlay);
-
-    const container = document.getElementById("game-container") || document.body;
-    container.appendChild(modalBg);
   }
 }

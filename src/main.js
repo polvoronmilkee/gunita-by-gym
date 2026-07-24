@@ -7,6 +7,7 @@ import { Grave1 } from "./scenes/Grave1.js";
 import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
+import { BulletHellScene } from "./scenes/BulletHellScene.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { MenuAudioController } from "./ui/MenuAudioController.js";
 import { getCache, setCache, clearCache } from "./save.js";
@@ -26,6 +27,7 @@ const sceneManager = new SceneManager([
   MemoryScene,
   UIScene,
   PauseScene,
+  BulletHellScene,
 ]);
 
 const config = {
@@ -183,7 +185,7 @@ function setGameVisible(visible) {
   gameShell.classList.toggle("hidden", !visible);
 }
 
-function startGame() {
+function startGame(initialScene) {
   loadingScreen.setContent({
     title: "Entering Campo Lunan",
     subtitle: "Awakening the Echoes",
@@ -199,6 +201,12 @@ function startGame() {
 
   menuAudioController.stopMusic();
 
+  if (initialScene) {
+    window.initialScene = initialScene;
+  } else {
+    window.initialScene = null;
+  }
+
   if (!game) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
@@ -206,6 +214,17 @@ function startGame() {
       loadingScreen.hide();
     });
   } else {
+    if (initialScene) {
+      sceneManager.start(initialScene);
+    } else {
+      const cache = getCache();
+      const currentArea = cache?.current_area;
+      if (currentArea === "Grave 1" || currentArea === "Grave1") {
+        sceneManager.start("Grave1");
+      } else {
+        sceneManager.start("CampoLunanScene");
+      }
+    }
     game.canvas?.focus?.();
     loadingScreen.hide();
   }
@@ -242,7 +261,7 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
 });
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
-  startGame("MemoryScene");
+  startGame("CampoLunanScene");
 });
 
 guideButton?.addEventListener("click", () => {
