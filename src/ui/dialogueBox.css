@@ -1,78 +1,308 @@
-/* Retro Pixel Art Dialogue Box Styling */
+/* Ornate RPG & Gothic Obsidian Dialogue Box Styling - Gunita Theme */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Georgia:ital,wght@0,400;0,700;1,400&display=swap');
+
 .gunita-dialogue {
   position: absolute;
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1001;
-  width: min(90vw, 750px);
-  min-height: 120px;
-  background: #000000;
-  border: 4px solid #ffffff;
-  padding: 6px;
+  width: min(92vw, 760px);
+  min-height: 140px;
+  background: linear-gradient(135deg, #f2e7d3 0%, #e5d4b5 50%, #d9c4a3 100%);
+  border: 4px solid #3c2a1e;
+  outline: 2px solid #8c6a49;
+  border-radius: 8px;
+  padding: 10px 14px;
   box-shadow: 
-    0 8px 0 -4px #000000, 
-    0 12px 24px rgba(0, 0, 0, 0.6),
-    0 0 15px rgba(176, 126, 255, 0.25); /* Subtle purple glow from Gunita theme */
-  image-rendering: pixelated;
+    0 12px 28px rgba(0, 0, 0, 0.75),
+    inset 0 0 15px rgba(120, 85, 45, 0.25),
+    0 0 20px rgba(0, 0, 0, 0.5);
   user-select: none;
   pointer-events: auto;
-  font-family: 'Press Start 2P', monospace;
   box-sizing: border-box;
+  font-family: 'Georgia', serif;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Inner border pattern inspired by retro RPG dialogue boxes */
+/* --- OBSIDIAN / GOTHIC DARK SLATE THEME (Campo Lunan & Tombstones) --- */
+.gunita-dialogue.gunita-dialogue--obsidian,
+.gunita-dialogue.gunita-dialogue--campo-lunan {
+  background: linear-gradient(135deg, #1a1824 0%, #13111c 50%, #0d0c14 100%);
+  border: 4px solid #343844;
+  outline: 2px solid #505666;
+  border-radius: 8px;
+  box-shadow: 
+    0 0 16px rgba(0, 229, 255, 0.45),
+    0 0 32px rgba(161, 0, 255, 0.35),
+    0 12px 32px rgba(0, 0, 0, 0.95),
+    inset 0 0 18px rgba(0, 229, 255, 0.15);
+  animation: spectral-wisp-pulse 3s infinite alternate ease-in-out;
+}
+
+@keyframes spectral-wisp-pulse {
+  0% {
+    box-shadow: 
+      0 0 15px rgba(0, 229, 255, 0.35),
+      0 0 25px rgba(161, 0, 255, 0.25),
+      0 12px 32px rgba(0, 0, 0, 0.95),
+      inset 0 0 15px rgba(0, 229, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 24px rgba(0, 229, 255, 0.65),
+      0 0 38px rgba(161, 0, 255, 0.5),
+      0 12px 32px rgba(0, 0, 0, 0.95),
+      inset 0 0 22px rgba(0, 229, 255, 0.2);
+  }
+  100% {
+    box-shadow: 
+      0 0 18px rgba(0, 229, 255, 0.4),
+      0 0 42px rgba(161, 0, 255, 0.55),
+      0 12px 32px rgba(0, 0, 0, 0.95),
+      inset 0 0 18px rgba(0, 229, 255, 0.15);
+  }
+}
+
+/* Metallic Corners & Rivets */
+.gunita-dialogue__corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gunita-dialogue__corner--tl { top: -2px; left: -2px; border-top: 3px solid #7c5c3e; border-left: 3px solid #7c5c3e; border-top-left-radius: 6px; }
+.gunita-dialogue__corner--tr { top: -2px; right: -2px; border-top: 3px solid #7c5c3e; border-right: 3px solid #7c5c3e; border-top-right-radius: 6px; }
+.gunita-dialogue__corner--bl { bottom: -2px; left: -2px; border-bottom: 3px solid #7c5c3e; border-left: 3px solid #7c5c3e; border-bottom-left-radius: 6px; }
+.gunita-dialogue__corner--br { bottom: -2px; right: -2px; border-bottom: 3px solid #7c5c3e; border-right: 3px solid #7c5c3e; border-bottom-right-radius: 6px; }
+
+.gunita-dialogue--obsidian .gunita-dialogue__corner--tl,
+.gunita-dialogue--obsidian .gunita-dialogue__corner--tr,
+.gunita-dialogue--obsidian .gunita-dialogue__corner--bl,
+.gunita-dialogue--obsidian .gunita-dialogue__corner--br {
+  border-color: #5a6070;
+}
+
+.gunita-dialogue__rivet {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background: radial-gradient(circle at 35% 35%, #d8b878 0%, #684a28 70%, #2a1a0e 100%);
+  border: 1px solid #1a0f08;
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__rivet {
+  background: radial-gradient(circle at 35% 35%, #a0a8ba 0%, #404654 70%, #181a20 100%);
+  border: 1px solid #0f1014;
+}
+
+.gunita-dialogue__corner--tl .gunita-dialogue__rivet { top: 3px; left: 3px; }
+.gunita-dialogue__corner--tr .gunita-dialogue__rivet { top: 3px; right: 3px; }
+.gunita-dialogue__corner--bl .gunita-dialogue__rivet { bottom: 3px; left: 3px; }
+.gunita-dialogue__corner--br .gunita-dialogue__rivet { bottom: 3px; right: 3px; }
+
+.gunita-dialogue__anchor {
+  position: absolute;
+  font-size: 11px;
+  color: #5c432b;
+  opacity: 0.75;
+}
+.gunita-dialogue__corner--tr .gunita-dialogue__anchor { top: 2px; right: 14px; }
+.gunita-dialogue__corner--br .gunita-dialogue__anchor { bottom: 2px; right: 14px; }
+
+/* Gothic Wings / Motifs */
+.gunita-dialogue__gothic-motif {
+  position: absolute;
+  top: -12px;
+  font-size: 16px;
+  z-index: 15;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+}
+.gunita-dialogue__gothic-motif--left { left: -8px; transform: scaleX(-1); }
+.gunita-dialogue__gothic-motif--right { right: -8px; }
+
+/* Speaker Name Tag */
+.gunita-dialogue__name-container {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+}
+
+.gunita-dialogue__name {
+  background: linear-gradient(180deg, #424750 0%, #25282e 60%, #17191d 100%);
+  border: 2px solid #8c6a49;
+  outline: 1px solid #2a1d13;
+  color: #f7e8c3;
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 3px 22px;
+  border-radius: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 1px 1px 2px #000;
+  white-space: nowrap;
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__name {
+  background: linear-gradient(180deg, #373b45 0%, #20232b 60%, #121419 100%);
+  border: 2px solid #5a6070;
+  outline: 1px solid #16181f;
+  color: #e2e8f0;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.8),
+    0 0 10px rgba(0, 229, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  text-shadow: 0 0 6px rgba(226, 232, 240, 0.5), 1px 1px 2px #000;
+}
+
+/* Inner Container */
 .gunita-dialogue__inner {
-  border: 3px solid #ffffff;
+  border: 2px solid #bfa482;
+  border-radius: 4px;
   padding: 12px 16px;
-  min-height: 120px;
+  min-height: 110px;
   box-sizing: border-box;
   position: relative;
   display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__inner {
+  border: 1px solid #323642;
+  background: rgba(10, 9, 15, 0.65);
+  box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.8);
+}
+
+/* Portrait Frame */
+.gunita-dialogue__portrait-frame {
+  width: 86px;
+  height: 86px;
+  min-width: 86px;
+  background: linear-gradient(135deg, #3a281c 0%, #20130a 100%);
+  border: 3px solid #8c6a49;
+  outline: 1px solid #3c2a1e;
+  border-radius: 6px;
+  box-shadow: 
+    inset 0 0 10px #000,
+    0 3px 6px rgba(0,0,0,0.4);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__portrait-frame {
+  background: linear-gradient(135deg, #252830 0%, #121418 100%);
+  border-color: #5a6070;
+  outline-color: #1a1d24;
+}
+
+.gunita-dialogue__portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* Content Box */
+.gunita-dialogue__content {
+  flex: 1;
+  display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
 }
 
-/* Retro Name/Speaker Tag hanging on the top-left border */
-.gunita-dialogue__name {
-  position: absolute;
-  top: -24px;
-  left: 8px;
-  background: #000000;
-  border: 3px solid #ffffff;
-  color: #2dd4bf; /* Gunita cyan/mint accent */
-  font-size: 12px;
-  padding: 4px 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Text message */
+/* Message Text */
 .gunita-dialogue__message {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #ffffff;
+  font-family: 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.55;
+  color: #24170e;
+  font-weight: 500;
   margin: 0;
   padding: 0;
   word-wrap: break-word;
   white-space: pre-wrap;
 }
 
-/* Pulsing Next indicator arrow */
-.gunita-dialogue__next {
-  position: absolute;
-  bottom: 4px;
-  right: 8px;
-  font-size: 24px;
-  color: #b07eff; /* Purple accent */
-  animation: pulse-down 0.8s infinite alternate;
+.gunita-dialogue--obsidian .gunita-dialogue__message {
+  color: #f0ebd8;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-@keyframes pulse-down {
+/* Keyword Highlights */
+.gunita-dialogue__message .highlight,
+.gunita-dialogue__message strong,
+.gunita-dialogue__message b {
+  color: #b86616;
+  font-weight: 700;
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__message .highlight,
+.gunita-dialogue--obsidian .gunita-dialogue__message .highlight-blue {
+  color: #00e5ff;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.6);
+  font-weight: 700;
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__message .highlight-orange {
+  color: #fbbf24;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+  font-weight: 700;
+}
+
+/* Pulsing Next Indicator */
+.gunita-dialogue__next {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 14px;
+  color: #9c6c28;
+  animation: pulse-gem 1s infinite alternate;
+}
+
+.gunita-dialogue--obsidian .gunita-dialogue__next {
+  color: #00e5ff;
+  text-shadow: 0 0 8px #00e5ff;
+  animation: pulse-gem-obsidian 1s infinite alternate;
+}
+
+@keyframes pulse-gem {
   from {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
   }
   to {
-    transform: translateY(3px);
+    transform: translateY(3px) scale(1.15);
+    opacity: 1;
+    color: #d49b28;
+  }
+}
+
+@keyframes pulse-gem-obsidian {
+  from {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
+    color: #00e5ff;
+  }
+  to {
+    transform: translateY(3px) scale(1.2);
+    opacity: 1;
+    color: #38bdf8;
+    text-shadow: 0 0 12px #00e5ff, 0 0 20px #a100ff;
   }
 }
