@@ -52,5 +52,12 @@ export const AUDIO_SETTINGS = {
         import.meta.url,
       ).href,
     },
+    rainAndThunder: {
+      key: "sfx-rain-thunder",
+      path: new URL(
+        "../assets/sounds/sound-effects/rain-and-thunder.mp3",
+        import.meta.url,
+      ).href,
+    },
   },
 };

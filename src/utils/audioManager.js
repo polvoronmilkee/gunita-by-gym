@@ -186,6 +186,32 @@ export class AudioManager {
     this.vinoMoveSfx?.play();
   }
 
+  playRainThunder() {
+    if (!this.sfxEnabled || this.isDestroyed) {
+      return;
+    }
+    if (!this.rainThunderSfx) {
+      if (this.scene.cache.audio.has(AUDIO_SETTINGS.sfx.rainAndThunder.key)) {
+        this.rainThunderSfx = this.scene.sound.add(
+          AUDIO_SETTINGS.sfx.rainAndThunder.key,
+          {
+            volume: 0.6,
+            loop: true,
+          },
+        );
+      }
+    }
+    if (this.rainThunderSfx && !this.rainThunderSfx.isPlaying) {
+      this.rainThunderSfx.play();
+    }
+  }
+
+  stopRainThunder() {
+    if (this.rainThunderSfx && this.rainThunderSfx.isPlaying) {
+      this.rainThunderSfx.stop();
+    }
+  }
+
   destroy() {
     if (this.isDestroyed) {
       return;
@@ -196,6 +222,7 @@ export class AudioManager {
     this.buttonSfx?.stop();
     this.dashSfx?.stop();
     this.vinoMoveSfx?.stop();
+    this.rainThunderSfx?.stop();
     this.currentTrack = null;
   }
 }
