@@ -140,7 +140,7 @@
   border: 2px solid #8c6a49;
   outline: 1px solid #2a1d13;
   color: #f7e8c3;
-  font-family: 'Cinzel', 'Georgia', serif;
+  font-family: 'Press Start 2P', monospace;
   font-size: 13px;
   font-weight: 700;
   padding: 3px 22px;
@@ -228,8 +228,7 @@
 
 /* Message Text */
 .gunita-dialogue__message {
-  font-family: 'Georgia', serif;
-  font-size: 16px;
+  font-family: 'Press Start 2P', monospace;
   line-height: 1.55;
   color: #24170e;
   font-weight: 500;
