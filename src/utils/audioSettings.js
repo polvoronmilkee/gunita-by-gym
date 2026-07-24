@@ -19,6 +19,18 @@ export const AUDIO_SETTINGS = {
       key: "bg-2",
       path: new URL("../assets/sounds/music/bg-2.mp3", import.meta.url).href,
     },
+    {
+      key: "campo-lunan",
+      path: new URL("../assets/sounds/music/campo_lunan.mp3", import.meta.url).href,
+    },
+    {
+      key: "village-v1",
+      path: new URL("../assets/sounds/music/village_v1.mp3", import.meta.url).href,
+    },
+    {
+      key: "forest-2",
+      path: new URL("../assets/sounds/music/forest_2.mp3", import.meta.url).href,
+    },
   ],
   sfx: {
     button: {

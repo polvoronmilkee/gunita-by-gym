@@ -8,6 +8,7 @@ import { MapOverlay } from "../ui/MapOverlay.js";
 import { getCache, setCache, getEssence, setEssence } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
 import characterData from "../data/characters.json";
+import { AudioManager } from "../utils/audioManager.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -297,7 +298,12 @@ export class Grave1 extends Phaser.Scene {
     const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 1137;
     const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 550;
 
-    this.player = new Player(this, spawnX, spawnY);
+    this.audioManager = new AudioManager(this, "village-v1");
+
+    this.player = new Player(this, spawnX, spawnY, {
+      onDashStart: () => this.audioManager.playDashSfx(),
+      onDirectionChange: () => this.audioManager.playVinoMoveSfx(),
+    });
     this.player.sprite.setDepth(this.player.sprite.y);
     this.cursors = this.input.keyboard.createCursorKeys();
 

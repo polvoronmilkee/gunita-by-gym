@@ -218,7 +218,7 @@ export class CampoLunanScene extends Phaser.Scene {
     const spawnY =
       cache && cache.position_y !== undefined ? cache.position_y : 360;
 
-    this.audioManager = new AudioManager(this);
+    this.audioManager = new AudioManager(this, "campo-lunan");
 
     this.player = new Player(this, spawnX, spawnY, {
       onDashStart: () => this.audioManager.playDashSfx(),
