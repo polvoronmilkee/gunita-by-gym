@@ -847,7 +847,7 @@ export class BulletHellScene extends Phaser.Scene {
       // Curated non-conflicting combo pairs
       const comboPairs = [
         [1, 5], // CircleBlast + SpotlightBurst (aimed rings + delayed explosions)
-        [2, 4], // WaveGrid + ShrinkingGrid (rain + safe zone goal)
+        [1, 4], // CircleBlast + ThunderSplitter (rings + arena splitter)
         [1, 3]  // CircleBlast + SweepingLaser (rings + single laser sweeps)
       ];
       const pair = Phaser.Utils.Array.GetRandom(comboPairs);
@@ -879,11 +879,8 @@ export class BulletHellScene extends Phaser.Scene {
       for (let t = 500; t < duration; t += 2400) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireSweepingLaser()));
       }
-    } else if (patternId === 4) { // ShrinkingGrid
-      // Takes ~4000ms per cast. Fire every 4500ms
-      for (let t = 0; t < duration; t += 4500) {
-        this.patternTimers.push(this.time.delayedCall(t, () => this.fireShrinkingGrid()));
-      }
+    } else if (patternId === 4) { // ThunderSplitter
+      this.fireThunderSplitter(duration);
     } else if (patternId === 5) { // SpotlightBurst
       // Fire every 3000ms
       for (let t = 0; t < duration; t += 3000) {
@@ -967,28 +964,35 @@ export class BulletHellScene extends Phaser.Scene {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
     let startX, startY, endX, endY, laserW, laserH, warnX, warnY, warnW, warnH;
+    const sweepDuration = this.isDesperation ? 1300 : 1800;
 
     if (directionIndex === 0) {
+      // Left vertical beam sweeping Right
       startX = x; startY = y;
-      endX = x + w; endY = y;
+      endX = x + w - 12; endY = y;
       laserW = 12; laserH = h;
       warnX = x; warnY = y; warnW = w; warnH = h;
     } else if (directionIndex === 1) {
-      startX = x + w; startY = y;
+      // Right vertical beam sweeping Left
+      startX = x + w - 12; startY = y;
       endX = x; endY = y;
       laserW = 12; laserH = h;
       warnX = x; warnY = y; warnW = w; warnH = h;
     } else if (directionIndex === 2) {
+      // Top horizontal beam sweeping Down
       startX = x; startY = y;
-      endX = x + w / 2 - 6; endY = y;
-      laserW = 12; laserH = h;
-      warnX = x; warnY = y; warnW = w / 2; warnH = h;
+      endX = x; endY = y + h - 12;
+      laserW = w; laserH = 12;
+      warnX = x; warnY = y; warnW = w; warnH = h;
     } else {
-      startX = x + w - 12; startY = y;
-      endX = x + w / 2 - 6; endY = y;
-      laserW = 12; laserH = h;
-      warnX = x + w / 2; warnY = y; warnW = w / 2; warnH = h;
+      // Bottom horizontal beam sweeping Up
+      startX = x; startY = y + h - 12;
+      endX = x; endY = y;
+      laserW = w; laserH = 12;
+      warnX = x; warnY = y; warnW = w; warnH = h;
     }
+
+    const isVertical = laserH > laserW;
 
     // Thunder Strike warning: quick white flash then animated stripes
     const warn = this.add.graphics();
@@ -1042,9 +1046,9 @@ export class BulletHellScene extends Phaser.Scene {
           // Outer electric glow aura
           laser.graphics.fillStyle(0x3b82f6, 0.15);
           if (isVertical) {
-            laser.graphics.fillRect(laser.x, laser.y - 6, laser.w, laser.h + 12);
-          } else {
             laser.graphics.fillRect(laser.x - 6, laser.y, laser.w + 12, laser.h);
+          } else {
+            laser.graphics.fillRect(laser.x, laser.y - 6, laser.w, laser.h + 12);
           }
 
           // Main beam body (electric blue)
@@ -1058,13 +1062,13 @@ export class BulletHellScene extends Phaser.Scene {
             const t = s / segments;
             const jit = zigzagPoints[s] * (0.5 + Math.random() * 0.5);
             if (isVertical) {
-              const px = laser.x + t * laser.w;
-              const py = laser.y + laser.h / 2 + jit;
+              const px = laser.x + laser.w / 2 + jit;
+              const py = laser.y + t * laser.h;
               if (s === 0) laser.graphics.moveTo(px, py);
               else laser.graphics.lineTo(px, py);
             } else {
-              const px = laser.x + laser.w / 2 + jit;
-              const py = laser.y + t * laser.h;
+              const px = laser.x + t * laser.w;
+              const py = laser.y + laser.h / 2 + jit;
               if (s === 0) laser.graphics.moveTo(px, py);
               else laser.graphics.lineTo(px, py);
             }
@@ -1077,15 +1081,6 @@ export class BulletHellScene extends Phaser.Scene {
             for (let sp = 0; sp < sparkCount; sp++) {
               laser.graphics.lineStyle(1, 0x93c5fd, 0.7);
               if (isVertical) {
-                const sx = laser.x + Math.random() * laser.w;
-                const sy = laser.y + laser.h / 2;
-                const forkLen = Phaser.Math.Between(4, 12);
-                const forkDir = Math.random() < 0.5 ? -1 : 1;
-                laser.graphics.beginPath();
-                laser.graphics.moveTo(sx, sy);
-                laser.graphics.lineTo(sx + Phaser.Math.Between(-4, 4), sy + forkLen * forkDir);
-                laser.graphics.strokePath();
-              } else {
                 const sx = laser.x + laser.w / 2;
                 const sy = laser.y + Math.random() * laser.h;
                 const forkLen = Phaser.Math.Between(4, 12);
@@ -1093,6 +1088,15 @@ export class BulletHellScene extends Phaser.Scene {
                 laser.graphics.beginPath();
                 laser.graphics.moveTo(sx, sy);
                 laser.graphics.lineTo(sx + forkLen * forkDir, sy + Phaser.Math.Between(-4, 4));
+                laser.graphics.strokePath();
+              } else {
+                const sx = laser.x + Math.random() * laser.w;
+                const sy = laser.y + laser.h / 2;
+                const forkLen = Phaser.Math.Between(4, 12);
+                const forkDir = Math.random() < 0.5 ? -1 : 1;
+                laser.graphics.beginPath();
+                laser.graphics.moveTo(sx, sy);
+                laser.graphics.lineTo(sx + Phaser.Math.Between(-4, 4), sy + forkLen * forkDir);
                 laser.graphics.strokePath();
               }
             }
@@ -1123,104 +1127,117 @@ export class BulletHellScene extends Phaser.Scene {
     this.fireSingleLaserSweep(dir);
   }
 
-  // Pattern 4: Dynamic Safe Zone Shrinking Grid — Balanced with Pulsing Indicator
-  fireShrinkingGrid() {
+  // Pattern 4: Thunder Arena Splitter + Homing Orbs
+  fireThunderSplitter(duration) {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
 
-    const safeZoneTargets = [
-      { cx: x + w * 0.3, cy: y + h * 0.3 },
-      { cx: x + w * 0.7, cy: y + h * 0.3 },
-      { cx: x + w * 0.3, cy: y + h * 0.7 },
-      { cx: x + w * 0.7, cy: y + h * 0.7 },
-      { cx: x + w * 0.5, cy: y + h * 0.5 }
-    ];
-    const target = Phaser.Utils.Array.GetRandom(safeZoneTargets);
-    const stopOffset = 50; // 100px safe zone
+    // 1. Spawn 2 static vertical lasers to split the arena into 3 lanes
+    const laneWidth = w / 3;
+    const laserW = 12;
+    const laserH = h;
+    const laser1X = x + laneWidth - laserW / 2;
+    const laser2X = x + laneWidth * 2 - laserW / 2;
 
-    // Warning: pulsing green safe zone indicator
-    const warnRect = this.add.graphics();
-    this.activeWarnings.push(warnRect);
+    // Warn for 1 second before lasers appear
+    const warn = this.add.graphics();
+    this.activeWarnings.push(warn);
     let pulse = 0;
-    const warnPulse = this.time.addEvent({
+    const warnTimer = this.time.addEvent({
       delay: 150,
-      repeat: 5,
+      repeat: 6,
       callback: () => {
-        if (!warnRect || !warnRect.active) return;
-        warnRect.clear();
+        if (!warn || !warn.active) return;
+        warn.clear();
         pulse++;
-        const alpha = (pulse % 2 === 0) ? 0.4 : 0.15;
-        // Show safe zone destination
-        warnRect.lineStyle(2, 0x22c55e, alpha);
-        warnRect.strokeRect(target.cx - stopOffset, target.cy - stopOffset, stopOffset * 2, stopOffset * 2);
-        // Flash arena border
-        warnRect.lineStyle(2, 0xffffff, alpha * 0.5);
-        warnRect.strokeRect(x, y, w, h);
+        const alpha = (pulse % 2 === 0) ? 0.3 : 0.1;
+        warn.fillStyle(0x3b82f6, alpha);
+        warn.fillRect(laser1X, y, laserW, laserH);
+        warn.fillRect(laser2X, y, laserW, laserH);
+        warn.lineStyle(2, 0x60a5fa, 0.6);
+        warn.strokeRect(laser1X, y, laserW, laserH);
+        warn.strokeRect(laser2X, y, laserW, laserH);
       }
     });
-    this.patternTimers.push(warnPulse);
+    this.patternTimers.push(warnTimer);
 
-    this.patternTimers.push(this.time.delayedCall(900, () => {
-      if (warnRect && warnRect.active) warnRect.destroy();
+    // After 1 second, activate lasers and start orb spawns
+    this.patternTimers.push(this.time.delayedCall(1050, () => {
+      if (warn && warn.active) warn.destroy();
       if (this.state !== "DODGE") return;
 
-      const gridState = {
-        topY: y,
-        bottomY: y + h,
-        leftX: x,
-        rightX: x + w,
-        life: 5000
+      this.cameras.main.shake(150, 0.005);
+
+      // Create solid lasers
+      const l1 = { x: laser1X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: duration - 1050 };
+      const l2 = { x: laser2X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: duration - 1050 };
+      this.lasers.push(l1, l2);
+
+      const drawStaticLaser = (l) => {
+        if (!l.graphics || !l.graphics.active) return;
+        l.graphics.clear();
+        // Electric glow
+        l.graphics.fillStyle(0x3b82f6, 0.2);
+        l.graphics.fillRect(l.x - 6, l.y, l.w + 12, l.h);
+        // Solid core
+        l.graphics.fillStyle(0x3b82f6, 0.9);
+        l.graphics.fillRect(l.x, l.y, l.w, l.h);
+        // White energy line
+        l.graphics.lineStyle(2, 0xffffff, 0.8);
+        l.graphics.beginPath();
+        l.graphics.moveTo(l.x + l.w / 2, l.y);
+        l.graphics.lineTo(l.x + l.w / 2, l.y + l.h);
+        l.graphics.strokePath();
       };
 
-      const gridGraphics = this.add.graphics();
-      gridState.graphics = gridGraphics;
-      this.lasers.push(gridState);
+      drawStaticLaser(l1);
+      drawStaticLaser(l2);
 
       this.tweens.add({
-        targets: gridState,
-        topY: target.cy - stopOffset,
-        bottomY: target.cy + stopOffset,
-        leftX: target.cx - stopOffset,
-        rightX: target.cx + stopOffset,
-        duration: 3000,
-        ease: 'Sine.easeInOut',
+        targets: [l1, l2],
+        alpha: 1, // dummy
+        duration: duration - 1050,
         onUpdate: () => {
-          if (!gridGraphics || !gridGraphics.active) return;
-          gridGraphics.clear();
-
-          const tY = Math.max(y, gridState.topY);
-          const bY = Math.min(y + h, gridState.bottomY);
-          const lX = Math.max(x, gridState.leftX);
-          const rX = Math.min(x + w, gridState.rightX);
-
-          // Thunder-styled grid walls (electric blue)
-          gridGraphics.fillStyle(0x3b82f6, 0.75);
-          gridGraphics.fillRect(x, y, w, Math.max(0, tY - y));
-          gridGraphics.fillStyle(0x93c5fd, 0.9);
-          gridGraphics.fillRect(x, Math.max(y, tY - 3), w, 3);
-
-          gridGraphics.fillStyle(0x3b82f6, 0.75);
-          gridGraphics.fillRect(x, bY, w, Math.max(0, (y + h) - bY));
-          gridGraphics.fillStyle(0x93c5fd, 0.9);
-          gridGraphics.fillRect(x, bY, w, 3);
-
-          gridGraphics.fillStyle(0x3b82f6, 0.75);
-          gridGraphics.fillRect(x, y, Math.max(0, lX - x), h);
-          gridGraphics.fillStyle(0x93c5fd, 0.9);
-          gridGraphics.fillRect(Math.max(x, lX - 3), y, 3, h);
-
-          gridGraphics.fillStyle(0x3b82f6, 0.75);
-          gridGraphics.fillRect(rX, y, Math.max(0, (x + w) - rX), h);
-          gridGraphics.fillStyle(0x93c5fd, 0.9);
-          gridGraphics.fillRect(rX, y, 3, h);
-
-          // Pulsing safe zone border
-          const safeAlpha = 0.2 + Math.sin(Date.now() * 0.006) * 0.15;
-          gridGraphics.lineStyle(2, 0x22c55e, safeAlpha);
-          gridGraphics.strokeRect(lX, tY, rX - lX, bY - tY);
+          if (l1.graphics) drawStaticLaser(l1);
+          if (l2.graphics) drawStaticLaser(l2);
+        },
+        onComplete: () => {
+          if (l1.graphics && l1.graphics.active) l1.graphics.destroy();
+          if (l2.graphics && l2.graphics.active) l2.graphics.destroy();
+          const idx1 = this.lasers.indexOf(l1);
+          if (idx1 > -1) this.lasers.splice(idx1, 1);
+          const idx2 = this.lasers.indexOf(l2);
+          if (idx2 > -1) this.lasers.splice(idx2, 1);
         }
       });
     }));
+
+    // Spawn massive tracking orbs every 2 seconds
+    for (let t = 1500; t < duration; t += 2000) {
+      this.patternTimers.push(this.time.delayedCall(t, () => {
+        if (this.state !== "DODGE" || !this.soul) return;
+
+        const spawnX = this.crystalEnemy.x;
+        const spawnY = this.crystalEnemy.y;
+        
+        // Massive slow-moving tracking orb
+        const speed = this.isDesperation ? 75 : 60;
+        const radius = 22; // Very large orb
+        
+        const orb = {
+          x: spawnX,
+          y: spawnY,
+          vx: 0,
+          vy: 0,
+          radius: radius,
+          isHoming: true,
+          homingSpeed: speed,
+          color: 0xec4899, // Pinkish purple to distinguish it
+          trail: []
+        };
+        this.bullets.push(orb);
+      }));
+    }
   }
 
   // Pattern 5: Tracking Spotlight Follower — Balanced
@@ -1417,13 +1434,20 @@ export class BulletHellScene extends Phaser.Scene {
 
         // Homing behavior for CircleBlast
         if (b.isHoming && this.soul) {
-          const targetAngle = Phaser.Math.Angle.Between(b.x, b.y, this.soul.x, this.soul.y);
-          const currentAngle = Math.atan2(b.vy, b.vx);
-          
-          // Rotate towards target slowly
-          const newAngle = Phaser.Math.Angle.RotateTo(currentAngle, targetAngle, b.homingTurnSpeed * (delta / 1000));
-          b.vx = Math.cos(newAngle) * b.speed;
-          b.vy = Math.sin(newAngle) * b.speed;
+          const angle = Phaser.Math.Angle.Between(b.x, b.y, this.soul.x, this.soul.y);
+          if (b.homingTurnSpeed) {
+            // CircleBlast fast homing
+            const currentAngle = Math.atan2(b.vy, b.vx);
+            const newAngle = Phaser.Math.Angle.RotateTo(currentAngle, angle, b.homingTurnSpeed * (delta / 1000));
+            b.vx = Math.cos(newAngle) * b.speed;
+            b.vy = Math.sin(newAngle) * b.speed;
+          } else if (b.homingSpeed) {
+            // Massive orb slow creeping homing
+            const targetVx = Math.cos(angle) * b.homingSpeed;
+            const targetVy = Math.sin(angle) * b.homingSpeed;
+            b.vx += (targetVx - b.vx) * 0.04;
+            b.vy += (targetVy - b.vy) * 0.04;
+          }
         }
 
         b.x += b.vx * (delta / 1000);
@@ -1438,21 +1462,23 @@ export class BulletHellScene extends Phaser.Scene {
           b.trailTimer = 0;
         }
 
+        const color = b.color || 0x2dd4bf;
+
         // Draw trail afterimages (fading smaller circles)
         for (let t = 0; t < b.trail.length; t++) {
           const tr = b.trail[t];
           const trailAlpha = (t + 1) / (b.trail.length + 1) * 0.35;
           const trailSize = b.radius * (0.4 + (t / b.trail.length) * 0.4);
-          this.bulletGraphics.fillStyle(0x2dd4bf, trailAlpha);
+          this.bulletGraphics.fillStyle(color, trailAlpha);
           this.bulletGraphics.fillCircle(tr.x, tr.y, trailSize);
         }
 
         // Outer glow aura
-        this.bulletGraphics.fillStyle(0x2dd4bf, 0.2);
+        this.bulletGraphics.fillStyle(color, 0.2);
         this.bulletGraphics.fillCircle(b.x, b.y, b.radius + 4);
 
-        // Main cyan orb body
-        this.bulletGraphics.fillStyle(0x2dd4bf, 0.9);
+        // Main orb body
+        this.bulletGraphics.fillStyle(color, 0.9);
         this.bulletGraphics.fillCircle(b.x, b.y, b.radius);
 
         // White hot core
@@ -1499,22 +1525,8 @@ export class BulletHellScene extends Phaser.Scene {
         const l = this.lasers[i];
         l.life -= delta;
 
-        // 1. Shrinking Grid safe zone collision check
-        if (l.leftX !== undefined && l.rightX !== undefined && l.topY !== undefined && l.bottomY !== undefined) {
-          const isInsideSafeZone = (
-            this.soul.x >= l.leftX &&
-            this.soul.x <= l.rightX &&
-            this.soul.y >= l.topY &&
-            this.soul.y <= l.bottomY
-          );
-
-          if (!isInsideSafeZone && (l.leftX > this.arena.x + 4)) {
-            this.triggerHit();
-            return;
-          }
-        }
-        // 2. Standard sweeping laser rectangle AABB collision check
-        else if (l.x !== undefined && l.y !== undefined && l.w !== undefined && l.h !== undefined) {
+        // Standard sweeping laser / solid laser rectangle AABB collision check
+        if (l.x !== undefined && l.y !== undefined && l.w !== undefined && l.h !== undefined) {
           const testX = Math.max(l.x, Math.min(this.soul.x, l.x + l.w));
           const testY = Math.max(l.y, Math.min(this.soul.y, l.y + l.h));
 
@@ -1524,6 +1536,7 @@ export class BulletHellScene extends Phaser.Scene {
             return;
           }
         }
+
 
         if (l.life <= 0) {
           if (l.graphics) l.graphics.destroy();
