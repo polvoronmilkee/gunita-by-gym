@@ -32,9 +32,6 @@ export class AudioManager {
     this.dashSfx = scene.sound.add(AUDIO_SETTINGS.sfx.dash.key, {
       volume: AUDIO_SETTINGS.volume.dash,
     });
-    this.vinoMoveSfx = scene.sound.add(AUDIO_SETTINGS.sfx.vinoMove.key, {
-      volume: AUDIO_SETTINGS.volume.vinoMove,
-    });
 
     for (const track of AUDIO_SETTINGS.tracks) {
       if (scene.sound.get(track.key) || scene.cache.audio.has(track.key)) {
@@ -179,12 +176,6 @@ export class AudioManager {
     this.dashSfx?.play();
   }
 
-  playVinoMoveSfx() {
-    if (!this.sfxEnabled || this.isDestroyed) {
-      return;
-    }
-    this.vinoMoveSfx?.play();
-  }
 
   playRainThunder() {
     if (!this.sfxEnabled || this.isDestroyed) {
@@ -221,7 +212,6 @@ export class AudioManager {
     this.stopMusic();
     this.buttonSfx?.stop();
     this.dashSfx?.stop();
-    this.vinoMoveSfx?.stop();
     this.rainThunderSfx?.stop();
     this.currentTrack = null;
   }

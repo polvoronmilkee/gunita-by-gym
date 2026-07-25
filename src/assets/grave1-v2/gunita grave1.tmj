@@ -569,7 +569,7 @@
                 {
                  "height":0,
                  "id":2,
-                 "name":"",
+                 "name":"water",
                  "opacity":1,
                  "polygon":[
                         {
@@ -8590,7 +8590,7 @@
                  "opacity":1,
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":55.25,
                  "x":1011,
                  "y":2815
@@ -8626,7 +8626,7 @@
                  "opacity":1,
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":30,
                  "x":4459.33,
                  "y":200.667
@@ -8642,15 +8642,690 @@
                  "width":34.25,
                  "x":-2.5,
                  "y":2815.5
+                }, 
+                {
+                 "height":0,
+                 "id":509,
+                 "name":"wasteland",
+                 "opacity":1,
+                 "polygon":[
+                        {
+                         "x":0,
+                         "y":0
+                        }, 
+                        {
+                         "x":0,
+                         "y":-32
+                        }, 
+                        {
+                         "x":32,
+                         "y":-32
+                        }, 
+                        {
+                         "x":32,
+                         "y":-64
+                        }, 
+                        {
+                         "x":96,
+                         "y":-64
+                        }, 
+                        {
+                         "x":96,
+                         "y":-96
+                        }, 
+                        {
+                         "x":96,
+                         "y":-96
+                        }, 
+                        {
+                         "x":128,
+                         "y":-96
+                        }, 
+                        {
+                         "x":128,
+                         "y":-128
+                        }, 
+                        {
+                         "x":160,
+                         "y":-128
+                        }, 
+                        {
+                         "x":160,
+                         "y":-160
+                        }, 
+                        {
+                         "x":192,
+                         "y":-160
+                        }, 
+                        {
+                         "x":192,
+                         "y":-192
+                        }, 
+                        {
+                         "x":224,
+                         "y":-192
+                        }, 
+                        {
+                         "x":224,
+                         "y":-256
+                        }, 
+                        {
+                         "x":256,
+                         "y":-256
+                        }, 
+                        {
+                         "x":256,
+                         "y":-288
+                        }, 
+                        {
+                         "x":288,
+                         "y":-288
+                        }, 
+                        {
+                         "x":288,
+                         "y":-320
+                        }, 
+                        {
+                         "x":320,
+                         "y":-320
+                        }, 
+                        {
+                         "x":320,
+                         "y":-352
+                        }, 
+                        {
+                         "x":352,
+                         "y":-352
+                        }, 
+                        {
+                         "x":352,
+                         "y":-384
+                        }, 
+                        {
+                         "x":384,
+                         "y":-384
+                        }, 
+                        {
+                         "x":384,
+                         "y":-416
+                        }, 
+                        {
+                         "x":448,
+                         "y":-416
+                        }, 
+                        {
+                         "x":448,
+                         "y":-448
+                        }, 
+                        {
+                         "x":480,
+                         "y":-448
+                        }, 
+                        {
+                         "x":480,
+                         "y":-480
+                        }, 
+                        {
+                         "x":512,
+                         "y":-480
+                        }, 
+                        {
+                         "x":512,
+                         "y":-512
+                        }, 
+                        {
+                         "x":576,
+                         "y":-512
+                        }, 
+                        {
+                         "x":576,
+                         "y":-544
+                        }, 
+                        {
+                         "x":608,
+                         "y":-544
+                        }, 
+                        {
+                         "x":608,
+                         "y":-576
+                        }, 
+                        {
+                         "x":640,
+                         "y":-576
+                        }, 
+                        {
+                         "x":640,
+                         "y":-608
+                        }, 
+                        {
+                         "x":704,
+                         "y":-608
+                        }, 
+                        {
+                         "x":704,
+                         "y":-640
+                        }, 
+                        {
+                         "x":736,
+                         "y":-640
+                        }, 
+                        {
+                         "x":736,
+                         "y":-672
+                        }, 
+                        {
+                         "x":800,
+                         "y":-672
+                        }, 
+                        {
+                         "x":800,
+                         "y":-704
+                        }, 
+                        {
+                         "x":832,
+                         "y":-704
+                        }, 
+                        {
+                         "x":832,
+                         "y":-736
+                        }, 
+                        {
+                         "x":864,
+                         "y":-736
+                        }, 
+                        {
+                         "x":864,
+                         "y":-800
+                        }, 
+                        {
+                         "x":896,
+                         "y":-800
+                        }, 
+                        {
+                         "x":896,
+                         "y":-864
+                        }, 
+                        {
+                         "x":928,
+                         "y":-864
+                        }, 
+                        {
+                         "x":928,
+                         "y":-928
+                        }, 
+                        {
+                         "x":960,
+                         "y":-928
+                        }, 
+                        {
+                         "x":960,
+                         "y":-992
+                        }, 
+                        {
+                         "x":992,
+                         "y":-992
+                        }, 
+                        {
+                         "x":992,
+                         "y":-1056
+                        }, 
+                        {
+                         "x":1024,
+                         "y":-1056
+                        }, 
+                        {
+                         "x":1024,
+                         "y":-1088
+                        }, 
+                        {
+                         "x":1056,
+                         "y":-1088
+                        }, 
+                        {
+                         "x":1056,
+                         "y":-1120
+                        }, 
+                        {
+                         "x":1088,
+                         "y":-1120
+                        }, 
+                        {
+                         "x":1088,
+                         "y":-1152
+                        }, 
+                        {
+                         "x":1120,
+                         "y":-1152
+                        }, 
+                        {
+                         "x":1120,
+                         "y":-1184
+                        }, 
+                        {
+                         "x":1152,
+                         "y":-1184
+                        }, 
+                        {
+                         "x":1152,
+                         "y":-1216
+                        }, 
+                        {
+                         "x":1184,
+                         "y":-1216
+                        }, 
+                        {
+                         "x":1184,
+                         "y":-1280
+                        }, 
+                        {
+                         "x":1216,
+                         "y":-1280
+                        }, 
+                        {
+                         "x":1216,
+                         "y":-1312
+                        }, 
+                        {
+                         "x":1280,
+                         "y":-1312
+                        }, 
+                        {
+                         "x":1280,
+                         "y":-1344
+                        }, 
+                        {
+                         "x":1312,
+                         "y":-1344
+                        }, 
+                        {
+                         "x":1312,
+                         "y":-1376
+                        }, 
+                        {
+                         "x":1408,
+                         "y":-1376
+                        }, 
+                        {
+                         "x":1408,
+                         "y":-1408
+                        }, 
+                        {
+                         "x":1536,
+                         "y":-1408
+                        }, 
+                        {
+                         "x":1536,
+                         "y":-1440
+                        }, 
+                        {
+                         "x":1664,
+                         "y":-1440
+                        }, 
+                        {
+                         "x":1664,
+                         "y":-1472
+                        }, 
+                        {
+                         "x":1920,
+                         "y":-1472
+                        }, 
+                        {
+                         "x":1920,
+                         "y":-1504
+                        }, 
+                        {
+                         "x":2272,
+                         "y":-1504
+                        }, 
+                        {
+                         "x":2272,
+                         "y":-1472
+                        }, 
+                        {
+                         "x":2496,
+                         "y":-1472
+                        }, 
+                        {
+                         "x":2496,
+                         "y":-1440
+                        }, 
+                        {
+                         "x":2560,
+                         "y":-1440
+                        }, 
+                        {
+                         "x":2560,
+                         "y":-1408
+                        }, 
+                        {
+                         "x":2624,
+                         "y":-1408
+                        }, 
+                        {
+                         "x":2624,
+                         "y":-1376
+                        }, 
+                        {
+                         "x":2720,
+                         "y":-1376
+                        }, 
+                        {
+                         "x":2720,
+                         "y":-1344
+                        }, 
+                        {
+                         "x":2752,
+                         "y":-1344
+                        }, 
+                        {
+                         "x":2752,
+                         "y":-1312
+                        }, 
+                        {
+                         "x":2816,
+                         "y":-1312
+                        }, 
+                        {
+                         "x":2816,
+                         "y":-1280
+                        }, 
+                        {
+                         "x":2848,
+                         "y":-1280
+                        }, 
+                        {
+                         "x":2848,
+                         "y":-1216
+                        }, 
+                        {
+                         "x":2848,
+                         "y":-1248
+                        }, 
+                        {
+                         "x":2912,
+                         "y":-1248
+                        }, 
+                        {
+                         "x":2912,
+                         "y":0
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1568,
+                 "y":3840
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":31,
+         "name":"CHARS_SPAWNS",
+         "objects":[
+                {
+                 "height":0,
+                 "id":495,
+                 "name":"OLD-FISHERMAN",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":624.666666666667,
+                 "y":518.333333333333
+                }, 
+                {
+                 "height":0,
+                 "id":497,
+                 "name":"YOUNG-FISHERMAN",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3280.66666666667,
+                 "y":2082.33333333333
+                }, 
+                {
+                 "height":0,
+                 "id":498,
+                 "name":"OLD-WIFE",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2942.5,
+                 "y":336
+                }, 
+                {
+                 "height":0,
+                 "id":499,
+                 "name":"OLD-DAUGHTER",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1952,
+                 "y":694.666666666667
+                }, 
+                {
+                 "height":0,
+                 "id":500,
+                 "name":"SCHOOL-GIRL",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3086,
+                 "y":442.5
+                }, 
+                {
+                 "height":0,
+                 "id":501,
+                 "name":"YOUNG-KID",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2689.33333333333,
+                 "y":560
+                }, 
+                {
+                 "height":0,
+                 "id":502,
+                 "name":"npc-RANDOM-GUY",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":576,
+                 "y":1920
+                }, 
+                {
+                 "height":0,
+                 "id":503,
+                 "name":"npc-RANDOM-WOMAN",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3121,
+                 "y":1354.33333333333
+                }, 
+                {
+                 "height":0,
+                 "id":504,
+                 "name":"npc-DEBT-COLLECTOR",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2483.25,
+                 "y":1708.25
+                }, 
+                {
+                 "height":0,
+                 "id":505,
+                 "name":"npc-SICK-WFE",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3894.66666666667,
+                 "y":1167.33333333333
+                }, 
+                {
+                 "height":0,
+                 "id":508,
+                 "name":"npc-RANDOM-GUY",
+                 "opacity":1,
+                 "polygon":[
+                        {
+                         "x":-78,
+                         "y":-14
+                        }, 
+                        {
+                         "x":-119,
+                         "y":-2
+                        }, 
+                        {
+                         "x":-353,
+                         "y":74
+                        }, 
+                        {
+                         "x":-622,
+                         "y":181
+                        }, 
+                        {
+                         "x":-679,
+                         "y":244
+                        }, 
+                        {
+                         "x":-657,
+                         "y":271
+                        }, 
+                        {
+                         "x":-667,
+                         "y":380
+                        }, 
+                        {
+                         "x":-659,
+                         "y":480
+                        }, 
+                        {
+                         "x":-661,
+                         "y":688
+                        }, 
+                        {
+                         "x":-672,
+                         "y":724
+                        }, 
+                        {
+                         "x":-671,
+                         "y":880
+                        }, 
+                        {
+                         "x":-697,
+                         "y":923
+                        }, 
+                        {
+                         "x":-696,
+                         "y":1033
+                        }, 
+                        {
+                         "x":-610,
+                         "y":1031
+                        }, 
+                        {
+                         "x":-612,
+                         "y":461
+                        }, 
+                        {
+                         "x":-607,
+                         "y":235
+                        }, 
+                        {
+                         "x":-597,
+                         "y":202
+                        }, 
+                        {
+                         "x":-546,
+                         "y":208
+                        }, 
+                        {
+                         "x":-515,
+                         "y":217
+                        }, 
+                        {
+                         "x":-442,
+                         "y":175
+                        }, 
+                        {
+                         "x":-424,
+                         "y":153
+                        }, 
+                        {
+                         "x":-371,
+                         "y":114
+                        }, 
+                        {
+                         "x":-324,
+                         "y":103
+                        }, 
+                        {
+                         "x":-252,
+                         "y":77
+                        }, 
+                        {
+                         "x":-232,
+                         "y":78
+                        }, 
+                        {
+                         "x":-189,
+                         "y":59
+                        }, 
+                        {
+                         "x":-140,
+                         "y":54
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1056,
+                 "y":1704
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
          "x":0,
          "y":0
         }],
- "nextlayerid":31,
- "nextobjectid":495,
+ "nextlayerid":32,
+ "nextobjectid":510,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",
@@ -8659,7 +9334,7 @@
         {
          "columns":22,
          "firstgid":1,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/TilesetFloor (1).png",
+         "image":"TilesetFloor (1).png",
          "imageheight":704,
          "imagewidth":704,
          "margin":0,
@@ -8672,7 +9347,7 @@
         {
          "columns":32,
          "firstgid":485,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/TilesetWater.png",
+         "image":"TilesetWater.png",
          "imageheight":1088,
          "imagewidth":1024,
          "margin":0,
@@ -8685,7 +9360,7 @@
         {
          "columns":23,
          "firstgid":1573,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/tileset_camp.png",
+         "image":"tileset_camp.png",
          "imageheight":288,
          "imagewidth":736,
          "margin":0,
@@ -8698,7 +9373,7 @@
         {
          "columns":14,
          "firstgid":1780,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/family home\/bahay-kubo.png",
+         "image":"bahay-kubo.png",
          "imageheight":130,
          "imagewidth":448,
          "margin":0,
@@ -8711,7 +9386,7 @@
         {
          "columns":24,
          "firstgid":1836,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/TilesetNature.png",
+         "image":"TilesetNature.png",
          "imageheight":672,
          "imagewidth":768,
          "margin":0,
@@ -8724,7 +9399,7 @@
         {
          "columns":41,
          "firstgid":2340,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/Bridges.png",
+         "image":"Bridges.png",
          "imageheight":1344,
          "imagewidth":1312,
          "margin":0,
@@ -8737,7 +9412,7 @@
         {
          "columns":2,
          "firstgid":4062,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/decor1.png",
+         "image":"decor1.png",
          "imageheight":896,
          "imagewidth":64,
          "margin":0,
@@ -8750,7 +9425,7 @@
         {
          "columns":33,
          "firstgid":4118,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/TilesetHouse.png",
+         "image":"TilesetHouse.png",
          "imageheight":736,
          "imagewidth":1056,
          "margin":0,
@@ -8763,7 +9438,7 @@
         {
          "columns":15,
          "firstgid":4877,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/Road2_ground.png",
+         "image":"Road2_ground.png",
          "imageheight":832,
          "imagewidth":480,
          "margin":0,
@@ -8776,7 +9451,7 @@
         {
          "columns":4,
          "firstgid":5267,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/decor3.png",
+         "image":"decor3.png",
          "imageheight":960,
          "imagewidth":128,
          "margin":0,
@@ -8789,7 +9464,7 @@
         {
          "columns":18,
          "firstgid":5387,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/Supplies.png",
+         "image":"Supplies.png",
          "imageheight":448,
          "imagewidth":576,
          "margin":0,
@@ -8802,7 +9477,7 @@
         {
          "columns":14,
          "firstgid":5639,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/broken houses.png",
+         "image":"broken houses.png",
          "imageheight":322,
          "imagewidth":448,
          "margin":0,
@@ -8815,7 +9490,7 @@
         {
          "columns":4,
          "firstgid":5779,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/decor3.png",
+         "image":"decor3.png",
          "imageheight":960,
          "imagewidth":128,
          "margin":0,
@@ -8828,7 +9503,7 @@
         {
          "columns":4,
          "firstgid":5899,
-         "image":"..\/Documents\/Sprites assets\/Graveyard Sprites\/grave 1\/decor3.png",
+         "image":"decor3.png",
          "imageheight":960,
          "imagewidth":128,
          "margin":0,
