@@ -15,21 +15,43 @@ export class CampoLunanScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.json("campo-lunan-map", "src/assets/campo-lunanv2/gunita-campo-lunan copy.tmj");
+    this.load.json(
+      "campo-lunan-map",
+      "src/assets/campo-lunanv2/gunita-campo-lunan copy.tmj",
+    );
 
     const v2TilesetImages = [
       "abandoned2.png",
       "graves1.png",
       "gravetileset.png",
       "stonefences1.png",
-      "store.png"
+      "store.png",
     ];
 
-    v2TilesetImages.forEach(img => {
+    v2TilesetImages.forEach((img) => {
       this.load.image(img, `src/assets/campo-lunanv2/${img}`);
     });
 
     // Idle spritesheet
+
+    this.load.spritesheet(
+      "pink-frog",
+      "src/assets/campo-lunanv2/memeng-easter-eggs/pink-frog.png",
+      {
+        frameWidth: 36,
+        frameHeight: 44,
+      },
+    );
+
+    this.load.spritesheet(
+      "poison-shroom",
+      "src/assets/campo-lunanv2/memeng-easter-eggs/poison-shroom.png",
+      {
+        frameWidth: 36,
+        frameHeight: 44,
+      },
+    );
+
     this.load.spritesheet(
       "vino-idle",
       "src/assets/vino-spritesheets/vino-idle/vino-idle.png",
@@ -90,35 +112,37 @@ export class CampoLunanScene extends Phaser.Scene {
 
     // Map Tiled tileset names to loaded texture keys in Phaser
     const tilesetKeyMap = {
-      "gravetileset": "gravetileset.png",
-      "stonefences": "stonefences1.png",
-      "decors": "abandoned2.png",
-      "graves": "graves1.png",
-      "store": "store.png"
+      gravetileset: "gravetileset.png",
+      stonefences: "stonefences1.png",
+      decors: "abandoned2.png",
+      graves: "graves1.png",
+      store: "store.png",
     };
 
     mapData.tilesets = mapData.tilesets.map((ts) => {
       return {
         ...ts,
-        image: tilesetKeyMap[ts.name] || (ts.name + ".png")
+        image: tilesetKeyMap[ts.name] || ts.name + ".png",
       };
     });
 
     this.cache.tilemap.add("campo-lunan-map-modified", {
       format: Phaser.Tilemaps.Formats ? Phaser.Tilemaps.Formats.TILED_JSON : 1,
-      data: mapData
+      data: mapData,
     });
 
     const map = this.make.tilemap({ key: "campo-lunan-map-modified" });
 
     const tilesetList = [];
     mapData.tilesets.forEach((ts) => {
-      const textureKey = tilesetKeyMap[ts.name] || (ts.name + ".png");
+      const textureKey = tilesetKeyMap[ts.name] || ts.name + ".png";
       const addedTileset = map.addTilesetImage(ts.name, textureKey);
       if (addedTileset) {
         tilesetList.push(addedTileset);
       } else {
-        console.warn(`Failed to add tileset image for ${ts.name} -> ${textureKey}`);
+        console.warn(
+          `Failed to add tileset image for ${ts.name} -> ${textureKey}`,
+        );
       }
     });
 
@@ -137,16 +161,38 @@ export class CampoLunanScene extends Phaser.Scene {
       "fenceslayer1",
       "fenceslayer2",
       "objectslayer2",
-      "objectslayer3"
+      "objectslayer3",
     ];
-    topLayers.forEach(layerName => {
+    topLayers.forEach((layerName) => {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
         // Set depth to a large value so they render in front of player
-        // Alternatively, if they should sort with the player based on Y, 
+        // Alternatively, if they should sort with the player based on Y,
         // they can be assigned distinct depths or set up for Y-sorting.
         layer.setDepth(1);
       }
+    });
+
+    // Pink Frog animation
+    this.anims.create({
+      key: "pink-frog-idle",
+      frames: this.anims.generateFrameNumbers("pink-frog", {
+        start: 0,
+        end: 5,
+      }),
+      frameRate: 6,
+      repeat: -1,
+    });
+
+    // Poison Shroom animation
+    this.anims.create({
+      key: "poison-shroom-idle",
+      frames: this.anims.generateFrameNumbers("poison-shroom", {
+        start: 0,
+        end: 4,
+      }),
+      frameRate: 6,
+      repeat: -1,
     });
 
     // Idle animation (frames 0–4)
@@ -159,7 +205,6 @@ export class CampoLunanScene extends Phaser.Scene {
       frameRate: 5,
       repeat: -1,
     });
-    
 
     // Moving up animation
     this.anims.create({
@@ -205,6 +250,16 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
+    // Add Pink Frog at (1359, 1075)
+    this.pinkFrog = this.add.sprite(1359, 1075, "pink-frog");
+    this.pinkFrog.setScale(0.75);
+    this.pinkFrog.play("pink-frog-idle");
+
+    // Add Poison Shroom at (1396, 1074)
+    this.poisonShroom = this.add.sprite(1384, 1074, "poison-shroom");
+    this.poisonShroom.setScale(0.75);
+    this.poisonShroom.play("poison-shroom-idle");
+
     // Retrieve coordinates from local cache immediately, default to (1278, 1779)
     const cache = getCache();
     let spawnX =
@@ -247,7 +302,7 @@ export class CampoLunanScene extends Phaser.Scene {
                 ) {
                   this.grave1Positions.push({
                     x: x * 32 + 16,
-                    y: y * 32 + 16
+                    y: y * 32 + 16,
                   });
                 }
               }
@@ -259,7 +314,8 @@ export class CampoLunanScene extends Phaser.Scene {
 
     //Load static map collisions from Tiled
     this.collisionGroup = this.physics.add.staticGroup();
-    const collisionLayer = map.getObjectLayer("collisions") || map.getObjectLayer("collsions");
+    const collisionLayer =
+      map.getObjectLayer("collisions") || map.getObjectLayer("collsions");
     if (collisionLayer && collisionLayer.objects) {
       collisionLayer.objects.forEach((obj) => {
         if (obj.width && obj.height) {
@@ -267,7 +323,7 @@ export class CampoLunanScene extends Phaser.Scene {
             obj.x + obj.width / 2,
             obj.y + obj.height / 2,
             obj.width,
-            obj.height
+            obj.height,
           );
           this.physics.add.existing(rect, true);
           this.collisionGroup.add(rect);
@@ -364,7 +420,13 @@ export class CampoLunanScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const modalWidth = 500;
     const modalHeight = 400;
-    this.minimapCamera = this.cameras.add((width - modalWidth) / 2, (height - modalHeight) / 2, modalWidth, modalHeight)
+    this.minimapCamera = this.cameras
+      .add(
+        (width - modalWidth) / 2,
+        (height - modalHeight) / 2,
+        modalWidth,
+        modalHeight,
+      )
       .setZoom(0.6)
       .setName("minimap")
       .setVisible(false);
@@ -399,7 +461,7 @@ export class CampoLunanScene extends Phaser.Scene {
         this.mapOverlay.show(
           "CAMPO LUNAN",
           this.player?.sprite?.x || 0,
-          this.player?.sprite?.y || 0
+          this.player?.sprite?.y || 0,
         );
       }
     });
@@ -467,11 +529,23 @@ export class CampoLunanScene extends Phaser.Scene {
 
       let step = 0;
       const steps = [
-        { speaker: "Tombstone", text: "Grave I\nAng Huling Mangingisda\nThe Last Fisherman" },
-        { speaker: "Memory", text: "\"The sea remembers... but the village does not.\"" },
-        { speaker: "Campo Lunan", text: "A forgotten fisherman waits beyond these echoes. Discover the memories he left behind and reveal the truth hidden beneath the waves." },
+        {
+          speaker: "Tombstone",
+          text: "Grave I\nAng Huling Mangingisda\nThe Last Fisherman",
+        },
+        {
+          speaker: "Memory",
+          text: '"The sea remembers... but the village does not."',
+        },
+        {
+          speaker: "Campo Lunan",
+          text: "A forgotten fisherman waits beyond these echoes. Discover the memories he left behind and reveal the truth hidden beneath the waves.",
+        },
         { speaker: "Campo Lunan", text: "Will you answer the sea's call?" },
-        { speaker: "Grave I", text: "▶ Enter the Memory (Click dialogue box or press E to Enter, ESC to Cancel)" }
+        {
+          speaker: "Grave I",
+          text: "▶ Enter the Memory (Click dialogue box or press E to Enter, ESC to Cancel)",
+        },
       ];
 
       const runDialogue = () => {
@@ -492,13 +566,15 @@ export class CampoLunanScene extends Phaser.Scene {
                   ...cache,
                   current_area: "Grave 1",
                   position_x: 1137,
-                  position_y: 550
+                  position_y: 550,
                 });
               }
 
-              import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
-                TransitionSystem.fadeToScene(this, "Grave1");
-              });
+              import("../systems/TransitionSystem.js").then(
+                ({ TransitionSystem }) => {
+                  TransitionSystem.fadeToScene(this, "Grave1");
+                },
+              );
             }
           });
         }
@@ -545,7 +621,7 @@ export class CampoLunanScene extends Phaser.Scene {
       current_area: "Campo Lunan",
       position_x: Math.round(this.player.sprite.x),
       position_y: Math.round(this.player.sprite.y),
-      explored_chunks: Array.from(this.exploredChunks || [])
+      explored_chunks: Array.from(this.exploredChunks || []),
     };
 
     // Update local cache immediately
@@ -576,17 +652,24 @@ export class CampoLunanScene extends Phaser.Scene {
       if (this.player && this.player.sprite) {
         this.mapOverlay?.updateLocation(
           this.player.sprite.x,
-          this.player.sprite.y
+          this.player.sprite.y,
         );
       }
 
       if (this.minimapPlayerDot && this.player && this.player.sprite) {
         this.minimapPlayerDot.clear();
         this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
-        this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 12);
+        this.minimapPlayerDot.fillCircle(
+          this.player.sprite.x,
+          this.player.sprite.y,
+          12,
+        );
       }
 
-      if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {
+      if (
+        !this.lastExploredChunksSize ||
+        this.exploredChunks.size !== this.lastExploredChunksSize
+      ) {
         this.lastExploredChunksSize = this.exploredChunks.size;
         this.minimapFow.clear();
         this.minimapFow.fillStyle(0x222222, 1);
@@ -621,7 +704,12 @@ export class CampoLunanScene extends Phaser.Scene {
     let closestGravePos = null;
     if (this.grave1Positions && this.grave1Positions.length > 0) {
       for (const pos of this.grave1Positions) {
-        const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, pos.x, pos.y);
+        const dist = Phaser.Math.Distance.Between(
+          this.player.sprite.x,
+          this.player.sprite.y,
+          pos.x,
+          pos.y,
+        );
         if (dist < nearestDist) {
           nearestDist = dist;
           closestGravePos = pos;
@@ -636,7 +724,9 @@ export class CampoLunanScene extends Phaser.Scene {
         this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE");
       }
     } else {
-      this.hud.setStatus("WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY");
+      this.hud.setStatus(
+        "WASD / ARROWS TO MOVE - SHIFT TO DASH - P TO PAUSE - M FOR MEMORY",
+      );
       if (this.interactionPrompt) {
         this.interactionPrompt.hide();
       }
