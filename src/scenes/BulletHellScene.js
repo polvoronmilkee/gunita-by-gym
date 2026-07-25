@@ -48,6 +48,9 @@ export class BulletHellScene extends Phaser.Scene {
     if (!this.textures.exists("bg-fish-basket")) {
       this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
     }
+    if (!this.textures.exists("red-warning-flag")) {
+      this.load.image("red-warning-flag", "src/assets/grave1-elements/bullet-scenes/red-warning-flag.png");
+    }
   }
 
   getDefaultRiddles() {
@@ -88,15 +91,14 @@ export class BulletHellScene extends Phaser.Scene {
     const bg = this.add.rectangle(centerX, height / 2, width, height, 0x050508, 1.0);
     bg.setInteractive(); // Consumes all mouse/pointer events so map behind is not clickable
 
-    const bgTextureKey = (this.bgKey && this.textures.exists(this.bgKey)) ? this.bgKey : "bg-fish-basket";
-    if (this.textures.exists(bgTextureKey)) {
-      const bgImg = this.add.image(centerX, height / 2, bgTextureKey);
-      bgImg.setDisplaySize(width, height);
-    }
+    // Set main background to the Red Warning Flag
+    this.bg = this.add.image(this.scale.width / 2, this.scale.height / 2, "red-warning-flag");
+    this.bg.setDisplaySize(this.scale.width, this.scale.height);
+    this.bg.setAlpha(0.6);
 
-    // 2. Box Specifications
-    this.boxWidth = 440;
+    // 2. Play Area Container (The Box)
     this.boxCenterX = centerX;
+    this.boxWidth = 480;
     this.boxCenterY = 270;
     this.boxHeight = 10; // Starts small, will tween to Dialogue height
 
@@ -553,21 +555,11 @@ export class BulletHellScene extends Phaser.Scene {
     this.crystalAngryTween.pause();
 
     // Clean up dodge artifacts
+    this.cleanupProjectiles();
     if (this.soul) {
+      this.soul.clear();
       this.soul.destroy();
       this.soul = null;
-    }
-    if (this.bulletGraphics) {
-      this.bulletGraphics.clear();
-    }
-    this.bullets = [];
-    this.lasers.forEach(l => {
-      if (l.graphics) l.graphics.destroy();
-    });
-    this.lasers = [];
-    if (this.patternTimers) {
-      this.patternTimers.forEach(t => t.destroy());
-      this.patternTimers = [];
     }
 
     // Select a random riddle from the remaining pool
@@ -653,8 +645,8 @@ export class BulletHellScene extends Phaser.Scene {
 
     // Step 3: Check Win Condition
     if (this.crystalHP <= 0) {
-      this.dialogueText.setText("Your heart is pure, Vino. Memory Restored!");
-      this.time.delayedCall(2000, () => {
+      // BATTLE WON!
+      this.time.delayedCall(1500, () => {
         if (this.onCompleteCallback) this.onCompleteCallback();
       });
       return;
@@ -668,14 +660,10 @@ export class BulletHellScene extends Phaser.Scene {
       "Ah... the shore calls to every fisherman."
     ];
 
-    const line = reactionLines[this.currentRiddleIndex] || "Impression restored...";
-    this.currentRiddleIndex++;
+    const line = reactionLines[6 - this.crystalHP - 1] || "Impression restored...";
     this.retryAttempt = 0; // Reset timer retry for new crystal
 
-    if (this.soul) {
-      this.soul.destroy();
-      this.soul = null;
-    }
+    this.cleanupProjectiles();
 
     this.clearTextAndTimers();
     this.setChoiceButtonsState("HIDDEN");
@@ -699,7 +687,9 @@ export class BulletHellScene extends Phaser.Scene {
 
   startTryAgainDialogue() {
     this.state = "TRY_AGAIN_DIALOGUE";
+    this.cleanupProjectiles();
     if (this.soul) {
+      this.soul.clear();
       this.soul.destroy();
       this.soul = null;
     }
@@ -728,7 +718,9 @@ export class BulletHellScene extends Phaser.Scene {
 
   transitionToDodge() {
     this.state = "TWEEN_TO_DODGE";
+    this.cleanupProjectiles();
     if (this.soul) {
+      this.soul.clear();
       this.soul.destroy();
       this.soul = null;
     }
@@ -756,6 +748,10 @@ export class BulletHellScene extends Phaser.Scene {
     this.crystalAngryTween.resume();
 
     // Spawn Vino Soul inside arena
+    if (this.soul) {
+      this.soul.clear();
+      this.soul.destroy();
+    }
     this.soul = this.add.graphics();
     this.soul.x = this.arena.x + this.arena.w / 2;
     this.soul.y = this.arena.y + this.arena.h / 2 + 30;
@@ -770,6 +766,26 @@ export class BulletHellScene extends Phaser.Scene {
         this.startDodgePhase();
       }
     });
+  }
+
+  cleanupProjectiles() {
+    if (this.bulletGraphics) {
+      this.bulletGraphics.clear();
+    }
+    this.bullets.forEach(b => {
+      if (b.graphics && b.graphics.active) b.graphics.destroy();
+    });
+    this.bullets = [];
+    this.lasers.forEach(l => {
+      if (l.graphics) l.graphics.destroy();
+    });
+    this.lasers = [];
+    if (this.patternTimers) {
+      this.patternTimers.forEach(t => t.destroy());
+      this.patternTimers = [];
+    }
+    this.activeWarnings.forEach(w => w.destroy());
+    this.activeWarnings = [];
   }
 
   getCurrentPhase() {
@@ -798,7 +814,6 @@ export class BulletHellScene extends Phaser.Scene {
   // --- DYNAMIC 3-PHASE PATTERN DISPATCHER ---
   startPatternsForPhase() {
     this.patternTimers = [];
-    this.projectiles = this.bullets;
     this.isDesperation = false;
 
     const phase = this.getCurrentPhase();
@@ -912,6 +927,9 @@ export class BulletHellScene extends Phaser.Scene {
           const angle = Phaser.Math.Angle.Between(b.x, b.y, targetX, targetY);
           b.vx = Math.cos(angle) * speed;
           b.vy = Math.sin(angle) * speed;
+          b.speed = speed;
+          b.isHoming = true;
+          b.homingTurnSpeed = 1.2;
         }
       });
     }));
@@ -938,7 +956,8 @@ export class BulletHellScene extends Phaser.Scene {
         y: arenaY,
         vx: Math.cos(phaseOffset) * 15,
         vy: baseSpeed,
-        radius: 5
+        radius: 4,
+        bounces: 1
       });
     }
   }
@@ -947,19 +966,18 @@ export class BulletHellScene extends Phaser.Scene {
   fireSingleLaserSweep(directionIndex, onCompleteCallback) {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
-    const isVertical = (directionIndex === 0 || directionIndex === 1);
     let startX, startY, endX, endY, laserW, laserH, warnX, warnY, warnW, warnH;
 
     if (directionIndex === 0) {
       startX = x; startY = y;
-      endX = x; endY = y + h / 2 - 6;
-      laserW = w; laserH = 12;
-      warnX = x; warnY = y; warnW = w; warnH = h / 2;
+      endX = x + w; endY = y;
+      laserW = 12; laserH = h;
+      warnX = x; warnY = y; warnW = w; warnH = h;
     } else if (directionIndex === 1) {
-      startX = x; startY = y + h - 12;
-      endX = x; endY = y + h / 2 - 6;
-      laserW = w; laserH = 12;
-      warnX = x; warnY = y + h / 2; warnW = w; warnH = h / 2;
+      startX = x + w; startY = y;
+      endX = x; endY = y;
+      laserW = 12; laserH = h;
+      warnX = x; warnY = y; warnW = w; warnH = h;
     } else if (directionIndex === 2) {
       startX = x; startY = y;
       endX = x + w / 2 - 6; endY = y;
@@ -1015,7 +1033,7 @@ export class BulletHellScene extends Phaser.Scene {
         targets: laser,
         x: endX,
         y: endY,
-        duration: 2400,
+        duration: sweepDuration,
         ease: 'Sine.easeInOut',
         onUpdate: () => {
           if (!laser.graphics || !laser.graphics.active) return;
@@ -1229,7 +1247,7 @@ export class BulletHellScene extends Phaser.Scene {
       // Track player soul position for 1.5s
       this.tweens.add({
         targets: warning,
-        duration: 1500,
+        duration: 1200,
         onUpdate: () => {
           if (warning && warning.active && this.soul) {
             warning.x = Phaser.Math.Clamp(this.soul.x, x + padding, x + w - padding);
@@ -1263,7 +1281,7 @@ export class BulletHellScene extends Phaser.Scene {
               if (this.state !== "DODGE") return;
 
               // Detonate into 6-directional radial burst (reduced from 8)
-              const burstSpeed = desp ? 120 : 140;
+              const burstSpeed = desp ? 160 : 180;
               const angles = [0, 60, 120, 180, 240, 300];
               angles.forEach(deg => {
                 const rad = Phaser.Math.DegToRad(deg);
@@ -1272,7 +1290,7 @@ export class BulletHellScene extends Phaser.Scene {
                   y: lockedY,
                   vx: Math.cos(rad) * burstSpeed,
                   vy: Math.sin(rad) * burstSpeed,
-                  radius: 4
+                  radius: 8
                 });
               });
             }
@@ -1345,6 +1363,11 @@ export class BulletHellScene extends Phaser.Scene {
       if (this.phaseTimer <= 0) {
         // Dodge survived! Return to riddle with reduced timer
         this.cleanupProjectiles();
+        if (this.soul) {
+          this.soul.clear();
+          this.soul.destroy();
+          this.soul = null;
+        }
         this.retryAttempt++;
         this.dialogueText.setVisible(false);
         this.questionText.setVisible(false);
@@ -1391,6 +1414,18 @@ export class BulletHellScene extends Phaser.Scene {
       // Bullet Physics & Collision — Soul Orb Visuals
       for (let i = this.bullets.length - 1; i >= 0; i--) {
         const b = this.bullets[i];
+
+        // Homing behavior for CircleBlast
+        if (b.isHoming && this.soul) {
+          const targetAngle = Phaser.Math.Angle.Between(b.x, b.y, this.soul.x, this.soul.y);
+          const currentAngle = Math.atan2(b.vy, b.vx);
+          
+          // Rotate towards target slowly
+          const newAngle = Phaser.Math.Angle.RotateTo(currentAngle, targetAngle, b.homingTurnSpeed * (delta / 1000));
+          b.vx = Math.cos(newAngle) * b.speed;
+          b.vy = Math.sin(newAngle) * b.speed;
+        }
+
         b.x += b.vx * (delta / 1000);
         b.y += b.vy * (delta / 1000);
 
@@ -1430,7 +1465,16 @@ export class BulletHellScene extends Phaser.Scene {
           return;
         }
 
-        if (b.x < 0 || b.x > this.scale.width || b.y < 0 || b.y > this.scale.height) {
+        // Bouncing / Boundaries
+        if (b.y > this.arena.y + this.arena.h) {
+          if (b.bounces && b.bounces > 0) {
+            b.vy *= -1;
+            b.y = this.arena.y + this.arena.h;
+            b.bounces--;
+          } else {
+            this.bullets.splice(i, 1);
+          }
+        } else if (b.x < 0 || b.x > this.scale.width || b.y < 0) {
           this.bullets.splice(i, 1);
         }
       }
