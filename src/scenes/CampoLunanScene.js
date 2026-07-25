@@ -576,11 +576,21 @@ export class CampoLunanScene extends Phaser.Scene {
                 });
               }
 
-              import("../systems/TransitionSystem.js").then(
-                ({ TransitionSystem }) => {
-                  TransitionSystem.fadeToScene(this, "Grave1");
-                },
-              );
+              import("../ui/portalLoadingScreen.js").then(({ PortalLoadingScreen }) => {
+                const loadingScreen = new PortalLoadingScreen({
+                  title: "GRAVE I",
+                  subtitle: "Entering Memory",
+                  hint: "Crossing the veil between Campo Lunan and forgotten memories..."
+                });
+                
+                setTimeout(() => {
+                  import("../systems/TransitionSystem.js").then(
+                    ({ TransitionSystem }) => {
+                      TransitionSystem.fadeToScene(this, "Grave1", { loadingScreen });
+                    },
+                  );
+                }, 2500);
+              });
             }
           });
         }

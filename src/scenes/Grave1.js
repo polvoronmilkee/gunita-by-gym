@@ -134,7 +134,17 @@ export class Grave1 extends Phaser.Scene {
     );
   }
 
-  create() {
+  create(data) {
+    // Hide and destroy portal loading screen if passed from previous scene
+    if (data && data.loadingScreen) {
+      setTimeout(() => {
+        data.loadingScreen.hide();
+        setTimeout(() => {
+          data.loadingScreen.destroy();
+        }, 400); // Wait for CSS transition
+      }, 1000); // Wait a bit after scene is created before hiding
+    }
+
     // Intercept Tiled map data to inline external TSX tileset metadata at runtime
     const cachedMap = this.cache.json.get("grave1-map");
     if (!cachedMap) {
