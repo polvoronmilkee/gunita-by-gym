@@ -893,7 +893,7 @@ export class BulletHellScene extends Phaser.Scene {
   // Pattern 1: Spiral Ring Burst — Balanced
   fireCircleBlast() {
     if (this.state !== "DODGE") return;
-    const count = this.isDesperation ? 12 : 14;
+    const count = this.isDesperation ? 10 : 12;
     const radius = 60;
     const centerX = this.crystalEnemy.x;
     const centerY = this.crystalEnemy.y;
@@ -917,7 +917,7 @@ export class BulletHellScene extends Phaser.Scene {
       if (this.state !== "DODGE" || !this.soul) return;
       const targetX = this.soul.x;
       const targetY = this.soul.y;
-      const speed = this.isDesperation ? 250 : 290;
+      const speed = this.isDesperation ? 240 : 275;
 
       ringBullets.forEach(b => {
         if (this.bullets.includes(b)) {
@@ -926,7 +926,7 @@ export class BulletHellScene extends Phaser.Scene {
           b.vy = Math.sin(angle) * speed;
           b.speed = speed;
           b.isHoming = true;
-          b.homingTurnSpeed = 1.2;
+          b.homingTurnSpeed = 1;
         }
       });
     }));
@@ -967,29 +967,29 @@ export class BulletHellScene extends Phaser.Scene {
     const sweepDuration = this.isDesperation ? 1300 : 1800;
 
     if (directionIndex === 0) {
-      // Left vertical beam sweeping Right
+      // Left vertical beam sweeping Right until middle
       startX = x; startY = y;
-      endX = x + w - 12; endY = y;
+      endX = x + w / 2 - 6; endY = y;
       laserW = 12; laserH = h;
-      warnX = x; warnY = y; warnW = w; warnH = h;
+      warnX = x; warnY = y; warnW = w / 2; warnH = h;
     } else if (directionIndex === 1) {
-      // Right vertical beam sweeping Left
+      // Right vertical beam sweeping Left until middle
       startX = x + w - 12; startY = y;
-      endX = x; endY = y;
+      endX = x + w / 2 - 6; endY = y;
       laserW = 12; laserH = h;
-      warnX = x; warnY = y; warnW = w; warnH = h;
+      warnX = x + w / 2; warnY = y; warnW = w / 2; warnH = h;
     } else if (directionIndex === 2) {
-      // Top horizontal beam sweeping Down
+      // Top horizontal beam sweeping Down until middle
       startX = x; startY = y;
-      endX = x; endY = y + h - 12;
+      endX = x; endY = y + h / 2 - 6;
       laserW = w; laserH = 12;
-      warnX = x; warnY = y; warnW = w; warnH = h;
+      warnX = x; warnY = y; warnW = w; warnH = h / 2;
     } else {
-      // Bottom horizontal beam sweeping Up
+      // Bottom horizontal beam sweeping Up until middle
       startX = x; startY = y + h - 12;
-      endX = x; endY = y;
+      endX = x; endY = y + h / 2 - 6;
       laserW = w; laserH = 12;
-      warnX = x; warnY = y; warnW = w; warnH = h;
+      warnX = x; warnY = y + h / 2; warnW = w; warnH = h / 2;
     }
 
     const isVertical = laserH > laserW;
@@ -1132,88 +1132,130 @@ export class BulletHellScene extends Phaser.Scene {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
 
-    // 1. Spawn 2 static vertical lasers to split the arena into 3 lanes
-    const laneWidth = w / 3;
-    const laserW = 12;
-    const laserH = h;
-    const laser1X = x + laneWidth - laserW / 2;
-    const laser2X = x + laneWidth * 2 - laserW / 2;
+    // 1. Helper function to spawn 2 static vertical lasers for a given cycle duration
+    const spawnLasers = (startTime, cycleDuration) => {
+      this.patternTimers.push(this.time.delayedCall(startTime, () => {
+        if (this.state !== "DODGE") return;
 
-    // Warn for 1 second before lasers appear
-    const warn = this.add.graphics();
-    this.activeWarnings.push(warn);
-    let pulse = 0;
-    const warnTimer = this.time.addEvent({
-      delay: 150,
-      repeat: 6,
-      callback: () => {
-        if (!warn || !warn.active) return;
-        warn.clear();
-        pulse++;
-        const alpha = (pulse % 2 === 0) ? 0.3 : 0.1;
-        warn.fillStyle(0x3b82f6, alpha);
-        warn.fillRect(laser1X, y, laserW, laserH);
-        warn.fillRect(laser2X, y, laserW, laserH);
-        warn.lineStyle(2, 0x60a5fa, 0.6);
-        warn.strokeRect(laser1X, y, laserW, laserH);
-        warn.strokeRect(laser2X, y, laserW, laserH);
-      }
-    });
-    this.patternTimers.push(warnTimer);
+        // Warn for 1 second before lasers appear
+        const warn = this.add.graphics();
+        this.activeWarnings.push(warn);
+        let pulse = 0;
+        const warnTimer = this.time.addEvent({
+          delay: 150,
+          repeat: 6,
+          callback: () => {
+            if (!warn || !warn.active) return;
+            warn.clear();
+            pulse++;
+            const alpha = (pulse % 2 === 0) ? 0.3 : 0.1;
+            warn.fillStyle(0x3b82f6, alpha);
+            warn.fillRect(laser1X, y, laserW, laserH);
+            warn.fillRect(laser2X, y, laserW, laserH);
+            warn.lineStyle(2, 0x60a5fa, 0.6);
+            warn.strokeRect(laser1X, y, laserW, laserH);
+            warn.strokeRect(laser2X, y, laserW, laserH);
+          }
+        });
+        this.patternTimers.push(warnTimer);
 
-    // After 1 second, activate lasers and start orb spawns
-    this.patternTimers.push(this.time.delayedCall(1050, () => {
-      if (warn && warn.active) warn.destroy();
-      if (this.state !== "DODGE") return;
+        // After 1 second, activate lasers
+        this.patternTimers.push(this.time.delayedCall(1050, () => {
+          if (warn && warn.active) warn.destroy();
+          if (this.state !== "DODGE") return;
 
-      this.cameras.main.shake(150, 0.005);
+          this.cameras.main.shake(150, 0.005);
 
-      // Create solid lasers
-      const l1 = { x: laser1X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: duration - 1050 };
-      const l2 = { x: laser2X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: duration - 1050 };
-      this.lasers.push(l1, l2);
+          // Create solid lasers
+          const laserLife = cycleDuration - 1050;
+          const l1 = { x: laser1X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: laserLife };
+          const l2 = { x: laser2X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: laserLife };
+          this.lasers.push(l1, l2);
 
-      const drawStaticLaser = (l) => {
-        if (!l.graphics || !l.graphics.active) return;
-        l.graphics.clear();
-        // Electric glow
-        l.graphics.fillStyle(0x3b82f6, 0.2);
-        l.graphics.fillRect(l.x - 6, l.y, l.w + 12, l.h);
-        // Solid core
-        l.graphics.fillStyle(0x3b82f6, 0.9);
-        l.graphics.fillRect(l.x, l.y, l.w, l.h);
-        // White energy line
-        l.graphics.lineStyle(2, 0xffffff, 0.8);
-        l.graphics.beginPath();
-        l.graphics.moveTo(l.x + l.w / 2, l.y);
-        l.graphics.lineTo(l.x + l.w / 2, l.y + l.h);
-        l.graphics.strokePath();
-      };
+          const zigzagPoints1 = [];
+          const zigzagPoints2 = [];
+          const segments = 12;
+          for (let s = 0; s <= segments; s++) {
+            zigzagPoints1.push((s === 0 || s === segments) ? 0 : Phaser.Math.Between(-6, 6));
+            zigzagPoints2.push((s === 0 || s === segments) ? 0 : Phaser.Math.Between(-6, 6));
+          }
 
-      drawStaticLaser(l1);
-      drawStaticLaser(l2);
+          const drawStaticLaser = (l, zigzags) => {
+            if (!l.graphics || !l.graphics.active) return;
+            l.graphics.clear();
+            
+            // Jitter zigzag points slightly
+            for (let s = 1; s < segments; s++) {
+              zigzags[s] += Phaser.Math.Between(-2, 2);
+              zigzags[s] = Phaser.Math.Clamp(zigzags[s], -8, 8);
+            }
 
-      this.tweens.add({
-        targets: [l1, l2],
-        alpha: 1, // dummy
-        duration: duration - 1050,
-        onUpdate: () => {
-          if (l1.graphics) drawStaticLaser(l1);
-          if (l2.graphics) drawStaticLaser(l2);
-        },
-        onComplete: () => {
-          if (l1.graphics && l1.graphics.active) l1.graphics.destroy();
-          if (l2.graphics && l2.graphics.active) l2.graphics.destroy();
-          const idx1 = this.lasers.indexOf(l1);
-          if (idx1 > -1) this.lasers.splice(idx1, 1);
-          const idx2 = this.lasers.indexOf(l2);
-          if (idx2 > -1) this.lasers.splice(idx2, 1);
-        }
-      });
-    }));
+            // Electric glow
+            l.graphics.fillStyle(0x3b82f6, 0.15);
+            l.graphics.fillRect(l.x - 6, l.y, l.w + 12, l.h);
+            // Solid core
+            l.graphics.fillStyle(0x3b82f6, 0.85);
+            l.graphics.fillRect(l.x, l.y, l.w, l.h);
+            // Jagged zigzag lightning core
+            l.graphics.lineStyle(2, 0xffffff, 0.95);
+            l.graphics.beginPath();
+            for (let s = 0; s <= segments; s++) {
+              const t = s / segments;
+              const px = l.x + l.w / 2 + zigzags[s];
+              const py = l.y + t * l.h;
+              if (s === 0) l.graphics.moveTo(px, py);
+              else l.graphics.lineTo(px, py);
+            }
+            l.graphics.strokePath();
 
-    // Spawn massive tracking orbs every 2 seconds
-    for (let t = 1500; t < duration; t += 2000) {
+            // Random edge spark forks
+            if (Math.random() < 0.4) {
+              const sparkCount = Phaser.Math.Between(1, 3);
+              for (let sp = 0; sp < sparkCount; sp++) {
+                l.graphics.lineStyle(1, 0x93c5fd, 0.7);
+                const sx = l.x + l.w / 2;
+                const sy = l.y + Math.random() * l.h;
+                const forkLen = Phaser.Math.Between(4, 12);
+                const forkDir = Math.random() < 0.5 ? -1 : 1;
+                l.graphics.beginPath();
+                l.graphics.moveTo(sx, sy);
+                l.graphics.lineTo(sx + forkLen * forkDir, sy + Phaser.Math.Between(-4, 4));
+                l.graphics.strokePath();
+              }
+            }
+          };
+
+          drawStaticLaser(l1, zigzagPoints1);
+          drawStaticLaser(l2, zigzagPoints2);
+
+          this.tweens.add({
+            targets: [l1, l2],
+            alpha: 1, // dummy
+            duration: laserLife,
+            onUpdate: () => {
+              if (l1.graphics) drawStaticLaser(l1, zigzagPoints1);
+              if (l2.graphics) drawStaticLaser(l2, zigzagPoints2);
+            },
+            onComplete: () => {
+              if (l1.graphics && l1.graphics.active) l1.graphics.destroy();
+              if (l2.graphics && l2.graphics.active) l2.graphics.destroy();
+              const idx1 = this.lasers.indexOf(l1);
+              if (idx1 > -1) this.lasers.splice(idx1, 1);
+              const idx2 = this.lasers.indexOf(l2);
+              if (idx2 > -1) this.lasers.splice(idx2, 1);
+            }
+          });
+        }));
+      }));
+    };
+
+    // Trigger two cycles of the lasers (halfway through, they reset)
+    const half = duration / 2;
+    spawnLasers(0, half);
+    spawnLasers(half, half);
+
+    // Spawn 2 massive tracking orbs every 4 seconds
+    for (let t = 1500; t < duration; t += 4000) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
         if (this.state !== "DODGE" || !this.soul) return;
 
@@ -1222,20 +1264,72 @@ export class BulletHellScene extends Phaser.Scene {
         
         // Massive slow-moving tracking orb
         const speed = this.isDesperation ? 75 : 60;
-        const radius = 22; // Very large orb
+        const radius = 20; // Very large orb
         
-        const orb = {
-          x: spawnX,
-          y: spawnY,
-          vx: 0,
-          vy: 0,
-          radius: radius,
-          isHoming: true,
-          homingSpeed: speed,
-          color: 0xec4899, // Pinkish purple to distinguish it
-          trail: []
+        const createOrb = (xOffset) => {
+          return {
+            x: spawnX + xOffset,
+            y: spawnY,
+            vx: 0,
+            vy: 0,
+            radius: radius,
+            isHoming: true,
+            homingSpeed: speed,
+            color: 0x2dd4bf, // Cyan soul orb style (like Pattern 1)
+            trail: [],
+            life: 3000, // Explode after 3 seconds
+            onExplode: (ex, ey) => {
+              if (this.state !== "DODGE") return;
+
+              // Explosion Damage check (radius * 2.5)
+              if (this.soul) {
+                const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, ex, ey);
+                if (dist < radius * 2.5 + this.soulRadius) {
+                  this.triggerHit();
+                }
+              }
+
+              // Electric explosion visual effect
+              this.cameras.main.shake(150, 0.008);
+              const burst = this.add.graphics();
+              let bPulse = 0;
+              const expTimer = this.time.addEvent({
+                delay: 30,
+                repeat: 8,
+                callback: () => {
+                  if (!burst || !burst.active) return;
+                  burst.clear();
+                  bPulse++;
+                  const a = 1 - (bPulse / 9);
+                  burst.fillStyle(0xffffff, a);
+                  burst.fillCircle(ex, ey, radius * 1.5 + bPulse * 2);
+                  burst.lineStyle(3, 0x3b82f6, a); // Electric blue
+                  burst.strokeCircle(ex, ey, radius * 2 + bPulse * 4);
+                  
+                  // Jagged sparks
+                  if (bPulse % 2 !== 0) {
+                    for (let i = 0; i < 5; i++) {
+                      const angle = Math.random() * Math.PI * 2;
+                      const len = Phaser.Math.Between(15, 35);
+                      burst.lineStyle(2, 0xffffff, a);
+                      burst.beginPath();
+                      burst.moveTo(ex, ey);
+                      burst.lineTo(ex + Math.cos(angle)*len, ey + Math.sin(angle)*len);
+                      burst.strokePath();
+                    }
+                  }
+                }
+              });
+              this.patternTimers.push(expTimer);
+
+              this.time.delayedCall(300, () => {
+                if (burst) burst.destroy();
+              });
+            }
+          };
         };
-        this.bullets.push(orb);
+
+        this.bullets.push(createOrb(-30), createOrb(30));
       }));
     }
   }
@@ -1431,6 +1525,15 @@ export class BulletHellScene extends Phaser.Scene {
       // Bullet Physics & Collision — Soul Orb Visuals
       for (let i = this.bullets.length - 1; i >= 0; i--) {
         const b = this.bullets[i];
+
+        if (b.life !== undefined) {
+          b.life -= delta;
+          if (b.life <= 0) {
+            this.bullets.splice(i, 1);
+            if (b.onExplode) b.onExplode(b.x, b.y);
+            continue;
+          }
+        }
 
         // Homing behavior for CircleBlast
         if (b.isHoming && this.soul) {
