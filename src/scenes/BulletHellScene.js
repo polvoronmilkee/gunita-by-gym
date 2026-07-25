@@ -882,7 +882,7 @@ export class BulletHellScene extends Phaser.Scene {
   fireCircleBlast() {
     if (this.state !== "DODGE") return;
     const count = this.isDesperation ? 12 : 14;
-    const radius = 55;
+    const radius = 60;
     const centerX = this.crystalEnemy.x;
     const centerY = this.crystalEnemy.y;
     const ringBullets = [];
@@ -905,7 +905,7 @@ export class BulletHellScene extends Phaser.Scene {
       if (this.state !== "DODGE" || !this.soul) return;
       const targetX = this.soul.x;
       const targetY = this.soul.y;
-      const speed = this.isDesperation ? 240 : 280;
+      const speed = this.isDesperation ? 250 : 290;
 
       ringBullets.forEach(b => {
         if (this.bullets.includes(b)) {
@@ -924,7 +924,7 @@ export class BulletHellScene extends Phaser.Scene {
     const arenaY = this.arena.y;
     const arenaW = this.arena.w;
 
-    const count = 9; // Increased columns slightly
+    const count = 10; // Increased columns slightly
     const step = arenaW / (count + 1);
     const phaseOffset = Math.random() * Math.PI * 2; // Randomize phase per wave
 
@@ -938,7 +938,7 @@ export class BulletHellScene extends Phaser.Scene {
         y: arenaY,
         vx: Math.cos(phaseOffset) * 15,
         vy: baseSpeed,
-        radius: 4
+        radius: 5
       });
     }
   }
