@@ -392,41 +392,62 @@ export class Grave1 extends Phaser.Scene {
     }
     this.physics.add.collider(this.player.sprite, obstacles);
 
-    // Spawn NPCs at designated land coordinates
+    // Spawn NPCs dynamically from CHARS_SPAWNS layer in TMJ map
     this.npcs = this.physics.add.staticGroup();
-    const npcPlacements = [
-      { key: "debt-collector", x: 500, y: 400 },
-      { key: "old-fisherman", x: 920, y: 780 }, // Moved from water to land
-      { key: "old-wife", x: 380, y: 480 },
-      { key: "random-guy", x: 1100, y: 600 },
-      { key: "random-woman", x: 1150, y: 620 },
-      { key: "school-girl", x: 950, y: 520 },
-      { key: "sick-wife", x: 450, y: 460 },
-      { key: "young-daughter", x: 400, y: 490 },
-      { key: "young-fisherman", x: 950, y: 800 }, // Moved from water to land
-      { key: "young-kid", x: 980, y: 530 }
-    ];
+    
+    // Map TMJ character names to sprite keys
+    const characterNameMap = {
+      "OLD-FISHERMAN": "old-fisherman",
+      "YOUNG-FISHERMAN": "young-fisherman",
+      "OLD-WIFE": "old-wife",
+      "OLD-DAUGHTER": "young-daughter",
+      "SCHOOL-GIRL": "school-girl",
+      "YOUNG-KID": "young-kid",
+      "npc-RANDOM-GUY": "random-guy",
+      "npc-RANDOM-WOMAN": "random-woman",
+      "npc-DEBT-COLLECTOR": "debt-collector",
+      "npc-SICK-WFE": "sick-wife"
+    };
 
-    npcPlacements.forEach(placement => {
-      const pos = this.getNearestLandCoordinate(placement.x, placement.y, map);
-      const npc = this.npcs.create(pos.x, pos.y, `npc-${placement.key}`);
-      npc.setDepth(1);
-      if (npc.body) {
-        npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
-        npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
-      }
+    // Get CHARS_SPAWNS layer from map
+    const charsSpawnLayer = map.getObjectLayer("CHARS_SPAWNS");
+    
+    if (charsSpawnLayer && charsSpawnLayer.objects) {
+      charsSpawnLayer.objects.forEach(obj => {
+        // Skip polygon objects, only process point objects
+        if (obj.polygon || !obj.point) {
+          return;
+        }
 
-      const animKey = `npc-anim-${placement.key}`;
-      if (!this.anims.exists(animKey)) {
-        this.anims.create({
-          key: animKey,
-          frames: this.anims.generateFrameNumbers(`npc-${placement.key}`, { start: 0, end: 3 }),
-          frameRate: 4,
-          repeat: -1
-        });
-      }
-      npc.setFrame(0); // Set to default frame (face down) instead of spinning
-    });
+        const charName = obj.name;
+        const spriteKey = characterNameMap[charName];
+        
+        if (spriteKey) {
+          const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
+          const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
+          npc.setDepth(1);
+          if (npc.body) {
+            npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
+            npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
+          }
+
+          const animKey = `npc-anim-${spriteKey}`;
+          if (!this.anims.exists(animKey)) {
+            this.anims.create({
+              key: animKey,
+              frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: 3 }),
+              frameRate: 4,
+              repeat: -1
+            });
+          }
+          npc.setFrame(0); // Set to default frame (face down) instead of spinning
+        } else {
+          console.warn(`Unknown character name in CHARS_SPAWNS: ${charName}`);
+        }
+      });
+    } else {
+      console.warn("CHARS_SPAWNS layer not found in map");
+    }
 
     this.physics.add.collider(this.player.sprite, this.npcs);
         this.storyStage = 1;
