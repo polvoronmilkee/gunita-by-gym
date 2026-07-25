@@ -629,7 +629,7 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     }
 
-    if (nearestDist < 45) {
+    if (nearestDist < 40) {
       nearGrave = true;
       this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
       if (this.interactionPrompt && closestGravePos) {
