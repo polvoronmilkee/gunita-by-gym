@@ -318,7 +318,6 @@ export class Grave1 extends Phaser.Scene {
 
     this.player = new Player(this, spawnX, spawnY, {
       onDashStart: () => this.audioManager.playDashSfx(),
-      onDirectionChange: () => this.audioManager.playVinoMoveSfx(),
     });
     this.player.sprite.setDepth(this.player.sprite.y);
     this.cursors = this.input.keyboard.createCursorKeys();

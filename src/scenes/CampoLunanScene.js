@@ -279,7 +279,6 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.player = new Player(this, spawnX, spawnY, {
       onDashStart: () => this.audioManager.playDashSfx(),
-      onDirectionChange: () => this.audioManager.playVinoMoveSfx(),
     });
     this.player.sprite.setDepth(0);
     this.cursors = this.input.keyboard.createCursorKeys();
