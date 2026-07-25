@@ -14,9 +14,10 @@ export class InteractionPrompt {
     scene.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown);
   }
 
-  show(target, key, label) {
+  show(target, key, label, yOffset = -32) {
     // If target is already active with the same label, just update position
     if (this.activeTarget === target && this.currentLabel === label) {
+      this.offsetY = yOffset;
       this.updatePosition();
       return;
     }
@@ -25,6 +26,7 @@ export class InteractionPrompt {
 
     this.activeTarget = target;
     this.currentLabel = label;
+    this.offsetY = yOffset;
 
     // Create the DOM structure
     const wrapper = document.createElement("div");
@@ -45,9 +47,9 @@ export class InteractionPrompt {
     inner.appendChild(labelText);
     wrapper.appendChild(inner);
 
-    // Initial positioning offset (-20px above target)
+    // Initial positioning offset
     const x = Math.round(target.x);
-    const y = Math.round(target.y - 40);
+    const y = Math.round(target.y + yOffset);
 
     // Add DOM Element to scene
     this.domElement = this.scene.add.dom(x, y, wrapper);
@@ -56,9 +58,10 @@ export class InteractionPrompt {
 
   updatePosition() {
     if (this.domElement && this.activeTarget) {
+      const yOffset = this.offsetY !== undefined ? this.offsetY : -32;
       this.domElement.setPosition(
         Math.round(this.activeTarget.x),
-        Math.round(this.activeTarget.y - 40)
+        Math.round(this.activeTarget.y + yOffset)
       );
     }
   }
