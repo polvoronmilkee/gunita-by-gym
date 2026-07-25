@@ -250,15 +250,17 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Add Pink Frog at (1359, 1075)
-    this.pinkFrog = this.add.sprite(1359, 1075, "pink-frog");
+    // Add Pink Frog at (1359, 1075) with Physics
+    this.pinkFrog = this.physics.add.sprite(1359, 1075, "pink-frog");
     this.pinkFrog.setScale(0.75);
     this.pinkFrog.play("pink-frog-idle");
+    this.pinkFrog.setImmovable(true); // Prevents Vino from pushing it
 
-    // Add Poison Shroom at (1396, 1074)
-    this.poisonShroom = this.add.sprite(1384, 1074, "poison-shroom");
+    // Add Poison Shroom at (1384, 1074) with Physics
+    this.poisonShroom = this.physics.add.sprite(1384, 1074, "poison-shroom");
     this.poisonShroom.setScale(0.75);
     this.poisonShroom.play("poison-shroom-idle");
+    this.poisonShroom.setImmovable(true); // Prevents Vino from pushing it
 
     // Retrieve coordinates from local cache immediately, default to (1278, 1779)
     const cache = getCache();
@@ -281,6 +283,10 @@ export class CampoLunanScene extends Phaser.Scene {
     });
     this.player.sprite.setDepth(0);
     this.cursors = this.input.keyboard.createCursorKeys();
+
+    // Add colliders so Vino can't walk through them
+    this.physics.add.collider(this.player.sprite, this.pinkFrog);
+    this.physics.add.collider(this.player.sprite, this.poisonShroom);
 
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
@@ -583,12 +589,50 @@ export class CampoLunanScene extends Phaser.Scene {
       runDialogue();
     };
 
+    const triggerFrogDialogue = () => {
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+
+      this.dialogue.showText(
+        "Pink Frog",
+        "Ribbit... Did you bring any flies?",
+        () => {
+          this.dialogue.hide();
+          this.dialogueActive = false;
+        },
+      );
+    };
+
+    const triggerShroomDialogue = () => {
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+
+      this.dialogue.showText(
+        "Poison Shroom",
+        "I wouldn't touch me if I were you...",
+        () => {
+          this.dialogue.hide();
+          this.dialogueActive = false;
+        },
+      );
+    };
+
     // Keyboard bindings for dialogue & interaction
     this.input.keyboard.on("keydown-E", () => {
       if (this.dialogueActive) {
         this.dialogue.onComplete();
       } else if (this.isNearGrave) {
         triggerGraveDialogue();
+      } else if (this.isNearFrog) {
+        triggerFrogDialogue();
+      } else if (this.isNearShroom) {
+        triggerShroomDialogue();
       }
     });
 
@@ -717,11 +761,38 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     }
 
+    // Distance checks for NPCs
+    const distFrog = Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      this.pinkFrog.x,
+      this.pinkFrog.y,
+    );
+    const distShroom = Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      this.poisonShroom.x,
+      this.poisonShroom.y,
+    );
+
+    this.isNearFrog = distFrog < 40;
+    this.isNearShroom = distShroom < 40;
+
     if (nearestDist < 40) {
       nearGrave = true;
       this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
       if (this.interactionPrompt && closestGravePos) {
         this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE");
+      }
+    } else if (this.isNearFrog) {
+      this.hud.setStatus("PRESS [E] TO TALK TO THE PINK FROG");
+      if (this.interactionPrompt) {
+        this.interactionPrompt.show({ x: this.pinkFrog.x, y: this.pinkFrog.y - 20 }, "E", "TALK");
+      }
+    } else if (this.isNearShroom) {
+      this.hud.setStatus("PRESS [E] TO TALK TO THE POISON SHROOM");
+      if (this.interactionPrompt) {
+        this.interactionPrompt.show({ x: this.poisonShroom.x, y: this.poisonShroom.y - 20 }, "E", "TALK");
       }
     } else {
       this.hud.setStatus(
