@@ -127,6 +127,10 @@ export class BulletHellScene extends Phaser.Scene {
     this.updateArenaBounds();
     this.drawBox();
 
+    // Black Overlay for Intro Sequence
+    this.introBlackOverlay = this.add.rectangle(centerX, height / 2, width, height, 0x000000);
+    this.introBlackOverlay.setDepth(9999);
+
     // 4. Start Flow
     this.startIntroSequence();
   }
@@ -218,14 +222,46 @@ export class BulletHellScene extends Phaser.Scene {
     });
   }
 
+  // --- GLITCH EFFECT ---
+  glitchElementIn(el, delay = 0) {
+    el.setAlpha(0);
+    this.tweens.add({
+      targets: el,
+      alpha: 1,
+      duration: 600,
+      delay: delay,
+      ease: 'Stepped',
+      easeParams: [8],
+    });
+    
+    // Position jitter
+    const origX = el.x;
+    this.tweens.add({
+      targets: el,
+      x: { 
+        getEnd: () => origX + Phaser.Math.Between(-15, 15),
+        getStart: () => origX 
+      },
+      duration: 50,
+      delay: delay,
+      yoyo: true,
+      repeat: 8,
+      onComplete: () => { el.x = origX; }
+    });
+  }
+
   // --- TOP AREA: CRYSTAL HP ---
   createCrystalHPUI(centerX) {
+    const uiDelay = 4200; // Delay UI appearance until black screen fades out
+
     // Soul Title
-    this.add.text(centerX, 25, `[${this.soulName.toUpperCase()}]`, {
+    this.soulTitle = this.add.text(centerX, 25, `[${this.soulName.toUpperCase()}]`, {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: "12px",
       color: "#2dd4bf"
     }).setOrigin(0.5);
+
+    this.glitchElementIn(this.soulTitle, uiDelay);
 
     // 6 Crystal HP Icons
     this.crystalIcons = [];
@@ -233,6 +269,7 @@ export class BulletHellScene extends Phaser.Scene {
       const icon = this.add.sprite(centerX - 75 + i * 30, 50, "fragment-main");
       icon.setScale(1.2);
       this.crystalIcons.push(icon);
+      this.glitchElementIn(icon, uiDelay);
     }
     this.updateCrystalHPUI();
 
@@ -240,6 +277,7 @@ export class BulletHellScene extends Phaser.Scene {
     this.crystalEnemy = this.add.sprite(centerX, 110, "fragment-main");
     this.crystalEnemy.setScale(1.8);
     this.crystalEnemy.play("fragment-anim");
+    this.glitchElementIn(this.crystalEnemy, uiDelay);
 
     this.crystalIdleTween = this.tweens.add({
       targets: this.crystalEnemy,
@@ -304,17 +342,20 @@ export class BulletHellScene extends Phaser.Scene {
 
   // --- SOUL HP BAR (PLAYER SIDE) ---
   createSoulHPUI(centerX) {
+    const uiDelay = 4200; // Same delay as crystal HP
+
     // ADJUST VINO HP POSITION HERE:
     const vinoHpX = centerX - 225;  // Left starting X position
     const vinoHpY = 445;            // Y position below Timer Bar
     const heartSpacing = 28;        // Gap between hearts
     const heartOffsetFromText = 50; // Distance from VINO label to first heart
 
-    this.add.text(vinoHpX, vinoHpY, "VINO", {
+    this.vinoLabel = this.add.text(vinoHpX, vinoHpY, "VINO", {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: "12px",
       color: "#b57fee"
     }).setOrigin(0.5);
+    this.glitchElementIn(this.vinoLabel, uiDelay);
 
     this.soulIcons = [];
     this.soulTweens = [];
@@ -325,6 +366,8 @@ export class BulletHellScene extends Phaser.Scene {
         fontSize: "22px",
         color: "#b57fee"
       }).setOrigin(0.5);
+      
+      this.glitchElementIn(soul, uiDelay);
 
       const tw = this.tweens.add({
         targets: soul,
@@ -488,18 +531,67 @@ export class BulletHellScene extends Phaser.Scene {
     this.setChoiceButtonsState("HIDDEN");
     this.setRiddleUIElementsVisible(false);
 
-    this.tweenBoxHeight(this.HEIGHT_DIALOGUE, () => {
-      this.dialogueText.setOrigin(0, 0);
-      this.dialogueText.setPosition(this.boxCenterX - this.boxWidth / 2 + 25, this.boxCenterY - 35);
-      this.dialogueText.setAlign("left");
-      this.dialogueText.setVisible(true);
+    // Hide box graphics initially for the full-screen text
+    this.boxGraphics.setAlpha(0);
 
-      const introLine = "The sea remembers what men forget...\nProve your soul remembers.";
-      this.typewriterDialogue(introLine, () => {
-        this.waitForAdvance(() => {
-          this.transitionToRiddle();
-        });
-      });
+    const { width, height } = this.scale;
+    const titleText = this.add.text(width / 2, height / 2 - 20, "YOU HAVE ENTERED A FRAGMENTED MEMORY", {
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: "32px",
+        color: "#de28cbff" // Magenta/Purple
+    }).setOrigin(0.5).setAlpha(0).setDepth(10000);
+
+    const subText = this.add.text(width / 2, height / 2 + 70, "Answer the riddles.\nSurvive the battles.\nReclaim the truth!", {
+        fontFamily: "'Press Start 2P', monospace",
+        fontSize: "16px",
+        color: "#b975f1ff",
+        align: "center",
+        lineSpacing: 12
+    }).setOrigin(0.5).setAlpha(0).setDepth(10000);
+
+    // Fade in texts
+    this.tweens.add({
+        targets: [titleText, subText],
+        alpha: 1,
+        duration: 800,
+        hold: 2500,
+        yoyo: true,
+        onComplete: () => {
+            titleText.destroy();
+            subText.destroy();
+            
+            // Fade out the black overlay
+            this.tweens.add({
+                targets: this.introBlackOverlay,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => {
+                    this.introBlackOverlay.destroy();
+                    
+                    // Fade in box graphics
+                    this.tweens.add({
+                        targets: this.boxGraphics,
+                        alpha: 1,
+                        duration: 300,
+                        onComplete: () => {
+                            this.tweenBoxHeight(this.HEIGHT_DIALOGUE, () => {
+                              this.dialogueText.setOrigin(0, 0);
+                              this.dialogueText.setPosition(this.boxCenterX - this.boxWidth / 2 + 25, this.boxCenterY - 35);
+                              this.dialogueText.setAlign("left");
+                              this.dialogueText.setVisible(true);
+
+                              const introLine = "The sea remembers what men forget...\nProve your soul remembers.";
+                              this.typewriterDialogue(introLine, () => {
+                                this.waitForAdvance(() => {
+                                  this.transitionToRiddle();
+                                });
+                              });
+                            });
+                        }
+                    });
+                }
+            });
+        }
     });
   }
 

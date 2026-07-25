@@ -9,6 +9,7 @@ import { getCache, setCache, getEssence, setEssence } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
 import characterData from "../data/characters.json";
 import { AudioManager } from "../utils/audioManager.js";
+import { TransitionSystem } from "../systems/TransitionSystem.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -1244,46 +1245,49 @@ export class Grave1 extends Phaser.Scene {
 
     const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
     
-    this.scene.pause();
-    this.scene.launch('BulletHellScene', {
-        riddleData: riddleData,
-        soulName: data.name,
-        dodgeLines: data.dodge_lines,
-        bgKey: bgKey || "bg-fish-basket",
-        onComplete: () => {
-            this.dialogueActive = false;
-            this.scene.stop('BulletHellScene');
-            this.scene.resume();
-            onCorrect();
-        },
-        onDeath: async () => {
-            this.dialogueActive = false;
-            this.scene.stop('BulletHellScene');
-            this.scene.resume();
-            
-            const cache = getCache();
-            if (cache && cache.player_id) {
-                await resetPlayerRiddles(cache.player_id);
-            }
-            setEssence(5); // reset essence
-            
-            // Show Death Screen then transition
-            const blackScreen = this.add.graphics();
-            blackScreen.fillStyle(0x000000, 1);
-            blackScreen.fillRect(0, 0, this.scale.width, this.scale.height);
-            blackScreen.setDepth(9999);
-            blackScreen.setScrollFactor(0);
-            
-            const deathText = this.add.text(this.scale.width/2, this.scale.height/2, "THE ECHOES CONSUMED YOU", {
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: "16px",
-                color: "#ff4444"
-            }).setOrigin(0.5).setDepth(10000).setScrollFactor(0);
-            
-            this.time.delayedCall(3000, () => {
-                this.scene.start('CampoLunanScene');
-            });
-        }
+    // Use the shattered glass transition before launching the bullet hell scene
+    TransitionSystem.shatteredGlassTransition(this, () => {
+      this.scene.pause();
+      this.scene.launch('BulletHellScene', {
+          riddleData: riddleData,
+          soulName: data.name,
+          dodgeLines: data.dodge_lines,
+          bgKey: bgKey || "bg-fish-basket",
+          onComplete: () => {
+              this.dialogueActive = false;
+              this.scene.stop('BulletHellScene');
+              this.scene.resume();
+              onCorrect();
+          },
+          onDeath: async () => {
+              this.dialogueActive = false;
+              this.scene.stop('BulletHellScene');
+              this.scene.resume();
+              
+              const cache = getCache();
+              if (cache && cache.player_id) {
+                  await resetPlayerRiddles(cache.player_id);
+              }
+              setEssence(5); // reset essence
+              
+              // Show Death Screen then transition
+              const blackScreen = this.add.graphics();
+              blackScreen.fillStyle(0x000000, 1);
+              blackScreen.fillRect(0, 0, this.scale.width, this.scale.height);
+              blackScreen.setDepth(9999);
+              blackScreen.setScrollFactor(0);
+              
+              const deathText = this.add.text(this.scale.width/2, this.scale.height/2, "THE ECHOES CONSUMED YOU", {
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "16px",
+                  color: "#ff4444"
+              }).setOrigin(0.5).setDepth(10000).setScrollFactor(0);
+              
+              this.time.delayedCall(3000, () => {
+                  this.scene.start('CampoLunanScene');
+              });
+          }
+      });
     });
   }
 }
