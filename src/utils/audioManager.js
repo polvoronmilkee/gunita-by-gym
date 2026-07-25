@@ -15,10 +15,10 @@ const clampIndex = (value, max) => {
 };
 
 export class AudioManager {
-  constructor(scene) {
+  constructor(scene, defaultTrackKey = null) {
     this.scene = scene;
-    this.musicTracks = [];
-    this.currentTrackIndex = 0;
+    this.musicTracks = {};
+    this.currentTrackKey = defaultTrackKey;
     this.currentTrack = null;
     this.isDestroyed = false;
 
@@ -37,19 +37,25 @@ export class AudioManager {
     });
 
     for (const track of AUDIO_SETTINGS.tracks) {
-      this.musicTracks.push(
-        scene.sound.add(track.key, {
+      if (scene.sound.get(track.key) || scene.cache.audio.has(track.key)) {
+        this.musicTracks[track.key] = scene.sound.add(track.key, {
           volume: AUDIO_SETTINGS.volume.music,
-          loop: false,
-        }),
-      );
+          loop: true,
+        });
+      }
     }
 
-    if (this.musicTracks.length > 0) {
-      this.currentTrackIndex = persisted.trackIndex;
-      if (this.musicEnabled) {
-        this.playCurrentTrack();
+    if (defaultTrackKey && this.musicTracks[defaultTrackKey]) {
+      this.currentTrackKey = defaultTrackKey;
+    } else if (AUDIO_SETTINGS.tracks.length > 0) {
+      const fallbackTrack = AUDIO_SETTINGS.tracks[clampIndex(persisted.trackIndex, AUDIO_SETTINGS.tracks.length)];
+      if (fallbackTrack) {
+        this.currentTrackKey = fallbackTrack.key;
       }
+    }
+
+    if (this.musicEnabled && this.currentTrackKey) {
+      this.playTrack(this.currentTrackKey);
     }
 
     this.handleShutdown = () => this.destroy();
@@ -91,7 +97,7 @@ export class AudioManager {
     const state = {
       musicEnabled: this.musicEnabled,
       sfxEnabled: this.sfxEnabled,
-      trackIndex: this.currentTrackIndex,
+      trackKey: this.currentTrackKey,
     };
 
     try {
@@ -104,37 +110,34 @@ export class AudioManager {
     }
   }
 
-  playCurrentTrack() {
-    if (
-      !this.musicEnabled ||
-      this.musicTracks.length === 0 ||
-      this.isDestroyed
-    ) {
+  playTrack(key) {
+    if (!key || this.isDestroyed) {
       return;
     }
 
-    this.currentTrack = this.musicTracks[this.currentTrackIndex];
-    if (!this.currentTrack || this.currentTrack.isPlaying) {
+    this.currentTrackKey = key;
+
+    if (!this.musicEnabled) {
       return;
     }
 
-    this.currentTrack.once("complete", this.handleTrackComplete, this);
-    this.currentTrack.play();
+    if (this.currentTrack && this.currentTrack.isPlaying) {
+      if (this.currentTrack.key === key) {
+        return;
+      }
+      this.currentTrack.stop();
+    }
+
+    this.currentTrack = this.musicTracks[key];
+    if (this.currentTrack) {
+      this.currentTrack.play({ loop: true, volume: AUDIO_SETTINGS.volume.music });
+    }
   }
 
-  handleTrackComplete() {
-    if (
-      !this.musicEnabled ||
-      this.musicTracks.length === 0 ||
-      this.isDestroyed
-    ) {
-      return;
+  playCurrentTrack() {
+    if (this.currentTrackKey) {
+      this.playTrack(this.currentTrackKey);
     }
-
-    this.currentTrackIndex =
-      (this.currentTrackIndex + 1) % this.musicTracks.length;
-    this.persistState();
-    this.playCurrentTrack();
   }
 
   toggleMusic() {
@@ -183,6 +186,32 @@ export class AudioManager {
     this.vinoMoveSfx?.play();
   }
 
+  playRainThunder() {
+    if (!this.sfxEnabled || this.isDestroyed) {
+      return;
+    }
+    if (!this.rainThunderSfx) {
+      if (this.scene.cache.audio.has(AUDIO_SETTINGS.sfx.rainAndThunder.key)) {
+        this.rainThunderSfx = this.scene.sound.add(
+          AUDIO_SETTINGS.sfx.rainAndThunder.key,
+          {
+            volume: 0.6,
+            loop: true,
+          },
+        );
+      }
+    }
+    if (this.rainThunderSfx && !this.rainThunderSfx.isPlaying) {
+      this.rainThunderSfx.play();
+    }
+  }
+
+  stopRainThunder() {
+    if (this.rainThunderSfx && this.rainThunderSfx.isPlaying) {
+      this.rainThunderSfx.stop();
+    }
+  }
+
   destroy() {
     if (this.isDestroyed) {
       return;
@@ -193,6 +222,7 @@ export class AudioManager {
     this.buttonSfx?.stop();
     this.dashSfx?.stop();
     this.vinoMoveSfx?.stop();
+    this.rainThunderSfx?.stop();
     this.currentTrack = null;
   }
 }

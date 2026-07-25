@@ -8,6 +8,7 @@ import { MapOverlay } from "../ui/MapOverlay.js";
 import { getCache, setCache, getEssence, setEssence } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
 import characterData from "../data/characters.json";
+import { AudioManager } from "../utils/audioManager.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -34,6 +35,11 @@ export class Grave1 extends Phaser.Scene {
     this.load.image('rosary', 'src/assets/grave1-elements/fragments-uncovered/rosary.png');
     this.load.image('daughters-drawing', 'src/assets/grave1-elements/fragments-uncovered/daughters-drawing.png');
     this.load.json('final-riddle', 'src/assets/data/dialogues/grave-1-final-riddle/final-riddle.json');
+    this.load.spritesheet('rain', 'src/assets/grave1-v2/rain.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.image('rain-tile', 'src/assets/grave1-v2/rain.png');
 
     // Mappings for grave1-v2 tilesets
     const mappings = {
@@ -297,7 +303,12 @@ export class Grave1 extends Phaser.Scene {
     const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 1137;
     const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 550;
 
-    this.player = new Player(this, spawnX, spawnY);
+    this.audioManager = new AudioManager(this, "village-v1");
+
+    this.player = new Player(this, spawnX, spawnY, {
+      onDashStart: () => this.audioManager.playDashSfx(),
+      onDirectionChange: () => this.audioManager.playVinoMoveSfx(),
+    });
     this.player.sprite.setDepth(this.player.sprite.y);
     this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -327,6 +338,11 @@ export class Grave1 extends Phaser.Scene {
     const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
+        // Skip Wasteland region object (ID 499) so it doesn't create solid collision walls around the rain area
+        if (obj.id === 499 || (obj.name && obj.name.toLowerCase() === "wasteland")) {
+          return;
+        }
+
         if (obj.polygon && obj.polygon.length >= 3) {
           // Process Tiled Polygons: decompose polygon edges into static rectangle colliders
           const points = obj.polygon.map(p => ({ x: obj.x + p.x, y: obj.y + p.y }));
@@ -501,6 +517,117 @@ export class Grave1 extends Phaser.Scene {
     this.dimGraphics.setDepth(998);
     this.dimGraphics.setVisible(false);
     this.minimapCamera.ignore(this.dimGraphics);
+
+    // --- DYNAMIC WASTELAND / RAIN SYSTEM FROM TILED MAP (ID 499 / "Wasteland") ---
+    if (!this.anims.exists("rain-fall")) {
+      this.anims.create({
+        key: "rain-fall",
+        frames: this.anims.generateFrameNumbers("rain", { start: 0, end: 23 }),
+        frameRate: 16,
+        repeat: -1,
+      });
+    }
+
+    let wastelandObj = null;
+    if (map.objects) {
+      map.objects.forEach(layer => {
+        if (layer.objects) {
+          const found = layer.objects.find(o => o.id === 499 || (o.name && o.name.toLowerCase() === "wasteland"));
+          if (found) wastelandObj = found;
+        }
+      });
+    }
+
+    if (!wastelandObj) {
+      const objLayers = map.getObjectLayerNames ? map.getObjectLayerNames() : [];
+      for (const name of objLayers) {
+        const layer = map.getObjectLayer(name);
+        if (layer && layer.objects) {
+          const found = layer.objects.find(o => o.id === 499 || (o.name && o.name.toLowerCase() === "wasteland"));
+          if (found) {
+            wastelandObj = found;
+            break;
+          }
+        }
+      }
+    }
+
+    if (wastelandObj && wastelandObj.polygon && wastelandObj.polygon.length > 0) {
+      const originX = wastelandObj.x;
+      const originY = wastelandObj.y;
+      const rainPolygonPoints = wastelandObj.polygon.map(p => ({
+        x: originX + p.x,
+        y: originY + p.y
+      }));
+
+      // Calculate Bounding Box
+      const xs = rainPolygonPoints.map(p => p.x);
+      const ys = rainPolygonPoints.map(p => p.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const bboxW = maxX - minX;
+      const bboxH = maxY - minY;
+
+      const rainMaskGraphics = this.make.graphics();
+      rainMaskGraphics.fillStyle(0xffffff);
+      rainMaskGraphics.beginPath();
+      rainMaskGraphics.moveTo(rainPolygonPoints[0].x, rainPolygonPoints[0].y);
+      for (let i = 1; i < rainPolygonPoints.length; i++) {
+        rainMaskGraphics.lineTo(rainPolygonPoints[i].x, rainPolygonPoints[i].y);
+      }
+      rainMaskGraphics.closePath();
+      rainMaskGraphics.fillPath();
+      const rainMask = rainMaskGraphics.createGeometryMask();
+
+      // TileSprite for falling rain layer covering dynamic bounding box
+      this.rainTileSprite = this.add.tileSprite(minX, minY, bboxW, bboxH, "rain-tile");
+      this.rainTileSprite.setOrigin(0, 0);
+      this.rainTileSprite.setAlpha(0.65);
+      this.rainTileSprite.setDepth(9999);
+      this.rainTileSprite.setMask(rainMask);
+
+      // Animated rain drop sprites placed dynamically across polygon bounds
+      const rainPolyGeom = new Phaser.Geom.Polygon(rainPolygonPoints);
+      this.wastelandPolyGeom = rainPolyGeom;
+      this.rainSpritesGroup = this.add.group();
+
+      for (let rx = minX + 32; rx < maxX; rx += 96) {
+        for (let ry = minY + 32; ry < maxY; ry += 96) {
+          if (Phaser.Geom.Polygon.Contains(rainPolyGeom, rx, ry)) {
+            const s = this.add.sprite(rx, ry, "rain");
+            s.setOrigin(0.5, 0.5);
+            s.setAlpha(0.7);
+            s.setDepth(9999);
+            s.play("rain-fall");
+            s.setMask(rainMask);
+            this.rainSpritesGroup.add(s);
+          }
+        }
+      }
+    }
+
+    // Periodic Thunder Lightning & Camera Shake Effects
+    this.time.addEvent({
+      delay: Phaser.Math.Between(7000, 14000),
+      loop: true,
+      callback: () => {
+        if (this.wastelandPolyGeom && this.player && this.player.sprite) {
+          const isInside = Phaser.Geom.Polygon.Contains(
+            this.wastelandPolyGeom,
+            this.player.sprite.x,
+            this.player.sprite.y
+          );
+          if (isInside) {
+            // Flash camera white for lightning effect
+            this.cameras.main.flash(350, 240, 248, 255);
+            // Camera shake effect
+            this.cameras.main.shake(300, 0.009);
+          }
+        }
+      }
+    });
 
     this.minimapFow = this.add.graphics();
     this.minimapFow.setDepth(999);
@@ -947,9 +1074,28 @@ export class Grave1 extends Phaser.Scene {
   }
 
   update() {
+    if (this.rainTileSprite) {
+      this.rainTileSprite.tilePositionY += 12;
+      this.rainTileSprite.tilePositionX -= 3;
+    }
+
     if (this.player && this.player.sprite) {
       // Dynamic depth sorting: Vino's depth updates dynamically according to Y position so he walks in front of lower objects & behind taller objects
       this.player.sprite.setDepth(this.player.sprite.y);
+
+      // Rain and Thunder Audio SFX triggering when player is inside the Wasteland region
+      if (this.wastelandPolyGeom) {
+        const inWasteland = Phaser.Geom.Polygon.Contains(
+          this.wastelandPolyGeom,
+          this.player.sprite.x,
+          this.player.sprite.y
+        );
+        if (inWasteland) {
+          this.audioManager?.playRainThunder();
+        } else {
+          this.audioManager?.stopRainThunder();
+        }
+      }
 
       const chunkX = Math.floor(this.player.sprite.x / 320);
       const chunkY = Math.floor(this.player.sprite.y / 320);

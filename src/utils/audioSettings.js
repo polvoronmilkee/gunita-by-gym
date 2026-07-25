@@ -19,6 +19,18 @@ export const AUDIO_SETTINGS = {
       key: "bg-2",
       path: new URL("../assets/sounds/music/bg-2.mp3", import.meta.url).href,
     },
+    {
+      key: "campo-lunan",
+      path: new URL("../assets/sounds/music/campo_lunan.mp3", import.meta.url).href,
+    },
+    {
+      key: "village-v1",
+      path: new URL("../assets/sounds/music/village_v1.mp3", import.meta.url).href,
+    },
+    {
+      key: "forest-2",
+      path: new URL("../assets/sounds/music/forest_2.mp3", import.meta.url).href,
+    },
   ],
   sfx: {
     button: {
@@ -37,6 +49,13 @@ export const AUDIO_SETTINGS = {
       key: "sfx-vino-move",
       path: new URL(
         "../assets/sounds/sound-effects/vino-move.mp3",
+        import.meta.url,
+      ).href,
+    },
+    rainAndThunder: {
+      key: "sfx-rain-thunder",
+      path: new URL(
+        "../assets/sounds/sound-effects/rain-and-thunder.mp3",
         import.meta.url,
       ).href,
     },

@@ -5,7 +5,6 @@ import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
-import { GROUND_TILE_TEXTURE_KEY } from "../utils/groundTiles.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
@@ -16,29 +15,19 @@ export class CampoLunanScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.json("campo-lunan-map", "src/assets/campo-lunan/campo lunan.tmj");
+    this.load.json("campo-lunan-map", "src/assets/campo-lunanv2/gunita-campo-lunan copy.tmj");
 
-    const images = [
-      "bottom_center_tile.png", "bottom_left_tile.png", "bottom_right_tile.png",
-      "candle_1.png", "candle_2.png", "center tile.png", "center_top_tile.png",
-      "ded trees_1.png", "ded trees_2.png", "fence 2.png", "fence 3.png",
-      "fence 4.png", "fence 5.png", "fence 6.png", "fence 7.png", "fence_1.png",
-      "gate.png", "grass_1.png", "grass_2.png", "Grave 1.png", "Grave 2.png",
-      "Grave 3.png", "Grave 4.png", "Grave 5.png", "Grave 6.png", "left_center_tile.png",
-      "left_stonefence.png", "left_stonefence2.png", "right_side_tile.png",
-      "right_stonefence.png", "right_stonefence2.png", "stone1.png", "stone2.png",
-      "stonefence1.png", "stonefence2.png", "stonepath1.png", "stonepath4.png",
-      "stonepath5.png", "top_left_side_tile.png", "top_right_side_tile.png",
-      "trees-1.png", "trees-2.png"
+    const v2TilesetImages = [
+      "abandoned2.png",
+      "graves1.png",
+      "gravetileset.png",
+      "stonefences1.png",
+      "store.png"
     ];
 
-    images.forEach(img => {
-      this.load.image(img, `src/assets/campo-lunan/${img}`);
+    v2TilesetImages.forEach(img => {
+      this.load.image(img, `src/assets/campo-lunanv2/${img}`);
     });
-
-    // Fallbacks for missing files in the TMJ
-    this.load.image("stonepath2.png", "src/assets/campo-lunan/stonepath1.png");
-    this.load.image("stonepath3.png", "src/assets/campo-lunan/stonepath1.png");
 
     // Idle spritesheet
     this.load.spritesheet(
@@ -99,33 +88,21 @@ export class CampoLunanScene extends Phaser.Scene {
     }
     const mapData = JSON.parse(JSON.stringify(cachedMap));
 
-    const newTilesets = [];
-    mapData.tilesets.forEach(ts => {
-      if (ts.tiles) {
-        // Image Collection: explode into individual tilesets
-        ts.tiles.forEach(tile => {
-          if (tile.image) {
-            let filename = tile.image.substring(tile.image.lastIndexOf("/") + 1);
-            newTilesets.push({
-              name: filename.replace(".png", "") + "_" + tile.id,
-              firstgid: ts.firstgid + tile.id,
-              image: filename,
-              imagewidth: tile.imagewidth || 32,
-              imageheight: tile.imageheight || 32,
-              tilewidth: tile.imagewidth || 32,
-              tileheight: tile.imageheight || 32,
-              margin: 0,
-              spacing: 0,
-              columns: 1,
-              tilecount: 1
-            });
-          }
-        });
-      } else {
-        newTilesets.push(ts);
-      }
+    // Map Tiled tileset names to loaded texture keys in Phaser
+    const tilesetKeyMap = {
+      "gravetileset": "gravetileset.png",
+      "stonefences": "stonefences1.png",
+      "decors": "abandoned2.png",
+      "graves": "graves1.png",
+      "store": "store.png"
+    };
+
+    mapData.tilesets = mapData.tilesets.map((ts) => {
+      return {
+        ...ts,
+        image: tilesetKeyMap[ts.name] || (ts.name + ".png")
+      };
     });
-    mapData.tilesets = newTilesets;
 
     this.cache.tilemap.add("campo-lunan-map-modified", {
       format: Phaser.Tilemaps.Formats ? Phaser.Tilemaps.Formats.TILED_JSON : 1,
@@ -136,27 +113,43 @@ export class CampoLunanScene extends Phaser.Scene {
 
     const tilesetList = [];
     mapData.tilesets.forEach((ts) => {
-      const addedTileset = map.addTilesetImage(ts.name, ts.image);
+      const textureKey = tilesetKeyMap[ts.name] || (ts.name + ".png");
+      const addedTileset = map.addTilesetImage(ts.name, textureKey);
       if (addedTileset) {
         tilesetList.push(addedTileset);
+      } else {
+        console.warn(`Failed to add tileset image for ${ts.name} -> ${textureKey}`);
       }
     });
 
     this.worldWidth = map.widthInPixels;
     this.worldHeight = map.heightInPixels;
 
-    // Build bottom layers
-    const bottomLayers = ["Tile Layer 1", "bottom"];
-    let depth = -20;
-    bottomLayers.forEach(layerName => {
+    // Build bottom ground layer
+    const groundLayer = map.createLayer("ground", tilesetList, 0, 0);
+    if (groundLayer) {
+      groundLayer.setDepth(-100);
+    }
+
+    // Build top layers
+    const topLayers = [
+      "objectslayer1",
+      "fenceslayer1",
+      "fenceslayer2",
+      "objectslayer2",
+      "objectslayer3"
+    ];
+    topLayers.forEach(layerName => {
       const layer = map.createLayer(layerName, tilesetList, 0, 0);
       if (layer) {
-        layer.setDepth(depth);
-        depth++;
+        // Set depth to a large value so they render in front of player
+        // Alternatively, if they should sort with the player based on Y, 
+        // they can be assigned distinct depths or set up for Y-sorting.
+        layer.setDepth(1);
       }
     });
 
-    // Idle animation (frames 0–4 because you have 5 frames)
+    // Idle animation (frames 0–4)
     this.anims.create({
       key: "vino-idle",
       frames: this.anims.generateFrameNumbers("vino-idle", {
@@ -166,14 +159,15 @@ export class CampoLunanScene extends Phaser.Scene {
       frameRate: 5,
       repeat: -1,
     });
+    
 
-    // Moving up animation (adjust start/end to match your frame count)
+    // Moving up animation
     this.anims.create({
       key: "vino-moving-up",
       frames: this.anims.generateFrameNumbers("vino-moving-up", {
         start: 0,
         end: 4,
-      }), // assuming 5 frames too
+      }),
       frameRate: 5,
       repeat: -1,
     });
@@ -184,7 +178,7 @@ export class CampoLunanScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("vino-moving-left", {
         start: 0,
         end: 4,
-      }), // assuming 5 frames too
+      }),
       frameRate: 5,
       repeat: -1,
     });
@@ -195,7 +189,7 @@ export class CampoLunanScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("vino-moving-right", {
         start: 0,
         end: 4,
-      }), // assuming 5 frames too
+      }),
       frameRate: 5,
       repeat: -1,
     });
@@ -206,7 +200,7 @@ export class CampoLunanScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("vino-moving-down", {
         start: 0,
         end: 4,
-      }), // assuming 5 frames too
+      }),
       frameRate: 5,
       repeat: -1,
     });
@@ -218,7 +212,7 @@ export class CampoLunanScene extends Phaser.Scene {
     const spawnY =
       cache && cache.position_y !== undefined ? cache.position_y : 360;
 
-    this.audioManager = new AudioManager(this);
+    this.audioManager = new AudioManager(this, "campo-lunan");
 
     this.player = new Player(this, spawnX, spawnY, {
       onDashStart: () => this.audioManager.playDashSfx(),
@@ -231,45 +225,22 @@ export class CampoLunanScene extends Phaser.Scene {
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(4);
 
-    // Build top layers
-    const topLayers = ["top", "top1", "top2"];
-    let topDepth = 1;
-
-    // GIDs to exclude from collision (e.g. grass, non-solid ground decor)
-    // firstgid is 1. grass_1 is id 9 -> GID 10. grass_2 is id 10 -> GID 11.
-    const nonCollidingGIDs = [-1, 10, 11];
-
-    topLayers.forEach(layerName => {
-      const layer = map.createLayer(layerName, tilesetList, 0, 0);
-      if (layer) {
-        layer.setDepth(topDepth);
-        // Automatically set collision for all placed tiles in these layers except grass
-        layer.setCollisionByExclusion(nonCollidingGIDs);
-        this.physics.add.collider(this.player.sprite, layer);
-        topDepth++;
-      }
-    });
-
-    // Scan for Grave 1 positions on the map
+    // Fast scan for Grave 1 positions on the new map
     this.grave1Positions = [];
-    const grave1Tilesets = map.tilesets.filter(ts => ts.name && ts.name.includes("Grave 1"));
-    grave1Tilesets.forEach(ts => {
-      const gid = ts.firstgid;
-      const topLayer = map.getLayer("top");
-      if (topLayer && topLayer.data) {
-        for (let y = 0; y < map.height; y++) {
-          for (let x = 0; x < map.width; x++) {
-            const tile = map.getTileAt(x, y, true, "top");
-            if (tile && tile.index === gid) {
-              this.grave1Positions.push({
-                x: x * 32 + 16,
-                y: y * 32 + 16
-              });
-            }
+    const gravesLayer = map.getLayer("graves");
+    if (gravesLayer && gravesLayer.data) {
+      for (let y = 0; y < map.height; y++) {
+        for (let x = 0; x < map.width; x++) {
+          const tile = gravesLayer.data[y][x];
+          if (tile && tile.index > 0) {
+            this.grave1Positions.push({
+              x: x * 32 + 16,
+              y: y * 32 + 16
+            });
           }
         }
       }
-    });
+    }
 
     // Background verify cache with Supabase
     if (cache && cache.player_id) {
@@ -555,8 +526,9 @@ export class CampoLunanScene extends Phaser.Scene {
   }
 
   update() {
-    // Track explored chunks
+    // Track explored chunks and update dynamic depth sorting
     if (this.player && this.player.sprite) {
+      this.player.sprite.setDepth(this.player.sprite.y);
       const chunkX = Math.floor(this.player.sprite.x / 320);
       const chunkY = Math.floor(this.player.sprite.y / 320);
       this.exploredChunks.add(`${chunkX},${chunkY}`);
