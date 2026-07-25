@@ -205,12 +205,18 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Retrieve coordinates from local cache immediately, default to (320, 360)
+    // Retrieve coordinates from local cache immediately, default to (1278, 1779)
     const cache = getCache();
-    const spawnX =
-      cache && cache.position_x !== undefined ? cache.position_x : 320;
-    const spawnY =
-      cache && cache.position_y !== undefined ? cache.position_y : 360;
+    let spawnX =
+      cache && cache.position_x !== undefined ? cache.position_x : 1278;
+    let spawnY =
+      cache && cache.position_y !== undefined ? cache.position_y : 1779;
+
+    // Sanitize spawn coordinates to prevent spawning inside map boundary walls
+    if (spawnY < 440) spawnY = 1779;
+    if (spawnX < 360) spawnX = 1278;
+    if (spawnX > 2180) spawnX = 1278;
+    if (spawnY > 1880) spawnY = 1779;
 
     this.audioManager = new AudioManager(this, "campo-lunan");
 
@@ -225,21 +231,49 @@ export class CampoLunanScene extends Phaser.Scene {
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(4);
 
-    // Fast scan for Grave 1 positions on the new map
+    // Fast scan for Grave 1 positions on the new map across all layers
     this.grave1Positions = [];
-    const gravesLayer = map.getLayer("graves");
-    if (gravesLayer && gravesLayer.data) {
-      for (let y = 0; y < map.height; y++) {
-        for (let x = 0; x < map.width; x++) {
-          const tile = gravesLayer.data[y][x];
-          if (tile && tile.index > 0) {
-            this.grave1Positions.push({
-              x: x * 32 + 16,
-              y: y * 32 + 16
-            });
+    if (map.layers) {
+      map.layers.forEach((layerData) => {
+        if (layerData && layerData.data) {
+          for (let y = 0; y < map.height; y++) {
+            for (let x = 0; x < map.width; x++) {
+              const tile = layerData.data[y][x];
+              if (tile && tile.index > 0) {
+                if (
+                  layerData.name === "graves" ||
+                  (tile.tileset && tile.tileset.name === "graves") ||
+                  (tile.index >= 3155 && tile.index <= 4111)
+                ) {
+                  this.grave1Positions.push({
+                    x: x * 32 + 16,
+                    y: y * 32 + 16
+                  });
+                }
+              }
+            }
           }
         }
-      }
+      });
+    }
+
+    //Load static map collisions from Tiled
+    this.collisionGroup = this.physics.add.staticGroup();
+    const collisionLayer = map.getObjectLayer("collisions") || map.getObjectLayer("collsions");
+    if (collisionLayer && collisionLayer.objects) {
+      collisionLayer.objects.forEach((obj) => {
+        if (obj.width && obj.height) {
+          const rect = this.add.rectangle(
+            obj.x + obj.width / 2,
+            obj.y + obj.height / 2,
+            obj.width,
+            obj.height
+          );
+          this.physics.add.existing(rect, true);
+          this.collisionGroup.add(rect);
+        }
+      });
+      this.physics.add.collider(this.player.sprite, this.collisionGroup);
     }
 
     // Background verify cache with Supabase
@@ -362,7 +396,11 @@ export class CampoLunanScene extends Phaser.Scene {
         this.lastExploredChunksSize = 0; // Force immediate redraw in update()
         this.dimGraphics.setVisible(true);
         this.minimapCamera.setVisible(true);
-        this.mapOverlay.show("CAMPO LUNAN");
+        this.mapOverlay.show(
+          "CAMPO LUNAN",
+          this.player?.sprite?.x || 0,
+          this.player?.sprite?.y || 0
+        );
       }
     });
 
@@ -535,6 +573,13 @@ export class CampoLunanScene extends Phaser.Scene {
     }
 
     if (this.minimapCamera && this.minimapCamera.visible) {
+      if (this.player && this.player.sprite) {
+        this.mapOverlay?.updateLocation(
+          this.player.sprite.x,
+          this.player.sprite.y
+        );
+      }
+
       if (this.minimapPlayerDot && this.player && this.player.sprite) {
         this.minimapPlayerDot.clear();
         this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
@@ -584,7 +629,7 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     }
 
-    if (nearestDist < 30) {
+    if (nearestDist < 45) {
       nearGrave = true;
       this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
       if (this.interactionPrompt && closestGravePos) {
