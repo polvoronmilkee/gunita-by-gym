@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 export class Player {
   constructor(scene, x, y, options = {}) {
+    this.scene = scene;
     const textureExists = scene.textures.exists("vino-idle");
 
     if (textureExists) {
@@ -20,7 +21,6 @@ export class Player {
       this.sprite.setStrokeStyle(2, 0x5b4636, 0.9);
     }
 
-    this.scene = scene;
     this.onDashStart = options.onDashStart ?? (() => {});
     this.onDirectionChange = options.onDirectionChange ?? (() => {});
     this.wasDashing = false;
@@ -41,10 +41,41 @@ export class Player {
     body.setMaxVelocity(220, 220);
     if (this.sprite.type === "Sprite") {
       body.setSize(80, 150);
-      body.setOffset(64, 60); 
+      body.setOffset(64, 60);
     } else {
       body.setSize(24, 32);
     }
+
+    // --- Glow & Bounce Effects Setup ---
+    this.setupEffects();
+  }
+
+  setupEffects() {
+    // 1. Post-FX Glow (WebGL only)
+    if (this.scene.cameras.main.postFX) {
+      this.glowFx = this.sprite.preFX.addGlow(0xffffff, 0, 0, false, 0.1, 10);
+      
+      this.glowTween = this.scene.tweens.add({
+        targets: this.glowFx,
+        outerStrength: 1,
+        innerStrength: 1,
+        duration: 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut",
+      });
+    }
+
+    // // 2. Idle Bounce Tween
+    // this.bounceTween = this.scene.tweens.add({
+    //   targets: this.sprite,
+    //   y: "-=6",
+    //   duration: 600,
+    //   yoyo: true,
+    //   repeat: -1,
+    //   ease: "Sine.easeInOut",
+    //   paused: false, // Starts playing immediately
+    // });
   }
 
   update(cursors) {
@@ -87,10 +118,17 @@ export class Player {
 
     body.velocity.normalize().scale(speed);
 
+    const isMoving = body.velocity.length() > 0;
+
+    // // --- Toggle Bounce on Movement ---
+    // if (isMoving && this.bounceTween.isPlaying()) {
+    //   this.bounceTween.pause();
+    // } else if (!isMoving && !this.bounceTween.isPlaying()) {
+    //   this.bounceTween.resume();
+    // }
+
     // Animation handling
     if (this.sprite.type === "Sprite") {
-      const isMoving = body.velocity.length() > 0;
-
       if (isMoving && upDown) {
         this.lastDirection = "up";
         if (this.sprite.scene.anims.exists("vino-moving-up")) {
@@ -112,7 +150,6 @@ export class Player {
           this.sprite.play("vino-moving-right", true);
         }
       } else if (!isMoving) {
-        // Idle when standing still - default back to forward facing (vino-idle)
         if (this.sprite.scene.anims.exists("vino-idle")) {
           this.sprite.play("vino-idle", true);
         } else if (this.sprite.anims.isPlaying) {
