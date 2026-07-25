@@ -49,7 +49,7 @@ export class InteractionPrompt {
 
     // Initial positioning offset
     const x = Math.round(target.x);
-    const y = Math.round(target.y + yOffset);
+    const y = Math.round(target.y - 30);
 
     // Add DOM Element to scene
     this.domElement = this.scene.add.dom(x, y, wrapper);
@@ -61,7 +61,7 @@ export class InteractionPrompt {
       const yOffset = this.offsetY !== undefined ? this.offsetY : -32;
       this.domElement.setPosition(
         Math.round(this.activeTarget.x),
-        Math.round(this.activeTarget.y + yOffset)
+        Math.round(this.activeTarget.y - 30)
       );
     }
   }
