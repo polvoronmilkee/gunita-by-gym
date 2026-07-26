@@ -36,8 +36,24 @@ export const AUDIO_SETTINGS = {
       path: new URL("../assets/sounds/music/chaotic_fragment_1.mp3", import.meta.url).href,
     },
     {
+      key: "fish-basket-boss",
+      path: new URL("../assets/sounds/music/fish_basket_BOSS.mp3", import.meta.url).href,
+    },
+    {
+      key: "storm-boss",
+      path: new URL("../assets/sounds/music/storm_BOSSV2.mp3", import.meta.url).href,
+    },
+    {
       key: "rosary-boss",
       path: new URL("../assets/sounds/music/rosary_BOSS.mp3", import.meta.url).href,
+    },
+    {
+      key: "fishermans-last-goodbye",
+      path: new URL("../assets/sounds/music/fishermans_last_goodbye.mp3", import.meta.url).href,
+    },
+    {
+      key: "daughters-letter-boss",
+      path: new URL("../assets/sounds/music/daughters_letter_BOSS.mp3", import.meta.url).href,
     },
   ],
   sfx: {
