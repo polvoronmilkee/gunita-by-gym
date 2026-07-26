@@ -35,6 +35,10 @@ export const AUDIO_SETTINGS = {
       key: "chaotic-fragment",
       path: new URL("../assets/sounds/music/chaotic_fragment_1.mp3", import.meta.url).href,
     },
+    {
+      key: "rosary-boss",
+      path: new URL("../assets/sounds/music/rosary_BOSS.mp3", import.meta.url).href,
+    },
   ],
   sfx: {
     button: {

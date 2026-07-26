@@ -385,14 +385,14 @@ export class Grave1 extends Phaser.Scene {
     this.npcs = this.physics.add.staticGroup();
     const npcPlacements = [
       { key: "debt-collector", x: 500, y: 400 },
-      { key: "old-fisherman", x: 920, y: 780 }, // Moved from water to land
-      { key: "old-wife", x: 380, y: 480 },
+      { key: "old-fisherman", x: 1060, y: 540 },   // Stage 1 (Fish Basket) - Testing Spot
+      { key: "young-fisherman", x: 1100, y: 540 }, // Stage 2 (Red Warning Flag) - Testing Spot
+      { key: "old-wife", x: 1140, y: 540 },        // Stage 3 (Rosary) - Testing Spot
+      { key: "young-daughter", x: 1180, y: 540 },   // Stage 4 (Daughter's Drawing) - Testing Spot
       { key: "random-guy", x: 1100, y: 600 },
       { key: "random-woman", x: 1150, y: 620 },
       { key: "school-girl", x: 950, y: 520 },
       { key: "sick-wife", x: 450, y: 460 },
-      { key: "young-daughter", x: 400, y: 490 },
-      { key: "young-fisherman", x: 950, y: 800 }, // Moved from water to land
       { key: "young-kid", x: 980, y: 530 }
     ];
 
@@ -679,23 +679,31 @@ export class Grave1 extends Phaser.Scene {
       if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
       } else if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
-        let riddleData, artifactKey, dialogueText;
+        let riddleData, artifactKey, dialogueText, sceneKey, bgKey;
         if (this.storyStage === 1) {
             riddleData = this.cache.json.get("riddle-fish-basket");
             artifactKey = "fish-basket";
             dialogueText = "Correct! The crystal shatters and takes the form of a weathered Fish Basket!";
+            sceneKey = "fragment-red-warning-flag";
+            bgKey = "bg-fish-basket";
         } else if (this.storyStage === 2) {
             riddleData = this.cache.json.get("riddle-weather-warning-flag");
             artifactKey = "weather-warning-flag";
             dialogueText = "Correct! The crystal reveals a Red Weather Warning Flag.";
+            sceneKey = "fragment-red-warning-flag";
+            bgKey = "red-warning-flag";
         } else if (this.storyStage === 3) {
             riddleData = this.cache.json.get("riddle-rosary");
             artifactKey = "rosary";
             dialogueText = "Correct! The crystal clears, leaving behind a delicate Rosary.";
+            sceneKey = "fragment-rosary";
+            bgKey = "bg-rosary-scene";
         } else if (this.storyStage === 4) {
             riddleData = this.cache.json.get("riddle-daughters-drawing");
             artifactKey = "daughters-drawing";
             dialogueText = "Correct! The crystal becomes a child's Drawing.";
+            sceneKey = "fragment-red-warning-flag";
+            bgKey = "bg-fish-basket";
         }
         
         const riddlesToPass = riddleData.riddles || riddleData;
@@ -712,7 +720,7 @@ export class Grave1 extends Phaser.Scene {
             this.startDialogueSequence([{ speaker: "Vino", text: dialogueText }]);
         }, () => {
             this.startDialogueSequence([{ speaker: "Vino", text: "That answer doesn't seem right... I should try again." }]);
-        });
+        }, bgKey, sceneKey);
       } else if (!this.dialogueActive && this.currentArtifact && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentArtifact.x, this.currentArtifact.y) < 60) {
         let completedData = this.cache.json.get(`completed-${this.currentArtifactKey}`);
         const interactions = completedData.interactions;
@@ -1220,7 +1228,7 @@ export class Grave1 extends Phaser.Scene {
     return { x: startX, y: startY };
   }
 
-  startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey) {
+  startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey, sceneKey) {
     this.dialogueActive = true;
     if (this.interactionPrompt) {
       this.interactionPrompt.hide();
@@ -1233,23 +1241,24 @@ export class Grave1 extends Phaser.Scene {
     }
 
     const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
+    const activeScene = sceneKey || 'fragment-red-warning-flag';
     
     this.scene.pause();
-    this.scene.launch('fragment-red-warning-flag', {
+    this.scene.launch(activeScene, {
         riddleData: riddleData,
         soulName: data.name,
         dodgeLines: data.dodge_lines,
         bgKey: bgKey || "bg-fish-basket",
         onComplete: () => {
             this.dialogueActive = false;
-            this.scene.stop('fragment-red-warning-flag');
+            this.scene.stop(activeScene);
             this.scene.resume();
             this.audioManager?.playTrack("village-v1");
             onCorrect();
         },
         onDeath: async () => {
             this.dialogueActive = false;
-            this.scene.stop('fragment-red-warning-flag');
+            this.scene.stop(activeScene);
             this.scene.resume();
             this.audioManager?.playTrack("village-v1");
             

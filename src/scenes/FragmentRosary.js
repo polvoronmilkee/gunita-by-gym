@@ -3,9 +3,9 @@ import { getEssence, setEssence } from "../save.js";
 import { AudioManager } from "../utils/audioManager.js";
 import { AUDIO_SETTINGS } from "../utils/audioSettings.js";
 
-export class FragmentRedWarningFlag extends Phaser.Scene {
+export class FragmentRosary extends Phaser.Scene {
   constructor() {
-    super("fragment-red-warning-flag");
+    super("fragment-rosary");
   }
 
   init(data) {
@@ -28,15 +28,15 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
     this.currentRiddle = null;
 
-    this.soulName = data.soulName || "The Last Fisherman";
+    this.soulName = data.soulName || "The Fisherman";
     this.dodgeLines = data.dodgeLines || [
-      "The sea is unforgiving!",
-      "Can you withstand the tide?",
-      "Hold fast to your memory!"
+      "Faith alone will not save you here...",
+      "The beads will not protect the forgetful.",
+      "Pray harder. Remember deeper."
     ];
     this.onCompleteCallback = data.onComplete;
     this.onDeathCallback = data.onDeath;
-    this.bgKey = (data && (data.bgKey || data.bgImage)) || "bg-fish-basket";
+    this.bgKey = (data && (data.bgKey || data.bgImage)) || "bg-rosary-scene";
 
     this.crystalHP = 6;
     this.maxCrystalHP = 6;
@@ -47,11 +47,8 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   }
 
   preload() {
-    if (!this.textures.exists("bg-fish-basket")) {
-      this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
-    }
-    if (!this.textures.exists("red-warning-flag")) {
-      this.load.image("red-warning-flag", "src/assets/grave1-elements/bullet-scenes/red-warning-flag.png");
+    if (!this.textures.exists("bg-rosary-scene")) {
+      this.load.image("bg-rosary-scene", "src/assets/grave1-elements/bullet-scenes/rosary.png");
     }
     if (!this.textures.exists("fragment-main")) {
       this.load.spritesheet("fragment-main", "src/assets/grave1-elements/fragment-main.png", {
@@ -59,37 +56,37 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
         frameHeight: 32
       });
     }
-    if (!this.cache.audio.has("chaotic-fragment")) {
-      this.load.audio("chaotic-fragment", new URL("../assets/sounds/music/chaotic_fragment_1.mp3", import.meta.url).href);
+    if (!this.cache.audio.has("rosary-boss")) {
+      this.load.audio("rosary-boss", new URL("../assets/sounds/music/rosary_BOSS.mp3", import.meta.url).href);
     }
   }
 
   getDefaultRiddles() {
     return [
       {
-        question: "I leave before dawn and return when the sky turns orange. The sea is my floor and patience is my tool. What am I?",
-        choices: ["A) A fisherman", "B) A sailor", "C) A diver", "D) A farmer"],
-        answer: "A) A fisherman"
+        question: "Before facing the waves, many hold me while whispering a prayer. What am I?",
+        choices: ["A) Rosary", "B) Compass", "C) Anchor", "D) Fishing Hook"],
+        answer: "A) Rosary"
       },
       {
-        question: "I am woven from rope and wood, I hold what the ocean gives, but I am not a boat. What am I?",
-        choices: ["A) A net", "B) A basket", "C) A trap", "D) A raft"],
-        answer: "A) A net"
+        question: "I am not a weapon, yet I bring courage through faith. What am I?",
+        choices: ["A) Rosary", "B) Knife", "C) Lantern", "D) Fishing Net"],
+        answer: "A) Rosary"
       },
       {
-        question: "Every morning he untangled me before the boat left shore. Every evening he folded me back with care. What am I?",
-        choices: ["A) His net", "B) His sail", "C) His rope", "D) His shirt"],
-        answer: "A) His net"
+        question: "Families hold me close when asking for protection. What am I?",
+        choices: ["A) Rosary", "B) Basket", "C) Paddle", "D) Shell"],
+        answer: "A) Rosary"
       },
       {
-        question: "My family waits on shore. I carry today's catch in my arms. The salt is still on my skin. Who am I going home to?",
-        choices: ["A) His crew", "B) His wife and children", "C) His father", "D) No one"],
-        answer: "B) His wife and children"
+        question: "Small beads tied together, carried with hope into uncertain days. What am I?",
+        choices: ["A) Rosary", "B) Necklace", "C) Bracelet", "D) Fishing Rope"],
+        answer: "A) Rosary"
       },
       {
-        question: "He cast his line every morning not for glory, not for gold — only so they would not go hungry. What drove him?",
-        choices: ["A) Duty", "B) Habit", "C) Love", "D) Fear"],
-        answer: "C) Love"
+        question: "He whispered to me every dawn before casting the first net. I gave no answer, but he always felt heard. What am I?",
+        choices: ["A) His rosary", "B) His boat", "C) The sea", "D) His knife"],
+        answer: "A) His rosary"
       }
     ];
   }
@@ -98,21 +95,20 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     const { width, height } = this.scale;
     const centerX = width / 2;
 
-    // Safely stop background music tracks before playing chaotic fragment
+    // Safely stop background music tracks before playing rosary-boss track
     this.sound.sounds.forEach(s => {
-      if (s.key !== "chaotic-fragment" && s.isPlaying && s.loop) {
+      if (s.key !== "rosary-boss" && s.isPlaying && s.loop) {
         s.stop();
       }
     });
-    this.audioManager = new AudioManager(this, "chaotic-fragment");
+    this.audioManager = new AudioManager(this, "rosary-boss");
 
-    // 1. Full-Screen Opaque Backdrop (Input Blocker)
+    // 1. Full-Screen Opaque Backdrop
     const bg = this.add.rectangle(centerX, height / 2, width, height, 0x050508, 1.0);
-    bg.setInteractive(); // Consumes all mouse/pointer events so map behind is not clickable
+    bg.setInteractive();
 
-    // Set main background dynamically based on passed bgKey
-    const activeBgKey = this.textures.exists(this.bgKey) ? this.bgKey : "red-warning-flag";
-    this.bg = this.add.image(this.scale.width / 2, this.scale.height / 2, activeBgKey);
+    // Main background — the Rosary
+    this.bg = this.add.image(this.scale.width / 2, this.scale.height / 2, "bg-rosary-scene");
     this.bg.setDisplaySize(this.scale.width, this.scale.height);
     this.bg.setAlpha(0.6);
 
@@ -120,7 +116,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.boxCenterX = centerX;
     this.boxWidth = 480;
     this.boxCenterY = 270;
-    this.boxHeight = 10; // Starts small, will tween to Dialogue height
+    this.boxHeight = 10;
 
     this.HEIGHT_DIALOGUE = 130;
     this.HEIGHT_RIDDLE = 130;
@@ -135,6 +131,13 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.activeLasers = [];
     this.activeWarnings = [];
     this.patternTimers = [];
+
+    // New rosary-specific state
+    this.rosaryPendulums = [];
+    this.divineCross = null;
+    this.prayerBeams = [];
+    this.playerSlowed = false;
+    this.slowTimer = 0;
 
     // Keyboard controls
     this.soulRadius = 4;
@@ -189,7 +192,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.boxGraphics.lineStyle(1, 0xbfa482, 0.6);
     this.boxGraphics.strokeRect(left + 8, top + 8, this.boxWidth - 16, this.boxHeight - 16);
 
-    // Corner rivets (4 corners)
+    // Corner rivets
     const rivets = [
       { x: left + 6, y: top + 6 },
       { x: left + this.boxWidth - 6, y: top + 6 },
@@ -243,11 +246,10 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
   // --- TOP AREA: CRYSTAL HP ---
   createCrystalHPUI(centerX) {
-    // Soul Title
     this.add.text(centerX, 25, `[${this.soulName.toUpperCase()}]`, {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: "12px",
-      color: "#2dd4bf"
+      color: "#f7c948"
     }).setOrigin(0.5);
 
     // 6 Crystal HP Icons
@@ -307,19 +309,18 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   updateCrystalHPUI() {
     for (let i = 0; i < 6; i++) {
       if (i < this.crystalHP) {
-        this.crystalIcons[i].setTint(0x2dd4bf); // Glowing cyan intact
+        this.crystalIcons[i].setTint(0xf7c948); // Golden intact
         this.crystalIcons[i].setAlpha(1.0);
       } else {
-        this.crystalIcons[i].setTint(0x333333); // Cracked dark grey shattered
+        this.crystalIcons[i].setTint(0x333333); // Dark grey shattered
         this.crystalIcons[i].setAlpha(0.4);
       }
     }
   }
 
   shatterCrystalParticle(targetX, targetY) {
-    // Particle burst on shattered crystal
     for (let i = 0; i < 16; i++) {
-      const p = this.add.rectangle(targetX, targetY, 4, 4, 0x2dd4bf);
+      const p = this.add.rectangle(targetX, targetY, 4, 4, 0xf7c948);
       const angle = (i / 16) * Math.PI * 2;
       const speed = Phaser.Math.Between(60, 160);
       const vx = Math.cos(angle) * speed;
@@ -339,11 +340,10 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
   // --- SOUL HP BAR (PLAYER SIDE) ---
   createSoulHPUI(centerX) {
-    // ADJUST VINO HP POSITION HERE:
-    const vinoHpX = centerX - 225;  // Left starting X position
-    const vinoHpY = 445;            // Y position below Timer Bar
-    const heartSpacing = 28;        // Gap between hearts
-    const heartOffsetFromText = 50; // Distance from VINO label to first heart
+    const vinoHpX = centerX - 225;
+    const vinoHpY = 445;
+    const heartSpacing = 28;
+    const heartOffsetFromText = 50;
 
     this.add.text(vinoHpX, vinoHpY, "VINO", {
       fontFamily: "'Press Start 2P', monospace",
@@ -440,19 +440,19 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
       btnBg.on("pointerdown", () => {
         if (this.state !== "RIDDLE") return;
-        const targetAnswer = this.currentRiddle ? this.currentRiddle.answer : "";
-        this.handleAnswer(btnText.text, targetAnswer);
+        this.handleAnswer(this.buttons[index].text.text, this.currentRiddle.answer);
       });
 
       this.buttons.push({ bg: btnBg, text: btnText });
     }
 
-    // Timer Bar ABOVE Vino HP (Y = 410)
+    // Timer Bar
+    const centerXTimer = centerX;
     const timerY = 410;
-    this.timerBarBg = this.add.rectangle(centerX, timerY, 480, 10, 0x000000);
+    this.timerBarBg = this.add.rectangle(centerXTimer, timerY, 480, 10, 0x000000);
     this.timerBarBg.setStrokeStyle(2, 0xffffff);
 
-    this.timerBarFill = this.add.rectangle(centerX - 240, timerY, 480, 10, 0x2dd4bf).setOrigin(0, 0.5);
+    this.timerBarFill = this.add.rectangle(centerXTimer - 240, timerY, 480, 10, 0xf7c948).setOrigin(0, 0.5);
   }
 
   // --- TYPEWRITER TEXT ---
@@ -529,7 +529,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       this.dialogueText.setAlign("left");
       this.dialogueText.setVisible(true);
 
-      const introLine = "The sea remembers what men forget...\nProve your soul remembers.";
+      const introLine = "Faith is the thread that binds memory\nto the soul... Prove yours holds true.";
       this.typewriterDialogue(introLine, () => {
         this.waitForAdvance(() => {
           this.transitionToRiddle();
@@ -542,7 +542,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.state = "TWEEN_TO_RIDDLE";
     this.clearTextAndTimers();
     this.setChoiceButtonsState("HIDDEN");
-    this.setRiddleUIElementsVisible(false); // Hide timer
+    this.setRiddleUIElementsVisible(false);
 
     this.tweenBoxHeight(10, () => {
       this.tweenBoxHeight(this.HEIGHT_RIDDLE, () => {
@@ -553,7 +553,6 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   }
 
   setRiddleUIElementsVisible(visible) {
-    // Only used for the timer bars now
     this.timerBarBg.setVisible(visible);
     this.timerBarFill.setVisible(visible);
   }
@@ -623,7 +622,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       this.maxPhaseTimer = this.phaseTimer;
 
       this.timerBarFill.width = 480;
-      this.timerBarFill.setFillStyle(0x2dd4bf);
+      this.timerBarFill.setFillStyle(0xf7c948);
       this.setChoiceButtonsState("ACTIVE");
       this.setRiddleUIElementsVisible(true);
     });
@@ -637,11 +636,11 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
     if (selected === correctAnswer) {
       if (clickedBtn) {
-        clickedBtn.bg.setFillStyle(0x2dd4bf);
+        clickedBtn.bg.setFillStyle(0xf7c948);
         clickedBtn.text.setColor("#000000");
-        clickedBtn.bg.setStrokeStyle(3, 0x2dd4bf);
+        clickedBtn.bg.setStrokeStyle(3, 0xf7c948);
       }
-      this.flashBoxColor(0x2dd4bf);
+      this.flashBoxColor(0xf7c948);
       this.time.delayedCall(450, () => {
         this.handleCorrectAnswer();
       });
@@ -661,39 +660,33 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   handleCorrectAnswer() {
     this.state = "CORRECT";
 
-    // Step 1: Particle burst at crystal icon position
     const shatteredIcon = this.crystalIcons[this.crystalHP - 1];
     this.shatterCrystalParticle(shatteredIcon.x, shatteredIcon.y);
 
-    // Step 2: Shatter crystal HP
     this.crystalHP--;
     this.updateCrystalHPUI();
 
-    // Remove answered riddle from pool so it doesn't repeat
     if (this.currentRiddle && this.remainingRiddles) {
       const idx = this.remainingRiddles.indexOf(this.currentRiddle);
       if (idx > -1) this.remainingRiddles.splice(idx, 1);
     }
 
-    // Step 3: Check Win Condition
     if (this.crystalHP <= 0) {
-      // BATTLE WON!
       this.time.delayedCall(1500, () => {
         if (this.onCompleteCallback) this.onCompleteCallback();
       });
       return;
     }
 
-    // Step 4: Advance to Next Crystal with reaction dialogue
     const reactionLines = [
-      "You know the way of the tide...",
-      "The net holds true.",
-      "Care for the tools, care for the family.",
-      "Ah... the shore calls to every fisherman."
+      "The beads remember your touch...",
+      "Each prayer answered strengthens the thread.",
+      "Faith echoes through the silence.",
+      "The rosary hums with recognition."
     ];
 
-    const line = reactionLines[6 - this.crystalHP - 1] || "Impression restored...";
-    this.retryAttempt = 0; // Reset timer retry for new crystal
+    const line = reactionLines[6 - this.crystalHP - 1] || "Memory restored...";
+    this.retryAttempt = 0;
 
     this.cleanupProjectiles();
 
@@ -760,7 +753,6 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.clearTextAndTimers();
     this.setChoiceButtonsState("HIDDEN");
 
-    // Tween box to full height (260px)
     this.tweenBoxHeight(10, () => {
       this.tweenBoxHeight(this.HEIGHT_DODGE, () => {
         this.prepareDodgePhase();
@@ -792,7 +784,14 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.phaseTimer = 10000;
     this.maxPhaseTimer = 10000;
 
-    // Buffer Delay: 300ms pause after tween before projectiles start
+    // Reset rosary-specific state
+    this.rosaryPendulums = [];
+    this.divineCross = null;
+    this.prayerBeams = [];
+    this.playerSlowed = false;
+    this.slowTimer = 0;
+
+    // Buffer Delay: 300ms pause before projectiles start
     this.time.delayedCall(300, () => {
       if (this.state === "DODGE_WAIT") {
         this.startDodgePhase();
@@ -800,30 +799,10 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     });
   }
 
-  cleanupProjectiles() {
-    if (this.bulletGraphics) {
-      this.bulletGraphics.clear();
-    }
-    this.bullets.forEach(b => {
-      if (b.graphics && b.graphics.active) b.graphics.destroy();
-    });
-    this.bullets = [];
-    this.lasers.forEach(l => {
-      if (l.graphics) l.graphics.destroy();
-    });
-    this.lasers = [];
-    if (this.patternTimers) {
-      this.patternTimers.forEach(t => t.destroy());
-      this.patternTimers = [];
-    }
-    this.activeWarnings.forEach(w => w.destroy());
-    this.activeWarnings = [];
-  }
-
   getCurrentPhase() {
-    if (this.crystalHP >= 4) return 1; // Phase 1: HP 6, 5, 4 (Half or more crystals)
-    if (this.crystalHP >= 2) return 2; // Phase 2: HP 3, 2 (Below half crystals)
-    return 3;                          // Phase 3: HP 1 (Desperation state)
+    if (this.crystalHP >= 4) return 1;
+    if (this.crystalHP >= 2) return 2;
+    return 3;
   }
 
   startDodgePhase() {
@@ -851,12 +830,10 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     const phase = this.getCurrentPhase();
 
     if (phase === 1) {
-      // Phase 1 (HP 6, 5, 4): Random 1 of 3 core patterns
       const pool1 = [1, 2, 5];
       const choice = Phaser.Utils.Array.GetRandom(pool1);
       this.executePattern(choice);
     } else if (phase === 2) {
-      // Phase 2 (HP 3, 2): Unlocks 2 new patterns (3: SweepingLaser, 4: ShrinkingGrid)
       let choice;
       if (!this.hasSeenPhase2NewPattern) {
         const newPool = [3, 4];
@@ -868,7 +845,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       }
       this.executePattern(choice);
     } else if (phase === 3) {
-      // Phase 3 (HP 1): Desperation State!
+      // Desperation State (HP 1)!
       this.isDesperation = true;
       this.phaseTimer = 14000;
       this.maxPhaseTimer = 14000;
@@ -876,592 +853,289 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       // Visual Cue: Crystal pulses deep red
       this.crystalEnemy.setTint(0xff1111);
 
-      // Curated non-conflicting combo pairs
-      const comboPairs = [
-        [1, 5], // CircleBlast + SpotlightBurst (aimed rings + delayed explosions)
-        [1, 4], // CircleBlast + ThunderSplitter (rings + arena splitter)
-        [1, 3]  // CircleBlast + SweepingLaser (rings + single laser sweeps)
-      ];
-      const pair = Phaser.Utils.Array.GetRandom(comboPairs);
-      this.executePattern(pair[0]);
-      this.executePattern(pair[1]);
+      // The Divine Cross is ALWAYS present in every attack phase during Desperation,
+      // slowing the player down while one of the other 4 patterns runs alongside it!
+      this.fireDivineCross(this.phaseTimer);
+
+      const otherPatterns = [1, 3, 4, 5];
+      const choice = Phaser.Utils.Array.GetRandom(otherPatterns);
+      this.executePattern(choice);
     }
   }
 
   executePattern(patternId) {
     const desp = this.isDesperation;
     const duration = desp ? 14000 : 10000;
-    
-    if (patternId === 1) { // CircleBlast
-      // Fire every 2000ms
-      for (let t = 0; t < duration; t += 2000) {
-        this.patternTimers.push(this.time.delayedCall(t, () => this.fireCircleBlast()));
-      }
-    } else if (patternId === 2) { // WaveGrid
-      // Fire every 1500ms, increasing speed slightly each time
-      const baseSpeed = desp ? 75 : 85;
+
+    if (patternId === 1) { // Rosary Pendulum
+      this.fireRosaryPendulum(duration);
+    } else if (patternId === 2) { // Divine Cross
+      this.fireDivineCross(duration);
+    } else if (patternId === 3) { // Candle Rain
+      const baseSpeed = desp ? 95 : 75;
       let speedInc = 0;
-      for (let t = 0; t < duration; t += 1500) {
+      for (let t = 0; t < duration; t += 1800) {
         const speed = baseSpeed + speedInc;
-        this.patternTimers.push(this.time.delayedCall(t, () => this.fireWaveGrid(speed)));
-        speedInc += 20;
+        this.patternTimers.push(this.time.delayedCall(t, () => this.fireCandleRain(speed)));
+        speedInc += 8;
       }
-    } else if (patternId === 3) { // SweepingLaser
-      // Fire every 2400ms (to give slight overlap or tight pacing)
-      for (let t = 500; t < duration; t += 2400) {
-        this.patternTimers.push(this.time.delayedCall(t, () => this.fireSweepingLaser()));
-      }
-    } else if (patternId === 4) { // ThunderSplitter
-      this.fireThunderSplitter(duration);
-    } else if (patternId === 5) { // SpotlightBurst
-      // Fire every 3000ms
-      for (let t = 0; t < duration; t += 3000) {
-        this.patternTimers.push(this.time.delayedCall(t, () => this.fireSpotlightBurst()));
+    } else if (patternId === 4) { // Incense Spiral
+      this.fireIncenseSpiral(duration);
+    } else if (patternId === 5) { // Bouncing Rosary Ring
+      for (let t = 0; t < duration; t += 3600) {
+        this.patternTimers.push(this.time.delayedCall(t, () => this.fireBouncingRosaryRing()));
       }
     }
   }
 
-  // --- PATTERN METHODS ---
-  // Pattern 1: Spiral Ring Burst — Balanced
-  fireCircleBlast() {
-    if (this.state !== "DODGE") return;
-    const count = this.isDesperation ? 10 : 12;
-    const radius = 60;
-    const centerX = this.crystalEnemy.x;
-    const centerY = this.crystalEnemy.y;
-    const ringBullets = [];
-    const formTime = 300;
-
-    for (let i = 0; i < count; i++) {
-      this.patternTimers.push(this.time.delayedCall(i * (formTime / count), () => {
-        if (this.state !== "DODGE") return;
-        const angle = i * ((2 * Math.PI) / count) + (Math.PI / 4);
-        const bx = centerX + radius * Math.cos(angle);
-        const by = centerY + radius * Math.sin(angle);
-
-        const bullet = { x: bx, y: by, vx: 0, vy: 0, radius: 4 };
-        this.bullets.push(bullet);
-        ringBullets.push(bullet);
-      }));
-    }
-
-    this.patternTimers.push(this.time.delayedCall(formTime + 50, () => {
-      if (this.state !== "DODGE" || !this.soul) return;
-      const targetX = this.soul.x;
-      const targetY = this.soul.y;
-      const speed = this.isDesperation ? 210 : 230;
-
-      ringBullets.forEach(b => {
-        if (this.bullets.includes(b)) {
-          const angle = Phaser.Math.Angle.Between(b.x, b.y, targetX, targetY);
-          b.vx = Math.cos(angle) * speed;
-          b.vy = Math.sin(angle) * speed;
-          b.speed = speed;
-          b.isHoming = true;
-          b.homingTurnSpeed = 1;
-        }
-      });
-    }));
-  }
-
-  // Pattern 2: Accelerating Sine Waves — Balanced
-  fireWaveGrid(baseSpeed) {
-    if (this.state !== "DODGE") return;
-    const arenaX = this.arena.x;
-    const arenaY = this.arena.y;
-    const arenaW = this.arena.w;
-
-    const count = 10; // Increased columns slightly
-    const step = arenaW / (count + 1);
-    const phaseOffset = Math.random() * Math.PI * 2; // Randomize phase per wave
-
-    for (let i = 1; i <= count; i++) {
-      // Skip 3 positions per wave for readable gaps
-      if (i === 2 || i === 6 || i === 8) continue;
-      const baseX = arenaX + step * i;
-      const sineShift = Math.sin(i * 0.8 + phaseOffset) * 12;
-      this.bullets.push({
-        x: baseX + sineShift,
-        y: arenaY,
-        vx: Math.cos(phaseOffset) * 15,
-        vy: baseSpeed,
-        radius: 4,
-        bounces: 1
-      });
-    }
-  }
-
-  // Pattern 3: Thunder Strike Sweeping Lasers — Balanced & Visually Stunning
-  fireSingleLaserSweep(directionIndex, onCompleteCallback) {
+  // =================================================================
+  // PATTERN 1: ROSARY PENDULUM — Swinging chain of prayer beads
+  // =================================================================
+  fireRosaryPendulum(duration) {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
-    let startX, startY, endX, endY, laserW, laserH, warnX, warnY, warnW, warnH;
-    const sweepDuration = this.isDesperation ? 1300 : 1800;
-
-    if (directionIndex === 0) {
-      // Left vertical beam sweeping Right until middle
-      startX = x; startY = y;
-      endX = x + w / 2 - 6; endY = y;
-      laserW = 12; laserH = h;
-      warnX = x; warnY = y; warnW = w / 2; warnH = h;
-    } else if (directionIndex === 1) {
-      // Right vertical beam sweeping Left until middle
-      startX = x + w - 12; startY = y;
-      endX = x + w / 2 - 6; endY = y;
-      laserW = 12; laserH = h;
-      warnX = x + w / 2; warnY = y; warnW = w / 2; warnH = h;
-    } else if (directionIndex === 2) {
-      // Top horizontal beam sweeping Down until middle
-      startX = x; startY = y;
-      endX = x; endY = y + h / 2 - 6;
-      laserW = w; laserH = 12;
-      warnX = x; warnY = y; warnW = w; warnH = h / 2;
-    } else {
-      // Bottom horizontal beam sweeping Up until middle
-      startX = x; startY = y + h - 12;
-      endX = x; endY = y + h / 2 - 6;
-      laserW = w; laserH = 12;
-      warnX = x; warnY = y + h / 2; warnW = w; warnH = h / 2;
-    }
-
-    const isVertical = laserH > laserW;
-
-    // Thunder Strike warning: quick white flash then animated stripes
-    const warn = this.add.graphics();
-    this.activeWarnings.push(warn);
-    let warnBlink = 0;
-    const warnTimer = this.time.addEvent({
-      delay: 120,
-      repeat: 5,
-      callback: () => {
-        if (!warn || !warn.active) return;
-        warn.clear();
-        warnBlink++;
-        const alpha = (warnBlink % 2 === 0) ? 0.35 : 0.12;
-        warn.fillStyle(0x3b82f6, alpha);
-        warn.fillRect(warnX, warnY, warnW, warnH);
-        // Animated dashed border
-        warn.lineStyle(2, 0x60a5fa, 0.6);
-        warn.strokeRect(warnX + 2, warnY + 2, warnW - 4, warnH - 4);
-      }
-    });
-    this.patternTimers.push(warnTimer);
-
-    this.patternTimers.push(this.time.delayedCall(800, () => {
-      if (warn && warn.active) warn.destroy();
-      if (this.state !== "DODGE") return;
-
-      // Screen shake on activation
-      this.cameras.main.shake(80, 0.003);
-
-      const laser = { x: startX, y: startY, w: laserW, h: laserH, graphics: this.add.graphics(), life: 2800 };
-      this.lasers.push(laser);
-
-      // Generate jagged zigzag points for lightning effect
-      const zigzagPoints = [];
-      const segments = 12;
-      for (let s = 0; s <= segments; s++) {
-        const jitter = (s === 0 || s === segments) ? 0 : Phaser.Math.Between(-6, 6);
-        zigzagPoints.push(jitter);
-      }
-
-      this.tweens.add({
-        targets: laser,
-        x: endX,
-        y: endY,
-        duration: sweepDuration,
-        ease: 'Sine.easeInOut',
-        onUpdate: () => {
-          if (!laser.graphics || !laser.graphics.active) return;
-          laser.graphics.clear();
-
-          // Outer electric glow aura
-          laser.graphics.fillStyle(0x3b82f6, 0.15);
-          if (isVertical) {
-            laser.graphics.fillRect(laser.x - 6, laser.y, laser.w + 12, laser.h);
-          } else {
-            laser.graphics.fillRect(laser.x, laser.y - 6, laser.w, laser.h + 12);
-          }
-
-          // Main beam body (electric blue)
-          laser.graphics.fillStyle(0x3b82f6, 0.85);
-          laser.graphics.fillRect(laser.x, laser.y, laser.w, laser.h);
-
-          // Jagged zigzag lightning core
-          laser.graphics.lineStyle(2, 0xffffff, 0.95);
-          laser.graphics.beginPath();
-          for (let s = 0; s <= segments; s++) {
-            const t = s / segments;
-            const jit = zigzagPoints[s] * (0.5 + Math.random() * 0.5);
-            if (isVertical) {
-              const px = laser.x + laser.w / 2 + jit;
-              const py = laser.y + t * laser.h;
-              if (s === 0) laser.graphics.moveTo(px, py);
-              else laser.graphics.lineTo(px, py);
-            } else {
-              const px = laser.x + t * laser.w;
-              const py = laser.y + laser.h / 2 + jit;
-              if (s === 0) laser.graphics.moveTo(px, py);
-              else laser.graphics.lineTo(px, py);
-            }
-          }
-          laser.graphics.strokePath();
-
-          // Random edge spark forks
-          if (Math.random() < 0.4) {
-            const sparkCount = Phaser.Math.Between(1, 3);
-            for (let sp = 0; sp < sparkCount; sp++) {
-              laser.graphics.lineStyle(1, 0x93c5fd, 0.7);
-              if (isVertical) {
-                const sx = laser.x + laser.w / 2;
-                const sy = laser.y + Math.random() * laser.h;
-                const forkLen = Phaser.Math.Between(4, 12);
-                const forkDir = Math.random() < 0.5 ? -1 : 1;
-                laser.graphics.beginPath();
-                laser.graphics.moveTo(sx, sy);
-                laser.graphics.lineTo(sx + forkLen * forkDir, sy + Phaser.Math.Between(-4, 4));
-                laser.graphics.strokePath();
-              } else {
-                const sx = laser.x + Math.random() * laser.w;
-                const sy = laser.y + laser.h / 2;
-                const forkLen = Phaser.Math.Between(4, 12);
-                const forkDir = Math.random() < 0.5 ? -1 : 1;
-                laser.graphics.beginPath();
-                laser.graphics.moveTo(sx, sy);
-                laser.graphics.lineTo(sx + Phaser.Math.Between(-4, 4), sy + forkLen * forkDir);
-                laser.graphics.strokePath();
-              }
-            }
-          }
-        },
-        onComplete: () => {
-          this.patternTimers.push(this.time.delayedCall(200, () => {
-            if (laser.graphics && laser.graphics.active) laser.graphics.destroy();
-            const idx = this.lasers.indexOf(laser);
-            if (idx > -1) this.lasers.splice(idx, 1);
-            if (onCompleteCallback) onCompleteCallback();
-          }));
-        }
-      });
-    }));
-  }
-
-  fireSweepingLaser() {
-    if (this.state !== "DODGE") return;
-    const verticalDirs = [0, 1];
-    const horizontalDirs = [2, 3];
-
-    let currentPlane = (this.lastLaserPlane === "vertical") ? "horizontal" : "vertical";
-    const pool = (currentPlane === "vertical") ? verticalDirs : horizontalDirs;
-    const dir = Phaser.Utils.Array.GetRandom(pool);
-    this.lastLaserPlane = currentPlane;
-
-    this.fireSingleLaserSweep(dir);
-  }
-
-  // Pattern 4: Thunder Arena Splitter + Homing Orbs
-  fireThunderSplitter(duration) {
-    if (this.state !== "DODGE") return;
-    const { x, y, w, h } = this.arena;
-
-    const laneWidth = w / 3;
-    const laserW = 12;
-    const laserH = h;
-    const laser1X = x + laneWidth - laserW / 2;
-    const laser2X = x + laneWidth * 2 - laserW / 2;
-
-    // 1. Helper function to spawn 2 static vertical lasers for a given cycle duration
-    const spawnLasers = (startTime, cycleDuration) => {
-      this.patternTimers.push(this.time.delayedCall(startTime, () => {
-        if (this.state !== "DODGE") return;
-
-        // Warn for 2 second before lasers appear
-        const warn = this.add.graphics();
-        this.activeWarnings.push(warn);
-        let pulse = 0;
-        const warnTimer = this.time.addEvent({
-          delay: 200,
-          repeat: 6,
-          callback: () => {
-            if (!warn || !warn.active) return;
-            warn.clear();
-            pulse++;
-            const alpha = (pulse % 2 === 0) ? 0.3 : 0.1;
-            warn.fillStyle(0x3b82f6, alpha);
-            warn.fillRect(laser1X, y, laserW, laserH);
-            warn.fillRect(laser2X, y, laserW, laserH);
-            warn.lineStyle(2, 0x60a5fa, 0.6);
-            warn.strokeRect(laser1X, y, laserW, laserH);
-            warn.strokeRect(laser2X, y, laserW, laserH);
-          }
-        });
-        this.patternTimers.push(warnTimer);
-
-        // After 1 second, activate lasers
-        this.patternTimers.push(this.time.delayedCall(1050, () => {
-          if (warn && warn.active) warn.destroy();
-          if (this.state !== "DODGE") return;
-
-          this.cameras.main.shake(150, 0.005);
-
-          // Create solid lasers
-          const laserLife = cycleDuration - 1050;
-          const l1 = { x: laser1X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: laserLife };
-          const l2 = { x: laser2X, y: y, w: laserW, h: laserH, graphics: this.add.graphics(), life: laserLife };
-          this.lasers.push(l1, l2);
-
-          const zigzagPoints1 = [];
-          const zigzagPoints2 = [];
-          const segments = 12;
-          for (let s = 0; s <= segments; s++) {
-            zigzagPoints1.push((s === 0 || s === segments) ? 0 : Phaser.Math.Between(-6, 6));
-            zigzagPoints2.push((s === 0 || s === segments) ? 0 : Phaser.Math.Between(-6, 6));
-          }
-
-          const drawStaticLaser = (l, zigzags) => {
-            if (!l.graphics || !l.graphics.active) return;
-            l.graphics.clear();
-            
-            // Jitter zigzag points slightly
-            for (let s = 1; s < segments; s++) {
-              zigzags[s] += Phaser.Math.Between(-2, 2);
-              zigzags[s] = Phaser.Math.Clamp(zigzags[s], -8, 8);
-            }
-
-            // Electric glow
-            l.graphics.fillStyle(0x3b82f6, 0.15);
-            l.graphics.fillRect(l.x - 6, l.y, l.w + 12, l.h);
-            // Solid core
-            l.graphics.fillStyle(0x3b82f6, 0.85);
-            l.graphics.fillRect(l.x, l.y, l.w, l.h);
-            // Jagged zigzag lightning core
-            l.graphics.lineStyle(2, 0xffffff, 0.95);
-            l.graphics.beginPath();
-            for (let s = 0; s <= segments; s++) {
-              const t = s / segments;
-              const px = l.x + l.w / 2 + zigzags[s];
-              const py = l.y + t * l.h;
-              if (s === 0) l.graphics.moveTo(px, py);
-              else l.graphics.lineTo(px, py);
-            }
-            l.graphics.strokePath();
-
-            // Random edge spark forks
-            if (Math.random() < 0.4) {
-              const sparkCount = Phaser.Math.Between(1, 3);
-              for (let sp = 0; sp < sparkCount; sp++) {
-                l.graphics.lineStyle(1, 0x93c5fd, 0.7);
-                const sx = l.x + l.w / 2;
-                const sy = l.y + Math.random() * l.h;
-                const forkLen = Phaser.Math.Between(4, 12);
-                const forkDir = Math.random() < 0.5 ? -1 : 1;
-                l.graphics.beginPath();
-                l.graphics.moveTo(sx, sy);
-                l.graphics.lineTo(sx + forkLen * forkDir, sy + Phaser.Math.Between(-4, 4));
-                l.graphics.strokePath();
-              }
-            }
-          };
-
-          drawStaticLaser(l1, zigzagPoints1);
-          drawStaticLaser(l2, zigzagPoints2);
-
-          this.tweens.add({
-            targets: [l1, l2],
-            alpha: 1, // dummy
-            duration: laserLife,
-            onUpdate: () => {
-              if (l1.graphics) drawStaticLaser(l1, zigzagPoints1);
-              if (l2.graphics) drawStaticLaser(l2, zigzagPoints2);
-            },
-            onComplete: () => {
-              if (l1.graphics && l1.graphics.active) l1.graphics.destroy();
-              if (l2.graphics && l2.graphics.active) l2.graphics.destroy();
-              const idx1 = this.lasers.indexOf(l1);
-              if (idx1 > -1) this.lasers.splice(idx1, 1);
-              const idx2 = this.lasers.indexOf(l2);
-              if (idx2 > -1) this.lasers.splice(idx2, 1);
-            }
-          });
-        }));
-      }));
-    };
-
-    // Trigger two cycles of the lasers (halfway through, they reset)
-    const half = duration / 2;
-    spawnLasers(0, half);
-    spawnLasers(half, half);
-
-    // Spawn 2 massive tracking orbs every 4 seconds
-    for (let t = 1500; t < duration; t += 4000) {
-      this.patternTimers.push(this.time.delayedCall(t, () => {
-        if (this.state !== "DODGE" || !this.soul) return;
-
-        const spawnX = this.crystalEnemy.x;
-        const spawnY = this.crystalEnemy.y;
-        
-        // Massive slow-moving tracking orb
-        const speed = this.isDesperation ? 70 : 80;
-        const radius = 18; // Very large orb
-        
-        const createOrb = (xOffset) => {
-          return {
-            x: spawnX + xOffset,
-            y: spawnY,
-            vx: 0,
-            vy: 0,
-            radius: radius,
-            isHoming: true,
-            homingSpeed: speed,
-            color: 0x2dd4bf, // Cyan soul orb style (like Pattern 1)
-            trail: [],
-            life: 2000, // Explode after 2 seconds
-            onExplode: (ex, ey) => {
-              if (this.state !== "DODGE") return;
-
-              // Explosion Damage check (radius * 2.5)
-              if (this.soul) {
-                const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, ex, ey);
-                if (dist < radius * 2 + this.soulRadius) {
-                  this.triggerHit();
-                }
-              }
-
-              // Electric explosion visual effect
-              this.cameras.main.shake(150, 0.008);
-              const burst = this.add.graphics();
-              let bPulse = 0;
-              const expTimer = this.time.addEvent({
-                delay: 30,
-                repeat: 8,
-                callback: () => {
-                  if (!burst || !burst.active) return;
-                  burst.clear();
-                  bPulse++;
-                  const a = 1 - (bPulse / 9);
-                  burst.fillStyle(0xffffff, a);
-                  burst.fillCircle(ex, ey, radius * 1.5 + bPulse * 2);
-                  burst.lineStyle(3, 0x3b82f6, a); // Electric blue
-                  burst.strokeCircle(ex, ey, radius * 2 + bPulse * 4);
-                  
-                  // Jagged sparks
-                  if (bPulse % 2 !== 0) {
-                    for (let i = 0; i < 5; i++) {
-                      const angle = Math.random() * Math.PI * 2;
-                      const len = Phaser.Math.Between(15, 35);
-                      burst.lineStyle(2, 0xffffff, a);
-                      burst.beginPath();
-                      burst.moveTo(ex, ey);
-                      burst.lineTo(ex + Math.cos(angle)*len, ey + Math.sin(angle)*len);
-                      burst.strokePath();
-                    }
-                  }
-                }
-              });
-              this.patternTimers.push(expTimer);
-
-              this.time.delayedCall(300, () => {
-                if (burst) burst.destroy();
-              });
-            }
-          };
-        };
-
-        this.bullets.push(createOrb(-30), createOrb(30));
-      }));
-    }
-  }
-
-  // Pattern 5: Tracking Spotlight Follower — Balanced
-  fireSpotlightBurst() {
-    if (this.state !== "DODGE") return;
-    const { x, y, w, h } = this.arena;
-    const padding = 30;
     const desp = this.isDesperation;
 
-    const fireSpot = () => {
-      if (this.state !== "DODGE" || !this.soul) return;
+    const swingSpeed = 1.8;
+    const maxAngle = Math.PI / 2; // Full 180 deg sweep (-90 to +90 deg)
 
-      const warning = this.add.circle(this.soul.x, this.soul.y, 30, 0xffffff, 0);
-      warning.setStrokeStyle(2, 0xffffff, 0.5);
-      this.activeWarnings.push(warning);
-
-      const exclText = this.add.text(this.soul.x, this.soul.y, "!", {
-        fontFamily: "'Press Start 2P', monospace",
-        fontSize: "16px",
-        color: "#ffffff"
-      }).setOrigin(0.5);
-      this.activeWarnings.push(exclText);
-
-      // Track player soul position for 1.5s
-      this.tweens.add({
-        targets: warning,
-        duration: 1200,
-        onUpdate: () => {
-          if (warning && warning.active && this.soul) {
-            warning.x = Phaser.Math.Clamp(this.soul.x, x + padding, x + w - padding);
-            warning.y = Phaser.Math.Clamp(this.soul.y, y + padding, y + h - padding);
-            if (exclText && exclText.active) {
-              exclText.setPosition(warning.x, warning.y);
-            }
-          }
-        },
-        onComplete: () => {
-          if (!warning || !warning.active) return;
-          const lockedX = warning.x;
-          const lockedY = warning.y;
-
-          // Lock down for 1100ms (more reaction time)
-          warning.setStrokeStyle(3, 0xff4444, 0.9);
-          warning.setFillStyle(0xff0000, 0.15);
-          if (exclText && exclText.active) {
-            exclText.setColor("#ff4444");
-            exclText.setPosition(lockedX, lockedY);
-          }
-
-          this.tweens.add({
-            targets: [warning, exclText],
-            scaleX: 1.3,
-            scaleY: 1.3,
-            duration: 1100,
-            onComplete: () => {
-              if (warning && warning.active) warning.destroy();
-              if (exclText && exclText.active) exclText.destroy();
-              if (this.state !== "DODGE") return;
-
-              // Detonate into 6-directional radial burst (reduced from 8)
-              const burstSpeed = desp ? 160 : 180;
-              const angles = [0, 60, 120, 180, 240, 300];
-              angles.forEach(deg => {
-                const rad = Phaser.Math.DegToRad(deg);
-                this.bullets.push({
-                  x: lockedX,
-                  y: lockedY,
-                  vx: Math.cos(rad) * burstSpeed,
-                  vy: Math.sin(rad) * burstSpeed,
-                  radius: 8
-                });
-              });
-            }
-          });
-        }
-      });
+    const createPendulum = (isOpposite) => {
+      const start = isOpposite ? -Math.PI / 2 : Math.PI / 2;
+      const end = isOpposite ? Math.PI / 2 : -Math.PI / 2;
+      return {
+        anchorX: x + w / 2,
+        anchorY: y,
+        numBeads: 8,
+        segmentLength: (h - 20) / 8,
+        beadRadius: 10,
+        hitboxRadius: 7,
+        missingBeadIndex: Phaser.Math.Between(2, 4),
+        swingState: "HOLD",
+        holdDelay: 0.8,
+        isInitialHold: true, // Prevents swapping angles on the very first drop
+        swingProgress: 0,
+        swingDuration: 1600, // 1.6 seconds to swing from side to side
+        startAngle: start,
+        endAngle: end,
+        angleHistory: [], // Stores recent angles for smooth motion blur trail
+        active: true
+      };
     };
 
-    // Fire a single spot tracking sequence
-    fireSpot();
+    this.rosaryPendulums.push(createPendulum(false));
+
+    if (desp) {
+      this.rosaryPendulums.push(createPendulum(true));
+    }
   }
 
+  // =================================================================
+  // PATTERN 2: DIVINE CROSS — Glowing cross that pulses & shoots beads
+  // =================================================================
+  fireDivineCross(duration) {
+    if (this.state !== "DODGE") return;
+    const { x, y, w, h } = this.arena;
+    const desp = this.isDesperation;
+
+    const crossX = x + w / 2;
+    const crossY = y + h / 2;
+
+    this.divineCross = {
+      x: this.crystalEnemy.x,
+      y: this.crystalEnemy.y,
+      targetX: crossX,
+      targetY: crossY,
+      size: 30,
+      active: false,
+      dropping: true,
+      pulseTimer: 0,
+      pulseInterval: desp ? 1500 : 2000,
+      shootTimer: 0,
+      shootInterval: desp ? 600 : 800,
+      pulseRings: []
+    };
+
+    // Animate the cross dropping from crystal to center
+    this.tweens.add({
+      targets: this.divineCross,
+      x: crossX,
+      y: crossY,
+      duration: 800,
+      ease: "Bounce.easeOut",
+      onComplete: () => {
+        if (this.divineCross) {
+          this.divineCross.active = true;
+          this.divineCross.dropping = false;
+          this.cameras.main.shake(80, 0.003);
+        }
+      }
+    });
+  }
+
+  // =================================================================
+  // PATTERN 3: CANDLE RAIN — Flame projectiles drifting down with sway
+  // =================================================================
+  fireCandleRain(baseSpeed) {
+    if (this.state !== "DODGE") return;
+    const { x, w } = this.arena;
+    const spawnY = this.boxCenterY - 130; // Stable top coordinate (140)
+    const desp = this.isDesperation;
+
+    const count = 12;
+    const step = w / (count + 1);
+    const gapCount = desp ? 2 : 3;
+
+    // Pick random gap positions (columns)
+    const skipIndices = [];
+    while (skipIndices.length < gapCount) {
+      const r = Phaser.Math.Between(1, count);
+      if (!skipIndices.includes(r)) skipIndices.push(r);
+    }
+
+    for (let i = 1; i <= count; i++) {
+      if (skipIndices.includes(i)) continue;
+      const baseX = x + step * i;
+      this.bullets.push({
+        x: baseX,
+        y: spawnY,
+        vx: 0,
+        vy: baseSpeed,
+        radius: 4,
+        color: 0xf7c948,
+        isCandleFlame: true,
+        swayPhase: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  // =================================================================
+  // PATTERN 4: INCENSE SPIRAL — Rotating arms spawning inward bullets
+  // =================================================================
+  fireIncenseSpiral(duration) {
+    if (this.state !== "DODGE") return;
+    const { x, y, w, h } = this.arena;
+    const desp = this.isDesperation;
+    const cx = x + w / 2;
+    const cy = y + h / 2;
+    const maxRadius = Math.min(w, h) / 2 - 10;
+
+    const half = duration / 2;
+
+    const spawnCycle = (startTime, cycleDuration) => {
+      const numArms = desp ? 3 : 2;
+      const armSpacing = (Math.PI * 2) / numArms;
+      const rotSpeed = 1.5;
+      const spawnInterval = 250;
+      let baseAngle = Math.random() * Math.PI * 2;
+
+      for (let t = 0; t < cycleDuration; t += spawnInterval) {
+        this.patternTimers.push(this.time.delayedCall(startTime + t, () => {
+          if (this.state !== "DODGE") return;
+          const elapsed = t / 1000;
+          const angle = baseAngle + elapsed * rotSpeed;
+
+          for (let arm = 0; arm < numArms; arm++) {
+            const a = angle + arm * armSpacing;
+            const spawnX = cx + maxRadius * Math.cos(a);
+            const spawnY = cy + maxRadius * Math.sin(a);
+            const speed = 75;
+            const dirX = (cx - spawnX) / maxRadius;
+            const dirY = (cy - spawnY) / maxRadius;
+
+            this.bullets.push({
+              x: spawnX,
+              y: spawnY,
+              vx: dirX * speed,
+              vy: dirY * speed,
+              radius: 5,
+              color: arm % 2 === 0 ? 0xf5a0c0 : 0x7c3aed,
+              life: 10000
+            });
+          }
+        }));
+      }
+    };
+
+    spawnCycle(0, half);
+    spawnCycle(half + 500, half - 500);
+  }
+
+  fireBouncingRosaryRing() {
+    if (this.state !== "DODGE" || !this.soul) return;
+    const desp = this.isDesperation;
+    const cx = this.crystalEnemy.x;
+    const cy = this.crystalEnemy.y;
+
+    const targetX = this.soul.x;
+    const targetY = this.soul.y;
+    const angle = Phaser.Math.Angle.Between(cx, cy, targetX, targetY);
+    const slowSpeed = 80;
+
+    this.bullets.push({
+      x: cx,
+      y: cy,
+      vx: Math.cos(angle) * slowSpeed,
+      vy: Math.sin(angle) * slowSpeed,
+      radius: 12, // 1 Big Ball
+      color: 0xf7c948,
+      life: 1400,
+      onExplode: (ex, ey) => {
+        if (this.state !== "DODGE") return;
+
+        // Sound/shake visual effect on detonation
+        this.cameras.main.shake(100, 0.005);
+
+        // Scatter into individual bouncing beads
+        const scatterCount = desp ? 8 : 6;
+        for (let s = 0; s < scatterCount; s++) {
+          const sAngle = (s / scatterCount) * Math.PI * 2 + (Math.PI / 6);
+          const bounceSpeed = desp ? 145 : 130;
+          this.bullets.push({
+            x: ex,
+            y: ey,
+            vx: Math.cos(sAngle) * bounceSpeed,
+            vy: Math.sin(sAngle) * bounceSpeed,
+            radius: 5,
+            color: 0xe8a317,
+            bounces: 2
+          });
+        }
+      }
+    });
+  }
+
+  // =================================================================
+  // HELPER: Point-to-line segment distance for beam collision
+  // =================================================================
+  pointToLineDistance(px, py, x1, y1, x2, y2) {
+    const A = px - x1;
+    const B = py - y1;
+    const C = x2 - x1;
+    const D = y2 - y1;
+    const dot = A * C + B * D;
+    const lenSq = C * C + D * D;
+    let param = lenSq !== 0 ? dot / lenSq : -1;
+    param = Math.max(0, Math.min(1, param));
+    const xx = x1 + param * C;
+    const yy = y1 + param * D;
+    return Math.hypot(px - xx, py - yy);
+  }
+
+  // =================================================================
+  // CLEANUP PROJECTILES
+  // =================================================================
   cleanupProjectiles() {
+    // Pattern timers
     if (this.patternTimers && this.patternTimers.length > 0) {
       this.patternTimers.forEach(t => {
         if (t) {
-          if (typeof t.remove === 'function') t.remove();
-          else if (typeof t.destroy === 'function') t.destroy();
+          if (typeof t.remove === "function") t.remove();
+          else if (typeof t.destroy === "function") t.destroy();
         }
       });
       this.patternTimers = [];
     }
+    // Warnings
     if (this.activeWarnings && this.activeWarnings.length > 0) {
       this.activeWarnings.forEach(w => {
         if (w && w.active) {
@@ -1471,6 +1145,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       });
       this.activeWarnings = [];
     }
+    // Active lasers
     if (this.activeLasers && this.activeLasers.length > 0) {
       this.activeLasers.forEach(l => {
         if (l && l.active) {
@@ -1480,6 +1155,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       });
       this.activeLasers = [];
     }
+    // Lasers
     if (this.lasers && this.lasers.length > 0) {
       this.lasers.forEach(l => {
         if (l && l.graphics && l.graphics.active) {
@@ -1489,19 +1165,38 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       });
       this.lasers = [];
     }
-    this.bullets = [];
-    this.projectiles = this.bullets;
+    // Bullets
+    if (this.bullets) {
+      this.bullets.forEach(b => {
+        if (b.graphics && b.graphics.active) b.graphics.destroy();
+      });
+      this.bullets = [];
+    }
+    // Bullet graphics
     if (this.bulletGraphics) {
       this.bulletGraphics.clear();
     }
+    // Rosary pendulums
+    this.rosaryPendulums = [];
+    // Divine cross
+    this.divineCross = null;
+    // Prayer beams
+    if (this.prayerBeams) {
+      this.prayerBeams = [];
+    }
+    // Player slow
+    this.playerSlowed = false;
+    this.slowTimer = 0;
   }
 
-  // --- UPDATE LOOP & COLLISIONS ---
+  // =================================================================
+  // UPDATE LOOP & COLLISIONS
+  // =================================================================
   update(time, delta) {
     if (this.state === "RIDDLE") {
       this.phaseTimer -= delta;
       this.timerBarFill.width = 480 * Math.max(0, this.phaseTimer / this.maxPhaseTimer);
-      this.timerBarFill.setFillStyle(0x2dd4bf);
+      this.timerBarFill.setFillStyle(0xf7c948);
 
       if (this.phaseTimer <= 0) {
         this.startTryAgainDialogue();
@@ -1510,7 +1205,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       this.phaseTimer -= delta;
 
       if (this.phaseTimer <= 0) {
-        // Dodge survived! Return to riddle with reduced timer
+        // Dodge survived! Return to riddle
         this.cleanupProjectiles();
         if (this.soul) {
           this.soul.clear();
@@ -1528,9 +1223,20 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
         return;
       }
 
-      // Soul Movement inside Dodge Box
+      // --- Player Slow Timer ---
+      if (this.playerSlowed) {
+        this.slowTimer -= delta;
+        if (this.slowTimer <= 0) {
+          this.playerSlowed = false;
+          this.slowTimer = 0;
+        }
+      }
+
+      // --- Soul Movement ---
       if (!this.soul) return;
-      const speed = 200 * (delta / 1000);
+      let speed = 200 * (delta / 1000);
+      if (this.playerSlowed) speed *= 0.70; // 30% slow reduction
+
       let vx = 0;
       let vy = 0;
 
@@ -1552,18 +1258,268 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       this.soul.x = Phaser.Math.Clamp(this.soul.x, this.arena.x + innerPad, this.arena.x + this.arena.w - innerPad);
       this.soul.y = Phaser.Math.Clamp(this.soul.y, this.arena.y + innerPad, this.arena.y + this.arena.h - innerPad);
 
+      // Redraw soul (tint gold when slowed)
+      if (this.playerSlowed) {
+        this.soul.clear();
+        this.soul.fillStyle(0xf7c948, 0.8);
+        this.soul.lineStyle(1, 0xffffff, 0.8);
+        this.soul.fillCircle(0, 2, this.soulRadius);
+        this.soul.strokeCircle(0, 2, this.soulRadius);
+        this.soul.fillTriangle(-4, 2, 4, 2, 0, -8);
+        this.soul.strokeTriangle(-4, 2, 4, 2, 0, -8);
+      } else {
+        this.drawSoul();
+      }
+
+      // --- Bullet Graphics Setup ---
       if (!this.bulletGraphics) {
         this.bulletGraphics = this.add.graphics();
       }
       this.bulletGraphics.clear();
 
-      // Manage bullet trails for Soul Orb afterimages
+      // =============================================
+      // ROSARY PENDULUMS — Draw & Collide
+      // =============================================
+      if (this.rosaryPendulums && this.rosaryPendulums.length > 0) {
+        for (let pi = 0; pi < this.rosaryPendulums.length; pi++) {
+          const p = this.rosaryPendulums[pi];
+          if (!p.active) continue;
+
+          if (p.swingState === "HOLD") {
+            p.holdDelay -= delta / 1000;
+            if (p.holdDelay <= 0) {
+              p.swingState = "SWING";
+              p.swingProgress = 0;
+
+              if (p.isInitialHold) {
+                p.isInitialHold = false;
+              } else {
+                // Swap start and end angles for return swing
+                const temp = p.startAngle;
+                p.startAngle = p.endAngle;
+                p.endAngle = temp;
+
+                // Randomly change the missing bead index for the next swing!
+                p.missingBeadIndex = Phaser.Math.Between(2, 4);
+              }
+            }
+          } else if (p.swingState === "SWING") {
+            p.swingProgress += (delta / 1000) / (p.swingDuration / 1000);
+            if (p.swingProgress >= 1.0) {
+              p.swingProgress = 1.0;
+              p.swingState = "HOLD";
+              p.holdDelay = 1.3; // More delay (1.3s) before swinging back
+            }
+          }
+
+          const isHolding = p.swingState === "HOLD";
+          // Smooth sine ease-in-out for realistic pendulum acceleration/deceleration
+          const t = p.swingProgress;
+          const easeT = (1 - Math.cos(t * Math.PI)) / 2;
+          const swingAngle = p.startAngle + (p.endAngle - p.startAngle) * easeT;
+
+          // Track angles for smooth motion blur trail
+          if (!isHolding) {
+            p.angleHistory.push(swingAngle);
+            if (p.angleHistory.length > 4) {
+              p.angleHistory.shift();
+            }
+          } else {
+            if (p.angleHistory.length > 0) {
+              p.angleHistory.shift();
+            }
+          }
+
+          // Step 1: Draw continuous unbroken wire path from anchor to tip
+          const wireAlpha = isHolding ? 0.8 : 0.4;
+          this.bulletGraphics.lineStyle(2, 0xf7c948, wireAlpha);
+          this.bulletGraphics.beginPath();
+          this.bulletGraphics.moveTo(p.anchorX, p.anchorY);
+
+          for (let i = 0; i < p.numBeads; i++) {
+            const dist = (i + 1) * p.segmentLength;
+            const wx = p.anchorX + dist * Math.sin(swingAngle);
+            const wy = p.anchorY + dist * Math.cos(swingAngle);
+            this.bulletGraphics.lineTo(wx, wy);
+          }
+          this.bulletGraphics.strokePath();
+
+          // Step 1.5: Draw smooth motion blur trail for beads
+          for (let th = 0; th < p.angleHistory.length; th++) {
+            const hAngle = p.angleHistory[th];
+            const trailAlpha = (th + 1) / (p.angleHistory.length + 1) * 0.12;
+            this.bulletGraphics.fillStyle(0xf7c948, trailAlpha);
+
+            for (let i = 0; i < p.numBeads; i++) {
+              if (i === p.missingBeadIndex || i === p.missingBeadIndex + 1) continue;
+              const dist = (i + 1) * p.segmentLength;
+              const bx = p.anchorX + dist * Math.sin(hAngle);
+              const by = p.anchorY + dist * Math.cos(hAngle);
+
+              if (i === p.numBeads - 1) {
+                const cs = 5;
+                this.bulletGraphics.fillRect(bx - 1, by - cs, 2, cs * 2);
+                this.bulletGraphics.fillRect(bx - cs, by - 1, cs * 2, 2);
+              } else {
+                this.bulletGraphics.fillCircle(bx, by, p.beadRadius - 1);
+              }
+            }
+          }
+
+          // Step 2: Draw beads, safe gap marker, and crucifix pendant
+          for (let i = 0; i < p.numBeads; i++) {
+            const dist = (i + 1) * p.segmentLength;
+            const bx = p.anchorX + dist * Math.sin(swingAngle);
+            const by = p.anchorY + dist * Math.cos(swingAngle);
+
+            if (i === p.missingBeadIndex || i === p.missingBeadIndex + 1) {
+              // Draw hollow safe gap indicator ring ( )
+              const gapAlpha = isHolding ? 0.9 : 0.6;
+              this.bulletGraphics.lineStyle(2, 0xffffff, gapAlpha);
+              this.bulletGraphics.strokeCircle(bx, by, p.beadRadius + 2);
+              continue;
+            }
+
+            if (i === p.numBeads - 1) {
+              // Draw glowing crucifix cross pendant at tip (✝)
+              const cs = 7;
+              this.bulletGraphics.fillStyle(0xf7c948, 1);
+              this.bulletGraphics.fillRect(bx - 2, by - cs, 4, cs * 2);
+              this.bulletGraphics.fillRect(bx - cs, by - 2, cs * 2, 4);
+              this.bulletGraphics.fillStyle(0xffffff, 0.9);
+              this.bulletGraphics.fillCircle(bx, by, 3);
+            } else {
+              // Draw main large golden bead
+              this.bulletGraphics.fillStyle(0xf7c948, 0.2);
+              this.bulletGraphics.fillCircle(bx, by, p.beadRadius + 4);
+
+              this.bulletGraphics.fillStyle(0xf7c948, 0.95);
+              this.bulletGraphics.fillCircle(bx, by, p.beadRadius);
+
+              this.bulletGraphics.fillStyle(0xffffff, 0.85);
+              this.bulletGraphics.fillCircle(bx, by, p.beadRadius * 0.4);
+            }
+
+            // Collision check with fair hitbox radius (active after hold delay)
+            if (this.soul && !isHolding) {
+              const d = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, bx, by);
+              if (d < this.soulRadius + (p.hitboxRadius || 7)) {
+                this.triggerHit();
+                return;
+              }
+            }
+          }
+        }
+      }
+
+      // =============================================
+      // DIVINE CROSS — Draw, Pulse, Shoot & Collide
+      // =============================================
+      if (this.divineCross) {
+        const cross = this.divineCross;
+
+        // Draw cross shape
+        const s = cross.size;
+        // Golden glow aura
+        this.bulletGraphics.fillStyle(0xf7c948, 0.1);
+        this.bulletGraphics.fillCircle(cross.x, cross.y, s + 15);
+
+        // Vertical arm
+        this.bulletGraphics.lineStyle(4, 0xf7c948, 0.9);
+        this.bulletGraphics.beginPath();
+        this.bulletGraphics.moveTo(cross.x, cross.y - s);
+        this.bulletGraphics.lineTo(cross.x, cross.y + s);
+        this.bulletGraphics.strokePath();
+
+        // Horizontal arm
+        this.bulletGraphics.beginPath();
+        this.bulletGraphics.moveTo(cross.x - s, cross.y);
+        this.bulletGraphics.lineTo(cross.x + s, cross.y);
+        this.bulletGraphics.strokePath();
+
+        // White center
+        this.bulletGraphics.fillStyle(0xffffff, 0.85);
+        this.bulletGraphics.fillCircle(cross.x, cross.y, 4);
+
+        if (cross.active) {
+          // Pulse timer
+          cross.pulseTimer += delta;
+          if (cross.pulseTimer >= cross.pulseInterval) {
+            cross.pulseTimer = 0;
+            // Add visual pulse ring
+            cross.pulseRings.push({ radius: 10, alpha: 0.9 });
+            // Slow pulse affects the entire arena
+            if (this.soul) {
+              this.playerSlowed = true;
+              this.slowTimer = 1200;
+            }
+            // Flash box border gold briefly to indicate area-wide slow pulse
+            this.flashBoxColor(0xf7c948);
+          }
+
+          // Draw expanding pulse rings (expanding across whole arena)
+          for (let ri = cross.pulseRings.length - 1; ri >= 0; ri--) {
+            const ring = cross.pulseRings[ri];
+            ring.radius += 280 * (delta / 1000);
+            ring.alpha -= 0.7 * (delta / 1000);
+            if (ring.alpha <= 0 || ring.radius > 400) {
+              cross.pulseRings.splice(ri, 1);
+            } else {
+              this.bulletGraphics.lineStyle(3, 0xf7c948, ring.alpha);
+              this.bulletGraphics.strokeCircle(cross.x, cross.y, ring.radius);
+            }
+          }
+
+          // Shoot accelerating holy orbs at player (only when not in desperation mode)
+          if (!this.isDesperation) {
+            cross.shootTimer += delta;
+            if (cross.shootTimer >= cross.shootInterval && this.soul) {
+              cross.shootTimer = 0;
+              const angle = Phaser.Math.Angle.Between(cross.x, cross.y, this.soul.x, this.soul.y);
+              const initialSpeed = 20;
+              this.bullets.push({
+                x: cross.x,
+                y: cross.y,
+                vx: Math.cos(angle) * initialSpeed,
+                vy: Math.sin(angle) * initialSpeed,
+                speed: initialSpeed,
+                accel: 175,
+                radius: 8,
+                color: 0xf7c948,
+                isAccelerating: true
+              });
+            }
+          }
+
+          // Cross body collision
+          if (this.soul) {
+            const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, cross.x, cross.y);
+            if (dist < 8) {
+              this.triggerHit();
+              return;
+            }
+            // Arm collision (check if soul is near the cross arms)
+            if (Math.abs(this.soul.x - cross.x) < 4 && this.soul.y > cross.y - s && this.soul.y < cross.y + s) {
+              this.triggerHit();
+              return;
+            }
+            if (Math.abs(this.soul.y - cross.y) < 4 && this.soul.x > cross.x - s && this.soul.x < cross.x + s) {
+              this.triggerHit();
+              return;
+            }
+          }
+        }
+      }
+
+      // =============================================
+      // BULLET PHYSICS & COLLISION
+      // =============================================
       if (!this.bulletTrails) this.bulletTrails = [];
 
-      // Bullet Physics & Collision — Soul Orb Visuals
       for (let i = this.bullets.length - 1; i >= 0; i--) {
         const b = this.bullets[i];
 
+        // Life check
         if (b.life !== undefined) {
           b.life -= delta;
           if (b.life <= 0) {
@@ -1573,17 +1529,29 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
           }
         }
 
-        // Homing behavior for CircleBlast
+        // Candle flame sway
+        if (b.isCandleFlame) {
+          b.swayPhase = (b.swayPhase || 0) + 3 * (delta / 1000);
+          b.x += Math.sin(b.swayPhase) * 0.8;
+        }
+
+        // Acceleration behavior for Divine Cross Holy Orbs
+        if (b.isAccelerating) {
+          b.speed += (b.accel || 140) * (delta / 1000);
+          const currentDir = Math.atan2(b.vy, b.vx);
+          b.vx = Math.cos(currentDir) * b.speed;
+          b.vy = Math.sin(currentDir) * b.speed;
+        }
+
+        // Homing behavior
         if (b.isHoming && this.soul) {
           const angle = Phaser.Math.Angle.Between(b.x, b.y, this.soul.x, this.soul.y);
           if (b.homingTurnSpeed) {
-            // CircleBlast fast homing
             const currentAngle = Math.atan2(b.vy, b.vx);
             const newAngle = Phaser.Math.Angle.RotateTo(currentAngle, angle, b.homingTurnSpeed * (delta / 1000));
             b.vx = Math.cos(newAngle) * b.speed;
             b.vy = Math.sin(newAngle) * b.speed;
           } else if (b.homingSpeed) {
-            // Massive orb slow creeping homing
             const targetVx = Math.cos(angle) * b.homingSpeed;
             const targetVy = Math.sin(angle) * b.homingSpeed;
             b.vx += (targetVx - b.vx) * 0.04;
@@ -1594,7 +1562,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
         b.x += b.vx * (delta / 1000);
         b.y += b.vy * (delta / 1000);
 
-        // Store trail position every few frames
+        // Store trail
         if (!b.trail) b.trail = [];
         b.trailTimer = (b.trailTimer || 0) + delta;
         if (b.trailTimer > 40) {
@@ -1603,9 +1571,9 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
           b.trailTimer = 0;
         }
 
-        const color = b.color || 0x2dd4bf;
+        const color = b.color || 0xf7c948;
 
-        // Draw trail afterimages (fading smaller circles)
+        // Draw trail afterimages
         for (let t = 0; t < b.trail.length; t++) {
           const tr = b.trail[t];
           const trailAlpha = (t + 1) / (b.trail.length + 1) * 0.35;
@@ -1626,47 +1594,93 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
         this.bulletGraphics.fillStyle(0xffffff, 0.85);
         this.bulletGraphics.fillCircle(b.x, b.y, b.radius * 0.45);
 
-        const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, b.x, b.y);
-        if (dist < this.soulRadius + b.radius) {
-          this.triggerHit();
-          return;
+        // Collision
+        if (this.soul) {
+          const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, b.x, b.y);
+          if (dist < this.soulRadius + b.radius) {
+            this.triggerHit();
+            return;
+          }
         }
 
-        // Bouncing / Boundaries
-        if (b.y > this.arena.y + this.arena.h) {
-          if (b.bounces && b.bounces > 0) {
-            b.vy *= -1;
-            b.y = this.arena.y + this.arena.h;
+        // Bouncing behavior off arena borders
+        if (b.bounces && b.bounces > 0) {
+          if (b.x < this.arena.x || b.x > this.arena.x + this.arena.w) {
+            b.vx *= -1;
+            b.x = Phaser.Math.Clamp(b.x, this.arena.x + 2, this.arena.x + this.arena.w - 2);
             b.bounces--;
-          } else {
-            this.bullets.splice(i, 1);
           }
-        } else if (b.x < 0 || b.x > this.scale.width || b.y < 0) {
+          if (b.y < this.arena.y || b.y > this.arena.y + this.arena.h) {
+            b.vy *= -1;
+            b.y = Phaser.Math.Clamp(b.y, this.arena.y + 2, this.arena.y + this.arena.h - 2);
+            b.bounces--;
+          }
+        } else if (b.x < this.boxCenterX - this.boxWidth / 2 - 30 || b.x > this.boxCenterX + this.boxWidth / 2 + 30 ||
+                   b.y > this.boxCenterY + 160) {
           this.bullets.splice(i, 1);
         }
       }
 
-      // Active Lasers Collision
+      // =============================================
+      // PRAYER BEAMS — Draw & Collide
+      // =============================================
+      if (this.prayerBeams && this.prayerBeams.length > 0) {
+        for (let i = this.prayerBeams.length - 1; i >= 0; i--) {
+          const beam = this.prayerBeams[i];
+          beam.life -= delta;
+          if (beam.life <= 0) {
+            this.prayerBeams.splice(i, 1);
+            continue;
+          }
+
+          const alpha = Math.min(1, beam.life / 200);
+
+          // Draw glow
+          this.bulletGraphics.lineStyle(8, 0xf7c948, alpha * 0.2);
+          this.bulletGraphics.beginPath();
+          this.bulletGraphics.moveTo(beam.x1, beam.y1);
+          this.bulletGraphics.lineTo(beam.x2, beam.y2);
+          this.bulletGraphics.strokePath();
+
+          // Draw core beam
+          this.bulletGraphics.lineStyle(3, 0xffffff, alpha * 0.9);
+          this.bulletGraphics.beginPath();
+          this.bulletGraphics.moveTo(beam.x1, beam.y1);
+          this.bulletGraphics.lineTo(beam.x2, beam.y2);
+          this.bulletGraphics.strokePath();
+
+          // Collision
+          if (this.soul) {
+            const dist = this.pointToLineDistance(this.soul.x, this.soul.y, beam.x1, beam.y1, beam.x2, beam.y2);
+            if (dist < this.soulRadius + 3) {
+              this.triggerHit();
+              return;
+            }
+          }
+        }
+      }
+
+      // =============================================
+      // ACTIVE LASER COLLISION
+      // =============================================
       if (this.activeLasers) {
         this.activeLasers.forEach(laser => {
           if (!laser || !laser.active) return;
-          // Horizontal laser (width > height)
           if (laser.width > laser.height) {
             if (Math.abs(this.soul.y - laser.y) < 6) this.triggerHit();
-          }
-          // Vertical laser (height > width)
-          else {
+          } else {
             if (Math.abs(this.soul.x - laser.x) < 6) this.triggerHit();
           }
         });
       }
 
-      // Laser Physics & Collision
+      // =============================================
+      // LASER PHYSICS & COLLISION
+      // =============================================
       for (let i = this.lasers.length - 1; i >= 0; i--) {
         const l = this.lasers[i];
         l.life -= delta;
 
-        // Standard sweeping laser / solid laser rectangle AABB collision check
         if (l.x !== undefined && l.y !== undefined && l.w !== undefined && l.h !== undefined) {
           const testX = Math.max(l.x, Math.min(this.soul.x, l.x + l.w));
           const testY = Math.max(l.y, Math.min(this.soul.y, l.y + l.h));
@@ -1677,7 +1691,6 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
             return;
           }
         }
-
 
         if (l.life <= 0) {
           if (l.graphics) l.graphics.destroy();
@@ -1693,11 +1706,9 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.cleanupProjectiles();
     this.state = "HIT_PAUSE";
 
-    // Deduct Soul HP
     this.soulHP--;
     this.updateSoulHPUI();
 
-    // Red screen flash
     const flash = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, this.scale.width, this.scale.height, 0xff0000, 0.5);
 
     this.time.delayedCall(180, () => {
@@ -1716,3 +1727,6 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     });
   }
 }
+
+
+

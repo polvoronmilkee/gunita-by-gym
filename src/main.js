@@ -8,6 +8,7 @@ import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
 import { FragmentRedWarningFlag } from "./scenes/FragmentRedWarningFlag.js";
+import { FragmentRosary } from "./scenes/FragmentRosary.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { MenuAudioController } from "./ui/MenuAudioController.js";
 import { getCache, setCache, clearCache } from "./save.js";
@@ -28,6 +29,7 @@ const sceneManager = new SceneManager([
   UIScene,
   PauseScene,
   FragmentRedWarningFlag,
+  FragmentRosary,
 ]);
 
 const config = {
