@@ -1,9 +1,11 @@
 import Phaser from "phaser";
 import { getEssence, setEssence } from "../save.js";
+import { AudioManager } from "../utils/audioManager.js";
+import { AUDIO_SETTINGS } from "../utils/audioSettings.js";
 
-export class BulletHellScene extends Phaser.Scene {
+export class FragmentRedWarningFlag extends Phaser.Scene {
   constructor() {
-    super("BulletHellScene");
+    super("fragment-red-warning-flag");
   }
 
   init(data) {
@@ -51,6 +53,15 @@ export class BulletHellScene extends Phaser.Scene {
     if (!this.textures.exists("red-warning-flag")) {
       this.load.image("red-warning-flag", "src/assets/grave1-elements/bullet-scenes/red-warning-flag.png");
     }
+    if (!this.textures.exists("fragment-main")) {
+      this.load.spritesheet("fragment-main", "src/assets/grave1-elements/fragment-main.png", {
+        frameWidth: 32,
+        frameHeight: 32
+      });
+    }
+    if (!this.cache.audio.has("chaotic-fragment")) {
+      this.load.audio("chaotic-fragment", new URL("../assets/sounds/music/chaotic_fragment_1.mp3", import.meta.url).href);
+    }
   }
 
   getDefaultRiddles() {
@@ -86,6 +97,14 @@ export class BulletHellScene extends Phaser.Scene {
   create() {
     const { width, height } = this.scale;
     const centerX = width / 2;
+
+    // Safely stop background music tracks before playing chaotic fragment
+    this.sound.sounds.forEach(s => {
+      if (s.key !== "chaotic-fragment" && s.isPlaying && s.loop) {
+        s.stop();
+      }
+    });
+    this.audioManager = new AudioManager(this, "chaotic-fragment");
 
     // 1. Full-Screen Opaque Backdrop (Input Blocker)
     const bg = this.add.rectangle(centerX, height / 2, width, height, 0x050508, 1.0);
@@ -242,7 +261,19 @@ export class BulletHellScene extends Phaser.Scene {
     // Floating Crystal Enemy Sprite above the box
     this.crystalEnemy = this.add.sprite(centerX, 110, "fragment-main");
     this.crystalEnemy.setScale(1.8);
-    this.crystalEnemy.play("fragment-anim");
+
+    if (!this.anims.exists("fragment-anim") && this.textures.exists("fragment-main")) {
+      this.anims.create({
+        key: "fragment-anim",
+        frames: this.anims.generateFrameNumbers("fragment-main"),
+        frameRate: 6,
+        repeat: -1,
+      });
+    }
+
+    if (this.anims.exists("fragment-anim")) {
+      this.crystalEnemy.play("fragment-anim");
+    }
 
     this.crystalIdleTween = this.tweens.add({
       targets: this.crystalEnemy,
@@ -917,7 +948,7 @@ export class BulletHellScene extends Phaser.Scene {
       if (this.state !== "DODGE" || !this.soul) return;
       const targetX = this.soul.x;
       const targetY = this.soul.y;
-      const speed = this.isDesperation ? 240 : 275;
+      const speed = this.isDesperation ? 220 : 250;
 
       ringBullets.forEach(b => {
         if (this.bullets.includes(b)) {
@@ -1131,6 +1162,12 @@ export class BulletHellScene extends Phaser.Scene {
   fireThunderSplitter(duration) {
     if (this.state !== "DODGE") return;
     const { x, y, w, h } = this.arena;
+
+    const laneWidth = w / 3;
+    const laserW = 12;
+    const laserH = h;
+    const laser1X = x + laneWidth - laserW / 2;
+    const laser2X = x + laneWidth * 2 - laserW / 2;
 
     // 1. Helper function to spawn 2 static vertical lasers for a given cycle duration
     const spawnLasers = (startTime, cycleDuration) => {

@@ -1235,21 +1235,23 @@ export class Grave1 extends Phaser.Scene {
     const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
     
     this.scene.pause();
-    this.scene.launch('BulletHellScene', {
+    this.scene.launch('fragment-red-warning-flag', {
         riddleData: riddleData,
         soulName: data.name,
         dodgeLines: data.dodge_lines,
         bgKey: bgKey || "bg-fish-basket",
         onComplete: () => {
             this.dialogueActive = false;
-            this.scene.stop('BulletHellScene');
+            this.scene.stop('fragment-red-warning-flag');
             this.scene.resume();
+            this.audioManager?.playTrack("village-v1");
             onCorrect();
         },
         onDeath: async () => {
             this.dialogueActive = false;
-            this.scene.stop('BulletHellScene');
+            this.scene.stop('fragment-red-warning-flag');
             this.scene.resume();
+            this.audioManager?.playTrack("village-v1");
             
             const cache = getCache();
             if (cache && cache.player_id) {
