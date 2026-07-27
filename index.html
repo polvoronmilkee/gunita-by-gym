@@ -16,6 +16,11 @@
         --bg: #0a0a14;
         --purple-pale: #e0c8ff;
         --teal: #2dd4bf;
+        --cyan-primary: #66e6ff;
+        --purple-secondary: #8b5dff;
+        --gold-accent: #ffd96b;
+        --text-light: #ecefff;
+        --dark-panel: #14172b;
       }
 
       html,
@@ -142,7 +147,6 @@
         left: -14%;
         width: 77%;
         height: 12%;
-        /* max-height: 8%; */
         object-fit: contain;
         user-select: none;
         pointer-events: none;
@@ -151,100 +155,214 @@
       /* Top Right Panel: Title Logo & Navigation Buttons */
       .right-panel {
         position: absolute;
-        top: -3%;
-        right: 0%;
-        width: 44%;
+        top: 2%;
+        right: 2%;
+        width: 46%;
         display: flex;
         flex-direction: column;
         align-items: flex-end;
       }
 
       .menu-logo {
-        width: 120%;
+        width: 110%;
         height: auto;
         object-fit: contain;
-        margin-bottom: 4%;
+        margin-bottom: 2%;
         user-select: none;
         pointer-events: none;
       }
 
-      .menu-buttons {
-        width: 85%;
-        display: flex;
+      .menu-subtitle {
+        font-family: "Press Start 2P", monospace;
+        font-size: clamp(9px, 1.1vw, 13px);
+        color: var(--cyan-primary);
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-top: -12px;
+        margin-bottom: 10px;
         margin-right: 7%;
+        text-shadow: 0 0 10px rgba(102, 230, 255, 0.5);
+      }
+
+      .menu-divider {
+        width: 88%;
+        margin-right: 6%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        position: relative;
+      }
+
+      .menu-divider::before,
+      .menu-divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(139, 93, 255, 0.6), transparent);
+      }
+
+      .menu-divider span {
+        padding: 0 10px;
+        color: var(--cyan-primary);
+        font-size: 12px;
+        text-shadow: 0 0 8px var(--cyan-primary);
+      }
+
+      .menu-buttons {
+        width: 88%;
+        display: flex;
+        margin-right: 6%;
         flex-direction: column;
-        gap: clamp(8px, 1.2vh, 16px);
-        margin-top: 15%;
+        gap: clamp(8px, 1.3vh, 14px);
+      }
+
+      /* Magical Memory Tablets */
+      .memory-tablet {
+        appearance: none;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        width: 100%;
+        padding: clamp(10px, 1.2vw, 15px) clamp(14px, 1.5vw, 20px);
+        background: linear-gradient(135deg, rgba(20, 23, 43, 0.88), rgba(10, 13, 26, 0.94));
+        border: 2px solid rgba(139, 93, 255, 0.45);
+        border-radius: 12px;
+        color: var(--text-light);
+        cursor: pointer;
+        text-align: left;
+        backdrop-filter: blur(8px);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.12),
+          inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+          0 4px 20px rgba(0, 0, 0, 0.6);
+        transition: all 220ms ease;
+        overflow: hidden;
+        user-select: none;
+      }
+
+      .memory-tablet::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(102, 230, 255, 0.25), transparent);
+        transform: skewX(-20deg);
+        transition: left 600ms ease;
+        pointer-events: none;
+      }
+
+      .memory-tablet:hover::before {
+        left: 150%;
+      }
+
+      .memory-tablet:hover {
+        border-color: var(--cyan-primary);
+        background: linear-gradient(135deg, rgba(28, 34, 60, 0.92), rgba(14, 18, 36, 0.96));
+        box-shadow:
+          0 0 25px rgba(102, 230, 255, 0.35),
+          inset 0 1px 0 rgba(255, 255, 255, 0.25),
+          inset 0 -2px 0 rgba(0, 0, 0, 0.6);
+        transform: translateY(-3px) scale(1.01);
+      }
+
+      .memory-tablet:active {
+        transform: translateY(1px) scale(0.99);
+      }
+
+      .tablet-icon {
+        font-size: clamp(16px, 1.8vw, 22px);
+        color: var(--cyan-primary);
+        text-shadow: 0 0 10px rgba(102, 230, 255, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+        transition: transform 200ms ease;
+      }
+
+      .memory-tablet:hover .tablet-icon {
+        transform: scale(1.2) rotate(-5deg);
+        color: #ffffff;
+        text-shadow: 0 0 14px rgba(102, 230, 255, 0.9);
+      }
+
+      .tablet-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex-grow: 1;
+      }
+
+      .tablet-title {
+        font-family: "Press Start 2P", monospace;
+        font-size: clamp(9px, 1vw, 13px);
+        color: var(--text-light);
+        letter-spacing: 1px;
+        transition: color 200ms ease;
+      }
+
+      .memory-tablet:hover .tablet-title {
+        color: #ffffff;
+        text-shadow: 0 0 8px rgba(102, 230, 255, 0.6);
+      }
+
+      .tablet-desc {
+        font-family: "VT323", monospace;
+        font-size: clamp(15px, 1.3vw, 19px);
+        color: #94a3b8;
+        line-height: 1.1;
+      }
+
+      .memory-tablet:hover .tablet-desc {
+        color: #d1d5db;
       }
 
       .menu-audio-controls {
         position: absolute;
-        top: 18px;
-        left: 18px;
+        top: 20px;
+        left: 20px;
         z-index: 7;
         display: flex;
-        gap: 8px;
+        gap: 10px;
       }
 
       .menu-audio-btn {
         appearance: none;
-        border: 2px solid rgba(124, 63, 207, 0.35);
-        background: rgba(5, 5, 12, 0.75);
-        color: #d0e8ff;
-        width: 46px;
-        height: 46px;
-        border-radius: 10px;
-        font-size: 22px;
+        border: 1.5px solid rgba(139, 93, 255, 0.45);
+        background: rgba(14, 19, 33, 0.85);
+        color: var(--cyan-primary);
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        font-size: 20px;
         line-height: 1;
         cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
         transition: all 200ms ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .menu-audio-btn:hover {
-        border-color: var(--teal);
-        background: rgba(12, 12, 24, 0.85);
+        border-color: var(--cyan-primary);
+        color: #ffffff;
+        background: rgba(24, 32, 55, 0.95);
         box-shadow:
-          0 0 15px rgba(45, 212, 191, 0.3),
-          inset 0 0 10px rgba(45, 212, 191, 0.1);
+          0 0 20px rgba(102, 230, 255, 0.4),
+          inset 0 0 10px rgba(102, 230, 255, 0.2);
         transform: translateY(-2px);
       }
 
       .menu-audio-btn:active {
         transform: translateY(1px);
-      }
-
-      .menu-btn {
-        appearance: none;
-        border: 2px solid rgba(124, 63, 207, 0.35);
-        background: rgba(5, 5, 12, 0.75);
-        color: #d0e8ff;
-        font-family: "Press Start 2P", monospace;
-        font-size: clamp(8px, 1vw, 15px);
-        padding: clamp(8px, 1.2vw, 18px) 0;
-        width: 90%;
-        cursor: pointer;
-        text-align: center;
-        letter-spacing: 2px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        transition: all 200ms ease;
-        user-select: none;
-      }
-
-      .menu-btn:hover {
-        border-color: var(--teal);
-        color: #ffffff;
-        background: rgba(12, 12, 24, 0.85);
-        text-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
-        box-shadow:
-          0 0 15px rgba(45, 212, 191, 0.3),
-          inset 0 0 10px rgba(45, 212, 191, 0.1);
-        transform: translateY(-2px);
-      }
-
-      .menu-btn:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
       }
 
       #game-shell {
@@ -279,11 +397,13 @@
         z-index: 6;
       }
 
-      /* Gunita Themed Codenames Modal */
+      /* Unified Gunita Modals (Matching Survival Guide Theme) */
       .gunita-modal-overlay {
         position: fixed;
         inset: 0;
-        background: rgba(5, 5, 12, 0.85);
+        background: rgba(4, 6, 14, 0.85);
+        backdrop-filter: blur(8px);
+        background-image: radial-gradient(circle at center, transparent 30%, rgba(30, 10, 60, 0.65) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -298,14 +418,15 @@
       }
 
       .gunita-modal {
-        background: #000000;
-        border: 4px solid #ffffff;
-        padding: 6px;
+        background: linear-gradient(180deg, rgba(14, 20, 34, 0.98), rgba(8, 12, 22, 0.98));
+        border: 2px solid rgba(160, 127, 236, 0.5);
+        border-radius: 16px;
+        padding: 24px 28px;
         box-shadow:
-          0 8px 0 -4px #000000,
-          0 12px 24px rgba(0, 0, 0, 0.8),
-          0 0 15px rgba(176, 126, 255, 0.3);
-        width: min(90vw, 420px);
+          0 28px 64px rgba(0, 0, 0, 0.7),
+          inset 0 1px 0 rgba(255, 255, 255, 0.1),
+          0 0 30px rgba(102, 230, 255, 0.25);
+        width: min(92vw, 440px);
         box-sizing: border-box;
         font-family: "Press Start 2P", monospace;
         position: relative;
@@ -313,52 +434,37 @@
 
       .gunita-modal__close-x {
         position: absolute;
-        top: 15px;
-        right: 15px;
-        background: none;
-        border: none;
-        color: #ffffff;
+        top: 16px;
+        right: 16px;
+        appearance: none;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(14, 19, 33, 0.92);
+        color: #f8faff;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
         font-family: "Press Start 2P", monospace;
-        font-size: 16px;
+        font-size: 12px;
         cursor: pointer;
-        transition: all 200ms ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 180ms ease;
         line-height: 1;
-        padding: 4px;
+        padding: 0;
         z-index: 10;
       }
 
       .gunita-modal__close-x:hover {
-        color: #ff5555;
-        text-shadow: 0 0 5px #ff5555;
-      }
-
-      .gunita-modal__btn--confirm-centered {
-        appearance: none;
-        border: 2px solid rgba(124, 63, 207, 0.35);
-        background: rgba(5, 5, 12, 0.75);
-        color: #d0e8ff;
-        font-family: "Press Start 2P", monospace;
-        font-size: 10px;
-        padding: 12px 0;
-        width: 60%;
-        cursor: pointer;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        transition: all 200ms ease;
-        user-select: none;
-        margin-top: 6px;
-      }
-
-      .gunita-modal__btn--confirm-centered:hover {
-        border-color: var(--teal);
-        color: #ffffff;
-        background: rgba(12, 12, 24, 0.85);
-        text-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
+        border-color: var(--cyan-primary);
+        color: var(--cyan-primary);
+        box-shadow: 0 0 12px rgba(102, 230, 255, 0.4);
+        transform: scale(1.05);
       }
 
       .gunita-modal__inner {
-        border: 3px solid #ffffff;
-        padding: 24px 20px;
+        border: none;
+        padding: 8px 0;
         display: flex;
         flex-direction: column;
         gap: 18px;
@@ -366,30 +472,35 @@
       }
 
       .gunita-modal__title {
-        color: #b57fee; /* Purple accent */
-        font-size: clamp(10px, 1vw, 14px);
+        color: var(--cyan-primary);
+        font-size: clamp(11px, 1.1vw, 15px);
         text-align: center;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        margin: 0 0 8px 0;
+        letter-spacing: 2px;
+        margin: 0 0 4px 0;
+        text-shadow: 0 0 10px rgba(102, 230, 255, 0.4);
       }
 
       .gunita-modal__input {
-        width: 90%;
-        background: #000000;
-        border: 3px solid #ffffff;
+        width: 100%;
+        box-sizing: border-box;
+        background: rgba(8, 12, 22, 0.9);
+        border: 1.5px solid rgba(139, 93, 255, 0.5);
+        border-radius: 10px;
         color: #ffffff;
         font-family: "Press Start 2P", monospace;
-        font-size: 14px;
-        padding: 10px;
+        font-size: 12px;
+        padding: 12px 14px;
         text-align: center;
         outline: none;
         text-transform: uppercase;
+        transition: all 200ms ease;
       }
 
       .gunita-modal__input:focus {
-        border-color: var(--teal);
-        color: #2dd4bf; /* Mint/cyan accent on focus */
+        border-color: var(--cyan-primary);
+        color: var(--cyan-primary);
+        box-shadow: 0 0 15px rgba(102, 230, 255, 0.3);
       }
 
       .gunita-modal__actions {
@@ -400,47 +511,44 @@
         margin-top: 6px;
       }
 
+      .gunita-modal__btn--confirm-centered,
       .gunita-modal__btn {
         appearance: none;
-        border: 2px solid rgba(124, 63, 207, 0.35);
-        background: rgba(5, 5, 12, 0.75);
-        color: #d0e8ff;
+        border: 1.5px solid rgba(139, 93, 255, 0.5);
+        background: rgba(20, 25, 45, 0.85);
+        color: var(--text-light);
         font-family: "Press Start 2P", monospace;
         font-size: 10px;
-        padding: 12px 0;
-        width: 45%;
+        padding: 12px 18px;
+        border-radius: 10px;
         cursor: pointer;
         text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         transition: all 200ms ease;
         user-select: none;
       }
 
+      .gunita-modal__btn--confirm-centered {
+        width: 70%;
+      }
+
+      .gunita-modal__btn {
+        width: 48%;
+      }
+
+      .gunita-modal__btn--confirm-centered:hover,
       .gunita-modal__btn:hover {
-        border-color: var(--teal);
+        border-color: var(--cyan-primary);
         color: #ffffff;
-        background: rgba(12, 12, 24, 0.85);
-        text-shadow: 0 0 8px rgba(45, 212, 191, 0.85);
-      }
-
-      .gunita-modal__cancel-link {
-        font-family: "Press Start 2P", monospace;
-        font-size: 10px;
-        color: #ff5555;
-        background: none;
-        border: none;
-        cursor: pointer;
-        text-decoration: underline;
-        margin-top: 4px;
-      }
-
-      .gunita-modal__cancel-link:hover {
-        text-shadow: 0 0 5px #ff5555;
+        background: rgba(28, 35, 60, 0.95);
+        text-shadow: 0 0 8px rgba(102, 230, 255, 0.85);
+        box-shadow: 0 0 18px rgba(102, 230, 255, 0.35);
+        transform: translateY(-2px);
       }
 
       .gunita-modal__error {
         font-family: "VT323", monospace;
-        font-size: 20px;
+        font-size: 22px;
         color: #ff5c5c;
         min-height: 24px;
         text-align: center;
@@ -456,6 +564,7 @@
         justify-content: center;
         padding: 24px;
         background: rgba(4, 6, 14, 0.86);
+        backdrop-filter: blur(8px);
         transition: opacity 220ms ease;
       }
 
@@ -467,7 +576,7 @@
       .guide-shell {
         width: min(1100px, 95vw);
         height: min(760px, 92vh);
-        border: 2px solid rgba(160, 127, 236, 0.45);
+        border: 2px solid rgba(160, 127, 236, 0.5);
         border-radius: 16px;
         background:
           linear-gradient(180deg, rgba(8, 12, 22, 0.98), rgba(5, 8, 15, 0.98)),
@@ -477,7 +586,8 @@
             transparent 40%
           );
         box-shadow:
-          0 28px 64px rgba(0, 0, 0, 0.55),
+          0 28px 64px rgba(0, 0, 0, 0.65),
+          0 0 35px rgba(102, 230, 255, 0.25),
           inset 0 1px 0 rgba(255, 255, 255, 0.07);
         display: grid;
         grid-template-columns: 260px 1fr;
@@ -526,16 +636,16 @@
       }
 
       .guide-nav__button:hover {
-        border-color: rgba(82, 207, 192, 0.4);
+        border-color: rgba(102, 230, 255, 0.4);
         background: rgba(32, 43, 68, 0.5);
         color: #ffffff;
       }
 
       .guide-nav__button.is-active {
-        border-color: rgba(82, 207, 192, 0.65);
+        border-color: rgba(102, 230, 255, 0.65);
         background: rgba(34, 50, 82, 0.68);
         color: #ffffff;
-        text-shadow: 0 0 9px rgba(45, 212, 191, 0.35);
+        text-shadow: 0 0 9px rgba(102, 230, 255, 0.4);
       }
 
       .guide-content {
@@ -558,10 +668,17 @@
         font-family: "Press Start 2P", monospace;
         font-size: 12px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 180ms ease;
       }
 
       .guide-close:hover {
-        border-color: rgba(82, 207, 192, 0.7);
+        border-color: var(--cyan-primary);
+        color: var(--cyan-primary);
+        box-shadow: 0 0 12px rgba(102, 230, 255, 0.4);
+        transform: scale(1.05);
       }
 
       .guide-tab {
@@ -664,14 +781,14 @@
           type="button"
           aria-label="Sound effects toggle"
           title="SFX"
-        ></button>
+        >🔊</button>
         <button
           class="menu-audio-btn"
           id="menu-music-toggle"
           type="button"
           aria-label="Music toggle"
           title="MUSIC"
-        ></button>
+        >🎵</button>
       </div>
       <div class="menu-container">
         <!-- Tagline bottom-left -->
@@ -688,13 +805,36 @@
             src="/src/assets/main-menu/gunita-text-glowing-2.png"
             alt="GUNITA: The Reaper of Echoes"
           />
+          <div class="menu-divider"><span>✦</span></div>
           <div class="menu-buttons">
-            <button class="menu-btn" id="continue-journey">
-              CONTINUE JOURNEY
+            <button class="memory-tablet" id="continue-journey">
+              <div class="tablet-icon">✦</div>
+              <div class="tablet-content">
+                <span class="tablet-title">CONTINUE JOURNEY</span>
+                <span class="tablet-desc">Resume Vino's search for forgotten memories</span>
+              </div>
             </button>
-            <button class="menu-btn" id="enter-campo-lunan">START AGAIN</button>
-            <button class="menu-btn" id="tale-untold">ENTER CAMPO LUNAN</button>
-            <button class="menu-btn" id="menu-guide">SURVIVAL GUIDE</button>
+            <button class="memory-tablet" id="enter-campo-lunan">
+              <div class="tablet-icon">⟳</div>
+              <div class="tablet-content">
+                <span class="tablet-title">START A NEW MEMORY</span>
+                <span class="tablet-desc">Begin Vino's journey from the beginning</span>
+              </div>
+            </button>
+            <button class="memory-tablet" id="tale-untold">
+              <div class="tablet-icon">📍</div>
+              <div class="tablet-content">
+                <span class="tablet-title">ENTER CAMPO LUNAN</span>
+                <span class="tablet-desc">Explore the realm of wandering souls</span>
+              </div>
+            </button>
+            <button class="memory-tablet" id="menu-guide">
+              <div class="tablet-icon">📖</div>
+              <div class="tablet-content">
+                <span class="tablet-title">SURVIVAL GUIDE</span>
+                <span class="tablet-desc">Learn about Campo Lunan, lore & mechanics</span>
+              </div>
+            </button>
           </div>
         </div>
       </div>
@@ -705,10 +845,10 @@
       <div class="gunita-modal">
         <!-- Close (X) button in top-right -->
         <button id="continue-modal-close-btn" class="gunita-modal__close-x">
-          X
+          ✕
         </button>
         <div class="gunita-modal__inner">
-          <h2 class="gunita-modal__title">CONTINUE JOURNEY</h2>
+          <h2 class="gunita-modal__title">✦ CONTINUE JOURNEY ✦</h2>
           <input
             type="text"
             id="continue-username-input"
@@ -731,8 +871,11 @@
     <!-- New Journey Modal Overlay (Gunita Theme) -->
     <div id="new-journey-modal" class="gunita-modal-overlay hidden">
       <div class="gunita-modal">
+        <button id="new-modal-close-btn" class="gunita-modal__close-x">
+          ✕
+        </button>
         <div class="gunita-modal__inner">
-          <h2 class="gunita-modal__title">START NEW JOURNEY</h2>
+          <h2 class="gunita-modal__title">✦ START NEW JOURNEY ✦</h2>
           <input
             type="text"
             id="new-username-input"
