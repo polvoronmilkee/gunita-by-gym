@@ -294,8 +294,15 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+window.showSurvivalGuide = showGuide;
+window.hideSurvivalGuide = hideGuide;
+
 // Continue Modal Listeners
 continueCloseBtn?.addEventListener("click", hideContinueModal);
+
+// New Modal Listeners
+document.getElementById("new-modal-close-btn")?.addEventListener("click", hideNewModal);
+newCancelBtn?.addEventListener("click", hideNewModal);
 
 continueConfirmBtn?.addEventListener("click", async () => {
   const username = continueInput.value.trim().toLowerCase();
@@ -345,9 +352,6 @@ continueConfirmBtn?.addEventListener("click", async () => {
     }
   }
 });
-
-// New Modal Listeners
-newCancelBtn?.addEventListener("click", hideNewModal);
 
 newConfirmBtn?.addEventListener("click", async () => {
   const username = newInput.value.trim().toLowerCase();
