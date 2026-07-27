@@ -3,6 +3,7 @@ import { CameraSystem } from "../systems/CameraSystem.js";
 import { HudOverlay } from "../ui/HudOverlay.js";
 import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
+import { Ghost } from "../entities/Ghost.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
 import { getCache, setCache } from "../save.js";
@@ -49,6 +50,15 @@ export class CampoLunanScene extends Phaser.Scene {
       {
         frameWidth: 36,
         frameHeight: 44,
+      },
+    );
+
+    this.load.spritesheet(
+      "ghost-walk",
+      "src/assets/campo-lunanv2/ghost.png",
+      {
+        frameWidth: 64,
+        frameHeight: 64,
       },
     );
 
@@ -250,6 +260,36 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
+    // Ghost animations (4 rows × 4 cols = 16 frames; rows: down, up, left, right)
+    const ghostDirs = [
+      { key: "down", row: 0 },
+      { key: "up", row: 1 },
+      { key: "left", row: 2 },
+      { key: "right", row: 3 },
+    ];
+    ghostDirs.forEach(({ key, row }) => {
+      const startIdx = row * 4;
+      const endIdx = startIdx + 3;
+      this.anims.create({
+        key: `ghost-walk-${key}`,
+        frames: this.anims.generateFrameNumbers("ghost-walk", {
+          start: startIdx,
+          end: endIdx,
+        }),
+        frameRate: 6,
+        repeat: -1,
+      });
+      this.anims.create({
+        key: `ghost-idle-${key}`,
+        frames: this.anims.generateFrameNumbers("ghost-walk", {
+          start: startIdx,
+          end: startIdx,
+        }),
+        frameRate: 1,
+        repeat: -1,
+      });
+    });
+
     // Add Pink Frog at (1359, 1075) with Physics
     this.pinkFrog = this.physics.add.sprite(1359, 1075, "pink-frog");
     this.pinkFrog.setScale(0.75);
@@ -336,6 +376,96 @@ export class CampoLunanScene extends Phaser.Scene {
       });
       this.physics.add.collider(this.player.sprite, this.collisionGroup);
     }
+
+    // ----- Ambient wandering ghosts -----
+    this.activeGhosts = [];
+    this.ghostMaxConcurrent = Phaser.Math.Between(3, 5);
+    this.ghostTints = [0xffffff, 0xc7d2fe, 0xddf4ff, 0xfae8ff, 0xcffafe, 0xfef3c7];
+    // Walkable spawn zones spread across the whole cemetery, including Vino's spawn
+    this.ghostSpawnZones = [
+      { x1: 500,  y1: 680,  x2: 850,  y2: 1100 },
+      { x1: 1000, y1: 600,  x2: 1600, y2: 1000 },
+      { x1: 550,  y1: 1200, x2: 900,  y2: 1650 },
+      { x1: 1200, y1: 1250, x2: 1950, y2: 1850 },
+      { x1: 900,  y1: 900,  x2: 1150, y2: 1200 },
+      { x1: 1700, y1: 700,  x2: 2150, y2: 1100 },
+      { x1: 1100, y1: 1680, x2: 1500, y2: 1880 },
+      { x1: 380,  y1: 480,  x2: 2200, y2: 1880 },
+    ];
+
+    this._spawnGhostRandom = (forceSpawn = false, preferNearby = null) => {
+      if (!forceSpawn && this.activeGhosts.length >= this.ghostMaxConcurrent)
+        return;
+      let x, y;
+      if (preferNearby) {
+        // Spawn in a donut around the player so they fade in/out subtly near Vino
+        const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+        const dist = Phaser.Math.Between(140, 300);
+        x = Phaser.Math.Clamp(preferNearby.x + Math.cos(angle) * dist, 380, 2200);
+        y = Phaser.Math.Clamp(preferNearby.y + Math.sin(angle) * dist, 480, 1880);
+      } else {
+        const zone = Phaser.Utils.Array.GetRandom(this.ghostSpawnZones);
+        x = Phaser.Math.Between(zone.x1, zone.x2);
+        y = Phaser.Math.Between(zone.y1, zone.y2);
+      }
+      const ghost = new Ghost(this, x, y, {
+        tint: Phaser.Utils.Array.GetRandom(this.ghostTints),
+        scale: Phaser.Math.FloatBetween(0.42, 0.62),
+        speed: Phaser.Math.Between(30, 70),
+        lifespanMs: Phaser.Math.Between(14000, 32000),
+        onDespawn: (g) => {
+          const idx = this.activeGhosts.indexOf(g);
+          if (idx !== -1) this.activeGhosts.splice(idx, 1);
+        },
+      });
+      if (ghost.sprite?.body && this.collisionGroup) {
+        this.physics.add.collider(ghost.sprite, this.collisionGroup, () => {
+          if (ghost.makeDecision) ghost.makeDecision();
+        });
+      }
+      if (ghost.sprite?.body) {
+        this.physics.add.collider(ghost.sprite, this.pinkFrog);
+        this.physics.add.collider(ghost.sprite, this.poisonShroom);
+      }
+      this.activeGhosts.push(ghost);
+    };
+
+    // Seed a few ghosts immediately with staggered fade-ins
+    // Spawn first ghost right next to Vino so effect is immediately visible
+    const seedCount = Phaser.Math.Between(3, 5);
+    for (let i = 0; i < seedCount; i++) {
+      const preferNearby = (i === 0 && this.player?.sprite)
+        ? { x: this.player.sprite.x, y: this.player.sprite.y }
+        : null;
+      this.time.delayedCall(Math.max(250, i * 550), () => {
+        if (!this.scene?.isActive?.()) return;
+        const pos = preferNearby || (this.player?.sprite && Phaser.Math.FloatBetween(0, 1) < 0.4
+          ? { x: this.player.sprite.x, y: this.player.sprite.y }
+          : null);
+        this._spawnGhostRandom(true, pos);
+      });
+    }
+
+    // Periodic spawn/refresh loop: occasionally add or refresh ghosts
+    this.time.addEvent({
+      delay: 3500,
+      loop: true,
+      callback: () => {
+        if (!this.scene?.isActive?.()) return;
+        const chance = Phaser.Math.FloatBetween(0, 1);
+        if (chance < 0.6 && this.activeGhosts.length < this.ghostMaxConcurrent) {
+          const pos = this.player?.sprite && Phaser.Math.FloatBetween(0, 1) < 0.5
+            ? { x: this.player.sprite.x, y: this.player.sprite.y }
+            : null;
+          this._spawnGhostRandom(true, pos);
+        } else if (chance > 0.88 && this.activeGhosts.length > 2) {
+          const toFade = Phaser.Utils.Array.GetRandom(this.activeGhosts.slice(0, -1));
+          if (toFade) toFade.despawn();
+        }
+      },
+      callbackScope: this,
+    });
+    // ----- End ambient ghosts -----
 
     // Background verify cache with Supabase
     if (cache && cache.player_id) {
@@ -750,6 +880,14 @@ export class CampoLunanScene extends Phaser.Scene {
     }
 
     this.player.update(this.cursors);
+
+    // Update ambient wandering ghosts
+    const nowMs = this.time.now;
+    if (this.activeGhosts) {
+      for (const ghost of this.activeGhosts) {
+        ghost.update(this, nowMs);
+      }
+    }
 
     // Proximity check for Grave 1
     let nearGrave = false;
