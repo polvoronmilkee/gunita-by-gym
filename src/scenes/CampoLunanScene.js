@@ -791,7 +791,7 @@ export class CampoLunanScene extends Phaser.Scene {
       nearGrave = true;
       this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
       if (this.interactionPrompt && closestGravePos) {
-        this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE");
+        this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE", -15);
       }
     } else if (this.isNearFrog) {
       this.hud.setStatus("PRESS [E] TO TALK TO THE PINK FROG");

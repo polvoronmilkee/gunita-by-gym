@@ -563,9 +563,51 @@
         align-items: center;
         justify-content: center;
         padding: 24px;
-        background: rgba(4, 6, 14, 0.86);
-        backdrop-filter: blur(8px);
+        background:
+          radial-gradient(ellipse at 20% 30%, rgba(168, 85, 247, 0.12) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 70%, rgba(45, 212, 191, 0.10) 0%, transparent 50%),
+          rgba(4, 6, 14, 0.92);
         transition: opacity 220ms ease;
+        overflow: hidden;
+      }
+
+      .guide-overlay::before,
+      .guide-overlay::after {
+        content: '';
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: rgba(200, 150, 255, 0.8);
+        border-radius: 50%;
+        box-shadow: 0 0 12px 3px rgba(200, 150, 255, 0.6);
+        pointer-events: none;
+      }
+
+      .guide-overlay::before {
+        top: 15%;
+        left: 10%;
+        animation: guideFloatOrb1 7s ease-in-out infinite;
+      }
+
+      .guide-overlay::after {
+        bottom: 20%;
+        right: 12%;
+        width: 5px;
+        height: 5px;
+        background: rgba(120, 230, 255, 0.8);
+        box-shadow: 0 0 10px 2px rgba(120, 230, 255, 0.5);
+        animation: guideFloatOrb2 9s ease-in-out infinite;
+      }
+
+      @keyframes guideFloatOrb1 {
+        0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+        33% { transform: translate(40px, -30px); opacity: 1; }
+        66% { transform: translate(-20px, 20px); opacity: 0.7; }
+      }
+
+      @keyframes guideFloatOrb2 {
+        0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+        50% { transform: translate(-30px, -40px); opacity: 0.9; }
       }
 
       .guide-overlay.hidden {
@@ -574,118 +616,276 @@
       }
 
       .guide-shell {
-        width: min(1100px, 95vw);
-        height: min(760px, 92vh);
-        border: 2px solid rgba(160, 127, 236, 0.5);
-        border-radius: 16px;
+        width: min(1180px, 96vw);
+        height: min(780px, 93vh);
+        position: relative;
+        border-radius: 10px;
+        padding: 5px;
         background:
-          linear-gradient(180deg, rgba(8, 12, 22, 0.98), rgba(5, 8, 15, 0.98)),
-          radial-gradient(
-            circle at top right,
-            rgba(45, 212, 191, 0.08),
-            transparent 40%
-          );
+          linear-gradient(135deg, #d4af37 0%, #b57fee 25%, #2dd4bf 50%, #b57fee 75%, #d4af37 100%);
         box-shadow:
-          0 28px 64px rgba(0, 0, 0, 0.65),
-          0 0 35px rgba(102, 230, 255, 0.25),
-          inset 0 1px 0 rgba(255, 255, 255, 0.07);
-        display: grid;
-        grid-template-columns: 260px 1fr;
+          0 0 30px rgba(181, 127, 238, 0.45),
+          0 0 60px rgba(181, 127, 238, 0.22),
+          0 0 90px rgba(45, 212, 191, 0.12),
+          0 30px 80px rgba(0, 0, 0, 0.7);
+        animation: guideShellGlow 4s ease-in-out infinite;
+      }
+
+      @keyframes guideShellGlow {
+        0%, 100% {
+          box-shadow:
+            0 0 30px rgba(181, 127, 238, 0.45),
+            0 0 60px rgba(181, 127, 238, 0.22),
+            0 0 90px rgba(45, 212, 191, 0.12),
+            0 30px 80px rgba(0, 0, 0, 0.7);
+        }
+        50% {
+          box-shadow:
+            0 0 40px rgba(181, 127, 238, 0.55),
+            0 0 80px rgba(181, 127, 238, 0.32),
+            0 0 110px rgba(45, 212, 191, 0.18),
+            0 30px 80px rgba(0, 0, 0, 0.7);
+        }
+      }
+
+      .guide-shell__inner {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background:
+          linear-gradient(180deg, rgba(14, 20, 44, 0.985) 0%, rgba(8, 12, 28, 0.985) 100%);
+        display: flex;
+        flex-direction: column;
         overflow: hidden;
+        position: relative;
+      }
+
+      .guide-shell__inner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 12% 8%, rgba(181, 127, 238, 0.10) 0%, transparent 38%),
+          radial-gradient(circle at 88% 92%, rgba(45, 212, 191, 0.08) 0%, transparent 40%);
+        pointer-events: none;
+      }
+
+      /* === TITLE BAR === */
+      .guide-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px 14px;
+        border-bottom: 2px solid;
+        border-image: linear-gradient(90deg, transparent 0%, rgba(181, 127, 238, 0.55) 20%, rgba(45, 212, 191, 0.55) 50%, rgba(181, 127, 238, 0.55) 80%, transparent 100%) 1;
+        z-index: 2;
+        flex-shrink: 0;
+      }
+
+      .guide-header__title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0;
+        font-family: "Press Start 2P", monospace;
+        color: #f5f0ff;
+        font-size: clamp(14px, 1.5vw, 20px);
+        letter-spacing: 0.06em;
+        text-shadow: 0 0 10px rgba(181, 127, 238, 0.7);
+      }
+
+      .guide-header__icon {
+        font-size: clamp(20px, 2vw, 28px);
+        filter: drop-shadow(0 0 6px rgba(181, 127, 238, 0.6));
+      }
+
+      .guide-header__right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .guide-progress {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 5px 14px;
+        border: 2px solid rgba(181, 127, 238, 0.55);
+        border-radius: 20px;
+        background: rgba(20, 16, 40, 0.8);
+        box-shadow: inset 0 0 8px rgba(181, 127, 238, 0.12);
+      }
+
+      .guide-progress__value {
+        font-family: "Press Start 2P", monospace;
+        font-size: 10px;
+        color: #67e8f9;
+        text-shadow: 0 0 6px rgba(103, 232, 249, 0.55);
+      }
+
+      .guide-progress__label {
+        font-family: "VT323", monospace;
+        font-size: 20px;
+        color: #e8e4ff;
+      }
+
+      .guide-close {
+        appearance: none;
+        position: relative;
+        width: 42px;
+        height: 42px;
+        border-radius: 8px;
+        border: 2px solid rgba(181, 127, 238, 0.55);
+        background:
+          linear-gradient(180deg, rgba(30, 22, 58, 0.95) 0%, rgba(14, 10, 32, 0.95) 100%);
+        color: #f0ebff;
+        font-family: "Press Start 2P", monospace;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 180ms ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .guide-close:hover {
+        border-color: #fda4af;
+        color: #fecdd3;
+        box-shadow:
+          0 0 15px rgba(251, 113, 133, 0.45),
+          inset 0 0 10px rgba(251, 113, 133, 0.18);
+        text-shadow: 0 0 8px rgba(251, 113, 133, 0.8);
+        transform: translateY(-1px);
+      }
+
+      .guide-close:active {
+        transform: translateY(1px);
+      }
+
+      /* === BODY (NAV + CONTENT) === */
+      .guide-body {
+        display: grid;
+        grid-template-columns: 272px 1fr;
+        flex: 1;
+        min-height: 0;
+        position: relative;
+        z-index: 1;
       }
 
       .guide-nav {
-        padding: 20px 14px;
-        border-right: 1px solid rgba(148, 163, 184, 0.22);
-        background: linear-gradient(
-          180deg,
-          rgba(14, 20, 34, 0.95),
-          rgba(9, 13, 24, 0.95)
-        );
+        padding: 18px 12px;
+        border-right: 2px solid;
+        border-image: linear-gradient(180deg, transparent 0%, rgba(181, 127, 238, 0.4) 15%, rgba(45, 212, 191, 0.3) 50%, rgba(181, 127, 238, 0.4) 85%, transparent 100%) 1;
+        background:
+          linear-gradient(180deg, rgba(18, 14, 38, 0.7) 0%, rgba(10, 8, 24, 0.7) 100%);
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 7px;
+        overflow-y: auto;
+      }
+
+      .guide-nav::-webkit-scrollbar,
+      .guide-tab::-webkit-scrollbar {
+        width: 7px;
+      }
+
+      .guide-nav::-webkit-scrollbar-thumb,
+      .guide-tab::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, rgba(181, 127, 238, 0.5), rgba(45, 212, 191, 0.5));
+        border-radius: 4px;
+      }
+
+      .guide-nav::-webkit-scrollbar-track,
+      .guide-tab::-webkit-scrollbar-track {
+        background: rgba(15, 12, 30, 0.5);
       }
 
       .guide-nav__title {
-        margin: 4px 8px 6px;
+        margin: 4px 10px 10px;
+        padding-bottom: 10px;
         color: #d8cfff;
         font-family: "Press Start 2P", monospace;
-        font-size: 12px;
-        line-height: 1.3;
+        font-size: 11px;
+        line-height: 1.4;
         letter-spacing: 0.05em;
-      }
-
-      .guide-nav__divider {
-        margin: 0 8px 10px;
-        border-bottom: 1px dashed rgba(148, 163, 184, 0.38);
+        border-bottom: 1px dashed rgba(181, 127, 238, 0.45);
       }
 
       .guide-nav__button {
         appearance: none;
-        border: 1px solid transparent;
-        border-radius: 10px;
+        border: 2px solid transparent;
+        border-radius: 8px;
         background: transparent;
-        color: #d8ddf0;
+        color: #cdd2ea;
         font-family: "Press Start 2P", monospace;
         font-size: 10px;
         text-align: left;
-        padding: 10px 12px;
+        padding: 11px 12px;
         cursor: pointer;
         transition: all 180ms ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        line-height: 1.3;
+      }
+
+      .guide-nav__icon {
+        font-size: 16px;
+        flex-shrink: 0;
+        width: 20px;
+        text-align: center;
       }
 
       .guide-nav__button:hover {
-        border-color: rgba(102, 230, 255, 0.4);
-        background: rgba(32, 43, 68, 0.5);
+        border-color: rgba(181, 127, 238, 0.4);
+        background: rgba(30, 22, 56, 0.55);
         color: #ffffff;
+        transform: translateX(2px);
       }
 
       .guide-nav__button.is-active {
-        border-color: rgba(102, 230, 255, 0.65);
-        background: rgba(34, 50, 82, 0.68);
+        border-color: rgba(45, 212, 191, 0.85);
+        background:
+          linear-gradient(90deg, rgba(45, 212, 191, 0.18) 0%, rgba(181, 127, 238, 0.10) 100%),
+          rgba(20, 30, 58, 0.7);
         color: #ffffff;
-        text-shadow: 0 0 9px rgba(102, 230, 255, 0.4);
+        box-shadow:
+          0 0 14px rgba(45, 212, 191, 0.35),
+          inset 0 0 10px rgba(45, 212, 191, 0.12);
+        text-shadow: 0 0 8px rgba(45, 212, 191, 0.5);
+      }
+
+      .guide-nav__button.is-active .guide-nav__icon {
+        filter: drop-shadow(0 0 4px rgba(45, 212, 191, 0.6));
       }
 
       .guide-content {
         position: relative;
-        padding: 22px 28px;
+        padding: 22px 30px 24px;
         overflow: hidden;
-      }
-
-      .guide-close {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        appearance: none;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: rgba(14, 19, 33, 0.92);
-        color: #f8faff;
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        font-family: "Press Start 2P", monospace;
-        font-size: 12px;
-        cursor: pointer;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 180ms ease;
+        flex-direction: column;
+        min-height: 0;
       }
 
-      .guide-close:hover {
-        border-color: var(--cyan-primary);
-        color: var(--cyan-primary);
-        box-shadow: 0 0 12px rgba(102, 230, 255, 0.4);
-        transform: scale(1.05);
+      .guide-content::before {
+        content: '';
+        position: absolute;
+        top: 18px;
+        right: 22px;
+        width: 80px;
+        height: 80px;
+        background: radial-gradient(circle, rgba(181, 127, 238, 0.10) 0%, transparent 70%);
+        pointer-events: none;
       }
 
       .guide-tab {
         display: none;
-        height: 100%;
-        overflow: auto;
-        padding: 4px 6px 6px 0;
+        flex: 1;
+        overflow-y: auto;
+        padding: 2px 8px 6px 0;
+        min-height: 0;
       }
 
       .guide-tab.is-active {
@@ -693,18 +893,22 @@
       }
 
       .guide-tab h2 {
-        margin: 0 0 14px;
+        margin: 0 0 8px;
         color: #ffffff;
         font-family: "Press Start 2P", monospace;
-        font-size: 15px;
+        font-size: clamp(16px, 2vw, 22px);
         line-height: 1.4;
+        text-align: center;
+        letter-spacing: 0.03em;
+        text-shadow: 0 0 14px rgba(181, 127, 238, 0.45);
       }
 
       .guide-tab h3 {
-        margin: 20px 0 10px;
-        color: #a7f3d0;
+        margin: 22px 0 10px;
+        color: #99f6e4;
         font-family: "Press Start 2P", monospace;
-        font-size: 11px;
+        font-size: 12px;
+        letter-spacing: 0.03em;
       }
 
       .guide-tab p,
@@ -712,58 +916,216 @@
       .guide-tab blockquote,
       .guide-tab table {
         font-family: "VT323", monospace;
-        color: #dfe7ff;
+        color: #e2e8ff;
         font-size: 26px;
-        line-height: 1.2;
+        line-height: 1.25;
+      }
+
+      .guide-tab strong {
+        color: #fde68a;
+        text-shadow: 0 0 6px rgba(253, 230, 138, 0.35);
+      }
+
+      .guide-tab p a,
+      .guide-tab li a {
+        color: #67e8f9;
+        text-shadow: 0 0 6px rgba(103, 232, 249, 0.45);
+        text-decoration: underline;
+      }
+
+      .guide-tab p a:hover {
+        color: #a5f3fc;
       }
 
       .guide-tab ul {
-        margin: 8px 0 12px;
-        padding-left: 24px;
+        margin: 8px 0 14px;
+        padding-left: 26px;
       }
 
       .guide-tab li {
         margin-bottom: 6px;
       }
 
-      .guide-tab blockquote {
-        margin: 10px 0;
-        padding: 10px 14px;
-        border-left: 3px solid rgba(82, 207, 192, 0.65);
-        background: rgba(15, 23, 42, 0.5);
+      /* Decorative diamond divider */
+      .guide-divider {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 20px 0;
+        height: 18px;
       }
 
+      .guide-divider::before,
+      .guide-divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, transparent 0%, rgba(181, 127, 238, 0.55) 50%, transparent 100%);
+      }
+
+      .guide-divider::before {
+        background: linear-gradient(90deg, transparent 0%, rgba(181, 127, 238, 0.55) 50%, rgba(181, 127, 238, 0.15) 100%);
+      }
+
+      .guide-divider::after {
+        background: linear-gradient(90deg, rgba(181, 127, 238, 0.15) 0%, rgba(181, 127, 238, 0.55) 50%, transparent 100%);
+      }
+
+      .guide-divider__diamond {
+        width: 10px;
+        height: 10px;
+        margin: 0 12px;
+        background: linear-gradient(135deg, #b57fee 0%, #2dd4bf 100%);
+        transform: rotate(45deg);
+        box-shadow: 0 0 10px rgba(181, 127, 238, 0.6);
+        flex-shrink: 0;
+      }
+
+      /* Image panel */
+      .guide-image-panel {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 26px;
+        align-items: start;
+        margin: 14px 0 10px;
+      }
+
+      .guide-image-panel__frame {
+        position: relative;
+        padding: 5px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #b57fee 0%, #2dd4bf 50%, #b57fee 100%);
+        box-shadow: 0 0 22px rgba(181, 127, 238, 0.35);
+      }
+
+      .guide-image-panel__inner {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: 5px;
+        background:
+          linear-gradient(180deg, rgba(20, 16, 48, 0.98) 0%, rgba(10, 8, 28, 0.98) 100%),
+          radial-gradient(circle at 30% 30%, rgba(45, 212, 191, 0.12) 0%, transparent 60%);
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .guide-image-panel__img {
+        width: 92%;
+        height: 92%;
+        object-fit: contain;
+        image-rendering: pixelated;
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+      }
+
+      .guide-image-panel__text p {
+        margin: 0 0 12px;
+      }
+
+      /* Blockquote */
+      .guide-tab blockquote {
+        position: relative;
+        margin: 14px 0 10px;
+        padding: 14px 20px;
+        background:
+          linear-gradient(180deg, rgba(24, 18, 52, 0.85) 0%, rgba(12, 10, 32, 0.85) 100%);
+        border: 2px solid transparent;
+        border-radius: 6px;
+        background-clip: padding-box;
+      }
+
+      .guide-tab blockquote::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        padding: 2px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, rgba(181, 127, 238, 0.6) 0%, rgba(45, 212, 191, 0.6) 100%);
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      /* Corner ornaments for blockquote */
+      .guide-tab blockquote::after {
+        content: '';
+        position: absolute;
+        inset: 6px;
+        border-radius: 4px;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(181, 127, 238, 0.5) 0%, transparent 8%) 0 0 / 100% 1px no-repeat,
+          linear-gradient(0deg, rgba(181, 127, 238, 0.5) 0%, transparent 8%) 0 0 / 1px 100% no-repeat,
+          linear-gradient(-90deg, rgba(45, 212, 191, 0.5) 0%, transparent 8%) 100% 100% / 100% 1px no-repeat,
+          linear-gradient(180deg, rgba(45, 212, 191, 0.5) 0%, transparent 8%) 100% 100% / 1px 100% no-repeat;
+        opacity: 0.7;
+      }
+
+      .guide-tab blockquote strong {
+        color: #67e8f9;
+        text-shadow: 0 0 8px rgba(103, 232, 249, 0.5);
+      }
+
+      /* Controls table */
       .guide-controls {
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
         width: min(620px, 100%);
+        overflow: hidden;
+        border-radius: 6px;
+        box-shadow: 0 0 18px rgba(181, 127, 238, 0.15);
       }
 
       .guide-controls th,
       .guide-controls td {
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        padding: 8px 10px;
+        border: 1px solid rgba(181, 127, 238, 0.3);
+        padding: 10px 14px;
         text-align: left;
+        background: rgba(18, 14, 40, 0.55);
       }
 
       .guide-controls th {
-        color: #99f6e4;
+        color: #67e8f9;
+        font-family: "Press Start 2P", monospace;
+        font-size: 11px;
+        background: rgba(28, 22, 58, 0.85);
+        border-bottom: 2px solid rgba(45, 212, 191, 0.5);
+        text-shadow: 0 0 6px rgba(103, 232, 249, 0.4);
       }
 
-      .guide-divider {
-        margin: 16px 0;
-        border-bottom: 1px dashed rgba(148, 163, 184, 0.38);
+      .guide-controls td:first-child {
+        color: #fde68a;
+        font-weight: bold;
       }
 
       @media (max-width: 900px) {
-        .guide-shell {
+        .guide-body {
           grid-template-columns: 1fr;
-          grid-template-rows: 250px 1fr;
+          grid-template-rows: 240px 1fr;
         }
 
         .guide-nav {
           border-right: none;
-          border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+          border-bottom: 2px solid;
+          border-image: linear-gradient(90deg, transparent 0%, rgba(181, 127, 238, 0.4) 15%, rgba(45, 212, 191, 0.3) 50%, rgba(181, 127, 238, 0.4) 85%, transparent 100%) 1;
           overflow: auto;
+        }
+
+        .guide-image-panel {
+          grid-template-columns: 1fr;
+        }
+
+        .guide-image-panel__frame {
+          max-width: 260px;
+          margin: 0 auto;
         }
       }
     </style>
@@ -907,299 +1269,538 @@
         aria-modal="true"
         aria-labelledby="guide-main-title"
       >
-        <nav class="guide-nav" aria-label="Survival Guide Sections">
-          <h2 class="guide-nav__title">📖 Survival Guide</h2>
-          <div class="guide-nav__divider"></div>
-          <button class="guide-nav__button is-active" data-guide-tab="about">
-            ► About
-          </button>
-          <button class="guide-nav__button" data-guide-tab="story">
-            ► Story
-          </button>
-          <button class="guide-nav__button" data-guide-tab="mission">
-            ► Mission
-          </button>
-          <button class="guide-nav__button" data-guide-tab="controls">
-            ► Controls
-          </button>
-          <button class="guide-nav__button" data-guide-tab="how-to-play">
-            ► How to Play
-          </button>
-          <button class="guide-nav__button" data-guide-tab="mechanics">
-            ► Mechanics
-          </button>
-          <button class="guide-nav__button" data-guide-tab="tips">
-            ► Tips
-          </button>
-          <button class="guide-nav__button" data-guide-tab="team">
-            ► Team
-          </button>
-          <button class="guide-nav__button" data-guide-tab="credits">
-            ► Credits
-          </button>
-        </nav>
-        <section class="guide-content">
-          <button
-            id="survival-guide-close"
-            class="guide-close"
-            type="button"
-            aria-label="Close guide"
-          >
-            X
-          </button>
-
-          <article class="guide-tab is-active" data-guide-content="about">
-            <h2 id="guide-main-title">About the Game</h2>
-            <p>
-              <strong>Gunita: Reaper of Echoes</strong> is an AI-powered
-              narrative adventure that brings Philippine history and culture to
-              life through exploration, investigation, and storytelling.
-            </p>
-            <p>
-              As <strong>Vino</strong>, the newly appointed
-              <strong>Echo Reaper</strong>, you journey into fragmented memories
-              to uncover forgotten stories, restore lost artifacts, and guide
-              wandering souls toward peace.
-            </p>
-            <p>
-              Every restored memory helps preserve Philippine heritage for
-              future generations.
-            </p>
-          </article>
-
-          <article class="guide-tab" data-guide-content="story">
-            <h2>Story</h2>
-            <p>
-              Long ago, every story that shaped the nation was preserved within
-              the <strong>TALA</strong>, the Hall of Remembrance.
-            </p>
-            <p>
-              As generations passed, traditions faded, legends disappeared, and
-              countless memories were forgotten.
-            </p>
-            <p>
-              Now those forgotten stories survive only as restless souls
-              wandering <strong>Campo Lunan</strong>.
-            </p>
-            <p>
-              You are <strong>Vino</strong>, an Echo Reaper entrusted with
-              restoring these lost memories before they vanish forever.
-            </p>
-          </article>
-
-          <article class="guide-tab" data-guide-content="mission">
-            <h2>Your Mission</h2>
-            <p>For every soul:</p>
-            <ul>
-              <li>Enter its Memory World</li>
-              <li>Explore the environment</li>
-              <li>Collect every Memory Fragment</li>
-              <li>Solve AI-generated riddles</li>
-              <li>Restore forgotten artifacts</li>
-              <li>Discover the truth behind the soul's story</li>
-              <li>Help the soul find peace</li>
-            </ul>
-            <blockquote>
-              <strong
-                >You're not here to defeat monsters. You're here to
-                remember.</strong
+        <div class="guide-shell__inner">
+          <!-- Header / Title Bar -->
+          <header class="guide-header">
+            <h1 class="guide-header__title">
+              <span class="guide-header__icon">📖</span>
+              <span>SURVIVAL GUIDE</span>
+            </h1>
+            <div class="guide-header__right">
+              <!-- <div class="guide-progress" aria-label="Completion progress">
+                <span class="guide-progress__value">18%</span>
+                <span class="guide-progress__label">Complete</span>
+              </div> -->
+              <button
+                id="survival-guide-close"
+                class="guide-close"
+                type="button"
+                aria-label="Close guide"
               >
-            </blockquote>
-          </article>
+                X
+              </button>
+            </div>
+          </header>
 
-          <article class="guide-tab" data-guide-content="controls">
-            <h2>Controls</h2>
-            <table class="guide-controls">
-              <thead>
-                <tr>
-                  <th>Key</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>W A S D / Arrow Keys</td>
-                  <td>Move</td>
-                </tr>
-                <tr>
-                  <td>Shift</td>
-                  <td>Dash</td>
-                </tr>
-                <tr>
-                  <td>E</td>
-                  <td>Interact</td>
-                </tr>
-                <tr>
-                  <td>Space</td>
-                  <td>Echo Ability</td>
-                </tr>
-                <tr>
-                  <td>Esc / P</td>
-                  <td>Pause Menu</td>
-                </tr>
-                <tr>
-                  <td>Mouse</td>
-                  <td>UI Navigation</td>
-                </tr>
-              </tbody>
-            </table>
-          </article>
+          <!-- Body: Nav + Content -->
+          <div class="guide-body">
+            <nav class="guide-nav" aria-label="Survival Guide Sections">
+              <h2 class="guide-nav__title">INDEX</h2>
+              <button class="guide-nav__button is-active" data-guide-tab="about">
+                <span class="guide-nav__icon">📜</span>
+                <span>About</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="story">
+                <span class="guide-nav__icon">📖</span>
+                <span>Story</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="world">
+                <span class="guide-nav__icon">🌍</span>
+                <span>World</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="characters">
+                <span class="guide-nav__icon">👤</span>
+                <span>Characters</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="mission">
+                <span class="guide-nav__icon">🎯</span>
+                <span>Mission</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="controls">
+                <span class="guide-nav__icon">🎮</span>
+                <span>Controls</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="how-to-play">
+                <span class="guide-nav__icon">🧩</span>
+                <span>How to Play</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="mechanics">
+                <span class="guide-nav__icon">⚙️</span>
+                <span>Mechanics</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="tips">
+                <span class="guide-nav__icon">💡</span>
+                <span>Tips</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="team">
+                <span class="guide-nav__icon">👥</span>
+                <span>Team</span>
+              </button>
+              <button class="guide-nav__button" data-guide-tab="credits">
+                <span class="guide-nav__icon">🎵</span>
+                <span>Credits</span>
+              </button>
+            </nav>
 
-          <article class="guide-tab" data-guide-content="how-to-play">
-            <h2>How to Play</h2>
-            <h3>Step 1</h3>
-            <p>
-              Explore <strong>Campo Lunan</strong>. Choose a glowing grave to
-              investigate.
-            </p>
-            <div class="guide-divider"></div>
-            <h3>Step 2</h3>
-            <p>
-              Enter the Memory World. Search every area carefully. Hidden paths
-              may contain important memories.
-            </p>
-            <div class="guide-divider"></div>
-            <h3>Step 3</h3>
-            <p>
-              Use the <strong>Echo Ability (Space)</strong>. Echo reveals nearby
-              Memory Fragments. Watch for glowing signals.
-            </p>
-            <div class="guide-divider"></div>
-            <h3>Step 4</h3>
-            <p>
-              Interact with a Memory Fragment and answer the AI-generated riddle
-              correctly.
-            </p>
-            <p>
-              <strong>Correct Answer:</strong> Restore the artifact and learn
-              part of the soul's story.
-            </p>
-            <p>
-              <strong>Wrong Answer:</strong> Lose Essence, the Fragment
-              relocates, and you must search again.
-            </p>
-            <div class="guide-divider"></div>
-            <h3>Step 5</h3>
-            <p>
-              Collect every Memory Fragment. Only then can the soul's true story
-              be revealed.
-            </p>
-          </article>
+            <section class="guide-content">
+              <!-- About Tab -->
+              <article class="guide-tab is-active" data-guide-content="about">
+                <h2 id="guide-main-title">About the Game</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <div class="guide-image-panel">
+                  <div class="guide-image-panel__frame">
+                    <div class="guide-image-panel__inner">
+                      <img
+                        class="guide-image-panel__img"
+                        src="src/assets/main-menu/vino-poster.png"
+                        alt="Vino the Echo Reaper with Memory Crystal"
+                        onerror="this.style.display='none'"
+                      />
+                    </div>
+                  </div>
+                  <div class="guide-image-panel__text">
+                    <p>
+                      <strong>Gunita: Reaper of Echoes</strong> is an AI-powered
+                      narrative adventure that brings Philippine history and culture
+                      to life through exploration, investigation, and storytelling.
+                    </p>
+                    <p>
+                      As <strong>Vino</strong>, the newly appointed
+                      <strong>Echo Reaper</strong>, you journey into fragmented
+                      <strong>Memory Crystals</strong> to uncover forgotten stories,
+                      restore lost artifacts, and guide wandering souls toward
+                      peace.
+                    </p>
+                    <p>
+                      Every restored memory helps preserve Philippine heritage for
+                      future generations.
+                    </p>
+                  </div>
+                </div>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong
+                    >The dead do not seek to be feared&hellip; only
+                    remembered.</strong
+                  >
+                </blockquote>
+              </article>
 
-          <article class="guide-tab" data-guide-content="mechanics">
-            <h2>Game Mechanics</h2>
-            <h3>Echo</h3>
-            <p>
-              Your supernatural ability. Detects nearby hidden memories and
-              clues. Use it often.
-            </p>
-            <h3>Memory Fragments</h3>
-            <p>
-              Scattered pieces of forgotten history. Each restored fragment
-              reveals artifacts, dialogue, story clues, and historical context.
-            </p>
-            <h3>Essence</h3>
-            <p>Your spiritual connection to the Memory World.</p>
-            <p>
-              Lose Essence by incorrect answers, environmental hazards, and
-              investigation mistakes.
-            </p>
-            <p>
-              If Essence reaches <strong>0</strong>, the Memory World collapses
-              and the investigation restarts.
-            </p>
-            <h3>Sentimos</h3>
-            <p>Crystallized emotions scattered throughout Memory Worlds.</p>
-            <p>
-              Collect them to purchase healing items, hint items, and cosmetics
-              from <strong>Aling Sisa's Tindahan</strong>.
-            </p>
-          </article>
+              <!-- Story Tab -->
+              <article class="guide-tab" data-guide-content="story">
+                <h2>Story</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <p>
+                  Long ago, every story that shaped the nation was preserved within
+                  the <strong>TALA</strong>, the Hall of Remembrance.
+                </p>
+                <p>
+                  As generations passed, traditions faded, legends disappeared, and
+                  countless memories were forgotten.
+                </p>
+                <p>
+                  Now those forgotten stories survive only as restless souls
+                  wandering <strong>Campo Lunan</strong>.
+                </p>
+                <p>
+                  You are <strong>Vino</strong>, an Echo Reaper entrusted with
+                  restoring these lost memories before they vanish forever.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong
+                    >What is forgotten may still echo &mdash; if only someone will
+                    listen.</strong
+                  >
+                </blockquote>
+              </article>
 
-          <article class="guide-tab" data-guide-content="tips">
-            <h2>Tips for New Reapers</h2>
-            <ul>
-              <li>Explore every corner.</li>
-              <li>Use Echo frequently.</li>
-              <li>Read dialogue carefully.</li>
-              <li>Observe your surroundings.</li>
-              <li>Every clue matters.</li>
-              <li>Do not rush your answers.</li>
-              <li>Every artifact tells part of the story.</li>
-            </ul>
-          </article>
+              <!-- World Tab (New) -->
+              <article class="guide-tab" data-guide-content="world">
+                <h2>The World</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Campo Lunan</h3>
+                <p>
+                  A quiet, moonlit cemetery at the edge of memory. Rows of glowing
+                  graves mark the souls waiting to be remembered. Each grave is a
+                  doorway into a life once lived.
+                </p>
+                <p>
+                  Here you will meet wandering spirits, discover fragment clues, and
+                  choose whose story you will restore next.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Memory Worlds</h3>
+                <p>
+                  Within each grave lies a <strong>Memory World</strong> &mdash; a
+                  reconstructed vision of the past shaped from the fragments of a
+                  soul's recollection.
+                </p>
+                <p>
+                  Villages, forests, shorelines, and homes from bygone eras wait to
+                  be explored once more.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong
+                    >Every grave is a book; every world is a chapter.</strong
+                  >
+                </blockquote>
+              </article>
 
-          <article class="guide-tab" data-guide-content="team">
-            <h2>Meet the Team</h2>
-            <h3><strong>We are Team GYM!</strong></h3>
-            <p>
-              Gian Gamir Umadhay
-            </p>
-            <p>
-              Yna Chloe Veñegas
-            </p>
-            <p>
-              Sophia Marielle Mendoza
-            </p>
-            <div class="guide-divider"></div>
-            <p>Developed for <strong>AI Game On 2026</strong></p>
-            <blockquote>
-              <strong
-                >Giving Our History a New Heartbeat through the Intelligence of
-                Tomorrow.</strong
-              >
-            </blockquote>
-          </article>
+              <!-- Characters Tab (New) -->
+              <article class="guide-tab" data-guide-content="characters">
+                <h2>Characters</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Vino &mdash; The Echo Reaper</h3>
+                <p>
+                  A young man chosen as the bridge between the living and the lost.
+                  Gifted with the <strong>Echo</strong> ability, Vino can hear what
+                  others cannot and shine light on memories buried by time.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>The Wandering Souls</h3>
+                <p>
+                  Fishermen, wives, children, villagers, dreamers &mdash; ordinary
+                  people whose extraordinary stories faded with the years.
+                </p>
+                <p>
+                  Each soul carries fragments of history, love, regret, and hope
+                  that only you can piece back together.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Aling Sisa &mdash; The Shopkeeper</h3>
+                <p>
+                  A familiar presence between worlds, running
+                  <strong>Aling Sisa's Tindahan</strong>. She trades
+                  <strong>Sentimos</strong> for healing, hints, and small comforts
+                  for your journey.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong
+                    >Behind every name on a stone is a life worth
+                    remembering.</strong
+                  >
+                </blockquote>
+              </article>
 
-          <article class="guide-tab" data-guide-content="credits">
-            <h2>Credits</h2>
-            <h3>Background Music</h3>
-            <p><strong>Stories Untold</strong></p>
-            <p>Composed by <strong>Alexander Nakarada</strong></p>
-            <p>
-              Website:
-              <a
-                href="http://www.serpentsoundstudios.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                >www.serpentsoundstudios.com</a
-              >
-            </p>
-            <p>Promoted by <strong>Music Fellows</strong></p>
-            <p>
-              <a
-                href="http://bit.ly/MF_official"
-                target="_blank"
-                rel="noopener noreferrer"
-                >http://bit.ly/MF_official</a
-              >
-            </p>
-            <p>
-              Licensed under
-              <strong
-                >Creative Commons Attribution 4.0 International (CC BY
-                4.0)</strong
-              >
-            </p>
-            <p>
-              <a
-                href="https://creativecommons.org/licenses/by/4.0/"
-                target="_blank"
-                rel="noopener noreferrer"
-                >https://creativecommons.org/licenses/by/4.0/</a
-              >
-            </p>
-            <div class="guide-divider"></div>
-            <h3>Thank You</h3>
-            <p>
-              Thank you for helping preserve the stories, traditions, and
-              memories that shaped our nation.
-            </p>
-            <blockquote>
-              <strong>The dead have stories to tell. Will you listen?</strong>
-            </blockquote>
-          </article>
-        </section>
+              <!-- Mission Tab -->
+              <article class="guide-tab" data-guide-content="mission">
+                <h2>Your Mission</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <p>For every soul:</p>
+                <ul>
+                  <li>Enter its Memory World</li>
+                  <li>Explore the environment</li>
+                  <li>Collect every Memory Fragment</li>
+                  <li>Solve AI-generated riddles</li>
+                  <li>Restore forgotten artifacts</li>
+                  <li>Discover the truth behind the soul's story</li>
+                  <li>Help the soul find peace</li>
+                </ul>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong
+                    >You're not here to defeat monsters. You're here to
+                    remember.</strong
+                  >
+                </blockquote>
+              </article>
+
+              <!-- Controls Tab -->
+              <article class="guide-tab" data-guide-content="controls">
+                <h2>Controls</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <table class="guide-controls">
+                  <thead>
+                    <tr>
+                      <th>Key</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>W A S D / Arrow Keys</td>
+                      <td>Move</td>
+                    </tr>
+                    <tr>
+                      <td>Shift</td>
+                      <td>Dash</td>
+                    </tr>
+                    <tr>
+                      <td>E</td>
+                      <td>Interact</td>
+                    </tr>
+                    <tr>
+                      <td>Space</td>
+                      <td>Echo Ability</td>
+                    </tr>
+                    <tr>
+                      <td>Esc / P</td>
+                      <td>Pause Menu</td>
+                    </tr>
+                    <tr>
+                      <td>Mouse</td>
+                      <td>UI Navigation</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+              </article>
+
+              <!-- How to Play Tab -->
+              <article class="guide-tab" data-guide-content="how-to-play">
+                <h2>How to Play</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Step 1</h3>
+                <p>
+                  Explore <strong>Campo Lunan</strong>. Choose a glowing grave to
+                  investigate.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Step 2</h3>
+                <p>
+                  Enter the Memory World. Search every area carefully. Hidden paths
+                  may contain important memories.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Step 3</h3>
+                <p>
+                  Use the <strong>Echo Ability (Space)</strong>. Echo reveals nearby
+                  Memory Fragments. Watch for glowing signals.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Step 4</h3>
+                <p>
+                  Interact with a Memory Fragment and answer the AI-generated riddle
+                  correctly.
+                </p>
+                <p>
+                  <strong>Correct Answer:</strong> Restore the artifact and learn
+                  part of the soul's story.
+                </p>
+                <p>
+                  <strong>Wrong Answer:</strong> Lose Essence, the Fragment
+                  relocates, and you must search again.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Step 5</h3>
+                <p>
+                  Collect every Memory Fragment. Only then can the soul's true story
+                  be revealed.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+              </article>
+
+              <!-- Mechanics Tab -->
+              <article class="guide-tab" data-guide-content="mechanics">
+                <h2>Game Mechanics</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Echo</h3>
+                <p>
+                  Your supernatural ability. Detects nearby hidden memories and
+                  clues. Use it often.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Memory Fragments</h3>
+                <p>
+                  Scattered pieces of forgotten history. Each restored fragment
+                  reveals artifacts, dialogue, story clues, and historical context.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Essence</h3>
+                <p>Your spiritual connection to the Memory World.</p>
+                <p>
+                  Lose Essence by incorrect answers, environmental hazards, and
+                  investigation mistakes.
+                </p>
+                <p>
+                  If Essence reaches <strong>0</strong>, the Memory World collapses
+                  and the investigation restarts.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Sentimos</h3>
+                <p>Crystallized emotions scattered throughout Memory Worlds.</p>
+                <p>
+                  Collect them to purchase healing items, hint items, and cosmetics
+                  from <strong>Aling Sisa's Tindahan</strong>.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+              </article>
+
+              <!-- Tips Tab -->
+              <article class="guide-tab" data-guide-content="tips">
+                <h2>Tips for New Reapers</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <ul>
+                  <li>Explore every corner.</li>
+                  <li>Use Echo frequently.</li>
+                  <li>Read dialogue carefully.</li>
+                  <li>Observe your surroundings.</li>
+                  <li>Every clue matters.</li>
+                  <li>Do not rush your answers.</li>
+                  <li>Every artifact tells part of the story.</li>
+                </ul>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong
+                    >Patience is the light by which the past is best
+                    seen.</strong
+                  >
+                </blockquote>
+              </article>
+
+              <!-- Team Tab -->
+              <article class="guide-tab" data-guide-content="team">
+                <h2>Meet the Team</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>We are Team GYM!</h3>
+                <p>
+                  <strong>Gian Gamir Umadhay</strong>
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <p>
+                  <strong>Yna Chloe Ve&ntilde;egas</strong>
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <p>
+                  <strong>Sophia Marielle Mendoza</strong>
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <p>Developed for <strong>AI Game On 2026</strong></p>
+                <blockquote>
+                  <strong
+                    >Giving Our History a New Heartbeat through the Intelligence of
+                    Tomorrow.</strong
+                  >
+                </blockquote>
+              </article>
+
+              <!-- Credits Tab -->
+              <article class="guide-tab" data-guide-content="credits">
+                <h2>Credits</h2>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Background Music</h3>
+                <p><strong>Stories Untold</strong></p>
+                <p>Composed by <strong>Alexander Nakarada</strong></p>
+                <p>
+                  Website:
+                  <a
+                    href="http://www.serpentsoundstudios.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >www.serpentsoundstudios.com</a
+                  >
+                </p>
+                <p>Promoted by <strong>Music Fellows</strong></p>
+                <p>
+                  <a
+                    href="http://bit.ly/MF_official"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >http://bit.ly/MF_official</a
+                  >
+                </p>
+                <p>
+                  Licensed under
+                  <strong
+                    >Creative Commons Attribution 4.0 International (CC BY
+                    4.0)</strong
+                  >
+                </p>
+                <p>
+                  <a
+                    href="https://creativecommons.org/licenses/by/4.0/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >https://creativecommons.org/licenses/by/4.0/</a
+                  >
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <h3>Thank You</h3>
+                <p>
+                  Thank you for helping preserve the stories, traditions, and
+                  memories that shaped our nation.
+                </p>
+                <div class="guide-divider">
+                  <div class="guide-divider__diamond"></div>
+                </div>
+                <blockquote>
+                  <strong>The dead have stories to tell. Will you listen?</strong>
+                </blockquote>
+              </article>
+            </section>
+          </div>
+        </div>
       </div>
     </div>
 
