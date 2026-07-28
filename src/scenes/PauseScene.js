@@ -142,21 +142,73 @@ export class PauseScene extends Phaser.Scene {
     // Keyboard controls for ESC and P key resume
     this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
     this.pKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    
+    // Add WASD/Arrow/Space/Enter
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.keys = this.input.keyboard.addKeys("W,S,SPACE,ENTER");
+    
+    this.menuItems = [resumeBtn, memoryBtn, musicBtn, sfxBtn, menuBtn];
+    this.selectedIndex = 0;
+    
+    // Add hover listeners to sync index if mouse is used
+    this.menuItems.forEach((btn, index) => {
+      btn.addEventListener("pointerenter", () => {
+        this.selectedIndex = index;
+        this.updateMenuSelection();
+      });
+    });
+    
+    this.updateMenuSelection();
 
     this.handleShutdown = () => this.destroyMenu();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown);
     this.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown);
+
+    this.canInput = false;
+    this.time.delayedCall(200, () => {
+      this.canInput = true;
+    });
+  }
+
+  updateMenuSelection() {
+    this.menuItems.forEach((btn, index) => {
+      if (index === this.selectedIndex) {
+        btn.classList.add("selected");
+        // Apply inline style as fallback just in case CSS doesn't have it
+        btn.style.borderColor = "#f7e8c3";
+        btn.style.color = "#ffffff";
+        btn.style.backgroundColor = "#9c6c28";
+      } else {
+        btn.classList.remove("selected");
+        btn.style.borderColor = "";
+        btn.style.color = "";
+        btn.style.backgroundColor = "";
+      }
+    });
   }
 
   update() {
+    if (!this.canInput) return;
+
     if (Phaser.Input.Keyboard.JustDown(this.escKey) || Phaser.Input.Keyboard.JustDown(this.pKey)) {
-      this.destroyMenu();
-      this.scene.stop();
-      if (this.parentScene) {
-        this.scene.resume(this.parentScene.scene.key);
-      } else {
-        this.scene.resume("CampoLunanScene");
-      }
+      this.menuItems[0].click(); // Simulate clicking resume
+      return;
+    }
+    
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keys.W)) {
+      this.selectedIndex--;
+      if (this.selectedIndex < 0) this.selectedIndex = this.menuItems.length - 1;
+      this.updateMenuSelection();
+      if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
+    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.keys.S)) {
+      this.selectedIndex++;
+      if (this.selectedIndex >= this.menuItems.length) this.selectedIndex = 0;
+      this.updateMenuSelection();
+      if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
+    }
+    
+    if (Phaser.Input.Keyboard.JustDown(this.keys.SPACE) || Phaser.Input.Keyboard.JustDown(this.keys.ENTER)) {
+      this.menuItems[this.selectedIndex].click();
     }
   }
 

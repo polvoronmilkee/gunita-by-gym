@@ -185,31 +185,31 @@ export class Grave1 extends Phaser.Scene {
       // Expand columns/rows if the physical image is smaller than the GID range allocated.
       let finalFrameName = frameName;
       if (tilecount < maxTiles) {
-         tilecount = maxTiles;
-         columns = Math.max(1, Math.ceil(Math.sqrt(tilecount)));
-         const rows = Math.ceil(tilecount / columns);
-         imgW = columns * tileWidth;
-         imgH = rows * tileHeight;
-         
-         finalFrameName = frameName + "_expanded";
-         if (!this.textures.exists(finalFrameName) && texture && texture.key !== "__MISSING") {
-           const canvas = this.textures.createCanvas(finalFrameName, imgW, imgH);
-           if (canvas) {
-             const sourceImage = texture.source[0].image;
-             const origW = texture.source[0].width;
-             const origH = texture.source[0].height;
-             // Repeat the original image across the entire new grid
-             for (let y = 0; y < rows; y++) {
-               for (let x = 0; x < columns; x++) {
-                 canvas.context.drawImage(sourceImage, 0, 0, origW, origH, x * tileWidth, y * tileHeight, origW, origH);
-               }
-             }
-             canvas.refresh();
-           }
-         }
+        tilecount = maxTiles;
+        columns = Math.max(1, Math.ceil(Math.sqrt(tilecount)));
+        const rows = Math.ceil(tilecount / columns);
+        imgW = columns * tileWidth;
+        imgH = rows * tileHeight;
+
+        finalFrameName = frameName + "_expanded";
+        if (!this.textures.exists(finalFrameName) && texture && texture.key !== "__MISSING") {
+          const canvas = this.textures.createCanvas(finalFrameName, imgW, imgH);
+          if (canvas) {
+            const sourceImage = texture.source[0].image;
+            const origW = texture.source[0].width;
+            const origH = texture.source[0].height;
+            // Repeat the original image across the entire new grid
+            for (let y = 0; y < rows; y++) {
+              for (let x = 0; x < columns; x++) {
+                canvas.context.drawImage(sourceImage, 0, 0, origW, origH, x * tileWidth, y * tileHeight, origW, origH);
+              }
+            }
+            canvas.refresh();
+          }
+        }
       } else if (tilecount > maxTiles) {
-         tilecount = maxTiles;
-         columns = Math.min(columns, tilecount);
+        tilecount = maxTiles;
+        columns = Math.min(columns, tilecount);
       }
 
       const newTs = {
@@ -319,7 +319,7 @@ export class Grave1 extends Phaser.Scene {
 
     // Build top layers (drawn above ground elements, but below player dynamic Y-depth unless roof level)
     const topLayerNames = [
-      "objectslayer1", "objectslayer2", "objectslayer3", 
+      "objectslayer1", "objectslayer2", "objectslayer3",
       "objectlayer4", "familyuse", "trees", "treeslayer2"
     ];
 
@@ -346,11 +346,11 @@ export class Grave1 extends Phaser.Scene {
         if (obj.polygon && obj.polygon.length >= 3) {
           // Process Tiled Polygons: decompose polygon edges into static rectangle colliders
           const points = obj.polygon.map(p => ({ x: obj.x + p.x, y: obj.y + p.y }));
-          
+
           for (let i = 0; i < points.length; i++) {
             const p1 = points[i];
             const p2 = points[(i + 1) % points.length];
-            
+
             const dx = p2.x - p1.x;
             const dy = p2.y - p1.y;
             const length = Math.hypot(dx, dy);
@@ -418,7 +418,7 @@ export class Grave1 extends Phaser.Scene {
     });
 
     this.physics.add.collider(this.player.sprite, this.npcs);
-        this.storyStage = 1;
+    this.storyStage = 1;
     this.currentFragment = null;
     this.currentArtifactKey = null;
     this.currentArtifact = null;
@@ -502,9 +502,9 @@ export class Grave1 extends Phaser.Scene {
     const modalWidth = 500;
     const modalHeight = 400;
     this.minimapCamera = this.cameras.add((width - modalWidth) / 2, (height - modalHeight) / 2, modalWidth, modalHeight)
-        .setZoom(0.4)
-        .setName("minimap")
-        .setVisible(false);
+      .setZoom(0.4)
+      .setName("minimap")
+      .setVisible(false);
 
     this.minimapCamera.setBounds(0, 0, this.worldWidth, this.worldHeight);
     this.minimapCamera.startFollow(this.player.sprite);
@@ -676,70 +676,71 @@ export class Grave1 extends Phaser.Scene {
 
     // Advance dialogue with key down events
     const handleInteract = () => {
+      if (this.scene.isPaused()) return;
       if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
       } else if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
         let riddleData, artifactKey, dialogueText, sceneKey, bgKey;
         if (this.storyStage === 1) {
-            riddleData = this.cache.json.get("riddle-fish-basket");
-            artifactKey = "fish-basket";
-            dialogueText = "Correct! The crystal shatters and takes the form of a weathered Fish Basket!";
-            sceneKey = "fragment-fish-basket";
-            bgKey = "bg-fish-basket";
+          riddleData = this.cache.json.get("riddle-fish-basket");
+          artifactKey = "fish-basket";
+          dialogueText = "Correct! The crystal shatters and takes the form of a weathered Fish Basket!";
+          sceneKey = "fragment-fish-basket";
+          bgKey = "bg-fish-basket";
         } else if (this.storyStage === 2) {
-            riddleData = this.cache.json.get("riddle-weather-warning-flag");
-            artifactKey = "weather-warning-flag";
-            dialogueText = "Correct! The crystal reveals a Red Weather Warning Flag.";
-            sceneKey = "fragment-red-warning-flag";
-            bgKey = "red-warning-flag";
+          riddleData = this.cache.json.get("riddle-weather-warning-flag");
+          artifactKey = "weather-warning-flag";
+          dialogueText = "Correct! The crystal reveals a Red Weather Warning Flag.";
+          sceneKey = "fragment-red-warning-flag";
+          bgKey = "red-warning-flag";
         } else if (this.storyStage === 3) {
-            riddleData = this.cache.json.get("riddle-rosary");
-            artifactKey = "rosary";
-            dialogueText = "Correct! The crystal clears, leaving behind a delicate Rosary.";
-            sceneKey = "fragment-rosary";
-            bgKey = "bg-rosary-scene";
+          riddleData = this.cache.json.get("riddle-rosary");
+          artifactKey = "rosary";
+          dialogueText = "Correct! The crystal clears, leaving behind a delicate Rosary.";
+          sceneKey = "fragment-rosary";
+          bgKey = "bg-rosary-scene";
         } else if (this.storyStage === 4) {
-            riddleData = this.cache.json.get("riddle-daughters-drawing");
-            artifactKey = "daughters-drawing";
-            dialogueText = "Correct! The crystal becomes a child's Drawing.";
-            sceneKey = "fragment-daughters-drawing";
-            bgKey = "bg-daughters-drawing";
+          riddleData = this.cache.json.get("riddle-daughters-drawing");
+          artifactKey = "daughters-drawing";
+          dialogueText = "Correct! The crystal becomes a child's Drawing.";
+          sceneKey = "fragment-daughters-drawing";
+          bgKey = "bg-daughters-drawing";
         }
-        
+
         const riddlesToPass = riddleData.riddles || riddleData;
         this.startFragmentChallenge(riddlesToPass, () => {
-            const fragmentX = this.currentFragment.x;
-            const fragmentY = this.currentFragment.y;
-            this.currentFragment.destroy();
-            this.currentFragment = null;
+          const fragmentX = this.currentFragment.x;
+          const fragmentY = this.currentFragment.y;
+          this.currentFragment.destroy();
+          this.currentFragment = null;
 
-            this.currentArtifact = this.physics.add.sprite(fragmentX, fragmentY, artifactKey);
-            this.currentArtifact.setDepth(1);
-            this.currentArtifactKey = artifactKey;
+          this.currentArtifact = this.physics.add.sprite(fragmentX, fragmentY, artifactKey);
+          this.currentArtifact.setDepth(1);
+          this.currentArtifactKey = artifactKey;
 
-            this.startDialogueSequence([{ speaker: "Vino", text: dialogueText }]);
+          this.startDialogueSequence([{ speaker: "Vino", text: dialogueText }]);
         }, () => {
-            this.startDialogueSequence([{ speaker: "Vino", text: "That answer doesn't seem right... I should try again." }]);
+          this.startDialogueSequence([{ speaker: "Vino", text: "That answer doesn't seem right... I should try again." }]);
         }, bgKey, sceneKey);
       } else if (!this.dialogueActive && this.currentArtifact && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentArtifact.x, this.currentArtifact.y) < 60) {
         let completedData = this.cache.json.get(`completed-${this.currentArtifactKey}`);
         const interactions = completedData.interactions;
         const randomInteraction = interactions[Math.floor(Math.random() * interactions.length)];
         const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
-        
+
         this.startDialogueSequence(steps, () => {
-            this.currentArtifact.destroy();
-            this.currentArtifact = null;
-            this.currentArtifactKey = null;
-            this.storyStage++;
-            if (this.storyStage === 5) {
-                this.startFinalRiddleSequence();
-            }
+          this.currentArtifact.destroy();
+          this.currentArtifact = null;
+          this.currentArtifactKey = null;
+          this.storyStage++;
+          if (this.storyStage === 5) {
+            this.startFinalRiddleSequence();
+          }
         });
       } else if (!this.dialogueActive && this.nearNpc) {
         const npc = this.closestNpc;
         const npcKey = npc.texture.key;
-        
+
         // Stop spinning and face the player
         npc.anims.stop();
         const dx = this.player.x - npc.x;
@@ -747,32 +748,32 @@ export class Grave1 extends Phaser.Scene {
         npc.setFrame(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 1) : (dy > 0 ? 0 : 3));
 
         if (this.storyStage === 5) {
-             this.startDialogueSequence([{ speaker: "Villager", text: "The sea is calm now. We remember." }]);
-             return;
+          this.startDialogueSequence([{ speaker: "Villager", text: "The sea is calm now. We remember." }]);
+          return;
         }
 
         if (npcKey === "npc-old-fisherman") {
-             this.storyStage = 1;
-             this.spawnFragment(this.closestNpc, "Old Fisherman", "Always respect the sea, my friend. It gives, but it also takes. Sometimes, it leaves behind a fragment of what it took.");
+          this.storyStage = 1;
+          this.spawnFragment(this.closestNpc, "Old Fisherman", "Always respect the sea, my friend. It gives, but it also takes. Sometimes, it leaves behind a fragment of what it took.");
         } else if (npcKey === "npc-young-fisherman") {
-             this.storyStage = 2;
-             this.spawnFragment(this.closestNpc, "Young Fisherman", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
+          this.storyStage = 2;
+          this.spawnFragment(this.closestNpc, "Young Fisherman", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
         } else if (npcKey === "npc-old-wife") {
-             this.storyStage = 3;
-             this.spawnFragment(this.closestNpc, "Old Wife", "Before every voyage... Tomas never forgot something precious. I just can't remember what it was.");
+          this.storyStage = 3;
+          this.spawnFragment(this.closestNpc, "Old Wife", "Before every voyage... Tomas never forgot something precious. I just can't remember what it was.");
         } else if (npcKey === "npc-young-daughter") {
-             this.storyStage = 4;
-             this.spawnFragment(this.closestNpc, "Daughter", "I made Papa a drawing... but I don't remember where I left it.");
+          this.storyStage = 4;
+          this.spawnFragment(this.closestNpc, "Daughter", "I made Papa a drawing... but I don't remember where I left it.");
         } else {
-             let flavor = "(They are staring into the distance, lost in forgotten memories...)";
-             if (npcKey === "npc-random-woman") flavor = "Drying fish takes time. The sea feeds us all, you know.";
-             if (npcKey === "npc-young-kid") flavor = "Mang Tomas had a really big boat! I want one too.";
-             if (npcKey === "npc-debt-collector") flavor = "Where's my money? People always disappear when they owe you.";
-             this.startDialogueSequence([{ speaker: "Villager", text: flavor }]);
+          let flavor = "(They are staring into the distance, lost in forgotten memories...)";
+          if (npcKey === "npc-random-woman") flavor = "Drying fish takes time. The sea feeds us all, you know.";
+          if (npcKey === "npc-young-kid") flavor = "Mang Tomas had a really big boat! I want one too.";
+          if (npcKey === "npc-debt-collector") flavor = "Where's my money? People always disappear when they owe you.";
+          this.startDialogueSequence([{ speaker: "Villager", text: flavor }]);
         }
       }
     };
-    
+
     this.input.keyboard.on("keydown-E", handleInteract);
     this.input.keyboard.on("keydown-SPACE", handleInteract);
 
@@ -780,21 +781,21 @@ export class Grave1 extends Phaser.Scene {
   }
 
   spawnFragment(npc, speaker, text) {
-      if (this.currentFragment || this.currentArtifact) {
-           this.startDialogueSequence([ { speaker: speaker, text: text } ]);
-           return;
-      }
+    if (this.currentFragment || this.currentArtifact) {
+      this.startDialogueSequence([{ speaker: speaker, text: text }]);
+      return;
+    }
+    this.startDialogueSequence([
+      { speaker: speaker, text: text }
+    ], () => {
+      const fragmentPos = this.getNearestLandCoordinate(npc.x + 50, npc.y + 50, this.map);
+      this.currentFragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
+      this.currentFragment.setDepth(1);
+      this.currentFragment.play("fragment-anim");
       this.startDialogueSequence([
-          { speaker: speaker, text: text }
-      ], () => {
-          const fragmentPos = this.getNearestLandCoordinate(npc.x + 50, npc.y + 50, this.map);
-          this.currentFragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
-          this.currentFragment.setDepth(1);
-          this.currentFragment.play("fragment-anim");
-          this.startDialogueSequence([
-              { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
-          ]);
-      });
+        { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
+      ]);
+    });
   }
 
   startFinalRiddleSequence() {
@@ -972,7 +973,7 @@ export class Grave1 extends Phaser.Scene {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         reject(new Error("AI generation timed out or failed."));
-      }, 500); 
+      }, 500);
     });
   }
 
@@ -988,7 +989,7 @@ export class Grave1 extends Phaser.Scene {
   startDialogueFromJSON() {
     console.log("[JSON] Attempting to load JSON fallback dialogue...");
     const cachedDialogues = this.cache.json.get("grave1-dialogues");
-    
+
     if (!cachedDialogues || !cachedDialogues.dialogues) {
       console.log("[Fallback] JSON missing or invalid. Using hardcoded dialogues.");
       this.startDialogueSequence(this.getHardcodedDialogues());
@@ -1116,23 +1117,23 @@ export class Grave1 extends Phaser.Scene {
 
     if (this.minimapCamera && this.minimapCamera.visible) {
       if (this.minimapPlayerDot && this.player && this.player.sprite) {
-          this.minimapPlayerDot.clear();
-          this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
-          this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 18);
-          this.mapOverlay?.updateLocation(this.player.sprite.x, this.player.sprite.y);
+        this.minimapPlayerDot.clear();
+        this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
+        this.minimapPlayerDot.fillCircle(this.player.sprite.x, this.player.sprite.y, 18);
+        this.mapOverlay?.updateLocation(this.player.sprite.x, this.player.sprite.y);
       }
-      
+
       if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {
-          this.lastExploredChunksSize = this.exploredChunks.size;
-          this.minimapFow.clear();
-          this.minimapFow.fillStyle(0x222222, 1);
-          for (let cx = -30; cx < 80; cx++) {
-              for (let cy = -30; cy < 80; cy++) {
-                  if (!this.exploredChunks.has(`${cx},${cy}`)) {
-                      this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
-                  }
-              }
+        this.lastExploredChunksSize = this.exploredChunks.size;
+        this.minimapFow.clear();
+        this.minimapFow.fillStyle(0x222222, 1);
+        for (let cx = -30; cx < 80; cx++) {
+          for (let cy = -30; cy < 80; cy++) {
+            if (!this.exploredChunks.has(`${cx},${cy}`)) {
+              this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
+            }
           }
+        }
       }
     }
 
@@ -1207,7 +1208,7 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-        this.player.update(this.cursors);
+    this.player.update(this.cursors);
   }
 
   getNearestLandCoordinate(startX, startY, map) {
@@ -1274,34 +1275,34 @@ export class Grave1 extends Phaser.Scene {
       soulName = data.name;
       dodgeLines = data.dodge_lines;
     }
-    
+
     this.scene.pause();
     this.scene.launch(activeScene, {
-        riddleData: riddleData,
-        soulName: soulName,
-        dodgeLines: dodgeLines,
-        bgKey: bgKey || "bg-fish-basket",
-        onComplete: () => {
-            this.dialogueActive = false;
-            this.scene.stop(activeScene);
-            this.scene.resume();
-            this.audioManager?.playTrack("village-v1");
-            onCorrect();
-        },
-        onDeath: async () => {
-            this.dialogueActive = false;
-            this.scene.stop(activeScene);
-            this.scene.resume();
-            this.audioManager?.playTrack("village-v1");
-            
-            const cache = getCache();
-            if (cache && cache.player_id) {
-                await resetPlayerRiddles(cache.player_id);
-            }
-            setEssence(5); // reset essence
-            
-            // No scene transition to CampoLunan; just stay in Grave1 so the player is in front of the fragment.
+      riddleData: riddleData,
+      soulName: soulName,
+      dodgeLines: dodgeLines,
+      bgKey: bgKey || "bg-fish-basket",
+      onComplete: () => {
+        this.dialogueActive = false;
+        this.scene.stop(activeScene);
+        this.scene.resume();
+        this.audioManager?.playTrack("village-v1");
+        onCorrect();
+      },
+      onDeath: async () => {
+        this.dialogueActive = false;
+        this.scene.stop(activeScene);
+        this.scene.resume();
+        this.audioManager?.playTrack("village-v1");
+
+        const cache = getCache();
+        if (cache && cache.player_id) {
+          await resetPlayerRiddles(cache.player_id);
         }
+        setEssence(5); // reset essence
+
+        // No scene transition to CampoLunan; just stay in Grave1 so the player is in front of the fragment.
+      }
     });
   }
 }
