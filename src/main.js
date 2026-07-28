@@ -14,7 +14,7 @@ import { getCache, setCache, clearCache } from "./save.js";
 import { loginPlayer, signupPlayer, loadGameState } from "./utils/api.js";
 
 const menuAssetUrls = [
-  "/src/assets/main-menu/main-menu-bg.png",
+  "/src/assets/main-menu/main-menu-bg-purple.png",
   "/src/assets/main-menu/tagline.png",
   "/src/assets/main-menu/gunita-text-glowing-2.png",
 ];
