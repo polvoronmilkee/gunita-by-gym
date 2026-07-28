@@ -144,6 +144,10 @@ export class FragmentRosary extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys("W,S,A,D");
 
+    // Global pause listeners
+    this.input.keyboard.on('keydown-P', this.handlePause, this);
+    this.input.keyboard.on('keydown-ESC', this.handlePause, this);
+
     // 3. UI Construction
     this.createCrystalHPUI(centerX);
     this.createSoulHPUI(centerX);
@@ -155,6 +159,15 @@ export class FragmentRosary extends Phaser.Scene {
 
     // 4. Start Flow
     this.startIntroSequence();
+
+    this.events.once("shutdown", () => {
+      this.cleanupProjectiles();
+      if (this.bulletGraphics) {
+        this.bulletGraphics.destroy();
+        this.bulletGraphics = null;
+      }
+      this.tweens.killAll();
+    });
   }
 
   updateArenaBounds() {
@@ -379,8 +392,9 @@ export class FragmentRosary extends Phaser.Scene {
     for (let i = 0; i < 5; i++) {
       if (i < this.soulHP) {
         this.soulIcons[i].setColor("#b57fee");
-        if (this.soulTweens[i] && !this.soulTweens[i].isPlaying()) {
-          this.soulTweens[i].resume();
+        if (this.soulTweens[i]) {
+          if (this.soulTweens[i].resume) this.soulTweens[i].resume();
+          else if (this.soulTweens[i].play) this.soulTweens[i].play();
         }
       } else {
         this.soulIcons[i].setColor("#333333");
@@ -532,7 +546,7 @@ export class FragmentRosary extends Phaser.Scene {
       const introLine = "Faith is the thread that binds memory\nto the soul... Prove yours holds true.";
       this.typewriterDialogue(introLine, () => {
         this.waitForAdvance(() => {
-          this.transitionToRiddle();
+          this.transitionToDodge();
         });
       });
     });
@@ -593,11 +607,34 @@ export class FragmentRosary extends Phaser.Scene {
       this.soul = null;
     }
 
-    // Select a random riddle from the remaining pool
-    if (!this.remainingRiddles || this.remainingRiddles.length === 0) {
-      this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
+    // Select a random riddle from the remaining pool for the current phase
+    const currentPhase = this.getCurrentPhase();
+    const difficultyMap = { 1: "easy", 2: "medium", 3: "hard" };
+    const targetDifficulty = difficultyMap[currentPhase] || "easy";
+
+    let pool = this.riddleList.filter(r => r.difficulty === targetDifficulty);
+    if (pool.length === 0) pool = this.riddleList; // fallback
+
+    if (!this.remainingRiddles) this.remainingRiddles = [];
+    if (!this.recentRiddles) this.recentRiddles = [];
+    
+    // Filter out recently asked riddles from available pool
+    let available = pool.filter(r => this.remainingRiddles.includes(r) && !this.recentRiddles.includes(r));
+    
+    if (available.length === 0) {
+      // If all are recent or exhausted, just refill the pool (and reset remaining for this difficulty)
+      this.remainingRiddles = this.remainingRiddles.concat(pool);
+      available = pool.filter(r => !this.recentRiddles.includes(r));
+      if (available.length === 0) available = [...pool]; // absolute fallback
     }
-    this.currentRiddle = Phaser.Utils.Array.GetRandom(this.remainingRiddles);
+    
+    this.currentRiddle = Phaser.Utils.Array.GetRandom(available);
+
+    // Track recently asked riddle
+    this.recentRiddles.push(this.currentRiddle);
+    if (this.recentRiddles.length > 3) {
+      this.recentRiddles.shift();
+    }
 
     this.questionText.setOrigin(0, 0);
     this.questionText.setPosition(this.boxCenterX - this.boxWidth / 2 + 25, this.boxCenterY - 35);
@@ -605,7 +642,11 @@ export class FragmentRosary extends Phaser.Scene {
     this.questionText.setVisible(true);
     this.dialogueText.setVisible(false);
 
-    this.currentRiddle.choices.forEach((choiceText, i) => {
+    let choices = this.currentRiddle.choices || ["A", "B", "C", "D"];
+    // Shuffle the choices so the correct answer is on a random button
+    choices = Phaser.Utils.Array.Shuffle([...choices]);
+
+    choices.forEach((choiceText, i) => {
       this.buttons[i].text.setText(choiceText);
       this.buttons[i].bg.setFillStyle(0x000000);
       this.buttons[i].text.setColor("#ffffff");
@@ -703,7 +744,7 @@ export class FragmentRosary extends Phaser.Scene {
 
         this.typewriterDialogue(line, () => {
           this.waitForAdvance(() => {
-            this.transitionToRiddle();
+            this.transitionToDodge();
           });
         });
       });
@@ -987,7 +1028,9 @@ export class FragmentRosary extends Phaser.Scene {
 
     // Pick random gap positions (columns)
     const skipIndices = [];
-    while (skipIndices.length < gapCount) {
+    let attempts = 0;
+    while (skipIndices.length < gapCount && attempts < 50) {
+      attempts++;
       const r = Phaser.Math.Between(1, count);
       if (!skipIndices.includes(r)) skipIndices.push(r);
     }
@@ -1715,7 +1758,7 @@ export class FragmentRosary extends Phaser.Scene {
       flash.destroy();
 
       if (this.soulHP <= 0) {
-        if (this.onDeathCallback) this.onDeathCallback();
+        this.handlePlayerDeath();
       } else {
         this.retryAttempt++;
         this.dialogueText.setVisible(false);
@@ -1725,6 +1768,77 @@ export class FragmentRosary extends Phaser.Scene {
         });
       }
     });
+  }
+
+  handlePlayerDeath() {
+    this.cleanupProjectiles();
+    this.state = "DEAD_SCREEN";
+    if (this.soul) {
+      this.soul.clear();
+      this.soul.destroy();
+      this.soul = null;
+    }
+
+    this.dialogueText.setVisible(false);
+    this.questionText.setVisible(false);
+
+    // Fade to dark
+    const blackBg = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, this.scale.width, this.scale.height, 0x000000, 1.0);
+    blackBg.setInteractive(); // consume clicks
+
+    const deathText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 80, "The Echoes have consumed you", {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "28px",
+      color: "#ff0000"
+    }).setOrigin(0.5).setShadow(0, 0, '#ff4444', 10, true, true);
+
+    this.tweens.add({
+      targets: deathText,
+      alpha: { from: 1, to: 0.5 },
+      scale: { from: 1, to: 1.05 },
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    const btnW = 220;
+    const btnH = 50;
+    const btnX = this.scale.width / 2;
+    const btnY = this.scale.height / 2 + 40;
+
+    const btnBg = this.add.rectangle(btnX, btnY, btnW, btnH, 0x111111).setStrokeStyle(3, 0xffffff);
+    btnBg.setInteractive({ useHandCursor: true });
+
+    const respawnBtn = this.add.text(btnX, btnY, "RESPAWN", {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "18px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    btnBg.on("pointerover", () => {
+      btnBg.setFillStyle(0x333333);
+      btnBg.setStrokeStyle(3, 0xf7c948);
+      respawnBtn.setColor("#f7c948");
+    });
+    btnBg.on("pointerout", () => {
+      btnBg.setFillStyle(0x111111);
+      btnBg.setStrokeStyle(3, 0xffffff);
+      respawnBtn.setColor("#ffffff");
+    });
+    btnBg.on("pointerdown", () => {
+      if (this.onDeathCallback) {
+        this.onDeathCallback();
+      } else {
+        this.scene.restart();
+      }
+    });
+  }
+
+  handlePause() {
+    if (this.state === "DEAD" || this.state === "DEAD_SCREEN" || this.state === "VICTORY") return;
+    this.scene.pause();
+    this.scene.launch("PauseScene", { parentScene: this });
   }
 }
 

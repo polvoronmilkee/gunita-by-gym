@@ -44,6 +44,7 @@ export class PreloadScene extends Phaser.Scene {
       );
     }
     this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
+    this.load.image("bg-daughters-drawing", "src/assets/grave1-elements/bullet-scenes/daughters-drawing.png");
     this.load.spritesheet("rain", "src/assets/grave1-v2/rain.png", {
       frameWidth: 64,
       frameHeight: 64,
@@ -56,10 +57,10 @@ export class PreloadScene extends Phaser.Scene {
     const currentArea = window.initialScene || cache?.current_area;
     window.initialScene = null;
     
-    if (currentArea === "Grave 1" || currentArea === "Grave1") {
-      this.scene.start("Grave1");
-    } else {
+    if (currentArea === "CampoLunanScene") {
       this.scene.start("CampoLunanScene");
+    } else {
+      this.scene.start("Grave1");
     }
   }
 }

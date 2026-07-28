@@ -684,7 +684,7 @@ export class Grave1 extends Phaser.Scene {
             riddleData = this.cache.json.get("riddle-fish-basket");
             artifactKey = "fish-basket";
             dialogueText = "Correct! The crystal shatters and takes the form of a weathered Fish Basket!";
-            sceneKey = "fragment-red-warning-flag";
+            sceneKey = "fragment-fish-basket";
             bgKey = "bg-fish-basket";
         } else if (this.storyStage === 2) {
             riddleData = this.cache.json.get("riddle-weather-warning-flag");
@@ -702,8 +702,8 @@ export class Grave1 extends Phaser.Scene {
             riddleData = this.cache.json.get("riddle-daughters-drawing");
             artifactKey = "daughters-drawing";
             dialogueText = "Correct! The crystal becomes a child's Drawing.";
-            sceneKey = "fragment-red-warning-flag";
-            bgKey = "bg-fish-basket";
+            sceneKey = "fragment-daughters-drawing";
+            bgKey = "bg-daughters-drawing";
         }
         
         const riddlesToPass = riddleData.riddles || riddleData;
@@ -751,13 +751,17 @@ export class Grave1 extends Phaser.Scene {
              return;
         }
 
-        if (this.storyStage === 1 && npcKey === "npc-old-fisherman") {
+        if (npcKey === "npc-old-fisherman") {
+             this.storyStage = 1;
              this.spawnFragment(this.closestNpc, "Old Fisherman", "Always respect the sea, my friend. It gives, but it also takes. Sometimes, it leaves behind a fragment of what it took.");
-        } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman") {
+        } else if (npcKey === "npc-young-fisherman") {
+             this.storyStage = 2;
              this.spawnFragment(this.closestNpc, "Young Fisherman", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
-        } else if (this.storyStage === 3 && npcKey === "npc-old-wife") {
+        } else if (npcKey === "npc-old-wife") {
+             this.storyStage = 3;
              this.spawnFragment(this.closestNpc, "Old Wife", "Before every voyage... Tomas never forgot something precious. I just can't remember what it was.");
-        } else if (this.storyStage === 4 && npcKey === "npc-young-daughter") {
+        } else if (npcKey === "npc-young-daughter") {
+             this.storyStage = 4;
              this.spawnFragment(this.closestNpc, "Daughter", "I made Papa a drawing... but I don't remember where I left it.");
         } else {
              let flavor = "(They are staring into the distance, lost in forgotten memories...)";
@@ -1240,14 +1244,42 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-    const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
     const activeScene = sceneKey || 'fragment-red-warning-flag';
+    let soulName = "The Unknown";
+    let dodgeLines = ["Survive."];
+
+    if (activeScene === "fragment-fish-basket") {
+      soulName = "The Old Fisherman";
+      dodgeLines = [
+        "The tides will not wait for you...",
+        "Respect the deep ocean currents.",
+        "Hold fast against the storm!"
+      ];
+    } else if (activeScene === "fragment-daughters-drawing") {
+      soulName = "The Young Daughter";
+      dodgeLines = [
+        "Please don't forget my picture, Papa...",
+        "The colors are running in the rain...",
+        "Remember the bright sun we drew together!"
+      ];
+    } else if (activeScene === "fragment-rosary") {
+      soulName = "The Faithful Soul";
+      dodgeLines = [
+        "Faith will guide you through the storm...",
+        "Hold onto your prayers.",
+        "Do not lose hope in the dark."
+      ];
+    } else {
+      const data = characterData.fisherman || { name: "The Unknown", dodge_lines: ["Survive."] };
+      soulName = data.name;
+      dodgeLines = data.dodge_lines;
+    }
     
     this.scene.pause();
     this.scene.launch(activeScene, {
         riddleData: riddleData,
-        soulName: data.name,
-        dodgeLines: data.dodge_lines,
+        soulName: soulName,
+        dodgeLines: dodgeLines,
         bgKey: bgKey || "bg-fish-basket",
         onComplete: () => {
             this.dialogueActive = false;
@@ -1268,22 +1300,7 @@ export class Grave1 extends Phaser.Scene {
             }
             setEssence(5); // reset essence
             
-            // Show Death Screen then transition
-            const blackScreen = this.add.graphics();
-            blackScreen.fillStyle(0x000000, 1);
-            blackScreen.fillRect(0, 0, this.scale.width, this.scale.height);
-            blackScreen.setDepth(9999);
-            blackScreen.setScrollFactor(0);
-            
-            const deathText = this.add.text(this.scale.width/2, this.scale.height/2, "THE ECHOES CONSUMED YOU", {
-                fontFamily: "'Press Start 2P', monospace",
-                fontSize: "16px",
-                color: "#ff4444"
-            }).setOrigin(0.5).setDepth(10000).setScrollFactor(0);
-            
-            this.time.delayedCall(3000, () => {
-                this.scene.start('CampoLunanScene');
-            });
+            // No scene transition to CampoLunan; just stay in Grave1 so the player is in front of the fragment.
         }
     });
   }

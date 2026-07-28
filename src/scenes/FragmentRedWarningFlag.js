@@ -141,6 +141,10 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.keys = this.input.keyboard.addKeys("W,S,A,D");
 
+    // Global pause listeners
+    this.input.keyboard.on('keydown-P', this.handlePause, this);
+    this.input.keyboard.on('keydown-ESC', this.handlePause, this);
+
     // 3. UI Construction
     this.createCrystalHPUI(centerX);
     this.createSoulHPUI(centerX);
@@ -152,6 +156,15 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
     // 4. Start Flow
     this.startIntroSequence();
+
+    this.events.once("shutdown", () => {
+      this.cleanupProjectiles();
+      if (this.bulletGraphics) {
+        this.bulletGraphics.destroy();
+        this.bulletGraphics = null;
+      }
+      this.tweens.killAll();
+    });
   }
 
   updateArenaBounds() {
@@ -307,7 +320,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   updateCrystalHPUI() {
     for (let i = 0; i < 6; i++) {
       if (i < this.crystalHP) {
-        this.crystalIcons[i].setTint(0x2dd4bf); // Glowing cyan intact
+        this.crystalIcons[i].setTint(0xff5533); // Glowing color intact
         this.crystalIcons[i].setAlpha(1.0);
       } else {
         this.crystalIcons[i].setTint(0x333333); // Cracked dark grey shattered
@@ -319,7 +332,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   shatterCrystalParticle(targetX, targetY) {
     // Particle burst on shattered crystal
     for (let i = 0; i < 16; i++) {
-      const p = this.add.rectangle(targetX, targetY, 4, 4, 0x2dd4bf);
+      const p = this.add.rectangle(targetX, targetY, 4, 4, 0xff5533);
       const angle = (i / 16) * Math.PI * 2;
       const speed = Phaser.Math.Between(60, 160);
       const vx = Math.cos(angle) * speed;
@@ -348,7 +361,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.add.text(vinoHpX, vinoHpY, "VINO", {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: "12px",
-      color: "#b57fee"
+      color: "#ff5533"
     }).setOrigin(0.5);
 
     this.soulIcons = [];
@@ -358,7 +371,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       const soul = this.add.text(vinoHpX + heartOffsetFromText + i * heartSpacing, vinoHpY, "♥", {
         fontFamily: "Arial",
         fontSize: "22px",
-        color: "#b57fee"
+        color: "#ff5533"
       }).setOrigin(0.5);
 
       const tw = this.tweens.add({
@@ -378,9 +391,10 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   updateSoulHPUI() {
     for (let i = 0; i < 5; i++) {
       if (i < this.soulHP) {
-        this.soulIcons[i].setColor("#b57fee");
-        if (this.soulTweens[i] && !this.soulTweens[i].isPlaying()) {
-          this.soulTweens[i].resume();
+        this.soulIcons[i].setColor("#ff5533");
+        if (this.soulTweens[i]) {
+          if (this.soulTweens[i].resume) this.soulTweens[i].resume();
+          else if (this.soulTweens[i].play) this.soulTweens[i].play();
         }
       } else {
         this.soulIcons[i].setColor("#333333");
@@ -428,7 +442,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
         if (this.state !== "RIDDLE") return;
         btnBg.setFillStyle(0x9c6c28);
         btnText.setColor("#ffffff");
-        btnBg.setStrokeStyle(2, 0xf7e8c3);
+        btnBg.setStrokeStyle(2, 0xff5533);
       });
 
       btnBg.on("pointerout", () => {
@@ -452,7 +466,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.timerBarBg = this.add.rectangle(centerX, timerY, 480, 10, 0x000000);
     this.timerBarBg.setStrokeStyle(2, 0xffffff);
 
-    this.timerBarFill = this.add.rectangle(centerX - 240, timerY, 480, 10, 0x2dd4bf).setOrigin(0, 0.5);
+    this.timerBarFill = this.add.rectangle(centerX - 240, timerY, 480, 10, 0xff5533).setOrigin(0, 0.5);
   }
 
   // --- TYPEWRITER TEXT ---
@@ -532,7 +546,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       const introLine = "The sea remembers what men forget...\nProve your soul remembers.";
       this.typewriterDialogue(introLine, () => {
         this.waitForAdvance(() => {
-          this.transitionToRiddle();
+          this.transitionToDodge();
         });
       });
     });
@@ -594,11 +608,34 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       this.soul = null;
     }
 
-    // Select a random riddle from the remaining pool
-    if (!this.remainingRiddles || this.remainingRiddles.length === 0) {
-      this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
+    // Select a random riddle from the remaining pool for the current phase
+    const currentPhase = this.getCurrentPhase();
+    const difficultyMap = { 1: "easy", 2: "medium", 3: "hard" };
+    const targetDifficulty = difficultyMap[currentPhase] || "easy";
+
+    let pool = this.riddleList.filter(r => r.difficulty === targetDifficulty);
+    if (pool.length === 0) pool = this.riddleList; // fallback
+
+    if (!this.remainingRiddles) this.remainingRiddles = [];
+    if (!this.recentRiddles) this.recentRiddles = [];
+    
+    // Filter out recently asked riddles from available pool
+    let available = pool.filter(r => this.remainingRiddles.includes(r) && !this.recentRiddles.includes(r));
+    
+    if (available.length === 0) {
+      // If all are recent or exhausted, just refill the pool (and reset remaining for this difficulty)
+      this.remainingRiddles = this.remainingRiddles.concat(pool);
+      available = pool.filter(r => !this.recentRiddles.includes(r));
+      if (available.length === 0) available = [...pool]; // absolute fallback
     }
-    this.currentRiddle = Phaser.Utils.Array.GetRandom(this.remainingRiddles);
+    
+    this.currentRiddle = Phaser.Utils.Array.GetRandom(available);
+
+    // Track recently asked riddle
+    this.recentRiddles.push(this.currentRiddle);
+    if (this.recentRiddles.length > 3) {
+      this.recentRiddles.shift();
+    }
 
     this.questionText.setOrigin(0, 0);
     this.questionText.setPosition(this.boxCenterX - this.boxWidth / 2 + 25, this.boxCenterY - 35);
@@ -606,7 +643,11 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     this.questionText.setVisible(true);
     this.dialogueText.setVisible(false);
 
-    this.currentRiddle.choices.forEach((choiceText, i) => {
+    let choices = this.currentRiddle.choices || ["A", "B", "C", "D"];
+    // Shuffle the choices so the correct answer is on a random button
+    choices = Phaser.Utils.Array.Shuffle([...choices]);
+
+    choices.forEach((choiceText, i) => {
       this.buttons[i].text.setText(choiceText);
       this.buttons[i].bg.setFillStyle(0x000000);
       this.buttons[i].text.setColor("#ffffff");
@@ -623,7 +664,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       this.maxPhaseTimer = this.phaseTimer;
 
       this.timerBarFill.width = 480;
-      this.timerBarFill.setFillStyle(0x2dd4bf);
+      this.timerBarFill.setFillStyle(0xff5533);
       this.setChoiceButtonsState("ACTIVE");
       this.setRiddleUIElementsVisible(true);
     });
@@ -637,11 +678,11 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
     if (selected === correctAnswer) {
       if (clickedBtn) {
-        clickedBtn.bg.setFillStyle(0x2dd4bf);
+        clickedBtn.bg.setFillStyle(0xff5533);
         clickedBtn.text.setColor("#000000");
-        clickedBtn.bg.setStrokeStyle(3, 0x2dd4bf);
+        clickedBtn.bg.setStrokeStyle(3, 0xff5533);
       }
-      this.flashBoxColor(0x2dd4bf);
+      this.flashBoxColor(0xff5533);
       this.time.delayedCall(450, () => {
         this.handleCorrectAnswer();
       });
@@ -710,7 +751,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
 
         this.typewriterDialogue(line, () => {
           this.waitForAdvance(() => {
-            this.transitionToRiddle();
+            this.transitionToDodge();
           });
         });
       });
@@ -800,26 +841,6 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     });
   }
 
-  cleanupProjectiles() {
-    if (this.bulletGraphics) {
-      this.bulletGraphics.clear();
-    }
-    this.bullets.forEach(b => {
-      if (b.graphics && b.graphics.active) b.graphics.destroy();
-    });
-    this.bullets = [];
-    this.lasers.forEach(l => {
-      if (l.graphics) l.graphics.destroy();
-    });
-    this.lasers = [];
-    if (this.patternTimers) {
-      this.patternTimers.forEach(t => t.destroy());
-      this.patternTimers = [];
-    }
-    this.activeWarnings.forEach(w => w.destroy());
-    this.activeWarnings = [];
-  }
-
   getCurrentPhase() {
     if (this.crystalHP >= 4) return 1; // Phase 1: HP 6, 5, 4 (Half or more crystals)
     if (this.crystalHP >= 2) return 2; // Phase 2: HP 3, 2 (Below half crystals)
@@ -835,7 +856,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
   drawSoul() {
     if (!this.soul) return;
     this.soul.clear();
-    this.soul.fillStyle(0xb57fee, 1);
+    this.soul.fillStyle(0xff5533, 1);
     this.soul.lineStyle(1, 0xffffff, 0.8);
     this.soul.fillCircle(0, 2, this.soulRadius);
     this.soul.strokeCircle(0, 2, this.soulRadius);
@@ -1313,7 +1334,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
             radius: radius,
             isHoming: true,
             homingSpeed: speed,
-            color: 0x2dd4bf, // Cyan soul orb style (like Pattern 1)
+            color: 0xff5533, // Updated orb color
             trail: [],
             life: 2000, // Explode after 2 seconds
             onExplode: (ex, ey) => {
@@ -1501,7 +1522,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
     if (this.state === "RIDDLE") {
       this.phaseTimer -= delta;
       this.timerBarFill.width = 480 * Math.max(0, this.phaseTimer / this.maxPhaseTimer);
-      this.timerBarFill.setFillStyle(0x2dd4bf);
+      this.timerBarFill.setFillStyle(0xff5533);
 
       if (this.phaseTimer <= 0) {
         this.startTryAgainDialogue();
@@ -1603,7 +1624,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
           b.trailTimer = 0;
         }
 
-        const color = b.color || 0x2dd4bf;
+        const color = b.color || 0xff5533;
 
         // Draw trail afterimages (fading smaller circles)
         for (let t = 0; t < b.trail.length; t++) {
@@ -1704,7 +1725,7 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
       flash.destroy();
 
       if (this.soulHP <= 0) {
-        if (this.onDeathCallback) this.onDeathCallback();
+        this.handlePlayerDeath();
       } else {
         this.retryAttempt++;
         this.dialogueText.setVisible(false);
@@ -1714,5 +1735,76 @@ export class FragmentRedWarningFlag extends Phaser.Scene {
         });
       }
     });
+  }
+
+  handlePlayerDeath() {
+    this.cleanupProjectiles();
+    this.state = "DEAD_SCREEN";
+    if (this.soul) {
+      this.soul.clear();
+      this.soul.destroy();
+      this.soul = null;
+    }
+
+    this.dialogueText.setVisible(false);
+    this.questionText.setVisible(false);
+
+    // Fade to dark
+    const blackBg = this.add.rectangle(this.scale.width / 2, this.scale.height / 2, this.scale.width, this.scale.height, 0x000000, 1.0);
+    blackBg.setInteractive(); // consume clicks
+
+    const deathText = this.add.text(this.scale.width / 2, this.scale.height / 2 - 80, "The Echoes have consumed you", {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "28px",
+      color: "#ff0000"
+    }).setOrigin(0.5).setShadow(0, 0, '#ff4444', 10, true, true);
+
+    this.tweens.add({
+      targets: deathText,
+      alpha: { from: 1, to: 0.5 },
+      scale: { from: 1, to: 1.05 },
+      duration: 1500,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    const btnW = 220;
+    const btnH = 50;
+    const btnX = this.scale.width / 2;
+    const btnY = this.scale.height / 2 + 40;
+
+    const btnBg = this.add.rectangle(btnX, btnY, btnW, btnH, 0x111111).setStrokeStyle(3, 0xffffff);
+    btnBg.setInteractive({ useHandCursor: true });
+
+    const respawnBtn = this.add.text(btnX, btnY, "RESPAWN", {
+      fontFamily: "'Press Start 2P', monospace",
+      fontSize: "18px",
+      color: "#ffffff"
+    }).setOrigin(0.5);
+
+    btnBg.on("pointerover", () => {
+      btnBg.setFillStyle(0x333333);
+      btnBg.setStrokeStyle(3, 0xff5533);
+      respawnBtn.setColor("#ff5533");
+    });
+    btnBg.on("pointerout", () => {
+      btnBg.setFillStyle(0x111111);
+      btnBg.setStrokeStyle(3, 0xffffff);
+      respawnBtn.setColor("#ffffff");
+    });
+    btnBg.on("pointerdown", () => {
+      if (this.onDeathCallback) {
+        this.onDeathCallback();
+      } else {
+        this.scene.restart();
+      }
+    });
+  }
+
+  handlePause() {
+    if (this.state === "DEAD" || this.state === "DEAD_SCREEN" || this.state === "VICTORY") return;
+    this.scene.pause();
+    this.scene.launch("PauseScene", { parentScene: this });
   }
 }
