@@ -24,6 +24,17 @@ export class Grave1 extends Phaser.Scene {
     this.load.json("random-guy-before", "src/assets/data/dialogues/grave1/random-guy/before-fragments.json");
     this.load.json("random-guy-completed", "src/assets/data/dialogues/grave1/random-guy/completed.json");
     this.load.json("old-fisherman-initial", "src/assets/data/dialogues/grave1/old-fisherman/initial.json");
+    this.load.json("old-fisherman-clue", "src/assets/data/dialogues/grave1/old-fisherman/clue.json");
+    this.load.json("young-fisherman-initial", "src/assets/data/dialogues/grave1/young-fisherman/initial.json");
+    this.load.json("young-fisherman-clue", "src/assets/data/dialogues/grave1/young-fisherman/clue.json");
+    this.load.json("old-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
+    this.load.json("old-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
+    this.load.json("young-daughter-initial", "src/assets/data/dialogues/grave1/young-daughter/initial.json");
+    this.load.json("young-daughter-clue", "src/assets/data/dialogues/grave1/young-daughter/clue.json");
+    this.load.json("random-woman-initial", "src/assets/data/dialogues/grave1/random-woman/initial.json");
+    this.load.json("young-boy-initial", "src/assets/data/dialogues/grave1/young-boy/initial.json");
+    this.load.json("school-girl-initial", "src/assets/data/dialogues/grave1/school-girl/initial.json");
+    this.load.json("debt-collector-initial", "src/assets/data/dialogues/grave1/debt-collector/initial.json");
     this.load.json("riddle-fish-basket", "src/assets/data/dialogues/fragments-riddles/fish-basket.json");
     this.load.json("completed-fish-basket", "src/assets/data/dialogues/fragments-completed/fish-basket.json");
     this.load.json('riddle-weather-warning-flag', 'src/assets/data/dialogues/fragments-riddles/weather-warning-flag.json');
@@ -770,24 +781,39 @@ export class Grave1 extends Phaser.Scene {
         npc.setFrame(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 1) : (dy > 0 ? 0 : 3));
 
         if (this.storyStage === 5) {
-             this.startDialogueSequence([{ speaker: "Villager", text: "The sea is calm now. We remember." }]);
+             const compText = this.getRandomVariant("random-guy-completed", "The sea is calm now. We remember Mang Tomas.");
+             this.startDialogueSequence([{ speaker: "Villager", text: compText }]);
              return;
         }
 
         if (this.storyStage === 1 && npcKey === "npc-old-fisherman") {
-             this.spawnFragment(this.closestNpc, "Old Fisherman", "Always respect the sea, my friend. It gives, but it also takes. Sometimes, it leaves behind a fragment of what it took.");
+             const clueText = this.getRandomVariant("old-fisherman-clue", "Always respect the sea, my friend. It gives, but it also takes.");
+             this.spawnFragment(this.closestNpc, "Old Fisherman", clueText);
         } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman") {
-             this.spawnFragment(this.closestNpc, "Young Fisherman", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
+             const clueText = this.getRandomVariant("young-fisherman-clue", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
+             this.spawnFragment(this.closestNpc, "Young Fisherman", clueText);
         } else if (this.storyStage === 3 && npcKey === "npc-old-wife") {
-             this.spawnFragment(this.closestNpc, "Old Wife", "Before every voyage... Tomas never forgot something precious. I just can't remember what it was.");
+             const clueText = this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious.");
+             this.spawnFragment(this.closestNpc, "Old Wife", clueText);
         } else if (this.storyStage === 4 && npcKey === "npc-young-daughter") {
-             this.spawnFragment(this.closestNpc, "Daughter", "I made Papa a drawing... but I don't remember where I left it.");
+             const clueText = this.getRandomVariant("young-daughter-clue", "I made Papa a drawing... but I don't remember where I left it.");
+             this.spawnFragment(this.closestNpc, "Daughter", clueText);
         } else {
-             let flavor = "(They are staring into the distance, lost in forgotten memories...)";
-             if (npcKey === "npc-random-woman") flavor = "Drying fish takes time. The sea feeds us all, you know.";
-             if (npcKey === "npc-young-kid") flavor = "Mang Tomas had a really big boat! I want one too.";
-             if (npcKey === "npc-debt-collector") flavor = "Where's my money? People always disappear when they owe you.";
-             this.startDialogueSequence([{ speaker: "Villager", text: flavor }]);
+             let speaker = "Villager";
+             let cacheKey = "random-guy-before";
+
+             if (npcKey === "npc-old-fisherman") { speaker = "Old Fisherman"; cacheKey = "old-fisherman-initial"; }
+             else if (npcKey === "npc-young-fisherman") { speaker = "Young Fisherman"; cacheKey = "young-fisherman-initial"; }
+             else if (npcKey === "npc-old-wife") { speaker = "Old Wife"; cacheKey = "old-wife-initial"; }
+             else if (npcKey === "npc-young-daughter") { speaker = "Daughter"; cacheKey = "young-daughter-initial"; }
+             else if (npcKey === "npc-random-woman") { speaker = "Barangay Woman"; cacheKey = "random-woman-initial"; }
+             else if (npcKey === "npc-random-guy") { speaker = "Villager"; cacheKey = "random-guy-before"; }
+             else if (npcKey === "npc-young-kid") { speaker = "Young Boy"; cacheKey = "young-boy-initial"; }
+             else if (npcKey === "npc-school-girl") { speaker = "School Girl"; cacheKey = "school-girl-initial"; }
+             else if (npcKey === "npc-debt-collector") { speaker = "Debt Collector"; cacheKey = "debt-collector-initial"; }
+
+             const flavorText = this.getRandomVariant(cacheKey, "(They are staring into the distance, lost in forgotten memories...)");
+             this.startDialogueSequence([{ speaker: speaker, text: flavorText }]);
         }
       }
     };
@@ -1079,6 +1105,18 @@ export class Grave1 extends Phaser.Scene {
     }
   }
 
+  getRandomVariant(cacheKey, fallback = "") {
+    const data = this.cache.json.get(cacheKey);
+    if (!data) return fallback;
+    if (Array.isArray(data) && data.length > 0) {
+      return data[Math.floor(Math.random() * data.length)];
+    }
+    if (data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
+      return data.variants[Math.floor(Math.random() * data.variants.length)];
+    }
+    return fallback;
+  }
+
   async saveProgress() {
     const cache = getCache();
     if (!cache || !cache.player_id || !this.player?.sprite) return;
@@ -1275,12 +1313,22 @@ export class Grave1 extends Phaser.Scene {
           bgKey: bgKey || "bg-fish-basket",
           onComplete: () => {
               this.dialogueActive = false;
+              if (this.transitionFadeBlack) {
+                this.transitionFadeBlack.destroy();
+                this.transitionFadeBlack = null;
+              }
               this.scene.stop('BulletHellScene');
               this.scene.resume();
+              if (this.physics && typeof this.physics.resume === 'function') {
+                this.physics.resume();
+              }
               onCorrect();
           },
           onDeath: async () => {
               this.dialogueActive = false;
+              if (this.physics && typeof this.physics.resume === 'function') {
+                this.physics.resume();
+              }
               this.scene.stop('BulletHellScene');
               this.scene.resume();
               

@@ -181,8 +181,27 @@ export class TransitionSystem {
               scene.textures.remove('screen-snapshot');
             }
 
-            // Keep fadeBlack active on screen until scene transition finishes!
+            scene.transitionFadeBlack = fadeBlack;
             if (onComplete) onComplete();
+
+            // Fade out and destroy transition fadeBlack so resuming scene is never stuck on black
+            scene.tweens.add({
+              targets: fadeBlack,
+              alpha: 0,
+              duration: 400,
+              delay: 300,
+              onComplete: () => {
+                if (fadeBlack && fadeBlack.active) {
+                  fadeBlack.destroy();
+                }
+                if (scene.transitionFadeBlack === fadeBlack) {
+                  scene.transitionFadeBlack = null;
+                }
+                if (scene.physics && typeof scene.physics.resume === 'function') {
+                  scene.physics.resume();
+                }
+              }
+            });
           }
         });
       }
