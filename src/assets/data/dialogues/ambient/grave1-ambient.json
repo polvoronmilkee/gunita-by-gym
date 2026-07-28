@@ -1,0 +1,92 @@
+{
+  "ambientConversations": [
+    {
+      "category": "fishermen",
+      "targetNpcs": ["npc-old-fisherman", "npc-young-fisherman"],
+      "lines": [
+        "Fisherman 1: The sea looks calm today.",
+        "Fisherman 2: Calm seas can fool even the oldest sailor. Respect the tide."
+      ]
+    },
+    {
+      "category": "fishermen",
+      "targetNpcs": ["npc-old-fisherman", "npc-young-fisherman"],
+      "lines": [
+        "Young Fisherman: Tata, if the sky turns orange at dusk, do we sail tomorrow?",
+        "Old Fisherman: Sky like ripe mango means fair weather. Sky like dark blood... check your ropes twice."
+      ]
+    },
+    {
+      "category": "fishermen",
+      "targetNpcs": ["npc-old-fisherman", "npc-young-fisherman"],
+      "lines": [
+        "Old Fisherman: Remember how Mang Tomas repaired his nylon lines?",
+        "Young Fisherman: Aye, double-woven near the anchor hook. Never snapped once."
+      ]
+    },
+    {
+      "category": "children",
+      "targetNpcs": ["npc-young-daughter", "npc-young-kid", "npc-school-girl"],
+      "lines": [
+        "Young Daughter: When Papa comes home, I'll show him this drawing!",
+        "School Girl: It's so pretty! The sun looks so warm and yellow."
+      ]
+    },
+    {
+      "category": "children",
+      "targetNpcs": ["npc-young-kid", "npc-school-girl"],
+      "lines": [
+        "Young Boy: Quick! Catch that red dragonfly near the banana plant!",
+        "School Girl: Careful! Lola says dragonflies bring good luck to the village."
+      ]
+    },
+    {
+      "category": "children",
+      "targetNpcs": ["npc-young-daughter", "npc-young-kid"],
+      "lines": [
+        "Young Boy: Is Sirena real, Ate?",
+        "Young Daughter: Lola says she only sings when the ocean feels lonely for fishermen."
+      ]
+    },
+    {
+      "category": "neighbors",
+      "targetNpcs": ["npc-random-woman", "npc-old-wife"],
+      "lines": [
+        "Random Woman: Pahiram ng asin, Mare. The dried galunggong needs a little extra salt today.",
+        "Old Wife: Take whatever you need. Tomas always said neighbors share whatever is in the jar."
+      ]
+    },
+    {
+      "category": "neighbors",
+      "targetNpcs": ["npc-random-woman", "npc-random-guy"],
+      "lines": [
+        "Random Woman: Did you hear the church bells ringing early this morning?",
+        "Random Guy: Aye, Father Jose was blessing the new fishing nets by the pier."
+      ]
+    },
+    {
+      "category": "neighbors",
+      "targetNpcs": ["npc-old-wife", "npc-random-woman"],
+      "lines": [
+        "Random Woman: Manang, I made hot champorado for afternoon merienda. Have a bowl.",
+        "Old Wife: Maraming salamat, Mare. Warm food brings comfort to quiet homes."
+      ]
+    },
+    {
+      "category": "collector",
+      "targetNpcs": ["npc-debt-collector", "npc-random-guy"],
+      "lines": [
+        "Debt Collector: I came to collect ledger debts...",
+        "Random Guy: You won't find gold here, sir. But whenever a roof broke, Mang Tomas was first to climb up with bamboo."
+      ]
+    },
+    {
+      "category": "collector",
+      "targetNpcs": ["npc-debt-collector", "npc-old-fisherman"],
+      "lines": [
+        "Debt Collector: Did Tomas ever leave any coins in his chest?",
+        "Old Fisherman: His wealth wasn't in silver, po. It was in the meals he put on his family's table."
+      ]
+    }
+  ]
+}

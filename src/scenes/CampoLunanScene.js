@@ -100,6 +100,16 @@ export class CampoLunanScene extends Phaser.Scene {
         frameHeight: 237,
       },
     );
+
+    // Luma idle spritesheet
+    this.load.spritesheet(
+      "luma-idle",
+      "src/assets/luma-idle-spritesheet.png",
+      {
+        frameWidth: 138.67,
+        frameHeight: 193.67,
+      },
+    );
   }
 
   create() {
@@ -493,35 +503,172 @@ export class CampoLunanScene extends Phaser.Scene {
       loop: true,
     });
 
-    // Instantiate Dialogue Box to showcase scale
-    const dialogues = [
-      {
-        speaker: "Vino",
-        text: "Where am I? This place... Campo Lunan. It feels familiar yet distant.",
-      },
-      {
-        speaker: "???",
-        text: "Be careful, Vino. The memories of this place can be heavy...",
-      },
-      { speaker: "Vino", text: "Who said that? Is someone there?" },
-    ];
-    let currentStep = 0;
-    this.dialogueActive = true;
+    // Check cache to see if the player has already met Luma
+    const activeCache = getCache() || {};
+    this.hasTalkedToLuma = activeCache.has_talked_to_luma || false;
 
-    this.dialogue = new DialogueBox(this, {
-      speaker: dialogues[0].speaker,
-      text: dialogues[0].text,
-      onComplete: () => {
-        currentStep++;
-        if (currentStep < dialogues.length) {
-          const next = dialogues[currentStep];
-          this.dialogue.showText(next.speaker, next.text);
-        } else {
-          this.dialogue.hide();
-          this.dialogueActive = false;
-        }
-      },
-    });
+    // Always create DialogueBox instance for Campo Lunan interactions
+    this.dialogue = new DialogueBox(this);
+    this.dialogue.hide();
+
+    if (!this.hasTalkedToLuma) {
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+
+      // Create Luma sprite (initially hidden/invisible)
+      this.lumaSprite = this.physics.add.sprite(spawnX + 36, spawnY - 60, "luma-idle");
+      this.lumaSprite.setScale(0.3); // matches Vino's scale/proportion
+      this.lumaSprite.setDepth(this.lumaSprite.y);
+      this.lumaSprite.setImmovable(true);
+      this.lumaSprite.setVisible(false);
+      this.lumaSprite.setAlpha(0);
+
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      this.lumaSprite.play("luma-idle-anim");
+
+      // Add purple glowing effect to Luma (similar to Vino's postFX glow)
+      if (this.cameras.main.postFX) {
+        this.lumaGlow = this.lumaSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+        this.tweens.add({
+          targets: this.lumaGlow,
+          outerStrength: 1.3,
+          innerStrength: 0.9,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+
+      this.lumaCollider = this.physics.add.collider(this.player.sprite, this.lumaSprite);
+
+      // Part A: Vino waking up alone
+      const partADialogues = [
+        { speaker: "Vino", text: "... Where... am I?" },
+        { speaker: "Vino", text: "This doesn't look like home..." },
+        { speaker: "Vino", text: "Am I... dead?" }
+      ];
+
+      let stepA = 0;
+      this.dialogue.showText(partADialogues[0].speaker, partADialogues[0].text, () => {
+        const runPartA = () => {
+          stepA++;
+          if (stepA < partADialogues.length) {
+            const next = partADialogues[stepA];
+            this.dialogue.showText(next.speaker, next.text, () => runPartA());
+          } else {
+            // Hide dialogue box temporarily during Luma transition
+            this.dialogue.hide();
+
+            // Part B transition sequence: slow wind gust (camera shake + blue particles)
+            this.cameras.main.shake(350, 0.004);
+            if (this.audioManager) {
+              this.audioManager.playButtonSfx();
+            }
+
+            // Create crystal-spark texture at runtime if needed for wisps particle effect
+            if (!this.textures.exists('crystal-spark')) {
+              const g = this.make.graphics({ x: 0, y: 0 });
+              g.fillStyle(0xffffff, 1);
+              g.fillRect(0, 0, 4, 4);
+              g.generateTexture('crystal-spark', 4, 4);
+              g.destroy();
+            }
+
+            // Emit blue and purple wisps gathering around Luma's coordinates
+            const emitter = this.add.particles(spawnX + 36, spawnY - 60, "crystal-spark", {
+              speed: { min: 15, max: 50 },
+              angle: { min: 0, max: 360 },
+              scale: { start: 1.5, end: 0 },
+              alpha: { start: 0.8, end: 0 },
+              tint: [0x50c0ff, 0xbc80ff, 0xffffff],
+              lifespan: 1200,
+              quantity: 3,
+              frequency: 45,
+              maxParticles: 35,
+              blendMode: 'SCREEN'
+            });
+            emitter.setDepth(this.lumaSprite.y + 1);
+
+            // Fade in Luma (ghostly entrance)
+            this.lumaSprite.setVisible(true);
+            this.tweens.add({
+              targets: this.lumaSprite,
+              alpha: 1,
+              duration: 1500,
+              onComplete: () => {
+                emitter.destroy();
+
+                // Part B: Dialogue with Luma
+                const partBDialogues = [
+                  { speaker: "Luma", text: "... At last. You've awakened." },
+                  { speaker: "Vino", text: "Who are you?" },
+                  { speaker: "Luma", text: "Merely someone who has watched this place for a very long time." },
+                  { speaker: "Vino", text: "Then tell me where I am." },
+                  { speaker: "Luma", text: "This place is called *Campo Lunan*. It is where forgotten memories come to rest... and where forgotten souls wait to be remembered." },
+                  { speaker: "Vino", text: "Forgotten... souls?" },
+                  { speaker: "Luma", text: "Their stories fade. Piece by piece. Until no one remembers they ever lived." },
+                  { speaker: "Vino", text: "The cemetery feels strangely empty... Why am I here?" },
+                  { speaker: "Luma", text: "Because... Campo Lunan needs someone who can still hear the *echoes*." },
+                  { speaker: "Vino", text: "I don't understand." },
+                  { speaker: "Luma", text: "You will, Vino. *In time.*" },
+                  { speaker: "Vino", text: "Hoy, wait lang!" },
+                ];
+
+                let stepB = 0;
+                this.dialogue.showText(partBDialogues[0].speaker, partBDialogues[0].text, () => {
+                  const runPartB = () => {
+                    stepB++;
+                    if (stepB < partBDialogues.length) {
+                      const next = partBDialogues[stepB];
+                      this.dialogue.showText(next.speaker, next.text, () => {
+                        runPartB();
+                      });
+                    } else {
+                      // Dialogue complete: fade out and destroy Luma
+                      this.dialogue.hide();
+                      this.dialogueActive = false;
+
+                      this.tweens.add({
+                        targets: this.lumaSprite,
+                        alpha: 0,
+                        duration: 1600,
+                        onComplete: () => {
+                          this.lumaSprite?.destroy();
+                          if (this.lumaCollider) {
+                            this.physics.world.removeCollider(this.lumaCollider);
+                          }
+
+                          // Persist talked to Luma state
+                          const freshCache = getCache() || {};
+                          freshCache.has_talked_to_luma = true;
+                          setCache(freshCache);
+                          this.saveProgress();
+                        }
+                      });
+                    }
+                  };
+                  runPartB();
+                });
+              }
+            });
+          }
+        };
+        runPartA();
+      });
+    } else {
+      this.dialogueActive = false;
+    }
 
     const triggerGraveDialogue = () => {
       this.dialogueActive = true;
@@ -562,7 +709,7 @@ export class CampoLunanScene extends Phaser.Scene {
               runDialogue();
             } else {
               this.dialogue.hide();
-              this.dialogueActive = false;
+              // Keep dialogueActive = true so Vino stays still during portal transition!
 
               // Set the area cache to Grave 1 before transitioning
               const cache = getCache();
@@ -588,7 +735,7 @@ export class CampoLunanScene extends Phaser.Scene {
                       TransitionSystem.fadeToScene(this, "Grave1", { loadingScreen });
                     },
                   );
-                }, 2500);
+                }, 1800);
               });
             }
           });
