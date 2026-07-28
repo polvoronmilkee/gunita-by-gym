@@ -182,14 +182,24 @@ export class PauseScene extends Phaser.Scene {
 
     menuBtn.addEventListener("click", async () => {
       playClickSfx();
-      this.destroyMenu();
-      this.scene.stop();
+      
+      // Add loading state
+      const titleSpan = menuBtn.querySelector(".pm-btn-title");
+      if (titleSpan) {
+        titleSpan.textContent = "SAVING...";
+      }
+      menuBtn.style.pointerEvents = "none";
+      menuBtn.style.opacity = "0.7";
+      
       if (this.parentScene) {
-        this.parentScene.scene.stop();
         if (typeof this.parentScene.saveProgress === "function") {
           await this.parentScene.saveProgress();
         }
+        this.parentScene.scene.stop();
       }
+      
+      this.destroyMenu();
+      this.scene.stop();
       window.returnToGunitaMenu?.();
     });
 

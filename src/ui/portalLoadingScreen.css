@@ -16,6 +16,8 @@
 .gunita-portal-loading-screen.hidden {
   opacity: 0;
   pointer-events: none;
+  visibility: hidden;
+  transition: opacity 800ms ease, visibility 0s 800ms;
 }
 
 /* Add a deep, breathing background glow */

@@ -507,6 +507,10 @@ export class CampoLunanScene extends Phaser.Scene {
     const activeCache = getCache() || {};
     this.hasTalkedToLuma = activeCache.has_talked_to_luma || false;
 
+    // Always create DialogueBox instance for Campo Lunan interactions
+    this.dialogue = new DialogueBox(this);
+    this.dialogue.hide();
+
     if (!this.hasTalkedToLuma) {
       this.dialogueActive = true;
       if (this.player?.sprite?.body) {
@@ -556,14 +560,12 @@ export class CampoLunanScene extends Phaser.Scene {
       ];
 
       let stepA = 0;
-      this.dialogue = new DialogueBox(this, {
-        speaker: partADialogues[0].speaker,
-        text: partADialogues[0].text,
-        onComplete: () => {
+      this.dialogue.showText(partADialogues[0].speaker, partADialogues[0].text, () => {
+        const runPartA = () => {
           stepA++;
           if (stepA < partADialogues.length) {
             const next = partADialogues[stepA];
-            this.dialogue.showText(next.speaker, next.text);
+            this.dialogue.showText(next.speaker, next.text, () => runPartA());
           } else {
             // Hide dialogue box temporarily during Luma transition
             this.dialogue.hide();
@@ -635,17 +637,17 @@ export class CampoLunanScene extends Phaser.Scene {
                     } else {
                       // Dialogue complete: fade out and destroy Luma
                       this.dialogue.hide();
+                      this.dialogueActive = false;
 
                       this.tweens.add({
                         targets: this.lumaSprite,
                         alpha: 0,
                         duration: 1600,
                         onComplete: () => {
-                          this.lumaSprite.destroy();
+                          this.lumaSprite?.destroy();
                           if (this.lumaCollider) {
                             this.physics.world.removeCollider(this.lumaCollider);
                           }
-                          this.dialogueActive = false;
 
                           // Persist talked to Luma state
                           const freshCache = getCache() || {};
@@ -661,7 +663,8 @@ export class CampoLunanScene extends Phaser.Scene {
               }
             });
           }
-        }
+        };
+        runPartA();
       });
     } else {
       this.dialogueActive = false;
@@ -706,7 +709,7 @@ export class CampoLunanScene extends Phaser.Scene {
               runDialogue();
             } else {
               this.dialogue.hide();
-              this.dialogueActive = false;
+              // Keep dialogueActive = true so Vino stays still during portal transition!
 
               // Set the area cache to Grave 1 before transitioning
               const cache = getCache();
@@ -732,7 +735,7 @@ export class CampoLunanScene extends Phaser.Scene {
                       TransitionSystem.fadeToScene(this, "Grave1", { loadingScreen });
                     },
                   );
-                }, 2500);
+                }, 1800);
               });
             }
           });
