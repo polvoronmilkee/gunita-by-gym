@@ -144,7 +144,7 @@ export class MenuAudioController {
 
   syncButtonLabels() {
     if (this.sfxButton) {
-      this.sfxButton.textContent = this.sfxEnabled ? "🕪" : "🕪×";
+      this.sfxButton.textContent = this.sfxEnabled ? "🔊" : "🔇";
       this.sfxButton.setAttribute(
         "aria-label",
         this.sfxEnabled ? "Sound effects on" : "Sound effects off",
@@ -153,7 +153,7 @@ export class MenuAudioController {
     }
 
     if (this.musicButton) {
-      this.musicButton.textContent = this.musicEnabled ? "♫" : "♫⃠";
+      this.musicButton.textContent = this.musicEnabled ? "🎵" : "🔇";
       this.musicButton.setAttribute(
         "aria-label",
         this.musicEnabled ? "Music on" : "Music off",

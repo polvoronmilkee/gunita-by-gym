@@ -57,24 +57,24 @@ export class PauseScene extends Phaser.Scene {
           </button>
 
           <button class="pause-menu__btn" id="pm-guide">
-            <div class="pm-btn-icon">🕮</div>
+            <div class="pm-btn-icon">📖</div>
             <div class="pm-btn-body">
-              <span class="pm-btn-title">SURVIVAL GUIDE</span>
+              <span class="pm-btn-title">ECHO ARCHIVE</span>
               <span class="pm-btn-desc">Review lore, controls & game mechanics</span>
             </div>
           </button>
 
           <button class="pause-menu__btn" id="pm-music">
-            <div class="pm-btn-icon">♫</div>
+            <div class="pm-btn-icon">🎵</div>
             <div class="pm-btn-body">
               <span class="pm-btn-title">BACKGROUND MUSIC</span>
               <span class="pm-btn-desc">Toggle ambience and soundtrack</span>
             </div>
-            <span class="pm-status-badge ${musicEnabled ? "is-on" : ""}" id="pm-music-badge">${musicEnabled ? "ON" : "OFF" }</span>
+            <span class="pm-status-badge ${musicEnabled ? "is-on" : ""}" id="pm-music-badge">${musicEnabled ? "ON" : "OFF"}</span>
           </button>
 
           <button class="pause-menu__btn" id="pm-sfx">
-            <div class="pm-btn-icon">🕪</div>
+            <div class="pm-btn-icon">🔊</div>
             <div class="pm-btn-body">
               <span class="pm-btn-title">SOUND EFFECTS</span>
               <span class="pm-btn-desc">Toggle interaction and audio feedback</span>
@@ -83,7 +83,7 @@ export class PauseScene extends Phaser.Scene {
           </button>
 
           <button class="pause-menu__btn" id="pm-menu">
-            <div class="pm-btn-icon">𖠿</div>
+            <div class="pm-btn-icon">🏠</div>
             <div class="pm-btn-body">
               <span class="pm-btn-title">RETURN TO MAIN MENU</span>
               <span class="pm-btn-desc">Save and leave the current memory</span>

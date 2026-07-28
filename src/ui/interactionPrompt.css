@@ -9,24 +9,19 @@
   will-change: transform;
 }
 
-/* Inner wrapper with ORIGINAL radius (4px) and PAST gold outline (#c8a86b) */
+/* Inner wrapper for smooth bobbing animation */
 .interaction-prompt-inner {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 4px 8px;
   background-color: #181d24;
   border: 1.5px solid #3a404c;
-  outline: 1px solid #c8a86b; /* Exact original gold outline */
+  outline: 1px solid #c8a86b;
   outline-offset: -3px;
-  border-radius: 4px; /* Exact original radius */
-  box-shadow: 
-    0px 3px 6px rgba(0, 0, 0, 0.6),
-    0 0 10px rgba(200, 168, 107, 0.4), /* Glow accent for the gold outline */
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.4);
   animation: prompt-bob 0.8s ease-in-out infinite alternate;
-  image-rendering: pixelated;
 }
 
 /* Tooltip tail/pointer pointing downward */
@@ -41,17 +36,16 @@
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #181d24;
-  filter: drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.5));
 }
 
-/* Keycap button style - Glowy pixel look */
+/* Keycap button style */
 .interaction-prompt-keycap {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 13px;
   height: 12px;
-  background-color: #212936;
+  background-color: #4a5868;
   border-bottom: 2px solid #2d3742;
   border-radius: 3px;
   outline: 1px solid #00e5ff;
@@ -59,14 +53,10 @@
   font-family: 'Press Start 2P', monospace;
   font-size: 6px;
   font-weight: bold;
-  text-shadow: 
-    0 0 4px #00e5ff,
-    0 1px 1px rgba(0, 0, 0, 0.5); /* Cyan key glow */
-  box-shadow: 0 0 6px rgba(0, 229, 255, 0.4);
-  box-sizing: border-box;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
 }
 
-/* Action text label style - Enhanced gold pixel glow */
+/* Action text label style */
 .interaction-prompt-label {
   color: #f0ebd8;
   font-family: 'Press Start 2P', monospace;
@@ -75,9 +65,6 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   white-space: nowrap;
-  text-shadow: 
-    0 0 6px rgba(200, 168, 107, 0.8),
-    0 0 10px rgba(240, 235, 216, 0.5); /* Layered pixel text glow */
 }
 
 /* Keyframe animation replacing Phaser tween */
