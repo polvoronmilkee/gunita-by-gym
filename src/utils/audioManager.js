@@ -203,6 +203,19 @@ export class AudioManager {
     }
   }
 
+  playLumaSwishSfx() {
+    if (!this.sfxEnabled || this.isDestroyed) {
+      return;
+    }
+    if (!this.lumaSwishSfx) {
+      const swishKey = AUDIO_SETTINGS.sfx.lumaSwish?.key || "sfx-luma-swish";
+      if (this.scene.sound.get(swishKey) || this.scene.cache.audio.has(swishKey)) {
+        this.lumaSwishSfx = this.scene.sound.add(swishKey, { volume: 0.8 });
+      }
+    }
+    this.lumaSwishSfx?.play();
+  }
+
   destroy() {
     if (this.isDestroyed) {
       return;
@@ -213,6 +226,7 @@ export class AudioManager {
     this.buttonSfx?.stop();
     this.dashSfx?.stop();
     this.rainThunderSfx?.stop();
+    this.lumaSwishSfx?.stop();
     this.currentTrack = null;
   }
 }

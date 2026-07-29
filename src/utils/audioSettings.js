@@ -75,5 +75,12 @@ export const AUDIO_SETTINGS = {
         import.meta.url,
       ).href,
     },
+    lumaSwish: {
+      key: "sfx-luma-swish",
+      path: new URL(
+        "../assets/sounds/sound-effects/luma-swish.mp3",
+        import.meta.url,
+      ).href,
+    },
   },
 };
