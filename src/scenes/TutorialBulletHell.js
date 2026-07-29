@@ -191,6 +191,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   startIntroSequence() {
     this.state = "INTRO";
+    this.currentLesson = 0;
     this.crystalEnemy.setTint(0xffffff);
     this.crystalIdleTween.resume();
     this.crystalAngryTween.pause();
@@ -205,13 +206,9 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       this.dialogueText.setAlign("left");
       this.dialogueText.setVisible(true);
 
-      this.showLumaDialogue("Welcome, Vino. See that small glowing circle? That is your Soul. You must protect it.", () => {
-        this.typewriterDialogue("\"A fragment stands before you. Let us begin the lesson.\"", () => {
-          this.waitForAdvance(() => {
-            this.currentLesson = 1;
-            this.showLessonHint();
-            this.transitionToDodge();
-          });
+      this.showLumaDialogue("Welcome, Vino. I am Luma. I will teach you how to face the Echoes. Let's begin.", () => {
+        this.showLumaDialogue("First, prepare your Soul.", () => {
+          this.transitionToDodge();
         });
       });
     });
@@ -282,6 +279,25 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   startDodgePhase() {
     super.startDodgePhase();
     this.showLessonHint();
+  }
+
+  prepareDodgePhase() {
+    super.prepareDodgePhase();
+    
+    if (this.currentLesson === 0) {
+      this.state = "INTRO_SOUL_SHOW";
+      
+      // Allow Luma to speak while the Soul is now clearly visible in the dodge box!
+      this.time.delayedCall(400, () => {
+        this.showLumaDialogue("See that small glowing circle? That is your Soul. Protect it at all costs.", () => {
+          this.showLumaDialogue("Use WASD or ARROW KEYS to move and dodge the bullets. Ready?", () => {
+            this.currentLesson = 1;
+            this.showLessonHint();
+            this.startDodgePhase();
+          });
+        });
+      });
+    }
   }
 
   startPatternsForPhase() {

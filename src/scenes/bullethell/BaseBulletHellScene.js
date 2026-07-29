@@ -1278,7 +1278,13 @@ export class BaseBulletHellScene extends Phaser.Scene {
         this.dialogueText.setText("The fragment is clear...").setVisible(true);
         this.time.delayedCall(2500, () => {
           this.dialogueText.setVisible(false);
-          if (this.onCompleteCallback) this.onCompleteCallback();
+          if (this.onCompleteCallback) {
+            this.onCompleteCallback();
+          } else if (this.returnScene) {
+            if (this.audioManager) this.audioManager.stopMusic();
+            this.scene.stop();
+            this.scene.resume(this.returnScene);
+          }
         });
       }
     });
