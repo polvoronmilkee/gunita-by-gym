@@ -196,9 +196,9 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     const hints = {
       1: "LESSON 1: This is your SOUL. Use WASD or ARROW KEYS to move and dodge!",
       2: "LESSON 2: During DODGE phases, survive until the timer runs out!",
-      3: "LESSON 3: Answer RIDDLES correctly to progress.",
+      3: "LESSON 3: Answer RIDDLES correctly to progress. Select using WASD/ARROWS, press SPACE to enter.",
       4: "LESSON 4: As crystals break, patterns get harder. Phase 2!",
-      5: "LESSON 5: DESPERATION mode - two patterns overlap at once!",
+      5: "LESSON 5: DESPERATION mode! Each fragment has a unique desperation phase based on their stolen memories.",
       6: "LESSON 6: You are ready. Show what you've learned!"
     };
     this.showTutorialHint(hints[this.currentLesson] || "");
@@ -237,11 +237,10 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       this.fireTutorialWave();
     } else if (lesson === 5) {
       this.isDesperation = true;
-      this.phaseTimer = 10000;
-      this.maxPhaseTimer = 10000;
+      this.phaseTimer = 6000;
+      this.maxPhaseTimer = 6000;
       this.crystalEnemy.setTint(0xff4444);
-      this.fireTutorialSlowRain();
-      this.fireTutorialCircle();
+      this.fireDioTimeStop();
     } else {
       this.phaseTimer = 6000;
       this.maxPhaseTimer = 6000;
@@ -252,16 +251,24 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   fireTutorialSingleBullet() {
     const { x, y, w, h } = this.arena;
     this.patternTimers.push(this.time.delayedCall(500, () => {
-      this.spawnBullet(x - 10, y + h / 2, 85, 0, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 2, 100, 0, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 2 - 30, 100, 5, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 2 + 30, 100, -5, 6, 0xf0d890, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(1500, () => {
-      this.spawnBullet(x + w + 10, y + h / 3, -85, 20, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, y + h / 3, -100, 20, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, y + h / 3 - 30, -100, 15, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, y + h / 3 + 30, -100, 25, 6, 0x60d0e8, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(2500, () => {
-      this.spawnBullet(x - 10, y + h / 4, 85, 10, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 4, 100, 10, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 4 - 30, 100, 5, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 4 + 30, 100, 15, 6, 0xf0d890, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(3500, () => {
-      this.spawnBullet(x + w + 10, y + h * 0.7, -85, -10, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, y + h * 0.7, -100, -10, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, y + h * 0.7 - 30, -100, -15, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, y + h * 0.7 + 30, -100, -5, 6, 0x60d0e8, 0, 5);
     }));
   }
 
@@ -276,7 +283,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
         const skip = Phaser.Math.Between(0, count - 1);
         for (let i = 0; i < count; i++) {
           if (i === skip) continue;
-          this.spawnBullet(x + step * (i + 1), topY, 0, 65, 5, 0xf0d890);
+          this.spawnBullet(x + step * (i + 1), topY, 0, 75, 5, 0xf0d890);
         }
       }));
     }
@@ -325,14 +332,81 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       "Watch the projectiles and find the gaps!",
       "That one hurt. Stay focused, Vino!"
     ];
-    const line = Phaser.Utils.Array.GetRandom(dodgeFeedback);
-    this.showLumaDialogue(line, () => {});
+    const msg = Phaser.Utils.Array.GetRandom(dodgeFeedback);
+    this.showLumaDialogue(msg, null);
     
     this.time.delayedCall(2000, () => {
       this.hideLumaDialogue();
     });
 
     super.triggerPlayerHit();
+  }
+
+  getPlayerSpeedModifier() {
+    return this.isTimeStopped ? 0 : 1;
+  }
+
+  fireDioTimeStop() {
+    this.showLumaDialogue("Hmmm... seems like something Dio would do.", null);
+    
+    this.patternTimers.push(this.time.delayedCall(500, () => {
+      this.isTimeStopped = true;
+      this.crystalAngryTween.pause();
+      this.sound.play("sfx-dash", { volume: 0.8 }); // Time stop sound
+      
+      const soulX = this.soul ? this.soul.x : this.arena.x + this.arena.w / 2;
+      const soulY = this.soul ? this.soul.y : this.arena.y + this.arena.h / 2;
+      const defaultCy = this.boxCenterY - 140;
+      const defaultCx = this.arena.x + this.arena.w / 2;
+
+      // Freeze all existing bullets
+      this.bullets.forEach(b => {
+        b.frozenVx = b.vx;
+        b.frozenVy = b.vy;
+        b.vx = 0;
+        b.vy = 0;
+      });
+
+      // Spawn knives in a circle around the frozen player
+      const knifeCount = 14;
+      for (let i = 0; i < knifeCount; i++) {
+        this.patternTimers.push(this.time.delayedCall(300 + i * 150, () => {
+          const angle = (i / knifeCount) * Math.PI * 2;
+          const dist = 110;
+          const bx = soulX + Math.cos(angle) * dist;
+          const by = soulY + Math.sin(angle) * dist;
+          
+          // Spawn bullet with 0 velocity, but record intended velocity
+          this.spawnBullet(bx, by, 0, 0, 6, 0xffff00);
+          const bullet = this.bullets[this.bullets.length - 1];
+          bullet.frozenVx = -Math.cos(angle) * 160;
+          bullet.frozenVy = -Math.sin(angle) * 160;
+          bullet.isArrow = true; // Looks like a knife
+          
+          // Teleport crystal to spawn position
+          this.crystalEnemy.setPosition(bx, by);
+        }));
+      }
+
+      // Resume time
+      this.patternTimers.push(this.time.delayedCall(300 + knifeCount * 150 + 800, () => {
+        this.isTimeStopped = false;
+        this.crystalAngryTween.resume();
+        this.crystalEnemy.setPosition(defaultCx, defaultCy);
+        
+        this.bullets.forEach(b => {
+          if (b.frozenVx !== undefined) {
+            b.vx = b.frozenVx;
+            b.vy = b.frozenVy;
+            delete b.frozenVx;
+            delete b.frozenVy;
+          }
+        });
+        
+        this.sound.play("sfx-dash", { volume: 1.0 });
+        this.cameras.main.shake(150, 0.005);
+      }));
+    }));
   }
 
   handleCorrectAnswer() {
