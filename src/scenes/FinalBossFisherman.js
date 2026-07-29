@@ -655,7 +655,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
   // =============================================
   updateCustomPatterns(timeSec, dtSec) {
     // --- Drowning flood damage ---
-    if (this.floodActive && this.soul && !this.isInvincible) {
+    if (this.soul && !this.isInvincible && (this.floodActive || (this.floodWaterY !== null && this.soul.y > this.floodWaterY))) {
       let safe = false;
       if (this.shieldZone) {
         const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, this.shieldZone.x, this.shieldZone.y);

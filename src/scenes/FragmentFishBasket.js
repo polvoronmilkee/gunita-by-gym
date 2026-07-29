@@ -78,26 +78,36 @@ export class FragmentFishBasket extends BaseBulletHellScene {
     const desp = this.isDesperation;
     const duration = desp ? 14000 : 10000;
 
+    // Pattern 1: Jellyfish Wave
+    // Tweak count/gaps inside fireJellyfishWave() to change density, and speed parameters to change pace.
     if (patternId === 1) {
       const interval = desp ? 1800 : 2200;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireJellyfishWave()));
       }
+    // Pattern 2: Floating Sea Urchin
+    // Tweak expand radius and spawn location inside spawnSeaUrchin() to customize.
     } else if (patternId === 2) {
       const interval = desp ? 2000 : 2600;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.spawnSeaUrchin()));
       }
+    // Pattern 3: Dropping Anchor Bomb
+    // Tweak drop duration and wave/shockwave count inside dropAnchorBomb() to customize.
     } else if (patternId === 3) {
       const interval = desp ? 2400 : 3200;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.dropAnchorBomb()));
       }
+    // Pattern 4: Fishing Net Trap
+    // Tweak net duration, size, and trap delay inside dropFishingNet() to customize.
     } else if (patternId === 4) {
       const interval = desp ? 2400 : 3200;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.dropFishingNet()));
       }
+    // Pattern 5: Crashing Tidal Wave
+    // Tweak horizontal speed and frequency inside crashTidalWave() to customize.
     } else if (patternId === 5) {
       const interval = desp ? 1500 : 2200;
       for (let t = 0; t < duration; t += interval) {

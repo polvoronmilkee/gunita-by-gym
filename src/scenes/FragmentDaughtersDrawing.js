@@ -96,6 +96,9 @@ export class FragmentDaughtersDrawing extends BaseBulletHellScene {
     const desp = this.isDesperation;
     const duration = desp ? 14000 : 10000;
 
+    // Pattern 1: Rainbow Merry-Go-Round & Paint Splatter Bombs
+    // Tweak rotSpeed to change rotation speed, segmentLength/numBeads to change size,
+    // and formTime/timer for telegraph duration.
     if (patternId === 1) {
       const count = 4;
       const colors = [[0xf87171, 0xfb923c, 0xfde68a, 0x86efac, 0x7dd3fc, 0xa78bfa, 0xc4b5fd],
@@ -117,21 +120,29 @@ export class FragmentDaughtersDrawing extends BaseBulletHellScene {
           bombTimer: 0
         });
       }
+    // Pattern 2: Scissors Trap
+    // Tweak telegraph duration and size/snap speed inside spawnScissorsTrap() to customize.
     } else if (patternId === 2) {
       const interval = desp ? 2600 : 3400;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.spawnScissorsTrap()));
       }
+    // Pattern 3: Airplane Volley
+    // Tweak count and bullet speed parameters inside launchAirplaneVolley() to customize.
     } else if (patternId === 3) {
       const interval = desp ? 1600 : 2200;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.launchAirplaneVolley()));
       }
+    // Pattern 4: Tracing Labyrinth Drawing
+    // Tweak tracing speed and spacing inside spawnTracingLabyrinth() to customize.
     } else if (patternId === 4) {
       const interval = desp ? 2800 : 3600;
       for (let t = 0; t < duration; t += interval) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.spawnTracingLabyrinth()));
       }
+    // Pattern 5: Bouncing Musical Notes
+    // Tweak count, bounces, and velocity inside spawnMusicalNotes() to customize.
     } else if (patternId === 5) {
       const interval = desp ? 1800 : 2400;
       for (let t = 0; t < duration; t += interval) {
@@ -386,34 +397,33 @@ export class FragmentDaughtersDrawing extends BaseBulletHellScene {
       const b = this.paintBombs[i];
       if (!b || !b.active) continue;
 
-      if (b.timer > 0) {
+      if (b.state !== "EXPLODE") {
         b.timer -= dtSec;
         this.bulletGraphics.lineStyle(2, b.color, 0.5 + Math.sin(timeSec * 15) * 0.5);
         this.bulletGraphics.strokeCircle(b.x, b.y, 25);
         this.bulletGraphics.fillStyle(b.color, 0.2);
-        this.bulletGraphics.fillCircle(b.x, b.y, 25 * (1 - b.timer / 0.8));
+        this.bulletGraphics.fillCircle(b.x, b.y, 25 * (1 - Math.max(0, b.timer) / 0.8));
 
         if (b.timer <= 0) {
           b.state = "EXPLODE";
           b.timer = 0.3;
         }
-        continue;
-      }
-
-      b.timer -= dtSec;
-      if (b.timer > 0) {
-        this.bulletGraphics.fillStyle(b.color, 0.8);
-        this.bulletGraphics.fillCircle(b.x, b.y, 25);
-        this.bulletGraphics.fillStyle(0xffffff, 0.9);
-        this.bulletGraphics.fillCircle(b.x - 5, b.y - 5, 8);
-
-        if (Phaser.Math.Distance.Between(this.soul.x, this.soul.y, b.x, b.y) < 25 + this.soulRadius) {
-          this.triggerPlayerHit();
-          return;
-        }
       } else {
-        b.active = false;
-        this.paintBombs.splice(i, 1);
+        b.timer -= dtSec;
+        if (b.timer > 0) {
+          this.bulletGraphics.fillStyle(b.color, 0.8);
+          this.bulletGraphics.fillCircle(b.x, b.y, 25);
+          this.bulletGraphics.fillStyle(0xffffff, 0.9);
+          this.bulletGraphics.fillCircle(b.x - 5, b.y - 5, 8);
+
+          if (Phaser.Math.Distance.Between(this.soul.x, this.soul.y, b.x, b.y) < 25 + this.soulRadius) {
+            this.triggerPlayerHit();
+            return;
+          }
+        } else {
+          b.active = false;
+          this.paintBombs.splice(i, 1);
+        }
       }
     }
 

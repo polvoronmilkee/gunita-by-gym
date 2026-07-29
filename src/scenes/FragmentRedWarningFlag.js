@@ -118,10 +118,14 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
     const desp = this.isDesperation;
     const duration = desp ? 14000 : 10000;
     
+    // Pattern 1: Circle Ring Blast
+    // Tweak count, radius, formTime, and homingTurnSpeed parameters inside fireCircleBlast() to customize.
     if (patternId === 1) {
       for (let t = 0; t < duration; t += 2000) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireCircleBlast()));
       }
+    // Pattern 2: Wave Grid
+    // Tweak baseSpeed, count, and spacing inside fireWaveGrid() to customize.
     } else if (patternId === 2) {
       const baseSpeed = desp ? 75 : 85;
       let speedInc = 0;
@@ -130,12 +134,18 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireWaveGrid(speed)));
         speedInc += 20;
       }
+    // Pattern 3: Sweeping Laser
+    // Tweak sweepDuration and warning time inside fireSingleLaserSweep() to customize.
     } else if (patternId === 3) {
       for (let t = 500; t < duration; t += 2400) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireSweepingLaser()));
       }
+    // Pattern 4: Thunder Splitter
+    // Tweak cycleDuration and laserLife inside fireThunderSplitter() to customize.
     } else if (patternId === 4) {
       this.fireThunderSplitter(duration);
+    // Pattern 5: Spotlight Burst
+    // Tweak count, bullet speed, and laser tracking inside fireSpotlightBurst() to customize.
     } else if (patternId === 5) {
       for (let t = 0; t < duration; t += 3000) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireSpotlightBurst()));

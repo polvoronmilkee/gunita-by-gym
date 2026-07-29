@@ -118,10 +118,16 @@ export class FragmentRosary extends BaseBulletHellScene {
     const desp = this.isDesperation;
     const duration = desp ? 14000 : 10000;
 
+    // Pattern 1: Rosary Pendulum
+    // Tweak swing duration, numBeads, and missingBeadIndex inside fireRosaryPendulum() to customize.
     if (patternId === 1) {
       this.fireRosaryPendulum(duration);
+    // Pattern 2: Divine Cross
+    // Tweak cross arm length, rotation, and particle speed inside fireDivineCross() to customize.
     } else if (patternId === 2) {
       this.fireDivineCross(duration);
+    // Pattern 3: Candle Rain
+    // Tweak speed, count, and drop frequency inside fireCandleRain() to customize.
     } else if (patternId === 3) {
       const baseSpeed = desp ? 95 : 75;
       let speedInc = 0;
@@ -130,8 +136,12 @@ export class FragmentRosary extends BaseBulletHellScene {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireCandleRain(speed)));
         speedInc += 8;
       }
+    // Pattern 4: Incense Spiral
+    // Tweak arm count, spacing, and rotation speed inside fireIncenseSpiral() to customize.
     } else if (patternId === 4) {
       this.fireIncenseSpiral(duration);
+    // Pattern 5: Bouncing Rosary Ring
+    // Tweak ring size, speed, and bounce parameters inside fireBouncingRosaryRing() to customize.
     } else if (patternId === 5) {
       for (let t = 0; t < duration; t += 3600) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireBouncingRosaryRing()));
