@@ -823,6 +823,7 @@ export class Grave1 extends Phaser.Scene {
              const flavorText = this.getRandomVariant(cacheKey, "(They are staring into the distance, lost in forgotten memories...)");
              this.startDialogueSequence([{ speaker: speaker, text: flavorText }]);
         }
+      }
     };
 
     this.input.keyboard.on("keydown-E", handleInteract);
