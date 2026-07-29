@@ -185,6 +185,11 @@ export class MenuAudioController {
       return;
     }
 
+    const menuScreen = document.getElementById("menu-screen");
+    if (menuScreen && menuScreen.classList.contains("hidden")) {
+      return;
+    }
+
     const nextTrack =
       this.musicTracks[this.currentTrackIndex] ?? this.musicTracks[0];
     if (!nextTrack) {
