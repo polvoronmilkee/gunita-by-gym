@@ -53,7 +53,7 @@ export class PreloadScene extends Phaser.Scene {
     const currentArea = window.initialScene || cache?.current_area;
     window.initialScene = null;
     
-    if (currentArea === "CampoLunanScene") {
+    if (currentArea === "CampoLunanScene" || currentArea === "Campo Lunan") {
       this.scene.start("CampoLunanScene");
     } else {
       this.scene.start("Grave1");
