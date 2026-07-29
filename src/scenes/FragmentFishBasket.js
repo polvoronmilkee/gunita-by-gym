@@ -54,14 +54,14 @@ export class FragmentFishBasket extends BaseBulletHellScene {
 
     if (phase === 1) {
       const pool = [1, 2, 3];
-      this.executePattern(Phaser.Utils.Array.GetRandom(pool));
+      this.executePattern(this.pickRandomPattern(pool));
     } else if (phase === 2) {
       let choice;
       if (!this.hasSeenPhase2NewPattern) {
         choice = Phaser.Utils.Array.GetRandom([4, 5]);
         this.hasSeenPhase2NewPattern = true;
       } else {
-        choice = Phaser.Utils.Array.GetRandom([1, 2, 3, 4, 5]);
+        choice = this.pickRandomPattern([1, 2, 3, 4, 5]);
       }
       this.executePattern(choice);
     } else if (phase === 3) {
@@ -70,7 +70,7 @@ export class FragmentFishBasket extends BaseBulletHellScene {
       this.maxPhaseTimer = 14000;
       this.crystalEnemy.setTint(0xff1111);
 
-      this.executePattern(Phaser.Utils.Array.GetRandom([1, 2, 3, 4, 5]));
+      this.executePattern(this.pickRandomPattern([1, 2, 3, 4, 5]));
     }
   }
 

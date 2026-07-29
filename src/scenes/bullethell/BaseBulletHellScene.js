@@ -29,6 +29,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
     this.currentRiddle = null;
     this.recentRiddles = [];
+    this.usedPatterns = [];
 
     // Fallbacks that child classes should provide
     this.soulName = data.soulName || this.getFallbackSoulName();
@@ -63,6 +64,29 @@ export class BaseBulletHellScene extends Phaser.Scene {
   startPatternsForPhase() {} // Child initializes its specific patterns
   updateCustomPatterns(timeSec, dtSec) {} // Child updates its specific patterns
   customCleanup() {} // Child cleans up unique projectile arrays
+
+  // Anti-repetition bag-style selection for bullet patterns
+  pickRandomPattern(pool) {
+    if (!this.usedPatterns) this.usedPatterns = [];
+
+    // Find all patterns in the pool that haven't been used yet
+    let available = pool.filter(p => !this.usedPatterns.includes(p));
+
+    // If all patterns have been used (the bag is empty), reset the bag!
+    if (available.length === 0) {
+      // Keep only patterns that are NOT in the current pool so we don't clear history for other pools (if any)
+      this.usedPatterns = this.usedPatterns.filter(p => !pool.includes(p));
+      available = [...pool];
+    }
+
+    // Pick a random pattern from the available ones
+    const chosen = Phaser.Utils.Array.GetRandom(available);
+
+    // Add it to the used bag
+    this.usedPatterns.push(chosen);
+
+    return chosen;
+  }
 
   preload() {
     if (!this.textures.exists("fragment-main")) {

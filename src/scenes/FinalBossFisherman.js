@@ -155,7 +155,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     if (phase === 1) {
       // Phase 1: Fish Basket + Rosary patterns (gentler)
       const pool = ["jellyfish", "candle-rain", "anchor"];
-      const chosen = Phaser.Utils.Array.GetRandom(pool);
+      const chosen = this.pickRandomPattern(pool);
       this.swapBackground(this.patternBgMap[chosen]);
       this.executeNamedPattern(chosen);
     } else if (phase === 2) {
@@ -166,7 +166,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
         chosen = Phaser.Utils.Array.GetRandom(["circle-blast", "scissors", "crayon-burst"]);
         this.hasSeenPhase2NewPattern = true;
       } else {
-        chosen = Phaser.Utils.Array.GetRandom(pool);
+        chosen = this.pickRandomPattern(pool);
       }
       this.swapBackground(this.patternBgMap[chosen]);
       this.executeNamedPattern(chosen);

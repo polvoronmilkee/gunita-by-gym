@@ -88,17 +88,17 @@ export class FragmentRosary extends BaseBulletHellScene {
 
     if (phase === 1) {
       const pool1 = [1, 2, 5];
-      const choice = Phaser.Utils.Array.GetRandom(pool1);
+      const choice = this.pickRandomPattern(pool1);
       this.executePattern(choice);
     } else if (phase === 2) {
       let choice;
       if (!this.hasSeenPhase2NewPattern) {
         const newPool = [3, 4];
-        choice = Phaser.Utils.Array.GetRandom(newPool);
+        choice = this.pickRandomPattern(newPool);
         this.hasSeenPhase2NewPattern = true;
       } else {
         const pool2 = [1, 2, 3, 4, 5];
-        choice = Phaser.Utils.Array.GetRandom(pool2);
+        choice = this.pickRandomPattern(pool2);
       }
       this.executePattern(choice);
     } else if (phase === 3) {
@@ -109,7 +109,7 @@ export class FragmentRosary extends BaseBulletHellScene {
 
       this.fireDivineCross(this.phaseTimer);
       const otherPatterns = [1, 3, 4, 5];
-      const choice = Phaser.Utils.Array.GetRandom(otherPatterns);
+      const choice = this.pickRandomPattern(otherPatterns);
       this.executePattern(choice);
     }
   }

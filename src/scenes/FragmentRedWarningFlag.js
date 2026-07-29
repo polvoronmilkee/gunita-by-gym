@@ -84,17 +84,17 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
 
     if (phase === 1) {
       const pool1 = [1, 2, 5];
-      const choice = Phaser.Utils.Array.GetRandom(pool1);
+      const choice = this.pickRandomPattern(pool1);
       this.executePattern(choice);
     } else if (phase === 2) {
       let choice;
       if (!this.hasSeenPhase2NewPattern) {
         const newPool = [3, 4];
-        choice = Phaser.Utils.Array.GetRandom(newPool);
+        choice = this.pickRandomPattern(newPool);
         this.hasSeenPhase2NewPattern = true;
       } else {
         const pool2 = [1, 2, 3, 4, 5];
-        choice = Phaser.Utils.Array.GetRandom(pool2);
+        choice = this.pickRandomPattern(pool2);
       }
       this.executePattern(choice);
     } else if (phase === 3) {
@@ -108,7 +108,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
         [1, 4],
         [1, 3]
       ];
-      const pair = Phaser.Utils.Array.GetRandom(comboPairs);
+      const pair = this.pickRandomPattern(comboPairs);
       this.executePattern(pair[0]);
       this.executePattern(pair[1]);
     }
