@@ -86,6 +86,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.audioManager = new AudioManager(this, audioKey);
 
     const bg = this.add.rectangle(centerX, height / 2, width, height, 0x0c060a, 1.0);
+    bg.setDepth(-20);
     bg.setInteractive(); // Consume clicks
 
     this.bg = this.add.image(centerX, height / 2, this.bgKey);
