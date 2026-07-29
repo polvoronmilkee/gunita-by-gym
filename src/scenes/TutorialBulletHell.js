@@ -67,19 +67,19 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       fontSize: "11px",
       color: "#ffffff",
       align: "left",
-      wordWrap: { width: 250 },
+      wordWrap: { width: 240 },
       lineSpacing: 7
     }).setOrigin(0, 0).setDepth(100).setAlpha(0);
     this.lumaDialogueActive = false;
   }
 
   createLumaGuide() {
-    this.lumaX = 1065;
-    this.lumaY = 230; // Moved down
+    this.lumaX = 940; // Moved left to fit bubble on screen
+    this.lumaY = 250; // Moved slightly down
 
     if (this.textures.exists("luma-idle")) {
       this.lumaSprite = this.add.sprite(this.lumaX, this.lumaY, "luma-idle");
-      this.lumaSprite.setScale(0.85);
+      this.lumaSprite.setScale(0.75); // Reduced size slightly
       this.lumaSprite.setDepth(90);
 
       if (!this.anims.exists("luma-idle-anim")) {
@@ -125,9 +125,9 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.lumaDialogueActive = true;
     
     // Draw bubble once when dialogue starts, anchored to her base position
-    const lx = this.lumaX + 40; // Top right relative to her body
-    const ly = this.lumaY - 90; 
-    const boxW = 280;
+    const lx = this.lumaX + 45; // Top right relative to her body
+    const ly = this.lumaY - 110; 
+    const boxW = 270;
     const boxH = 120;
     const boxX = lx;
     const boxY = ly;
@@ -136,15 +136,15 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
     this.lumaDialogueBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
     
-    // Pointer triangle towards Luma (pointing left)
-    this.lumaDialogueBg.fillTriangle(boxX, boxY + 40, boxX - 20, boxY + 50, boxX, boxY + 60);
+    // Pointer triangle towards Luma (pointing down-left)
+    this.lumaDialogueBg.fillTriangle(boxX, boxY + 80, boxX - 15, boxY + 95, boxX + 15, boxY + 95);
 
     this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
     this.lumaDialogueBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
     this.lumaDialogueBg.beginPath();
-    this.lumaDialogueBg.moveTo(boxX, boxY + 40);
-    this.lumaDialogueBg.lineTo(boxX - 20, boxY + 50);
-    this.lumaDialogueBg.lineTo(boxX, boxY + 60);
+    this.lumaDialogueBg.moveTo(boxX, boxY + 80);
+    this.lumaDialogueBg.lineTo(boxX - 15, boxY + 95);
+    this.lumaDialogueBg.lineTo(boxX + 15, boxY + 95);
     this.lumaDialogueBg.strokePath();
 
     this.lumaDialogueText.setPosition(boxX + 15, boxY + 15);
