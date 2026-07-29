@@ -778,6 +778,8 @@ export class Grave1 extends Phaser.Scene {
             this.startFinalRiddleSequence();
           }
         });
+      } else if (!this.dialogueActive && this.nearHouseDoor) {
+        this.enterFamilyHouse();
       } else if (!this.dialogueActive && this.nearNpc) {
         const npc = this.closestNpc;
         const npcKey = npc.texture.key;
@@ -1245,10 +1247,19 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
+    let nearHouseDoor = false;
+    const houseDoorX = 3044;
+    const houseDoorY = 320;
+    const distToHouse = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, houseDoorX, houseDoorY);
+    if (distToHouse < 60) {
+      nearHouseDoor = true;
+    }
+
     this.nearNpc = nearNpc;
     this.closestNpc = closestNpc;
     this.nearFragment = nearFragment;
     this.nearArtifact = nearArtifact;
+    this.nearHouseDoor = nearHouseDoor;
 
     if (nearFragment) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO SOLVE RIDDLE");
@@ -1259,6 +1270,11 @@ export class Grave1 extends Phaser.Scene {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO INSPECT ARTIFACT");
       if (this.interactionPrompt && this.currentArtifact) {
         this.interactionPrompt.show(this.currentArtifact, "E", "INSPECT ARTIFACT");
+      }
+    } else if (nearHouseDoor) {
+      this.hud.setStatus("PRESS [E] OR [SPACE] TO ENTER HOUSE");
+      if (this.interactionPrompt) {
+        this.interactionPrompt.show({ x: houseDoorX, y: houseDoorY - 20 }, "E", "ENTER HOUSE");
       }
     } else if (nearNpc) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK");
@@ -1378,6 +1394,38 @@ export class Grave1 extends Phaser.Scene {
               setEssence(5); // reset essence
           }
       });
+    });
+  }
+
+  enterFamilyHouse() {
+    this.dialogueActive = true;
+    if (this.player && this.player.sprite && this.player.sprite.body) {
+      this.player.sprite.body.setVelocity(0);
+      this.player.sprite.anims.stop();
+    }
+
+    const cache = getCache();
+    if (cache) {
+      setCache({
+        ...cache,
+        current_area: "Grave1",
+        position_x: 3044,
+        position_y: 330,
+      });
+    }
+
+    import("../ui/portalLoadingScreen.js").then(({ PortalLoadingScreen }) => {
+      const loadingScreen = new PortalLoadingScreen({
+        title: "FAMILY HOUSE",
+        subtitle: "Entering Memory",
+        hint: "Returning to the old home..."
+      });
+
+      setTimeout(() => {
+        import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
+          TransitionSystem.fadeToScene(this, "FamilyHomeScene", { loadingScreen });
+        });
+      }, 1000);
     });
   }
 }

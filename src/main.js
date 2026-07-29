@@ -11,6 +11,7 @@ import { FragmentRedWarningFlag } from "./scenes/FragmentRedWarningFlag.js";
 import { FragmentRosary } from "./scenes/FragmentRosary.js";
 import { FragmentFishBasket } from "./scenes/FragmentFishBasket.js";
 import { FragmentDaughtersDrawing } from "./scenes/FragmentDaughtersDrawing.js";
+import { FamilyHomeScene } from "./scenes/FamilyHomeScene.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { MenuAudioController } from "./ui/MenuAudioController.js";
 import { getCache, setCache, clearCache } from "./save.js";
@@ -34,6 +35,7 @@ const sceneManager = new SceneManager([
   FragmentRosary,
   FragmentFishBasket,
   FragmentDaughtersDrawing,
+  FamilyHomeScene,
 ]);
 
 const config = {
