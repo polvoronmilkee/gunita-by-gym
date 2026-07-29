@@ -1078,7 +1078,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
           }
         } else {
           // Standard despawn logic with margin
-          const margin = 30;
+          const margin = b.margin !== undefined ? b.margin : 30;
           if (b.x + b.radius < this.arena.x - margin || b.x - b.radius > this.arena.x + this.arena.w + margin ||
               b.y + b.radius < this.arena.y - margin || b.y - b.radius > this.arena.y + this.arena.h + margin) {
             b.active = false;

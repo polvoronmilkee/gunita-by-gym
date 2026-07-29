@@ -181,7 +181,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
         const bx = centerX + radius * Math.cos(angle);
         const by = centerY + radius * Math.sin(angle);
 
-        const bullet = { active: true, x: bx, y: by, vx: 0, vy: 0, radius: 4, color: 0x06b6d4 };
+        const bullet = { active: true, x: bx, y: by, vx: 0, vy: 0, radius: 4, color: 0x06b6d4, margin: 200 };
         this.bullets.push(bullet);
         ringBullets.push(bullet);
       }));
@@ -223,7 +223,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
       this.bullets.push({
         active: true,
         x: baseX + sineShift,
-        y: arenaY,
+        y: arenaY + 5,
         vx: Math.cos(phaseOffset) * 15,
         vy: baseSpeed,
         radius: 4,
