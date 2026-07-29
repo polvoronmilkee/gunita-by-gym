@@ -219,12 +219,12 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   showLessonHint() {
     const hints = {
-      1: "LESSON 1: This is your SOUL. Use WASD or ARROW KEYS to move and dodge!",
-      2: "LESSON 2: During DODGE phases, survive until the timer runs out!",
-      3: "LESSON 3: Answer RIDDLES correctly to progress. Select using WASD/ARROWS, press SPACE to enter.",
-      4: "LESSON 4: As crystals break, patterns get harder. Phase 2!",
-      5: "LESSON 5: DESPERATION mode! Each fragment has a unique desperation phase based on their stolen memories.",
-      6: "LESSON 6: You are ready. Show what you've learned!"
+      1: "LESSON 1: Use WASD/ARROW KEYS to move your SOUL and dodge the bullets!",
+      2: "LESSON 2: Dodge phase! Find the gaps in the falling rain to survive!",
+      3: "LESSON 3: Dodge phase! Watch the expanding circles and avoid them!",
+      4: "LESSON 4: Phase 2! The crystal attacks faster, dodge the waves!",
+      5: "LESSON 5: DESPERATION PHASE! Time is stopped! Find the gap in the knives!",
+      6: "LESSON 6: Show me everything you've learned!"
     };
     this.showTutorialHint(hints[this.currentLesson] || "");
   }
