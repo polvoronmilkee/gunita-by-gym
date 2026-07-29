@@ -74,11 +74,11 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   }
 
   createLumaGuide() {
-    const lumaX = 1065;
-    const lumaY = 170;
+    this.lumaX = 1065;
+    this.lumaY = 230; // Moved down
 
     if (this.textures.exists("luma-idle")) {
-      this.lumaSprite = this.add.sprite(lumaX, lumaY, "luma-idle");
+      this.lumaSprite = this.add.sprite(this.lumaX, this.lumaY, "luma-idle");
       this.lumaSprite.setScale(0.85);
       this.lumaSprite.setDepth(90);
 
@@ -106,7 +106,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
       this.tweens.add({
         targets: this.lumaSprite,
-        y: lumaY - 5,
+        y: this.lumaY - 5,
         yoyo: true,
         repeat: -1,
         duration: 1200,
@@ -115,7 +115,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     } else {
       this.lumaSprite = this.add.graphics().setDepth(90);
       this.lumaSprite.fillStyle(0xbc80ff, 0.8);
-      this.lumaSprite.fillCircle(lumaX, lumaY, 30);
+      this.lumaSprite.fillCircle(this.lumaX, this.lumaY, 30);
     }
 
     // Luma label removed
@@ -123,6 +123,31 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   showLumaDialogue(text, onComplete) {
     this.lumaDialogueActive = true;
+    
+    // Draw bubble once when dialogue starts, anchored to her base position
+    const lx = this.lumaX - 70;
+    const ly = this.lumaY - 90; // Top right relative to her body
+    const boxW = 280;
+    const boxH = 120;
+    const boxX = lx - boxW;
+    const boxY = ly;
+
+    this.lumaDialogueBg.clear();
+    this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
+    this.lumaDialogueBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
+    
+    // Pointer triangle towards Luma
+    this.lumaDialogueBg.fillTriangle(boxX + boxW, boxY + 40, boxX + boxW + 20, boxY + 50, boxX + boxW, boxY + 60);
+
+    this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
+    this.lumaDialogueBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
+    this.lumaDialogueBg.beginPath();
+    this.lumaDialogueBg.moveTo(boxX + boxW, boxY + 40);
+    this.lumaDialogueBg.lineTo(boxX + boxW + 20, boxY + 50);
+    this.lumaDialogueBg.lineTo(boxX + boxW, boxY + 60);
+    this.lumaDialogueBg.strokePath();
+
+    this.lumaDialogueText.setPosition(boxX + 15, boxY + 15);
     this.lumaDialogueText.setAlpha(1);
 
     this.typewriterText(this.lumaDialogueText, text, 18, () => {
@@ -470,32 +495,6 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   }
 
   updateCustomPatterns(timeSec, dtSec) {
-    // Dynamic speech bubble anchored to Luma
-    if (this.lumaDialogueActive && this.lumaSprite) {
-      this.lumaDialogueBg.clear();
-      
-      const lx = this.lumaSprite.x - 70;
-      const ly = this.lumaSprite.y - 70; // Positioned higher, near her head
-      const boxW = 280;
-      const boxH = 120;
-      const boxX = lx - boxW;
-      const boxY = ly - 30;
-
-      this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
-      this.lumaDialogueBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
-      
-      // Pointer triangle towards Luma
-      this.lumaDialogueBg.fillTriangle(boxX + boxW, boxY + 40, boxX + boxW + 20, boxY + 50, boxX + boxW, boxY + 60);
-
-      this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
-      this.lumaDialogueBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
-      this.lumaDialogueBg.beginPath();
-      this.lumaDialogueBg.moveTo(boxX + boxW, boxY + 40);
-      this.lumaDialogueBg.lineTo(boxX + boxW + 20, boxY + 50);
-      this.lumaDialogueBg.lineTo(boxX + boxW, boxY + 60);
-      this.lumaDialogueBg.strokePath();
-
-      this.lumaDialogueText.setPosition(boxX + 15, boxY + 15);
-    }
+    // Dynamic speech bubble removed from here, drawn in showLumaDialogue instead
   }
 }
