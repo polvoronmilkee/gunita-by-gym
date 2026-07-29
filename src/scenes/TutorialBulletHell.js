@@ -50,8 +50,8 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.createLumaGuide();
 
     // Create tutorial hint text overlay (top-center banner)
-    this.tutorialHintBg = this.add.rectangle(this.scale.width / 2, 85, this.scale.width, 30, 0x000000, 0.7).setDepth(99).setAlpha(0);
-    this.tutorialHintText = this.add.text(this.scale.width / 2, 85, "", {
+    this.tutorialHintBg = this.add.rectangle(this.scale.width / 2, 140, this.scale.width, 30, 0x000000, 0.7).setDepth(99).setAlpha(0);
+    this.tutorialHintText = this.add.text(this.scale.width / 2, 140, "", {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: "11px",
       color: "#f0d890",
