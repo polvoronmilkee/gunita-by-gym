@@ -91,6 +91,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.bg = this.add.image(centerX, height / 2, this.bgKey);
     this.bg.setDisplaySize(width, height);
     this.bg.setAlpha(0.65);
+    this.bg.setDepth(-10);
 
     // =========================================
     // CENTRALIZED UI COORDINATES

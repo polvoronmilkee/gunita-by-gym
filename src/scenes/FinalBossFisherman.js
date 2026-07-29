@@ -108,7 +108,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     const newBg = this.add.image(width / 2, height / 2, newBgKey);
     newBg.setDisplaySize(width, height);
     newBg.setAlpha(0);
-    newBg.setDepth(oldBg ? oldBg.depth : 0);
+    newBg.setDepth(-10);
 
     // Crossfade
     this.tweens.add({
