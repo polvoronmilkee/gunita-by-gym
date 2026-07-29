@@ -129,7 +129,7 @@ export class FamilyHomeScene extends Phaser.Scene {
 
     // Default spawn coordinate inside house
     const spawnX = 500;
-    const spawnY = 1080;
+    const spawnY = 1140;
 
     this.audioManager = new AudioManager(this, "village-v1");
 
