@@ -150,6 +150,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.currentRainbowColorStr = "#ffffff";
 
     this.startIntroSequence();
+    this.game.events.emit("game-ready");
 
     this.events.once("shutdown", () => {
       this.input.keyboard.off('keydown-P', this.handlePause, this);
