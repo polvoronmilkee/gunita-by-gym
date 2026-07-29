@@ -118,11 +118,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       this.lumaSprite.fillCircle(lumaX, lumaY, 30);
     }
 
-    this.lumaLabel = this.add.text(lumaX, lumaY - 95, "LUMA", {
-      fontFamily: "'Press Start 2P', monospace",
-      fontSize: "12px",
-      color: "#bc80ff"
-    }).setOrigin(0.5).setDepth(91);
+    // Luma label removed
   }
 
   showLumaDialogue(text, onComplete) {
@@ -198,14 +194,24 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   showLessonHint() {
     const hints = {
-      1: "LESSON 1: This is your SOUL. Use WASD or ARROW KEYS to move it.",
+      1: "LESSON 1: This is your SOUL. Use WASD or ARROW KEYS to move and dodge!",
       2: "LESSON 2: During DODGE phases, survive until the timer runs out!",
-      3: "LESSON 3: Answer RIDDLES correctly to shatter crystals.",
-      4: "LESSON 4: As crystals break, patterns get harder. This is Phase 2!",
+      3: "LESSON 3: Answer RIDDLES correctly to progress.",
+      4: "LESSON 4: As crystals break, patterns get harder. Phase 2!",
       5: "LESSON 5: DESPERATION mode - two patterns overlap at once!",
       6: "LESSON 6: You are ready. Show what you've learned!"
     };
     this.showTutorialHint(hints[this.currentLesson] || "");
+  }
+
+  startRiddlePhase() {
+    super.startRiddlePhase();
+    this.showTutorialHint("RIDDLE PHASE: Read the crystal's memory and click the correct answer!");
+  }
+
+  startDodgePhase() {
+    super.startDodgePhase();
+    this.showLessonHint();
   }
 
   startPatternsForPhase() {
@@ -395,7 +401,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       this.lumaDialogueBg.clear();
       
       const lx = this.lumaSprite.x - 70;
-      const ly = this.lumaSprite.y - 40;
+      const ly = this.lumaSprite.y - 70; // Positioned higher, near her head
       const boxW = 280;
       const boxH = 120;
       const boxX = lx - boxW;
