@@ -311,13 +311,70 @@ guideTabButtons.forEach((button) => {
   });
 });
 
+// Main Menu Keyboard Navigation
+const menuScreen = document.getElementById("menu-screen");
+let selectedMenuIndex = 0;
+const menuButtons = [
+  document.getElementById("continue-journey"),
+  document.getElementById("enter-campo-lunan"),
+  document.getElementById("tale-untold"),
+  document.getElementById("menu-guide")
+].filter(Boolean);
+
+function updateMenuSelection() {
+  menuButtons.forEach((btn, idx) => {
+    if (idx === selectedMenuIndex) {
+      btn.classList.add("selected");
+      btn.focus();
+    } else {
+      btn.classList.remove("selected");
+    }
+  });
+}
+
+// Sync mouse hover with keyboard selection
+menuButtons.forEach((btn, idx) => {
+  btn.addEventListener("mouseover", () => {
+    const continueModalOpen = document.getElementById("continue-journey-modal") && !document.getElementById("continue-journey-modal").classList.contains("hidden");
+    const newModalOpen = document.getElementById("new-journey-modal") && !document.getElementById("new-journey-modal").classList.contains("hidden");
+    const guideOpen = guideOverlay && !guideOverlay.classList.contains("hidden");
+    
+    if (!continueModalOpen && !newModalOpen && !guideOpen) {
+      selectedMenuIndex = idx;
+      updateMenuSelection();
+    }
+  });
+});
+
+// Set initial selection once DOM is fully ready
+setTimeout(updateMenuSelection, 300);
+
 document.addEventListener("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    guideOverlay &&
-    !guideOverlay.classList.contains("hidden")
-  ) {
+  const guideOpen = guideOverlay && !guideOverlay.classList.contains("hidden");
+  
+  if (event.key === "Escape" && guideOpen) {
     hideGuide();
+    return;
+  }
+
+  // Handle main menu navigation when menu is active and no modals are open
+  const menuActive = menuScreen && !menuScreen.classList.contains("hidden");
+  const continueModalOpen = document.getElementById("continue-journey-modal") && !document.getElementById("continue-journey-modal").classList.contains("hidden");
+  const newModalOpen = document.getElementById("new-journey-modal") && !document.getElementById("new-journey-modal").classList.contains("hidden");
+
+  if (menuActive && !continueModalOpen && !newModalOpen && !guideOpen) {
+    if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") {
+      event.preventDefault();
+      selectedMenuIndex = (selectedMenuIndex - 1 + menuButtons.length) % menuButtons.length;
+      updateMenuSelection();
+    } else if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") {
+      event.preventDefault();
+      selectedMenuIndex = (selectedMenuIndex + 1) % menuButtons.length;
+      updateMenuSelection();
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      menuButtons[selectedMenuIndex]?.click();
+    }
   }
 });
 
