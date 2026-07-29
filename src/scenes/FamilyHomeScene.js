@@ -207,6 +207,7 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, this.collisionGroup);
 
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
+    this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(3.5);
 
