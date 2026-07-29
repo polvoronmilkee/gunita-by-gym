@@ -46,7 +46,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.tutorialHintText = null;
     this.lumaDialogueText = null;
 
-    // Create Luma sprite on the left side of the screen
+    // Create Luma sprite on the right side of the screen
     this.createLumaGuide();
 
     // Create tutorial hint text overlay (bottom-center)
@@ -59,20 +59,20 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       lineSpacing: 6
     }).setOrigin(0.5).setDepth(100).setAlpha(0);
 
-    // Create Luma dialogue bubble (left side under Luma)
+    // Create Luma dialogue bubble (right side under Luma)
     this.lumaDialogueBg = this.add.graphics().setDepth(99);
-    this.lumaDialogueText = this.add.text(55, 305, "", {
+    this.lumaDialogueText = this.add.text(940, 302, "", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "8px",
+      fontSize: "10px",
       color: "#ffffff",
       align: "left",
-      wordWrap: { width: 320 },
-      lineSpacing: 6
+      wordWrap: { width: 250 },
+      lineSpacing: 7
     }).setOrigin(0, 0).setDepth(100).setAlpha(0);
   }
 
   createLumaGuide() {
-    const lumaX = 215;
+    const lumaX = 1065;
     const lumaY = 170;
 
     if (this.textures.exists("luma-idle")) {
@@ -126,13 +126,13 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   showLumaDialogue(text, onComplete) {
     this.lumaDialogueBg.clear();
     this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
-    this.lumaDialogueBg.fillRoundedRect(40, 290, 350, 140, 8);
+    this.lumaDialogueBg.fillRoundedRect(925, 290, 280, 120, 8);
     this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
-    this.lumaDialogueBg.strokeRoundedRect(40, 290, 350, 140, 8);
+    this.lumaDialogueBg.strokeRoundedRect(925, 290, 280, 120, 8);
     this.lumaDialogueBg.setAlpha(1);
 
     this.lumaDialogueText.setAlpha(1);
-    this.lumaDialogueText.setPosition(55, 305);
+    this.lumaDialogueText.setPosition(940, 302);
 
     this.typewriterText(this.lumaDialogueText, text, 18, () => {
       if (onComplete) {
