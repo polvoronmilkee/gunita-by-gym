@@ -205,7 +205,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       this.dialogueText.setAlign("left");
       this.dialogueText.setVisible(true);
 
-      this.showLumaDialogue("Welcome, Vino. I am Luma. I will teach you how to face the Echoes. Watch and learn.", () => {
+      this.showLumaDialogue("Welcome, Vino. See that small glowing circle? That is your Soul. You must protect it.", () => {
         this.typewriterDialogue("\"A fragment stands before you. Let us begin the lesson.\"", () => {
           this.waitForAdvance(() => {
             this.currentLesson = 1;
@@ -223,15 +223,60 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       2: "LESSON 2: Dodge phase! Find the gaps in the falling rain to survive!",
       3: "LESSON 3: Dodge phase! Watch the expanding circles and avoid them!",
       4: "LESSON 4: Phase 2! The crystal attacks faster, dodge the waves!",
-      5: "LESSON 5: DESPERATION PHASE! Time is stopped! Find the gap in the knives!",
+      5: "LESSON 5: DESPERATION PHASE! Every fragment has a different special move",
       6: "LESSON 6: Show me everything you've learned!"
     };
     this.showTutorialHint(hints[this.currentLesson] || "");
   }
 
   startRiddlePhase() {
-    super.startRiddlePhase();
+    this.state = "RIDDLE_TYPEWRITER";
+    this.crystalEnemy.clearTint();
+    this.crystalIdleTween.resume();
+    this.crystalAngryTween.pause();
+
+    this.cleanupProjectiles();
+    if (this.soul) {
+      this.soul.clear();
+      this.soul.destroy();
+      this.soul = null;
+    }
+
+    // Sequentially get the riddle matching the current lesson (1-based index)
+    const riddleIdx = Math.min(this.riddleList.length - 1, Math.max(0, this.currentLesson - 1));
+    this.currentRiddle = this.riddleList[riddleIdx];
+
+    this.questionText.setOrigin(0, 0);
+    this.questionText.setPosition(this.boxCenterX - this.boxWidth / 2 + 25, this.boxCenterY - 35);
+    this.questionText.setAlign("left");
+    this.questionText.setVisible(true);
+    this.dialogueText.setVisible(false);
+
+    // Keep choice order fixed (no Shuffle) for tutorial
+    let choices = this.currentRiddle.choices || ["A", "B", "C", "D"];
+
+    choices.forEach((choiceText, i) => {
+      if (this.buttons[i]) {
+        this.buttons[i].text.setText(choiceText);
+        this.buttons[i].bg.setFillStyle(0x25282e);
+        this.buttons[i].text.setColor("#f7e8c3");
+        this.buttons[i].bg.setStrokeStyle(2, 0x8c6a49);
+      }
+    });
+
+    this.setChoiceButtonsState("HIDDEN");
+    this.setRiddleUIElementsVisible(false);
+
     this.showTutorialHint("RIDDLE PHASE: Read the memory. Use WASD/ARROWS to navigate, press SPACE/ENTER to select!");
+
+    this.typewriterText(this.questionText, this.currentRiddle.question, 12, () => {
+      this.state = "RIDDLE";
+      this.setChoiceButtonsState("VISIBLE");
+      this.setRiddleUIElementsVisible(true);
+      this.selectedButtonIndex = 0;
+      this.updateButtonSelection();
+      this.startRiddleTimer();
+    });
   }
 
   startDodgePhase() {
@@ -489,11 +534,11 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.hideTutorialHint();
 
     const lessonDialogues = {
-      2: "Good! Now let's see if you can dodge. The arena will expand and projectiles will appear.",
-      3: "Well done! Now I'll teach you about riddles. Answer correctly to break crystals!",
-      4: "Getting harder now. As you break crystals, the patterns speed up. Stay focused!",
-      5: "Almost there. When only 1 crystal remains, the enemy gets DESPERATE. Two patterns overlap!",
-      6: "Final lesson. Show me everything you've learned!"
+      2: "Good! When bullets fill the arena, your only goal is to dodge them and survive until the timer runs out.",
+      3: "Correct. To defeat the echo, you must answer riddles. Correct answers will shatter its outer crystals!",
+      4: "Excellent. But if you answer a riddle incorrectly, you will be penalized with an extra dodge phase!",
+      5: "Smart. Every fragment is protected by 6 crystals. You must shatter all 6 to set it free.",
+      6: "Amazing. But beware: when only 1 crystal remains, the enemy enters Desperation mode. Their attacks get chaotic!"
     };
 
     const lumaLine = lessonDialogues[this.currentLesson] || "Keep going, Vino!";

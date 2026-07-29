@@ -34,17 +34,6 @@
       "difficulty": "easy"
     },
     {
-      "question": "How many crystals must you break to free a fragment?",
-      "choices": [
-        "A) 6",
-        "B) 3",
-        "C) 4",
-        "D) 10"
-      ],
-      "answer": "A) 6",
-      "difficulty": "easy"
-    },
-    {
       "question": "What happens when you answer a riddle WRONG?",
       "choices": [
         "A) A dodge phase begins",
@@ -53,6 +42,17 @@
         "D) A crystal shatters"
       ],
       "answer": "A) A dodge phase begins",
+      "difficulty": "easy"
+    },
+    {
+      "question": "How many crystals must you break to free a fragment?",
+      "choices": [
+        "A) 6",
+        "B) 3",
+        "C) 4",
+        "D) 10"
+      ],
+      "answer": "A) 6",
       "difficulty": "easy"
     },
     {
