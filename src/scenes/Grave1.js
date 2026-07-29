@@ -712,12 +712,12 @@ export class Grave1 extends Phaser.Scene {
     });
 
     // Start-up dialogue for Grave 1 (The Last Fisherman)
-    const cache = getCache();
+    const startupCache = getCache();
     let shouldPlayIntro = false;
-    if (cache) {
-      if (!cache.played_grave1_intro) {
-        cache.played_grave1_intro = true;
-        setCache(cache);
+    if (startupCache) {
+      if (!startupCache.played_grave1_intro) {
+        startupCache.played_grave1_intro = true;
+        setCache(startupCache);
         shouldPlayIntro = true;
       }
     } else {
