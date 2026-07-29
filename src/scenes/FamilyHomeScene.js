@@ -32,6 +32,13 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.load.image("interior1", "src/assets/family-house/interior1.png");
     this.load.image("Items_1_32x32", "src/assets/family-house/Items_1_32x32.png");
     this.load.image("paintings", "src/assets/family-house/paintings.png");
+
+    // Preload player animations sheets
+    this.load.spritesheet("vino-idle", "src/assets/vino-spritesheets/vino-idle/vino-idle.png", { frameWidth: 208, frameHeight: 237 });
+    this.load.spritesheet("vino-moving-up", "src/assets/vino-spritesheets/vino-moving-up.png", { frameWidth: 208, frameHeight: 237 });
+    this.load.spritesheet("vino-moving-left", "src/assets/vino-spritesheets/vino-moving-left.png", { frameWidth: 208, frameHeight: 237 });
+    this.load.spritesheet("vino-moving-right", "src/assets/vino-spritesheets/vino-moving-right.png", { frameWidth: 208, frameHeight: 237 });
+    this.load.spritesheet("vino-moving-down", "src/assets/vino-spritesheets/vino-moving-down.png", { frameWidth: 208, frameHeight: 237 });
   }
 
   create(data) {
@@ -145,6 +152,48 @@ export class FamilyHomeScene extends Phaser.Scene {
     if (startCache && (startCache.current_area === "FamilyHomeScene" || startCache.current_area === "FamilyHome") && startCache.position_x !== undefined) {
       spawnX = startCache.position_x;
       spawnY = startCache.position_y;
+    }
+
+    // Create Vino Animations if not created yet
+    if (!this.anims.exists("vino-idle")) {
+      this.anims.create({
+        key: "vino-idle",
+        frames: this.anims.generateFrameNumbers("vino-idle", { start: 0, end: 4 }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
+    if (!this.anims.exists("vino-moving-up")) {
+      this.anims.create({
+        key: "vino-moving-up",
+        frames: this.anims.generateFrameNumbers("vino-moving-up", { start: 0, end: 2 }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
+    if (!this.anims.exists("vino-moving-left")) {
+      this.anims.create({
+        key: "vino-moving-left",
+        frames: this.anims.generateFrameNumbers("vino-moving-left", { start: 0, end: 2 }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
+    if (!this.anims.exists("vino-moving-right")) {
+      this.anims.create({
+        key: "vino-moving-right",
+        frames: this.anims.generateFrameNumbers("vino-moving-right", { start: 0, end: 2 }),
+        frameRate: 5,
+        repeat: -1,
+      });
+    }
+    if (!this.anims.exists("vino-moving-down")) {
+      this.anims.create({
+        key: "vino-moving-down",
+        frames: this.anims.generateFrameNumbers("vino-moving-down", { start: 0, end: 2 }),
+        frameRate: 5,
+        repeat: -1,
+      });
     }
 
     this.audioManager = new AudioManager(this, "village-v1");
