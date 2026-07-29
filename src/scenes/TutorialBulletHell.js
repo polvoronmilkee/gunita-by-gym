@@ -268,11 +268,16 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
     this.typewriterText(this.questionText, this.currentRiddle.question, 12, () => {
       this.state = "RIDDLE";
-      this.setChoiceButtonsState("VISIBLE");
+      this.setChoiceButtonsState("ACTIVE");
       this.setRiddleUIElementsVisible(true);
       this.selectedButtonIndex = 0;
       this.updateButtonSelection();
-      this.startRiddleTimer();
+      
+      const durations = [20000, 16000, 12000, 10000];
+      this.phaseTimer = durations[Math.min(this.retryAttempt, 3)];
+      this.maxPhaseTimer = this.phaseTimer;
+      this.timerBarFill.width = 580;
+      this.timerBarFill.setFillStyle(this.currentRainbowColor);
     });
   }
 
