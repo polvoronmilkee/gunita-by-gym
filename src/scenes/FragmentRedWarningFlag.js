@@ -674,7 +674,6 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
 
     for (let i = this.lasers.length - 1; i >= 0; i--) {
       const l = this.lasers[i];
-      l.life -= deltaMs;
 
       if (l.x !== undefined && l.y !== undefined && l.w !== undefined && l.h !== undefined) {
         const testX = Math.max(l.x, Math.min(this.soul.x, l.x + l.w));
@@ -685,13 +684,6 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
           this.triggerPlayerHit();
           return;
         }
-      }
-
-      if (l.life <= 0) {
-        if (l.graphics) l.graphics.destroy();
-        this.lasers.splice(i, 1);
-      } else if (l.graphics) {
-        l.graphics.alpha = Math.min(1, l.life / 200);
       }
     }
   }

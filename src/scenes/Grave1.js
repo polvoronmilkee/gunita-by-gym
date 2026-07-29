@@ -1394,6 +1394,7 @@ export class Grave1 extends Phaser.Scene {
 
     // Use the shattered glass transition before launching the bullet hell scene
     TransitionSystem.shatteredGlassTransition(this, () => {
+      if (this.audioManager) this.audioManager.stopMusic();
       this.scene.pause();
       this.scene.launch(activeScene, {
           riddleData: riddleData,
