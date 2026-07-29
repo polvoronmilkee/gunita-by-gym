@@ -40,8 +40,11 @@ export class FamilyHomeScene extends Phaser.Scene {
         data.loadingScreen.hide();
         setTimeout(() => {
           data.loadingScreen.destroy();
+          this.playIntroDialogue();
         }, 400); // Wait for CSS transition
       }, 300); // Wait a bit after scene is created before hiding
+    } else {
+      this.playIntroDialogue();
     }
 
     const mapData = this.cache.json.get("family-home-map");
@@ -92,15 +95,14 @@ export class FamilyHomeScene extends Phaser.Scene {
     if (floorLayer) floorLayer.setDepth(-10);
     if (wallLayer) wallLayer.setDepth(-5);
     if (wall2Layer) wall2Layer.setDepth(-4);
-    if (obj1Layer) obj1Layer.setDepth(1);
-    if (obj2Layer) obj2Layer.setDepth(2);
-    if (obj3Layer) obj3Layer.setDepth(3);
+    if (obj1Layer) obj1Layer.setDepth(-3);
+    if (obj2Layer) obj2Layer.setDepth(-2);
+    if (obj3Layer) obj3Layer.setDepth(10);
 
     // Initialize HUD and UI
     this.hud = new HudOverlay(this);
     this.hud.setStatus("WASD / ARROWS TO MOVE   E TO EXIT");
 
-    this.dialogue = new DialogueBox(this);
     this.interactionPrompt = new InteractionPrompt(this);
 
     // Load static map collisions from Tiled
@@ -142,6 +144,15 @@ export class FamilyHomeScene extends Phaser.Scene {
     // Escape or P opens pause menu
     this.input.keyboard.on("keydown-P", () => this.handlePause());
     this.input.keyboard.on("keydown-ESC", () => this.handlePause());
+
+    // Advance dialogue sequence with E or SPACE
+    const handleInteract = () => {
+      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
+        this.dialogue.onComplete();
+      }
+    };
+    this.input.keyboard.on("keydown-E", handleInteract);
+    this.input.keyboard.on("keydown-SPACE", handleInteract);
 
     this.dialogueActive = false;
     this.game.events.emit("game-ready");
@@ -200,5 +211,66 @@ export class FamilyHomeScene extends Phaser.Scene {
   handlePause() {
     this.scene.pause();
     this.scene.launch("PauseScene", { parentScene: this });
+  }
+
+  playIntroDialogue() {
+    this.startDialogueSequence([
+      { speaker: "Vino", text: "This is it... the family home of Mang Tomas." },
+      { speaker: "Vino", text: "It feels completely empty, but the memories of this place must still linger here." },
+      { speaker: "Vino", text: "I should look around. There might be clues about his final keepsake." }
+    ]);
+  }
+
+  startDialogueSequence(dialogueSteps, onFinished = null) {
+    if (!dialogueSteps || dialogueSteps.length === 0) return;
+
+    this.currentDialogueSteps = dialogueSteps;
+    this.currentStep = 0;
+    this.dialogueActive = true;
+
+    if (!this.dialogue) {
+      this.dialogue = new DialogueBox(this, {
+        speaker: this.currentDialogueSteps[0].speaker,
+        text: this.currentDialogueSteps[0].text,
+        onComplete: () => {
+          this.currentStep++;
+          if (this.currentStep < this.currentDialogueSteps.length) {
+            const next = this.currentDialogueSteps[this.currentStep];
+            this.dialogue.showText(next.speaker, next.text);
+          } else {
+            if (this.dialogue && typeof this.dialogue.hide === 'function') {
+              this.dialogue.hide();
+            }
+            this.dialogueActive = false;
+            if (typeof onFinished === 'function') {
+              onFinished();
+            }
+          }
+        }
+      });
+    } else {
+      if (typeof this.dialogue.show === 'function') {
+        this.dialogue.show();
+      }
+      this.dialogue.showText(
+        this.currentDialogueSteps[0].speaker,
+        this.currentDialogueSteps[0].text
+      );
+      this.dialogue.onComplete = () => {
+        this.currentStep++;
+        if (this.currentStep < this.currentDialogueSteps.length) {
+          const next = this.currentDialogueSteps[this.currentStep];
+          this.dialogue.showText(next.speaker, next.text);
+        } else {
+          if (this.dialogue && typeof this.dialogue.hide === 'function') {
+            this.dialogue.hide();
+          }
+          this.dialogueActive = false;
+          if (typeof onFinished === 'function') {
+            onFinished();
+          }
+        }
+      };
+    }
   }
 }
