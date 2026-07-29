@@ -5,6 +5,7 @@ import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { getCache, setCache } from "../save.js";
+import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
 
 export class FamilyHomeScene extends Phaser.Scene {
@@ -128,8 +129,14 @@ export class FamilyHomeScene extends Phaser.Scene {
     }
 
     // Default spawn coordinate inside house
-    const spawnX = 500;
-    const spawnY = 1140;
+    const startCache = getCache();
+    let spawnX = 500;
+    let spawnY = 1140;
+
+    if (startCache && (startCache.current_area === "FamilyHomeScene" || startCache.current_area === "FamilyHome") && startCache.position_x !== undefined) {
+      spawnX = startCache.position_x;
+      spawnY = startCache.position_y;
+    }
 
     this.audioManager = new AudioManager(this, "village-v1");
 
@@ -158,8 +165,24 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-E", handleInteract);
     this.input.keyboard.on("keydown-SPACE", handleInteract);
 
+    this.input.keyboard.on("keydown-BACKSPACE", async () => {
+      await this.saveProgress();
+      window.returnToGunitaMenu?.();
+    });
+
+    // Autosave timer every 5 seconds
+    this.time.addEvent({
+      delay: 5000,
+      callback: this.saveProgress,
+      callbackScope: this,
+      loop: true
+    });
+
     this.dialogueActive = false;
     this.game.events.emit("game-ready");
+
+    // Save initial progress immediately on entry
+    this.saveProgress();
   }
 
   update(time, delta) {
@@ -275,6 +298,30 @@ export class FamilyHomeScene extends Phaser.Scene {
           }
         }
       };
+    }
+  }
+
+  async saveProgress() {
+    const cache = getCache();
+    if (!cache || !cache.player_id || !this.player?.sprite) return;
+
+    const state = {
+      current_world: "Lunan",
+      current_area: "FamilyHomeScene",
+      position_x: Math.round(this.player.sprite.x),
+      position_y: Math.round(this.player.sprite.y)
+    };
+
+    setCache({
+      ...cache,
+      ...state
+    });
+
+    try {
+      await saveGameState(cache.player_id, state);
+      syncOfflineData();
+    } catch (err) {
+      console.error("Autosave database sync failed:", err.message);
     }
   }
 }
