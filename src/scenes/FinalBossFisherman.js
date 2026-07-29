@@ -330,7 +330,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
           if (this.state !== "DODGE" || !this.soul) return;
           const targetX = this.soul.x;
           const targetY = this.soul.y;
-          const speed = desp ? 210 : 230;
+          const speed = desp ? 180 : 165;
 
           ringBullets.forEach(b => {
             if (this.bullets.includes(b)) {
