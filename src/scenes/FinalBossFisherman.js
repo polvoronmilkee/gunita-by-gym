@@ -26,6 +26,9 @@ export class FinalBossFisherman extends BaseBulletHellScene {
 
   preload() {
     super.preload();
+    // Load final boss riddles JSON
+    this.load.json("riddle-final-boss", "src/assets/data/dialogues/fragments-riddles/final-boss.json");
+
     // Load all fragment backgrounds for the swap system
     const bgAssets = [
       { key: "bg-final-conclusion", path: "src/assets/grave1-elements/bullet-scenes/final-conclusion.png" },
@@ -42,6 +45,13 @@ export class FinalBossFisherman extends BaseBulletHellScene {
   }
 
   create() {
+    // Populate the riddle list from the preloaded final-boss.json before running parent setup
+    const bossRiddles = this.cache.json.get("riddle-final-boss");
+    if (bossRiddles && bossRiddles.riddles) {
+      this.riddleList = bossRiddles.riddles;
+      this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
+    }
+
     super.create();
 
     // Custom projectile arrays for borrowed patterns
