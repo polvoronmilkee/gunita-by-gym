@@ -63,6 +63,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     // Drowning flood state
     this.floodActive = false;
     this.floodOverlay = null;
+    this.floodWaterY = null; // Animating rising water level Y
     this.shieldZone = null;
     this.shieldRadius = 40;
     this.waterParticles = [];
@@ -76,8 +77,8 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       "jellyfish": "bg-fish-basket",
       "anchor": "bg-fish-basket",
       "circle-blast": "bg-red-warning-flag",
+      "spotlight-burst": "bg-red-warning-flag",
       "candle-rain": "bg-rosary-scene",
-      "crayon-burst": "bg-daughters-drawing",
       "scissors": "bg-daughters-drawing",
       "musical-notes": "bg-daughters-drawing",
       "incense-spiral": "bg-rosary-scene",
@@ -92,6 +93,7 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     this.musicalNotes = [];
     this.waterParticles = [];
     this.floodActive = false;
+    this.floodWaterY = null;
     if (this.floodOverlay) {
       this.floodOverlay.destroy();
       this.floodOverlay = null;
@@ -153,17 +155,17 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     const phase = this.getCurrentPhase();
 
     if (phase === 1) {
-      // Phase 1: Fish Basket + Rosary patterns (gentler)
-      const pool = ["jellyfish", "candle-rain", "anchor"];
+      // Phase 1: Gentler selection of patterns
+      const pool = ["jellyfish", "candle-rain", "anchor", "circle-blast"];
       const chosen = this.pickRandomPattern(pool);
       this.swapBackground(this.patternBgMap[chosen]);
       this.executeNamedPattern(chosen);
     } else if (phase === 2) {
-      // Phase 2: All 4 fragments
-      const pool = ["jellyfish", "circle-blast", "candle-rain", "crayon-burst", "scissors", "anchor", "musical-notes"];
+      // Phase 2: All 8 patterns (2 from each fragment)
+      const pool = ["jellyfish", "anchor", "candle-rain", "incense-spiral", "circle-blast", "spotlight-burst", "scissors", "musical-notes"];
       let chosen;
       if (!this.hasSeenPhase2NewPattern) {
-        chosen = Phaser.Utils.Array.GetRandom(["circle-blast", "scissors", "crayon-burst"]);
+        chosen = Phaser.Utils.Array.GetRandom(["circle-blast", "spotlight-burst", "scissors", "incense-spiral"]);
         this.hasSeenPhase2NewPattern = true;
       } else {
         chosen = this.pickRandomPattern(pool);
@@ -195,11 +197,11 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       case "circle-blast":
         this.fireCircleBlast(duration, desp);
         break;
+      case "spotlight-burst":
+        this.fireSpotlightBurst(duration, desp);
+        break;
       case "candle-rain":
         this.fireCandleRain(duration, desp);
-        break;
-      case "crayon-burst":
-        this.fireCrayonBurst(duration, desp);
         break;
       case "scissors":
         this.fireScissorsTrap(duration, desp);
@@ -336,22 +338,71 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     }
   }
 
-  // --- From Daughter's Drawing ---
-  fireCrayonBurst(duration, desp) {
-    const interval = desp ? 1600 : 2200;
+  // --- From Red Warning Flag (Pattern 2) ---
+  fireSpotlightBurst(duration, desp) {
+    const interval = desp ? 2200 : 3000;
+    const { x, y, w, h } = this.arena;
+    const padding = 30;
+
     for (let t = 0; t < duration; t += interval) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
-        const cx = this.crystalEnemy.x;
-        const cy = this.crystalEnemy.y;
-        const count = desp ? 10 : 7;
-        const speed = desp ? 90 : 70;
-        const rainbowColors = [0xf87171, 0xfb923c, 0xfde68a, 0x86efac, 0x7dd3fc, 0xa78bfa, 0xc4b5fd];
+        if (this.state !== "DODGE" || !this.soul) return;
 
-        for (let i = 0; i < count; i++) {
-          const angle = (i / count) * Math.PI * 2 + Math.random() * 0.3;
-          const color = rainbowColors[i % rainbowColors.length];
-          this.spawnBullet(cx, cy, Math.cos(angle) * speed, Math.sin(angle) * speed, 5, color, 1);
-        }
+        const warning = this.add.circle(this.soul.x, this.soul.y, 30, 0xffffff, 0);
+        warning.setStrokeStyle(2, 0xffffff, 0.5);
+        this.activeWarnings.push(warning);
+
+        const exclText = this.add.text(this.soul.x, this.soul.y, "!", {
+          fontFamily: "'Press Start 2P', monospace",
+          fontSize: "16px",
+          color: "#ffffff"
+        }).setOrigin(0.5);
+        this.activeWarnings.push(exclText);
+
+        this.tweens.add({
+          targets: warning,
+          duration: 1200,
+          onUpdate: () => {
+            if (warning && warning.active && this.soul) {
+              warning.x = Phaser.Math.Clamp(this.soul.x, x + padding, x + w - padding);
+              warning.y = Phaser.Math.Clamp(this.soul.y, y + padding, y + h - padding);
+              if (exclText && exclText.active) {
+                exclText.setPosition(warning.x, warning.y);
+              }
+            }
+          },
+          onComplete: () => {
+            if (!warning || !warning.active) return;
+            const lockedX = warning.x;
+            const lockedY = warning.y;
+
+            warning.setStrokeStyle(3, 0xff4444, 0.9);
+            warning.setFillStyle(0xff0000, 0.15);
+            if (exclText && exclText.active) {
+              exclText.setColor("#ff4444");
+              exclText.setPosition(lockedX, lockedY);
+            }
+
+            this.tweens.add({
+              targets: [warning, exclText],
+              scaleX: 1.3,
+              scaleY: 1.3,
+              duration: 1100,
+              onComplete: () => {
+                if (warning && warning.active) warning.destroy();
+                if (exclText && exclText.active) exclText.destroy();
+                if (this.state !== "DODGE") return;
+
+                const burstSpeed = desp ? 160 : 130;
+                const angles = [0, 60, 120, 180, 240, 300];
+                angles.forEach(deg => {
+                  const rad = Phaser.Math.DegToRad(deg);
+                  this.spawnBullet(lockedX, lockedY, Math.cos(rad) * burstSpeed, Math.sin(rad) * burstSpeed, 8, 0xef4444);
+                });
+              }
+            });
+          }
+        });
       }));
     }
   }
@@ -457,6 +508,17 @@ export class FinalBossFisherman extends BaseBulletHellScene {
   startDrowningFlood() {
     const { width, height } = this.scale;
 
+    // Reset water Y level to bottom of the arena
+    this.floodWaterY = this.arena.y + this.arena.h;
+
+    // Tween the water level rising to the top of the arena over 3.5 seconds (during warning)
+    this.tweens.add({
+      targets: this,
+      floodWaterY: this.arena.y,
+      duration: 3500,
+      ease: "Quad.easeOut"
+    });
+
     // Step 1: Wind-up warning (3 seconds)
     this.floodWarningText = this.add.text(width / 2, height / 2 - 60, "THE TIDE IS RISING...", {
       fontFamily: "'Press Start 2P', monospace",
@@ -501,37 +563,28 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     // Step 3: Flood begins (at 3.5s, lasts 2.5s)
     this.time.delayedCall(3500, () => {
       this.floodActive = true;
+      this.floodWaterY = this.arena.y; // Ensure locked to top
       if (this.floodWarningText) {
         this.floodWarningText.setText("DROWNING!");
         this.floodWarningText.setColor("#ef4444");
       }
-
-      this.floodOverlay = this.add.rectangle(width / 2, height / 2, width, height, 0x0e4d6e, 0);
-      this.floodOverlay.setDepth(50);
-      this.tweens.add({
-        targets: this.floodOverlay,
-        alpha: 0.55,
-        duration: 400,
-        ease: "Sine.easeIn"
-      });
     });
 
     // Step 4: Flood ends (at 6s), transition to random pattern
     this.time.delayedCall(6000, () => {
       this.floodActive = false;
-      if (this.floodOverlay) {
-        this.tweens.add({
-          targets: this.floodOverlay,
-          alpha: 0,
-          duration: 500,
-          onComplete: () => {
-            if (this.floodOverlay) {
-              this.floodOverlay.destroy();
-              this.floodOverlay = null;
-            }
-          }
-        });
-      }
+      
+      // Tween the water level back down to the bottom of the arena
+      this.tweens.add({
+        targets: this,
+        floodWaterY: this.arena.y + this.arena.h,
+        duration: 500,
+        ease: "Quad.easeIn",
+        onComplete: () => {
+          this.floodWaterY = null;
+        }
+      });
+
       if (this.floodWarningText) {
         this.floodWarningText.destroy();
         this.floodWarningText = null;
@@ -540,8 +593,8 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       this.waterParticles = [];
 
       // Post-flood: fire a random pattern for the remaining time
-      const pool = ["jellyfish", "circle-blast", "candle-rain", "crayon-burst"];
-      const chosen = Phaser.Utils.Array.GetRandom(pool);
+      const pool = ["jellyfish", "circle-blast", "candle-rain", "spotlight-burst", "anchor", "scissors", "musical-notes", "incense-spiral"];
+      const chosen = this.pickRandomPattern(pool);
       this.swapBackground(this.patternBgMap[chosen]);
       this.executeNamedPattern(chosen);
     });
@@ -569,6 +622,31 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       } else {
         this.floodDamageTimer = 0;
       }
+    }
+
+    // --- Draw rising water waves ---
+    if (this.floodWaterY !== null) {
+      const waveAmplitude = 5;
+      const waveFrequency = 0.04;
+      const waveSpeed = 8;
+
+      this.bulletGraphics.fillStyle(0x0e4d6e, 0.55);
+      this.bulletGraphics.beginPath();
+      
+      // Start from bottom-left corner of the dodge arena
+      this.bulletGraphics.moveTo(this.arena.x, this.arena.y + this.arena.h);
+
+      // Draw the wavy top surface
+      for (let x = this.arena.x; x <= this.arena.x + this.arena.w; x += 5) {
+        const waveY = this.floodWaterY + Math.sin((x * waveFrequency) + (timeSec * waveSpeed)) * waveAmplitude;
+        const clampedY = Phaser.Math.Clamp(waveY, this.arena.y, this.arena.y + this.arena.h);
+        this.bulletGraphics.lineTo(x, clampedY);
+      }
+
+      // Complete path to bottom-right corner of the dodge arena
+      this.bulletGraphics.lineTo(this.arena.x + this.arena.w, this.arena.y + this.arena.h);
+      this.bulletGraphics.closePath();
+      this.bulletGraphics.fillPath();
     }
 
     // --- Draw shield safe zone ---
