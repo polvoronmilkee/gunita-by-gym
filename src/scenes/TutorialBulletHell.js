@@ -490,8 +490,8 @@ export class TutorialBulletHell extends BaseBulletHellScene {
           const bx = soulX + Math.cos(angle) * dist;
           const by = soulY + Math.sin(angle) * dist;
           
-          // Spawn bullet with 0 velocity, but record intended velocity, and set a lifespan of 1.1s so it despawns after crossing center
-          this.spawnBullet(bx, by, 0, 0, 6, 0xffff00, 0, 1.1);
+          // Spawn bullet with 0 velocity, but record intended velocity
+          this.spawnBullet(bx, by, 0, 0, 6, 0xffff00);
           const bullet = this.bullets[this.bullets.length - 1];
           bullet.frozenVx = -Math.cos(angle) * 160;
           bullet.frozenVy = -Math.sin(angle) * 160;
@@ -512,6 +512,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
           if (b.frozenVx !== undefined) {
             b.vx = b.frozenVx;
             b.vy = b.frozenVy;
+            b.lifespan = 1.1; // Only set lifespan now when they start moving!
             delete b.frozenVx;
             delete b.frozenVy;
           }
