@@ -35,6 +35,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.dodgeLines = data.dodgeLines || this.getFallbackDodgeLines();
     this.onCompleteCallback = data.onComplete;
     this.onDeathCallback = data.onDeath;
+    this.returnScene = data ? data.returnScene : null;
     this.bgKey = (data && (data.bgKey || data.bgImage)) || this.getFallbackBgKey();
 
     this.crystalHP = 6;
