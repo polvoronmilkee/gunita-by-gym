@@ -11,10 +11,49 @@ const PORTRAIT_MAP = {
   "VILLAGER": "src/assets/grave1-elements/characters/random-guy.png",
 };
 
+const DIALOGUE_VOICE_MAP = {
+  // "VINO": "dialogue-vino",
+  "OLD FISHERMAN": "dialogue-old-fisherman",
+  "FISHERMAN": "dialogue-old-fisherman",
+  "MANG TOMAS": "dialogue-old-fisherman",
+  "TOMAS": "dialogue-old-fisherman",
+  "MANGINGISDA": "dialogue-old-fisherman",
+  "YOUNG FISHERMAN": "dialogue-young-fisherman",
+  "OLD WIFE": "dialogue-oldwife",
+  "WIFE": "dialogue-oldwife",
+  "DEBT COLLECTOR": "dialogue-debt-collector",
+  "DAUGHTER": "dialogue-old-daughter",
+  "YOUNG DAUGHTER": "dialogue-old-daughter",
+  "OLD DAUGHTER": "dialogue-old-daughter",
+  "SCHOOL GIRL": "dialogue-young-girl",
+  "YOUNG GIRL": "dialogue-young-girl",
+  "BARANGAY WOMAN": "dialogue-young-girl",
+  "SICK WIFE": "dialogue-sick-wife",
+  "YOUNG KID": "dialogue-young-kid",
+  "YOUNG BOY": "dialogue-young-kid",
+  "VILLAGER": "dialogue-young-fisherman",
+  "LUMA": "dialogue-young-girl",
+  // "ECHO": "dialogue-old-fisherman",
+  // "???": "dialogue-vino",
+};
+
+function getVoiceKeyForSpeaker(speaker) {
+  if (!speaker) return "dialogue-vino";
+  const upper = speaker.toUpperCase();
+  for (const [key, voice] of Object.entries(DIALOGUE_VOICE_MAP)) {
+    if (upper.includes(key)) return voice;
+  }
+  return "dialogue-vino";
+}
+
 export class DialogueBox {
   constructor(scene, options = {}) {
     this.scene = scene;
     this.onComplete = options.onComplete ?? (() => {});
+    this.currentVoiceSound = null;
+    this.typewriterTimer = null;
+    this.isTyping = false;
+    this.fullFormattedText = "";
 
     // Determine Theme (default to obsidian in CampoLunanScene or when requested)
     const isObsidian = options.theme === "obsidian" || 
@@ -106,15 +145,89 @@ export class DialogueBox {
     // Initial setup
     this.showText(options.speaker ?? "Vino", options.text ?? "", this.onComplete, options.portrait, options.theme);
 
-    // Click handler
+    // Click handler (skips typewriter on first click, advances on second click)
     this.root.addEventListener("click", () => {
-      this.onComplete();
+      if (this.isTyping) {
+        this.completeTypewriter();
+      } else {
+        this.stopSpeakerVoice();
+        this.onComplete();
+      }
     });
 
     // Scene cleanup
     this.handleShutdown = () => this.destroy();
     scene.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown);
     scene.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown);
+  }
+
+  playSpeakerVoice(speaker) {
+    this.stopSpeakerVoice();
+
+    if (!this.scene || !this.scene.sound) return;
+
+    const voiceKey = getVoiceKeyForSpeaker(speaker);
+    if (this.scene.cache.audio.has(voiceKey) || this.scene.sound.get(voiceKey)) {
+      try {
+        this.currentVoiceSound = this.scene.sound.add(voiceKey, {
+          volume: 0.65,
+          loop: false
+        });
+        this.currentVoiceSound.play();
+      } catch (err) {
+        console.warn("Failed to play dialogue voice:", err);
+      }
+    }
+  }
+
+  stopSpeakerVoice() {
+    if (this.currentVoiceSound) {
+      if (this.currentVoiceSound.isPlaying) {
+        this.currentVoiceSound.stop();
+      }
+      this.currentVoiceSound.destroy();
+      this.currentVoiceSound = null;
+    }
+  }
+
+  startTypewriter(formattedText) {
+    if (this.typewriterTimer) {
+      clearInterval(this.typewriterTimer);
+      this.typewriterTimer = null;
+    }
+
+    this.fullFormattedText = formattedText;
+    this.isTyping = true;
+
+    // Tokenize HTML tags vs plain text characters
+    const tokens = [];
+    const regex = /(<[^>]+>|[^<])/g;
+    let match;
+    while ((match = regex.exec(formattedText)) !== null) {
+      tokens.push(match[0]);
+    }
+
+    let index = 0;
+    let currentHtml = "";
+
+    this.typewriterTimer = setInterval(() => {
+      if (index < tokens.length) {
+        currentHtml += tokens[index];
+        this.messageText.innerHTML = currentHtml;
+        index++;
+      } else {
+        this.completeTypewriter();
+      }
+    }, 22);
+  }
+
+  completeTypewriter() {
+    if (this.typewriterTimer) {
+      clearInterval(this.typewriterTimer);
+      this.typewriterTimer = null;
+    }
+    this.messageText.innerHTML = this.fullFormattedText;
+    this.isTyping = false;
   }
 
   showText(speaker, text, onComplete = null, portrait = null, theme = null) {
@@ -153,21 +266,35 @@ export class DialogueBox {
       formattedText = formattedText.replace(regex, `<span class="highlight-blue">$1</span>`);
     });
 
-    this.messageText.innerHTML = formattedText;
-
     this.root.style.display = "block";
     if (onComplete) {
       this.onComplete = onComplete;
     }
+
+    // Play character murmur voice SFX
+    this.playSpeakerVoice(speaker);
+
+    // Start typewriter effect
+    this.startTypewriter(formattedText);
   }
 
   hide() {
+    this.stopSpeakerVoice();
+    if (this.typewriterTimer) {
+      clearInterval(this.typewriterTimer);
+      this.typewriterTimer = null;
+    }
     this.root.style.display = "none";
   }
 
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.stopSpeakerVoice();
+    if (this.typewriterTimer) {
+      clearInterval(this.typewriterTimer);
+      this.typewriterTimer = null;
+    }
     this.root?.remove();
   }
 }

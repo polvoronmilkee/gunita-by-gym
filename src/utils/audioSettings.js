@@ -59,4 +59,69 @@ export const AUDIO_SETTINGS = {
       ).href,
     },
   },
+  dialogueVoices: [
+    // {
+    //   key: "dialogue-vino",
+    //   path: new URL(
+    //     "../assets/sounds/sound-effects/dialogue-sounds/vino.mp3",
+    //     import.meta.url,
+    //   ).href,
+    // },
+    {
+      key: "dialogue-old-fisherman",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/old_fisherman.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-young-fisherman",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/young_fisherman.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-oldwife",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/oldwife.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-debt-collector",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/debt_collector_v1.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-old-daughter",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/old_daughter.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-young-girl",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/young_girl.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-sick-wife",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/sick_wife.mp3",
+        import.meta.url,
+      ).href,
+    },
+    {
+      key: "dialogue-young-kid",
+      path: new URL(
+        "../assets/sounds/sound-effects/dialogue-sounds/young_kid.mp3",
+        import.meta.url,
+      ).href,
+    },
+  ],
 };
