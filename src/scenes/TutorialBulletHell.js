@@ -50,8 +50,8 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.createLumaGuide();
 
     // Create tutorial hint text overlay (top-center banner)
-    this.tutorialHintBg = this.add.rectangle(this.scale.width / 2, 40, this.scale.width, 50, 0x000000, 0.7).setDepth(99).setAlpha(0);
-    this.tutorialHintText = this.add.text(this.scale.width / 2, 40, "", {
+    this.tutorialHintBg = this.add.rectangle(this.scale.width / 2, 85, this.scale.width, 30, 0x000000, 0.7).setDepth(99).setAlpha(0);
+    this.tutorialHintText = this.add.text(this.scale.width / 2, 85, "", {
       fontFamily: "'Press Start 2P', monospace",
       fontSize: "11px",
       color: "#f0d890",
@@ -125,26 +125,26 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.lumaDialogueActive = true;
     
     // Draw bubble once when dialogue starts, anchored to her base position
-    const lx = this.lumaX - 70;
-    const ly = this.lumaY - 90; // Top right relative to her body
+    const lx = this.lumaX + 40; // Top right relative to her body
+    const ly = this.lumaY - 90; 
     const boxW = 280;
     const boxH = 120;
-    const boxX = lx - boxW;
+    const boxX = lx;
     const boxY = ly;
 
     this.lumaDialogueBg.clear();
     this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
     this.lumaDialogueBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
     
-    // Pointer triangle towards Luma
-    this.lumaDialogueBg.fillTriangle(boxX + boxW, boxY + 40, boxX + boxW + 20, boxY + 50, boxX + boxW, boxY + 60);
+    // Pointer triangle towards Luma (pointing left)
+    this.lumaDialogueBg.fillTriangle(boxX, boxY + 40, boxX - 20, boxY + 50, boxX, boxY + 60);
 
     this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
     this.lumaDialogueBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
     this.lumaDialogueBg.beginPath();
-    this.lumaDialogueBg.moveTo(boxX + boxW, boxY + 40);
-    this.lumaDialogueBg.lineTo(boxX + boxW + 20, boxY + 50);
-    this.lumaDialogueBg.lineTo(boxX + boxW, boxY + 60);
+    this.lumaDialogueBg.moveTo(boxX, boxY + 40);
+    this.lumaDialogueBg.lineTo(boxX - 20, boxY + 50);
+    this.lumaDialogueBg.lineTo(boxX, boxY + 60);
     this.lumaDialogueBg.strokePath();
 
     this.lumaDialogueText.setPosition(boxX + 15, boxY + 15);
