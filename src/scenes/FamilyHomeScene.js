@@ -251,11 +251,30 @@ export class FamilyHomeScene extends Phaser.Scene {
   }
 
   playIntroDialogue() {
-    this.startDialogueSequence([
-      { speaker: "Vino", text: "This is it... the family home of Mang Tomas." },
-      { speaker: "Vino", text: "It feels completely empty, but the memories of this place must still linger here." },
-      { speaker: "Vino", text: "I should look around. There might be clues about his final keepsake." }
-    ]);
+    const cache = getCache();
+    let shouldPlay = false;
+    if (cache) {
+      if (!cache.played_family_home_intro) {
+        cache.played_family_home_intro = true;
+        setCache(cache);
+        shouldPlay = true;
+      }
+    } else {
+      if (!window.played_family_home_intro) {
+        window.played_family_home_intro = true;
+        shouldPlay = true;
+      }
+    }
+
+    if (shouldPlay) {
+      this.startDialogueSequence([
+        { speaker: "Vino", text: "This is it... the family home of Mang Tomas." },
+        { speaker: "Vino", text: "It feels completely empty, but the memories of this place must still linger here." },
+        { speaker: "Vino", text: "I should look around. There might be clues about his final keepsake." }
+      ]);
+    } else {
+      this.dialogueActive = false;
+    }
   }
 
   startDialogueSequence(dialogueSteps, onFinished = null) {

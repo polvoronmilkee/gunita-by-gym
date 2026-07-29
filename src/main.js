@@ -229,6 +229,8 @@ function startGame(initialScene) {
       const currentArea = cache?.current_area;
       if (currentArea === "Grave 1" || currentArea === "Grave1") {
         sceneManager.start("Grave1");
+      } else if (currentArea === "FamilyHomeScene" || currentArea === "FamilyHome") {
+        sceneManager.start("FamilyHomeScene");
       } else {
         sceneManager.start("CampoLunanScene");
       }
