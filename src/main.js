@@ -312,7 +312,6 @@ guideTabButtons.forEach((button) => {
 });
 
 // Main Menu Keyboard Navigation
-const menuScreen = document.getElementById("menu-screen");
 let selectedMenuIndex = 0;
 const menuButtons = [
   document.getElementById("continue-journey"),
