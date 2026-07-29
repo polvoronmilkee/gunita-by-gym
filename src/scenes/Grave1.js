@@ -1425,7 +1425,7 @@ export class Grave1 extends Phaser.Scene {
         import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
           TransitionSystem.fadeToScene(this, "FamilyHomeScene", { loadingScreen });
         });
-      }, 1000);
+      }, 250);
     });
   }
 }

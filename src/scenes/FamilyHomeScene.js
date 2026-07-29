@@ -33,7 +33,17 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.load.image("paintings", "src/assets/family-house/paintings.png");
   }
 
-  create() {
+  create(data) {
+    // Hide and destroy portal loading screen if passed from previous scene
+    if (data && data.loadingScreen) {
+      setTimeout(() => {
+        data.loadingScreen.hide();
+        setTimeout(() => {
+          data.loadingScreen.destroy();
+        }, 400); // Wait for CSS transition
+      }, 300); // Wait a bit after scene is created before hiding
+    }
+
     const mapData = this.cache.json.get("family-home-map");
     // Deep copy to avoid mutating cache
     const copiedMapData = JSON.parse(JSON.stringify(mapData));
@@ -183,7 +193,7 @@ export class FamilyHomeScene extends Phaser.Scene {
         import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
           TransitionSystem.fadeToScene(this, "Grave1", { loadingScreen });
         });
-      }, 1000);
+      }, 250);
     });
   }
 
