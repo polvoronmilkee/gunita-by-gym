@@ -64,22 +64,22 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.lumaDialogueBg = this.add.graphics().setDepth(99);
     this.lumaDialogueText = this.add.text(0, 0, "", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "11px",
+      fontSize: "9px",
       color: "#ffffff",
       align: "left",
-      wordWrap: { width: 240 },
+      wordWrap: { width: 180 },
       lineSpacing: 7
     }).setOrigin(0, 0).setDepth(100).setAlpha(0);
     this.lumaDialogueActive = false;
   }
 
   createLumaGuide() {
-    this.lumaX = 940; // Moved left to fit bubble on screen
-    this.lumaY = 250; // Moved slightly down
+    this.lumaX = 1030; // Moved right to avoid clipping the arena
+    this.lumaY = 240; // Shifted up slightly to align nicely
 
     if (this.textures.exists("luma-idle")) {
       this.lumaSprite = this.add.sprite(this.lumaX, this.lumaY, "luma-idle");
-      this.lumaSprite.setScale(0.75); // Reduced size slightly
+      this.lumaSprite.setScale(0.65); // Made smaller
       this.lumaSprite.setDepth(90);
 
       if (!this.anims.exists("luma-idle-anim")) {
@@ -125,10 +125,10 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.lumaDialogueActive = true;
     
     // Draw bubble once when dialogue starts, anchored to her base position
-    const lx = this.lumaX + 45; // Top right relative to her body
-    const ly = this.lumaY - 110; 
-    const boxW = 270;
-    const boxH = 120;
+    const lx = this.lumaX + 35; // Top right relative to her body
+    const ly = this.lumaY - 100; 
+    const boxW = 200;
+    const boxH = 110;
     const boxX = lx;
     const boxY = ly;
 
@@ -137,14 +137,14 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.lumaDialogueBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
     
     // Pointer triangle towards Luma (pointing down-left)
-    this.lumaDialogueBg.fillTriangle(boxX, boxY + 80, boxX - 15, boxY + 95, boxX + 15, boxY + 95);
+    this.lumaDialogueBg.fillTriangle(boxX, boxY + 70, boxX - 12, boxY + 80, boxX + 12, boxY + 85);
 
     this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
     this.lumaDialogueBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
     this.lumaDialogueBg.beginPath();
-    this.lumaDialogueBg.moveTo(boxX, boxY + 80);
-    this.lumaDialogueBg.lineTo(boxX - 15, boxY + 95);
-    this.lumaDialogueBg.lineTo(boxX + 15, boxY + 95);
+    this.lumaDialogueBg.moveTo(boxX, boxY + 70);
+    this.lumaDialogueBg.lineTo(boxX - 12, boxY + 80);
+    this.lumaDialogueBg.lineTo(boxX + 12, boxY + 85);
     this.lumaDialogueBg.strokePath();
 
     this.lumaDialogueText.setPosition(boxX + 15, boxY + 15);
