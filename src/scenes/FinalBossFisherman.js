@@ -257,8 +257,10 @@ export class FinalBossFisherman extends BaseBulletHellScene {
           x: Phaser.Math.Clamp(targetX, this.arena.x + 30, this.arena.x + this.arena.w - 30),
           y: this.arena.y - 25,
           vy: desp ? 220 : 175,
-          exploded: false,
-          shrapnelCount: desp ? 10 : 8
+          targetY: this.arena.y + this.arena.h - 15,
+          detonated: false,
+          shockwaveCount: desp ? 28 : 25,
+          bounces: 0
         });
       }));
     }
@@ -609,31 +611,48 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       jf.y += jf.vy * dtSec;
       jf.x = jf.baseX + Math.sin(jf.phase + timeSec * 2) * 12;
 
-      // Draw jellyfish body
-      this.bulletGraphics.fillStyle(0x43b5e8, 0.85);
-      this.bulletGraphics.fillCircle(jf.x, jf.y, 8);
+      // Jellyfish Drawing (Original style)
+      this.bulletGraphics.fillStyle(0x43b5e8, 0.7);
+      this.bulletGraphics.fillCircle(jf.x, jf.y, 10);
+      this.bulletGraphics.lineStyle(1, 0xccfbf1, 0.3);
+      this.bulletGraphics.strokeCircle(jf.x, jf.y, 12);
       this.bulletGraphics.fillStyle(0xffffff, 0.6);
-      this.bulletGraphics.fillCircle(jf.x - 2, jf.y - 2, 3);
+      this.bulletGraphics.fillCircle(jf.x, jf.y - 2, 3);
 
-      // Draw tentacles
-      for (let t = 0; t < jf.tentacleCount; t++) {
-        const tx = jf.x + (t - (jf.tentacleCount - 1) / 2) * 5;
-        const ty = jf.y + 8;
-        this.bulletGraphics.lineStyle(1, 0x43b5e8, 0.7);
+      let hit = false;
+      if (Phaser.Math.Distance.Between(this.soul.x, this.soul.y, jf.x, jf.y) < 10 + this.soulRadius) hit = true;
+
+      for (let t = 1; t <= jf.tentacleCount; t++) {
+        const tx1 = jf.x - 4 + Math.sin(timeSec * 4 + t) * 3;
+        const ty1 = jf.y + t * 12;
+        const tx2 = jf.x + 4 - Math.sin(timeSec * 4 + t) * 3;
+        const ty2 = jf.y + t * 12;
+
+        this.bulletGraphics.lineStyle(1, 0x43b5e8, 0.4);
         this.bulletGraphics.beginPath();
-        this.bulletGraphics.moveTo(tx, ty);
-        this.bulletGraphics.lineTo(tx + Math.sin(timeSec * 3 + t) * 4, ty + 12);
+        this.bulletGraphics.moveTo(jf.x - 4, jf.y + 8);
+        this.bulletGraphics.lineTo(tx1, ty1);
+        this.bulletGraphics.moveTo(jf.x + 4, jf.y + 8);
+        this.bulletGraphics.lineTo(tx2, ty2);
         this.bulletGraphics.strokePath();
+
+        this.bulletGraphics.fillStyle(0xccfbf1, 0.8);
+        this.bulletGraphics.fillCircle(tx1, ty1, 3);
+        this.bulletGraphics.fillCircle(tx2, ty2, 3);
+
+        if (Phaser.Math.Distance.Between(this.soul.x, this.soul.y, tx1, ty1) < 3 + this.soulRadius ||
+            Phaser.Math.Distance.Between(this.soul.x, this.soul.y, tx2, ty2) < 3 + this.soulRadius) {
+          hit = true;
+        }
       }
 
-      // Collision
-      if (this.soul && Phaser.Math.Distance.Between(this.soul.x, this.soul.y, jf.x, jf.y) < 8 + this.soulRadius) {
+      if (hit) {
         this.triggerPlayerHit();
         return;
       }
 
       // Despawn
-      if (jf.y < this.arena.y - 40) {
+      if (jf.y > this.arena.y + this.arena.h + 40) {
         jf.active = false;
         this.jellyfishes.splice(i, 1);
       }
@@ -644,43 +663,46 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       const a = this.anchors[i];
       if (!a || !a.active) continue;
 
-      if (!a.exploded) {
+      if (!a.detonated) {
         a.y += a.vy * dtSec;
 
-        // Draw anchor
-        this.bulletGraphics.fillStyle(0x6b7280, 0.95);
-        this.bulletGraphics.fillRect(a.x - 3, a.y - 15, 6, 30);
-        this.bulletGraphics.fillCircle(a.x, a.y + 15, 6);
-        this.bulletGraphics.lineStyle(2, 0x9ca3af, 1);
-        this.bulletGraphics.strokeCircle(a.x, a.y + 15, 6);
+        const progress = Math.min(1, (a.y - (this.arena.y - 25)) / (a.targetY - (this.arena.y - 25)));
+        const teleR = 5 + progress * 25;
+        this.bulletGraphics.lineStyle(2, 0xff4444, 0.4 + progress * 0.4);
+        this.bulletGraphics.strokeCircle(a.x, a.targetY, teleR);
+        this.bulletGraphics.fillStyle(0xff4444, progress * 0.3 + Math.abs(Math.sin(timeSec * 20)) * 0.3);
+        this.bulletGraphics.fillCircle(a.x, a.targetY, teleR);
 
-        // Collision
-        if (this.soul && Phaser.Math.Distance.Between(this.soul.x, this.soul.y, a.x, a.y) < 15 + this.soulRadius) {
+        this.bulletGraphics.lineStyle(2, 0x43b5e8, 1);
+        this.bulletGraphics.strokeCircle(a.x, a.y - 12, 5);
+        this.bulletGraphics.fillStyle(0x43b5e8, 1);
+        this.bulletGraphics.fillRect(a.x - 2, a.y - 7, 4, 20);
+        this.bulletGraphics.fillRect(a.x - 10, a.y + 8, 20, 4);
+
+        this.bulletGraphics.beginPath();
+        this.bulletGraphics.arc(a.x - 8, a.y + 12, 5, Math.PI, Math.PI * 0.5, true);
+        this.bulletGraphics.strokePath();
+        this.bulletGraphics.beginPath();
+        this.bulletGraphics.arc(a.x + 8, a.y + 12, 5, Math.PI * 0.5, 0, true);
+        this.bulletGraphics.strokePath();
+
+        if (this.soul && Phaser.Math.Distance.Between(this.soul.x, this.soul.y, a.x, a.y) < 14 + this.soulRadius) {
           this.triggerPlayerHit();
           return;
         }
 
-        // Explode at bottom
-        if (a.y >= this.arena.y + this.arena.h - 20) {
-          a.exploded = true;
-          a.timer = 0.4;
-          // Spawn shrapnel
-          for (let s = 0; s < a.shrapnelCount; s++) {
-            const angle = (s / a.shrapnelCount) * Math.PI * 2;
-            const speed = Phaser.Math.Between(80, 130);
-            this.spawnBullet(a.x, a.y, Math.cos(angle) * speed, Math.sin(angle) * speed, 4, 0x6b7280, 0, 1.5);
-          }
-          this.cameras.main.shake(80, 0.004);
-        }
-      } else {
-        a.timer -= dtSec;
-        // Explosion ring
-        const explosionRadius = (1 - a.timer / 0.4) * 40;
-        this.bulletGraphics.lineStyle(3, 0xf59e0b, a.timer / 0.4);
-        this.bulletGraphics.strokeCircle(a.x, a.y, explosionRadius);
-
-        if (a.timer <= 0) {
+        if (a.y >= a.targetY) {
           a.active = false;
+          this.cameras.main.shake(150, 0.008);
+          this.sound.play("sfx-dash", { volume: 0.5 });
+          const totalBullets = a.shockwaveCount;
+          const gapSize = 4;
+          const gapStart = Phaser.Math.Between(0, totalBullets - gapSize);
+          for (let sp = 0; sp < totalBullets; sp++) {
+            if (sp >= gapStart && sp < gapStart + gapSize) continue;
+            const ang = sp * (Math.PI * 2 / totalBullets);
+            this.spawnBullet(a.x, a.targetY, Math.cos(ang) * 135, Math.sin(ang) * 135, 5, 0x2dd4bf, 0);
+          }
           this.anchors.splice(i, 1);
         }
       }

@@ -49,26 +49,28 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     // Create Luma sprite on the right side of the screen
     this.createLumaGuide();
 
-    // Create tutorial hint text overlay (bottom-center)
-    this.tutorialHintText = this.add.text(this.scale.width / 2, this.scale.height - 35, "", {
+    // Create tutorial hint text overlay (top-center banner)
+    this.tutorialHintBg = this.add.rectangle(this.scale.width / 2, 40, this.scale.width, 50, 0x000000, 0.7).setDepth(99).setAlpha(0);
+    this.tutorialHintText = this.add.text(this.scale.width / 2, 40, "", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "8px",
+      fontSize: "11px",
       color: "#f0d890",
       align: "center",
-      wordWrap: { width: 500 },
+      wordWrap: { width: 800 },
       lineSpacing: 6
     }).setOrigin(0.5).setDepth(100).setAlpha(0);
 
-    // Create Luma dialogue bubble (right side under Luma)
+    // Create Luma dialogue bubble
     this.lumaDialogueBg = this.add.graphics().setDepth(99);
-    this.lumaDialogueText = this.add.text(940, 302, "", {
+    this.lumaDialogueText = this.add.text(0, 0, "", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "10px",
+      fontSize: "11px",
       color: "#ffffff",
       align: "left",
       wordWrap: { width: 250 },
       lineSpacing: 7
     }).setOrigin(0, 0).setDepth(100).setAlpha(0);
+    this.lumaDialogueActive = false;
   }
 
   createLumaGuide() {
@@ -118,21 +120,14 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
     this.lumaLabel = this.add.text(lumaX, lumaY - 95, "LUMA", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "10px",
+      fontSize: "12px",
       color: "#bc80ff"
     }).setOrigin(0.5).setDepth(91);
   }
 
   showLumaDialogue(text, onComplete) {
-    this.lumaDialogueBg.clear();
-    this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
-    this.lumaDialogueBg.fillRoundedRect(925, 290, 280, 120, 8);
-    this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
-    this.lumaDialogueBg.strokeRoundedRect(925, 290, 280, 120, 8);
-    this.lumaDialogueBg.setAlpha(1);
-
+    this.lumaDialogueActive = true;
     this.lumaDialogueText.setAlpha(1);
-    this.lumaDialogueText.setPosition(940, 302);
 
     this.typewriterText(this.lumaDialogueText, text, 18, () => {
       if (onComplete) {
@@ -145,14 +140,15 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   }
 
   hideLumaDialogue() {
+    this.lumaDialogueActive = false;
     this.lumaDialogueBg.clear();
     this.lumaDialogueText.setText("").setAlpha(0);
   }
 
   showTutorialHint(text) {
-    this.tutorialHintText.setText(text).setAlpha(1);
+    this.tutorialHintText.setText(text);
     this.tweens.add({
-      targets: this.tutorialHintText,
+      targets: [this.tutorialHintText, this.tutorialHintBg],
       alpha: { from: 0, to: 1 },
       duration: 400,
       ease: "Sine.easeIn"
@@ -161,7 +157,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   hideTutorialHint() {
     this.tweens.add({
-      targets: this.tutorialHintText,
+      targets: [this.tutorialHintText, this.tutorialHintBg],
       alpha: 0,
       duration: 300,
       ease: "Sine.easeOut"
@@ -250,25 +246,31 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   fireTutorialSingleBullet() {
     const { x, y, w, h } = this.arena;
     this.patternTimers.push(this.time.delayedCall(500, () => {
-      this.spawnBullet(x - 10, y + h / 2, 60, 0, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, y + h / 2, 85, 0, 6, 0xf0d890, 0, 5);
+    }));
+    this.patternTimers.push(this.time.delayedCall(1500, () => {
+      this.spawnBullet(x + w + 10, y + h / 3, -85, 20, 6, 0x60d0e8, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(2500, () => {
-      this.spawnBullet(x + w + 10, y + h / 3, -60, 20, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x - 10, y + h / 4, 85, 10, 6, 0xf0d890, 0, 5);
+    }));
+    this.patternTimers.push(this.time.delayedCall(3500, () => {
+      this.spawnBullet(x + w + 10, y + h * 0.7, -85, -10, 6, 0x60d0e8, 0, 5);
     }));
   }
 
   fireTutorialSlowRain() {
     const { x, w } = this.arena;
     const topY = this.boxCenterY - 140;
-    const count = 5;
+    const count = 7;
     const step = w / (count + 1);
 
-    for (let t = 0; t < 6000; t += 1500) {
+    for (let t = 0; t < 6000; t += 1200) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
         const skip = Phaser.Math.Between(0, count - 1);
         for (let i = 0; i < count; i++) {
           if (i === skip) continue;
-          this.spawnBullet(x + step * (i + 1), topY, 0, 45, 5, 0xf0d890);
+          this.spawnBullet(x + step * (i + 1), topY, 0, 65, 5, 0xf0d890);
         }
       }));
     }
@@ -278,12 +280,12 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     const cx = this.arena.x + this.arena.w / 2;
     const cy = this.arena.y + 10;
 
-    for (let t = 0; t < 6000; t += 2000) {
+    for (let t = 0; t < 6000; t += 1500) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
-        const count = 6;
+        const count = 8;
         for (let i = 0; i < count; i++) {
           const angle = (i / count) * Math.PI * 2;
-          this.spawnBullet(cx, cy, Math.cos(angle) * 55, Math.sin(angle) * 55, 5, 0x60d0e8);
+          this.spawnBullet(cx, cy, Math.cos(angle) * 70, Math.sin(angle) * 70, 5, 0x60d0e8);
         }
       }));
     }
@@ -293,15 +295,15 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     const { x, w } = this.arena;
     const topY = this.boxCenterY - 140;
 
-    for (let t = 0; t < 8000; t += 1200) {
+    for (let t = 0; t < 8000; t += 1000) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
-        const count = 8;
+        const count = 10;
         const step = w / (count + 1);
         const skip1 = Phaser.Math.Between(1, count - 2);
         const skip2 = skip1 + 1;
         for (let i = 0; i < count; i++) {
           if (i === skip1 || i === skip2) continue;
-          this.spawnBullet(x + step * (i + 1), topY, 0, 65, 5, 0xffd700);
+          this.spawnBullet(x + step * (i + 1), topY, 0, 80, 5, 0xffd700);
         }
       }));
     }
@@ -388,6 +390,32 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   }
 
   updateCustomPatterns(timeSec, dtSec) {
-    // No custom projectile types for tutorial
+    // Dynamic speech bubble anchored to Luma
+    if (this.lumaDialogueActive && this.lumaSprite) {
+      this.lumaDialogueBg.clear();
+      
+      const lx = this.lumaSprite.x - 70;
+      const ly = this.lumaSprite.y - 40;
+      const boxW = 280;
+      const boxH = 120;
+      const boxX = lx - boxW;
+      const boxY = ly - 30;
+
+      this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
+      this.lumaDialogueBg.fillRoundedRect(boxX, boxY, boxW, boxH, 8);
+      
+      // Pointer triangle towards Luma
+      this.lumaDialogueBg.fillTriangle(boxX + boxW, boxY + 40, boxX + boxW + 20, boxY + 50, boxX + boxW, boxY + 60);
+
+      this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
+      this.lumaDialogueBg.strokeRoundedRect(boxX, boxY, boxW, boxH, 8);
+      this.lumaDialogueBg.beginPath();
+      this.lumaDialogueBg.moveTo(boxX + boxW, boxY + 40);
+      this.lumaDialogueBg.lineTo(boxX + boxW + 20, boxY + 50);
+      this.lumaDialogueBg.lineTo(boxX + boxW, boxY + 60);
+      this.lumaDialogueBg.strokePath();
+
+      this.lumaDialogueText.setPosition(boxX + 15, boxY + 15);
+    }
   }
 }

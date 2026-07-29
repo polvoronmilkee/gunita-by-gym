@@ -1107,11 +1107,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
             const trailSize = b.radius * (0.4 + (t / b.trail.length) * 0.4);
             this.bulletGraphics.fillStyle(b.color || 0xff5533, trailAlpha);
             this.bulletGraphics.fillCircle(tr.x, tr.y, trailSize);
-            this.bulletGraphics.lineStyle(2, 0xffffff, trailAlpha);
-            this.bulletGraphics.strokeCircle(tr.x, tr.y, trailSize);
           }
-          this.bulletGraphics.fillStyle(b.color || 0xff5533, 0.2);
-          this.bulletGraphics.fillCircle(b.x, b.y, b.radius + 4);
         }
 
         const alpha = b.lifespan !== undefined ? Math.min(0.9, b.lifespan) : 0.9;
@@ -1132,12 +1128,17 @@ export class BaseBulletHellScene extends Phaser.Scene {
           this.bulletGraphics.fillStyle(0xa855f7, alpha);
           this.bulletGraphics.fillCircle(tipX, tipY, 3);
         } else {
+          // Outer glow aura
+          this.bulletGraphics.fillStyle(b.color || 0xff5533, 0.2 * alpha);
+          this.bulletGraphics.fillCircle(b.x, b.y, b.radius + 4);
+          
+          // Main body
           this.bulletGraphics.fillStyle(b.color || 0xf5a0c0, alpha);
           this.bulletGraphics.fillCircle(b.x, b.y, b.radius);
-          this.bulletGraphics.lineStyle(2, 0xffffff, alpha);
-          this.bulletGraphics.strokeCircle(b.x, b.y, b.radius);
-          this.bulletGraphics.fillStyle(0xffffff, 0.7);
-          this.bulletGraphics.fillCircle(b.x, b.y, b.radius * (b.trail ? 0.45 : 0.4));
+          
+          // White hot core
+          this.bulletGraphics.fillStyle(0xffffff, 0.85 * alpha);
+          this.bulletGraphics.fillCircle(b.x, b.y, b.radius * 0.45);
         }
 
         if (Phaser.Math.Distance.Between(this.soul.x, this.soul.y, b.x, b.y) < b.radius + this.soulRadius) {
