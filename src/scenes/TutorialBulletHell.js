@@ -274,26 +274,30 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   }
 
   fireTutorialSingleBullet() {
-    const { x, y, w, h } = this.arena;
+    const { x, w, h } = this.arena;
     this.patternTimers.push(this.time.delayedCall(500, () => {
-      this.spawnBullet(x - 10, y + h / 2, 100, 0, 6, 0xf0d890, 0, 5);
-      this.spawnBullet(x - 10, y + h / 2 - 30, 100, 5, 6, 0xf0d890, 0, 5);
-      this.spawnBullet(x - 10, y + h / 2 + 30, 100, -5, 6, 0xf0d890, 0, 5);
+      const sy = this.soul ? this.soul.y : this.arena.y + h / 2;
+      this.spawnBullet(x - 10, sy, 100, 0, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, sy - 30, 100, 5, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, sy + 30, 100, -5, 6, 0xf0d890, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(1500, () => {
-      this.spawnBullet(x + w + 10, y + h / 3, -100, 20, 6, 0x60d0e8, 0, 5);
-      this.spawnBullet(x + w + 10, y + h / 3 - 30, -100, 15, 6, 0x60d0e8, 0, 5);
-      this.spawnBullet(x + w + 10, y + h / 3 + 30, -100, 25, 6, 0x60d0e8, 0, 5);
+      const sy = this.soul ? this.soul.y : this.arena.y + h / 3;
+      this.spawnBullet(x + w + 10, sy, -100, 0, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, sy - 30, -100, 15, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, sy + 30, -100, -15, 6, 0x60d0e8, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(2500, () => {
-      this.spawnBullet(x - 10, y + h / 4, 100, 10, 6, 0xf0d890, 0, 5);
-      this.spawnBullet(x - 10, y + h / 4 - 30, 100, 5, 6, 0xf0d890, 0, 5);
-      this.spawnBullet(x - 10, y + h / 4 + 30, 100, 15, 6, 0xf0d890, 0, 5);
+      const sy = this.soul ? this.soul.y : this.arena.y + h / 4;
+      this.spawnBullet(x - 10, sy, 100, 0, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, sy - 30, 100, 5, 6, 0xf0d890, 0, 5);
+      this.spawnBullet(x - 10, sy + 30, 100, -5, 6, 0xf0d890, 0, 5);
     }));
     this.patternTimers.push(this.time.delayedCall(3500, () => {
-      this.spawnBullet(x + w + 10, y + h * 0.7, -100, -10, 6, 0x60d0e8, 0, 5);
-      this.spawnBullet(x + w + 10, y + h * 0.7 - 30, -100, -15, 6, 0x60d0e8, 0, 5);
-      this.spawnBullet(x + w + 10, y + h * 0.7 + 30, -100, -5, 6, 0x60d0e8, 0, 5);
+      const sy = this.soul ? this.soul.y : this.arena.y + h * 0.7;
+      this.spawnBullet(x + w + 10, sy, -100, 0, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, sy - 30, -100, -15, 6, 0x60d0e8, 0, 5);
+      this.spawnBullet(x + w + 10, sy + 30, -100, 15, 6, 0x60d0e8, 0, 5);
     }));
   }
 
@@ -310,6 +314,13 @@ export class TutorialBulletHell extends BaseBulletHellScene {
           if (i === skip) continue;
           this.spawnBullet(x + step * (i + 1), topY, 0, 75, 5, 0xf0d890);
         }
+        // Spawn one extra targeted bullet to force movement if they sit in the gap
+        if (this.soul) {
+          const dx = this.soul.x - this.arena.x - this.arena.w / 2;
+          const dy = this.soul.y - topY;
+          const angle = Math.atan2(dy, dx);
+          this.spawnBullet(this.arena.x + this.arena.w / 2, topY, Math.cos(angle) * 60, Math.sin(angle) * 60, 4, 0xff0000);
+        }
       }));
     }
   }
@@ -321,8 +332,10 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     for (let t = 0; t < 6000; t += 1500) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
         const count = 8;
+        // Aim one specific bullet at the player, the rest relative to that angle
+        const targetAngle = this.soul ? Math.atan2(this.soul.y - cy, this.soul.x - cx) : Math.PI / 2;
         for (let i = 0; i < count; i++) {
-          const angle = (i / count) * Math.PI * 2;
+          const angle = targetAngle + (i / count) * Math.PI * 2;
           this.spawnBullet(cx, cy, Math.cos(angle) * 70, Math.sin(angle) * 70, 5, 0x60d0e8);
         }
       }));
