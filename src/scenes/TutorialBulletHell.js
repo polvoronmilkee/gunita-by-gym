@@ -231,7 +231,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   startRiddlePhase() {
     super.startRiddlePhase();
-    this.showTutorialHint("RIDDLE PHASE: Read the crystal's memory and click the correct answer!");
+    this.showTutorialHint("RIDDLE PHASE: Read the memory. Use WASD/ARROWS to navigate, press SPACE/ENTER to select!");
   }
 
   startDodgePhase() {
