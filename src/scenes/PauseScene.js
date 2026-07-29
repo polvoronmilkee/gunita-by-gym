@@ -203,14 +203,41 @@ export class PauseScene extends Phaser.Scene {
       window.returnToGunitaMenu?.();
     });
 
-    // Keyboard controls for ESC and P key resume
-    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    this.pKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
-    
-    // Add WASD/Arrow/Space/Enter
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.keys = this.input.keyboard.addKeys("W,S,SPACE,ENTER");
-    
+    // Global keyboard listener on window for 100% reliable input
+    this.handleKeyDown = (e) => {
+      if (!this.canInput) return;
+      const key = e.key.toUpperCase();
+
+      if (key === "ESCAPE" || key === "P") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.menuItems[0]?.click(); // Simulate clicking resume
+        return;
+      }
+
+      if (key === "ARROWUP" || key === "W") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectedIndex--;
+        if (this.selectedIndex < 0) this.selectedIndex = this.menuItems.length - 1;
+        this.updateMenuSelection();
+        if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
+      } else if (key === "ARROWDOWN" || key === "S") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectedIndex++;
+        if (this.selectedIndex >= this.menuItems.length) this.selectedIndex = 0;
+        this.updateMenuSelection();
+        if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
+      } else if (key === "ENTER" || key === " " || key === "SPACE") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.menuItems[this.selectedIndex]?.click();
+      }
+    };
+
+    window.addEventListener("keydown", this.handleKeyDown);
+
     this.menuItems = [resumeBtn, memoryBtn, musicBtn, sfxBtn, menuBtn];
     this.selectedIndex = 0;
     
@@ -238,7 +265,6 @@ export class PauseScene extends Phaser.Scene {
     this.menuItems.forEach((btn, index) => {
       if (index === this.selectedIndex) {
         btn.classList.add("selected");
-        // Apply inline style as fallback just in case CSS doesn't have it
         btn.style.borderColor = "#f7e8c3";
         btn.style.color = "#ffffff";
         btn.style.backgroundColor = "#9c6c28";
@@ -252,28 +278,7 @@ export class PauseScene extends Phaser.Scene {
   }
 
   update() {
-    if (!this.canInput) return;
-
-    if (Phaser.Input.Keyboard.JustDown(this.escKey) || Phaser.Input.Keyboard.JustDown(this.pKey)) {
-      this.menuItems[0].click(); // Simulate clicking resume
-      return;
-    }
-    
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.up) || Phaser.Input.Keyboard.JustDown(this.keys.W)) {
-      this.selectedIndex--;
-      if (this.selectedIndex < 0) this.selectedIndex = this.menuItems.length - 1;
-      this.updateMenuSelection();
-      if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
-    } else if (Phaser.Input.Keyboard.JustDown(this.cursors.down) || Phaser.Input.Keyboard.JustDown(this.keys.S)) {
-      this.selectedIndex++;
-      if (this.selectedIndex >= this.menuItems.length) this.selectedIndex = 0;
-      this.updateMenuSelection();
-      if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
-    }
-    
-    if (Phaser.Input.Keyboard.JustDown(this.keys.SPACE) || Phaser.Input.Keyboard.JustDown(this.keys.ENTER)) {
-      this.menuItems[this.selectedIndex].click();
-    }
+    // Handled via window keydown listener
   }
 
   persistFallbackSettings(musicEnabled, sfxEnabled) {
@@ -286,6 +291,10 @@ export class PauseScene extends Phaser.Scene {
   }
 
   destroyMenu() {
+    if (this.handleKeyDown) {
+      window.removeEventListener("keydown", this.handleKeyDown);
+      this.handleKeyDown = null;
+    }
     if (this.root) {
       this.root.remove();
       this.root = null;

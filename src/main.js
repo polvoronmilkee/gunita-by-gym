@@ -225,10 +225,6 @@ function startGame(initialScene) {
     game.events.once("game-ready", () => {
       loadingScreen.hide();
     });
-    // Safety fallback: Hide loading screen after 2.5s if game-ready event is missed
-    setTimeout(() => {
-      loadingScreen.hide();
-    }, 2500);
   } else {
     if (initialScene) {
       sceneManager.start(initialScene);

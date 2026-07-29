@@ -16,12 +16,6 @@ export class FamilyHomeScene extends Phaser.Scene {
   preload() {
     const { width, height } = this.scale;
 
-    this.loadingText = this.add.text(width / 2, height / 2 - 30, "Loading Family Home...", {
-      fontFamily: "Arial, Helvetica, sans-serif",
-      fontSize: "24px",
-      color: "#ffffff",
-    }).setOrigin(0.5);
-
     // Preload family-house assets
     this.load.json("family-home-map", "src/assets/family-house/family house.tmj");
     this.load.image("TilesetElement", "src/assets/family-house/TilesetElement.png");
