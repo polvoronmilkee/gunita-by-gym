@@ -6,7 +6,7 @@ import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
 import { getCache, setCache, getEssence, setEssence } from "../save.js";
-import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
+import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles, addInventoryItem } from "../utils/api.js";
 import characterData from "../data/characters.json";
 import { AudioManager } from "../utils/audioManager.js";
 import { TransitionSystem } from "../systems/TransitionSystem.js";
@@ -797,6 +797,13 @@ export class Grave1 extends Phaser.Scene {
         const interactions = completedData.interactions;
         const randomInteraction = interactions[Math.floor(Math.random() * interactions.length)];
         const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
+
+        // Save item to player's inventory
+        const cache = getCache();
+        const inventoryId = cache ? cache.inventory_id : null;
+        if (inventoryId && this.currentArtifactKey) {
+          addInventoryItem(inventoryId, this.currentArtifactKey, "memory_fragment");
+        }
 
         this.startDialogueSequence(steps, () => {
           this.currentArtifact.destroy();

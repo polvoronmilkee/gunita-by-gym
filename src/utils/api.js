@@ -216,6 +216,26 @@ export async function syncOfflineData() {
       if (state) {
         await saveGameStateToServer(player.id, state);
       }
+
+      // Sync the local inventory items to the server
+      const localItems = JSON.parse(localStorage.getItem("gunita_local_inventory_items") || "[]");
+      if (localItems.length > 0) {
+        for (const item of localItems) {
+          let targetInvId = item.inventory_id;
+          if (targetInvId === oldId || targetInvId.startsWith("local_")) {
+            targetInvId = player.inventory_id;
+          }
+          try {
+            await fetch(`${API_BASE_URL}/inventory/items`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ inventory_id: targetInvId, item_key: item.item_key, item_type: item.item_type })
+            });
+          } catch (e) {
+            console.warn("Failed to sync item:", item.item_key, e.message);
+          }
+        }
+      }
     } catch (err) {
       console.error(`Failed to sync player ${username}:`, err.message);
       remainingQueue.push(username);
@@ -234,6 +254,35 @@ export async function syncOfflineData() {
       activeCache.player_id = syncedPlayer.id;
       activeCache.inventory_id = syncedPlayer.inventory_id;
       setCache(activeCache);
+    }
+  }
+}
+
+/**
+ * Add an item to the player's inventory, falling back to local storage if offline.
+ */
+export async function addInventoryItem(inventoryId, itemKey, itemType) {
+  // Always save locally first
+  const localItems = JSON.parse(localStorage.getItem("gunita_local_inventory_items") || "[]");
+  const exists = localItems.some(item => item.inventory_id === inventoryId && item.item_key === itemKey);
+  if (!exists) {
+    localItems.push({ inventory_id: inventoryId, item_key: itemKey, item_type: itemType });
+    localStorage.setItem("gunita_local_inventory_items", JSON.stringify(localItems));
+  }
+
+  const online = await isServerOnline();
+  if (online && inventoryId && !inventoryId.startsWith("local_")) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/inventory/items`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inventory_id: inventoryId, item_key: itemKey, item_type: itemType })
+      });
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (err) {
+      console.warn("Failed to add inventory item on server, saved locally:", err.message);
     }
   }
 }
