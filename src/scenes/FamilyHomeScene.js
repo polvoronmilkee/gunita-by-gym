@@ -105,8 +105,17 @@ export class FamilyHomeScene extends Phaser.Scene {
     if (obj3Layer) obj3Layer.setDepth(10);
 
     // Initialize HUD and UI
-    this.hud = new HudOverlay(this);
-    this.hud.setStatus("WASD / ARROWS TO MOVE   E TO EXIT");
+    this.hud = new HudOverlay(this, {
+      status: "WASD / ARROWS TO MOVE   E TO EXIT",
+      onPause: () => {
+        this.saveProgress();
+        this.scene.launch("PauseScene", { parentScene: this });
+        this.scene.pause();
+      }
+    });
+    this.hud.setBackVisible(false);
+    this.hud.setPauseVisible(true);
+    this.hud.setMemoryVisible(false);
 
     this.interactionPrompt = new InteractionPrompt(this);
 
@@ -236,8 +245,9 @@ export class FamilyHomeScene extends Phaser.Scene {
   }
 
   handlePause() {
-    this.scene.pause();
+    this.saveProgress();
     this.scene.launch("PauseScene", { parentScene: this });
+    this.scene.pause();
   }
 
   playIntroDialogue() {
