@@ -39,6 +39,12 @@ export class PreloadScene extends Phaser.Scene {
         AUDIO_SETTINGS.sfx.rainAndThunder.path,
       );
     }
+    if (AUDIO_SETTINGS.sfx.lumaSwish) {
+      this.load.audio(
+        AUDIO_SETTINGS.sfx.lumaSwish.key,
+        AUDIO_SETTINGS.sfx.lumaSwish.path,
+      );
+    }
     this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
     this.load.spritesheet("rain", "src/assets/grave1-v2/rain.png", {
       frameWidth: 64,

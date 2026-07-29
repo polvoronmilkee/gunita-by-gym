@@ -573,7 +573,7 @@ export class CampoLunanScene extends Phaser.Scene {
             // Part B transition sequence: slow wind gust (camera shake + blue particles)
             this.cameras.main.shake(350, 0.004);
             if (this.audioManager) {
-              this.audioManager.playButtonSfx();
+              this.audioManager.playLumaSwishSfx();
             }
 
             // Create crystal-spark texture at runtime if needed for wisps particle effect
@@ -638,6 +638,10 @@ export class CampoLunanScene extends Phaser.Scene {
                       // Dialogue complete: fade out and destroy Luma
                       this.dialogue.hide();
                       this.dialogueActive = false;
+
+                      if (this.audioManager) {
+                        this.audioManager.playLumaSwishSfx();
+                      }
 
                       this.tweens.add({
                         targets: this.lumaSprite,
