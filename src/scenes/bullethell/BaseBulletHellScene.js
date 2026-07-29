@@ -123,6 +123,17 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-P', this.handlePause, this);
     this.input.keyboard.on('keydown-ESC', this.handlePause, this);
 
+    // Debug shortcuts for testing
+    this.input.keyboard.on("keydown-U", () => {
+      this.cleanupAudioAndTimers();
+      this.scene.start("tutorial-bullet-hell", { returnScene: "Grave1" });
+    });
+
+    this.input.keyboard.on("keydown-I", () => {
+      this.cleanupAudioAndTimers();
+      this.scene.start("final-boss-fisherman", { returnScene: "Grave1" });
+    });
+
     this.events.on('resume', () => {
       this.isPaused = false;
     });

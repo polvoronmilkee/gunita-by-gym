@@ -536,6 +536,16 @@ export class Grave1 extends Phaser.Scene {
       this.scene.pause();
     });
 
+    this.input.keyboard.on("keydown-U", () => {
+      if (this.audioManager) this.audioManager.stopMusic();
+      this.scene.start("tutorial-bullet-hell", { returnScene: "Grave1" });
+    });
+
+    this.input.keyboard.on("keydown-I", () => {
+      if (this.audioManager) this.audioManager.stopMusic();
+      this.scene.start("final-boss-fisherman", { returnScene: "Grave1" });
+    });
+
     this.mapOverlay = new MapOverlay(this);
 
     // Setup minimap camera perfectly centered within the 500x400 modal
