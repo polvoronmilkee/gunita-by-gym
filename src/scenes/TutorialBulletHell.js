@@ -407,10 +407,15 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
       // Spawn knives in a circle around the frozen player
       const knifeCount = 14;
+      const gapIndex = Phaser.Math.Between(0, knifeCount - 1);
       for (let i = 0; i < knifeCount; i++) {
         this.patternTimers.push(this.time.delayedCall(300 + i * 150, () => {
+          // Create a 3-knife gap for the player to escape
+          const isGap = (i === gapIndex || i === (gapIndex + 1) % knifeCount || i === (gapIndex + 2) % knifeCount);
+          if (isGap) return;
+
           const angle = (i / knifeCount) * Math.PI * 2;
-          const dist = 110;
+          const dist = 165; // Spawned farther away (previously 110)
           const bx = soulX + Math.cos(angle) * dist;
           const by = soulY + Math.sin(angle) * dist;
           
