@@ -21,35 +21,7 @@ export class FragmentRosary extends BaseBulletHellScene {
   getTitleColor() { return "#f7c948"; }
   getTimerFillColor() { return 0xf7c948; }
 
-  getDefaultRiddles() {
-    return [
-      {
-        question: "Before facing the waves, many hold me while whispering a prayer. What am I?",
-        choices: ["A) Rosary", "B) Compass", "C) Anchor", "D) Fishing Hook"],
-        answer: "A) Rosary"
-      },
-      {
-        question: "I am not a weapon, yet I bring courage through faith. What am I?",
-        choices: ["A) Rosary", "B) Knife", "C) Lantern", "D) Fishing Net"],
-        answer: "A) Rosary"
-      },
-      {
-        question: "Families hold me close when asking for protection. What am I?",
-        choices: ["A) Rosary", "B) Basket", "C) Paddle", "D) Shell"],
-        answer: "A) Rosary"
-      },
-      {
-        question: "Small beads tied together, carried with hope into uncertain days. What am I?",
-        choices: ["A) Rosary", "B) Necklace", "C) Bracelet", "D) Fishing Rope"],
-        answer: "A) Rosary"
-      },
-      {
-        question: "He whispered to me every dawn before casting the first net. I gave no answer, but he always felt heard. What am I?",
-        choices: ["A) His rosary", "B) His boat", "C) The sea", "D) His knife"],
-        answer: "A) His rosary"
-      }
-    ];
-  }
+
 
   preload() {
     super.preload();

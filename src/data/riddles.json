@@ -1,0 +1,346 @@
+{
+  "tutorial-bullet-hell": [
+    {
+      "question": "What is the small glowing shape you control in battle?",
+      "choices": [
+        "A) Your Soul",
+        "B) A Fragment",
+        "C) A Bullet",
+        "D) A Crystal"
+      ],
+      "answer": "A) Your Soul",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What must you do when the arena fills with projectiles?",
+      "choices": [
+        "A) Dodge them",
+        "B) Collect them",
+        "C) Ignore them",
+        "D) Click them"
+      ],
+      "answer": "A) Dodge them",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What happens when you answer a riddle correctly?",
+      "choices": [
+        "A) A crystal shatters",
+        "B) You lose HP",
+        "C) The timer resets",
+        "D) Nothing"
+      ],
+      "answer": "A) A crystal shatters",
+      "difficulty": "easy"
+    },
+    {
+      "question": "How many crystals must you break to free a fragment?",
+      "choices": [
+        "A) 6",
+        "B) 3",
+        "C) 4",
+        "D) 10"
+      ],
+      "answer": "A) 6",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What happens when you answer a riddle WRONG?",
+      "choices": [
+        "A) A dodge phase begins",
+        "B) You win",
+        "C) The game ends",
+        "D) A crystal shatters"
+      ],
+      "answer": "A) A dodge phase begins",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What is the final phase called when only 1 crystal remains?",
+      "choices": [
+        "A) Desperation",
+        "B) Calm",
+        "C) Tutorial",
+        "D) Victory"
+      ],
+      "answer": "A) Desperation",
+      "difficulty": "easy"
+    }
+  ],
+  "final-boss-fisherman": [
+    {
+      "question": "What was the fisherman's most treasured possession from the sea?",
+      "choices": [
+        "A) His fish basket",
+        "B) His boat",
+        "C) His hat",
+        "D) His net"
+      ],
+      "answer": "A) His fish basket",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What did the fisherman hang above his door for protection?",
+      "choices": [
+        "A) A rosary",
+        "B) A flag",
+        "C) A lantern",
+        "D) A bell"
+      ],
+      "answer": "A) A rosary",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What warning did the old fisherman never heed?",
+      "choices": [
+        "A) The red warning flag",
+        "B) The lighthouse beam",
+        "C) The church bell",
+        "D) The rooster's call"
+      ],
+      "answer": "A) The red warning flag",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What did his daughter leave behind in his home?",
+      "choices": [
+        "A) A drawing",
+        "B) A letter",
+        "C) A photograph",
+        "D) A toy"
+      ],
+      "answer": "A) A drawing",
+      "difficulty": "medium"
+    },
+    {
+      "question": "Who is the soul that stands before you now?",
+      "choices": [
+        "A) The Fisherman",
+        "B) A stranger",
+        "C) A merchant",
+        "D) A soldier"
+      ],
+      "answer": "A) The Fisherman",
+      "difficulty": "hard"
+    },
+    {
+      "question": "What binds all four fragments together?",
+      "choices": [
+        "A) Love and Memory",
+        "B) Anger",
+        "C) Fear",
+        "D) Gold"
+      ],
+      "answer": "A) Love and Memory",
+      "difficulty": "hard"
+    }
+  ],
+  "fragment-red-warning-flag": [
+    {
+      "question": "I leave before dawn and return when the sky turns orange. The sea is my floor and patience is my tool. What am I?",
+      "choices": [
+        "A) A fisherman",
+        "B) A sailor",
+        "C) A diver",
+        "D) A farmer"
+      ],
+      "answer": "A) A fisherman"
+    },
+    {
+      "question": "I am woven from rope and wood, I hold what the ocean gives, but I am not a boat. What am I?",
+      "choices": [
+        "A) A net",
+        "B) A basket",
+        "C) A trap",
+        "D) A raft"
+      ],
+      "answer": "A) A net"
+    },
+    {
+      "question": "Every morning he untangled me before the boat left shore. Every evening he folded me back with care. What am I?",
+      "choices": [
+        "A) His net",
+        "B) His sail",
+        "C) His rope",
+        "D) His shirt"
+      ],
+      "answer": "A) His net"
+    },
+    {
+      "question": "My family waits on shore. I carry today's catch in my arms. The salt is still on my skin. Who am I going home to?",
+      "choices": [
+        "A) His crew",
+        "B) His wife and children",
+        "C) His father",
+        "D) No one"
+      ],
+      "answer": "B) His wife and children"
+    },
+    {
+      "question": "He cast his line every morning not for glory, not for gold — only so they would not go hungry. What drove him?",
+      "choices": [
+        "A) Duty",
+        "B) Habit",
+        "C) Love",
+        "D) Fear"
+      ],
+      "answer": "C) Love"
+    }
+  ],
+  "fragment-rosary": [
+    {
+      "question": "Before facing the waves, many hold me while whispering a prayer. What am I?",
+      "choices": [
+        "A) Rosary",
+        "B) Compass",
+        "C) Anchor",
+        "D) Fishing Hook"
+      ],
+      "answer": "A) Rosary"
+    },
+    {
+      "question": "I am not a weapon, yet I bring courage through faith. What am I?",
+      "choices": [
+        "A) Rosary",
+        "B) Knife",
+        "C) Lantern",
+        "D) Fishing Net"
+      ],
+      "answer": "A) Rosary"
+    },
+    {
+      "question": "Families hold me close when asking for protection. What am I?",
+      "choices": [
+        "A) Rosary",
+        "B) Basket",
+        "C) Paddle",
+        "D) Shell"
+      ],
+      "answer": "A) Rosary"
+    },
+    {
+      "question": "Small beads tied together, carried with hope into uncertain days. What am I?",
+      "choices": [
+        "A) Rosary",
+        "B) Necklace",
+        "C) Bracelet",
+        "D) Fishing Rope"
+      ],
+      "answer": "A) Rosary"
+    },
+    {
+      "question": "He whispered to me every dawn before casting the first net. I gave no answer, but he always felt heard. What am I?",
+      "choices": [
+        "A) His rosary",
+        "B) His boat",
+        "C) The sea",
+        "D) His knife"
+      ],
+      "answer": "A) His rosary"
+    }
+  ],
+  "fragment-fish-basket": [
+    {
+      "question": "Before I return to the shore, what holds my hard-earned catch from the depths? What am I?",
+      "choices": [
+        "A) Fish Basket",
+        "B) Anchor",
+        "C) Fishing Hook",
+        "D) Compass"
+      ],
+      "answer": "A) Fish Basket"
+    },
+    {
+      "question": "Woven from bamboo and rattan, I carry the sea's bounty on my back. What am I?",
+      "choices": [
+        "A) Fish Basket",
+        "B) Sail",
+        "C) Fishing Net",
+        "D) Wooden Paddle"
+      ],
+      "answer": "A) Fish Basket"
+    },
+    {
+      "question": "Through storms and calm tides, I am filled with silvery scales. What am I?",
+      "choices": [
+        "A) Fish Basket",
+        "B) Lantern",
+        "C) Wooden Chest",
+        "D) Shell"
+      ],
+      "answer": "A) Fish Basket"
+    },
+    {
+      "question": "I let the ocean water drain out, but keep the nourishment within. What am I?",
+      "choices": [
+        "A) Fish Basket",
+        "B) Bucket",
+        "C) Glass Bottle",
+        "D) Fishing Rod"
+      ],
+      "answer": "A) Fish Basket"
+    },
+    {
+      "question": "When the old fisherman rested his weary arms, he placed me beside the dock. What am I?",
+      "choices": [
+        "A) His fish basket",
+        "B) His boat",
+        "C) His boots",
+        "D) His knife"
+      ],
+      "answer": "A) His fish basket"
+    }
+  ],
+  "fragment-daughters-drawing": [
+    {
+      "question": "I made a picture of Papa with wax and bright colors on a paper sheet. What am I?",
+      "choices": [
+        "A) Daughter's Drawing",
+        "B) Wooden Toy",
+        "C) Shell Necklace",
+        "D) Songbook"
+      ],
+      "answer": "A) Daughter's Drawing"
+    },
+    {
+      "question": "Even when Papa was far out at sea, he looked at my colorful smiles to feel warm. What am I?",
+      "choices": [
+        "A) Daughter's Drawing",
+        "B) Brass Compass",
+        "C) Warm Blanket",
+        "D) Lantern"
+      ],
+      "answer": "A) Daughter's Drawing"
+    },
+    {
+      "question": "Drawn with love by small hands, keeping a family together across the waves. What am I?",
+      "choices": [
+        "A) Daughter's Drawing",
+        "B) Ribbon Tie",
+        "C) Fishing Hook",
+        "D) Glass Bead"
+      ],
+      "answer": "A) Daughter's Drawing"
+    },
+    {
+      "question": "I show a big sun, a blue ocean, and a little boat with two stick figures. What am I?",
+      "choices": [
+        "A) Daughter's Drawing",
+        "B) Nautical Map",
+        "C) Storybook",
+        "D) Mirror"
+      ],
+      "answer": "A) Daughter's Drawing"
+    },
+    {
+      "question": "What did the young daughter give her father before the great storm took his ship?",
+      "choices": [
+        "A) Her drawing",
+        "B) Her ribbon",
+        "C) A seashell",
+        "D) A prayer bead"
+      ],
+      "answer": "A) Her drawing"
+    }
+  ]
+}

@@ -19,35 +19,7 @@ export class FragmentFishBasket extends BaseBulletHellScene {
   getSoulColor() { return 0x43b5e8; }
   getTitleColor() { return "#43b5e8"; }
   getTimerFillColor() { return 0x43b5e8; }
-  getDefaultRiddles() {
-    return [
-      {
-        question: "Before I return to the shore, what holds my hard-earned catch from the depths? What am I?",
-        choices: ["A) Fish Basket", "B) Anchor", "C) Fishing Hook", "D) Compass"],
-        answer: "A) Fish Basket"
-      },
-      {
-        question: "Woven from bamboo and rattan, I carry the sea's bounty on my back. What am I?",
-        choices: ["A) Fish Basket", "B) Sail", "C) Fishing Net", "D) Wooden Paddle"],
-        answer: "A) Fish Basket"
-      },
-      {
-        question: "Through storms and calm tides, I am filled with silvery scales. What am I?",
-        choices: ["A) Fish Basket", "B) Lantern", "C) Wooden Chest", "D) Shell"],
-        answer: "A) Fish Basket"
-      },
-      {
-        question: "I let the ocean water drain out, but keep the nourishment within. What am I?",
-        choices: ["A) Fish Basket", "B) Bucket", "C) Glass Bottle", "D) Fishing Rod"],
-        answer: "A) Fish Basket"
-      },
-      {
-        question: "When the old fisherman rested his weary arms, he placed me beside the dock. What am I?",
-        choices: ["A) His fish basket", "B) His boat", "C) His boots", "D) His knife"],
-        answer: "A) His fish basket"
-      }
-    ];
-  }
+
 
   preload() {
     super.preload();

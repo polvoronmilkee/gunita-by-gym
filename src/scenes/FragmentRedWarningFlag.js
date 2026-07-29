@@ -21,35 +21,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
   getTitleColor() { return "#ff5533"; }
   getTimerFillColor() { return 0x2dd4bf; }
 
-  getDefaultRiddles() {
-    return [
-      {
-        question: "I leave before dawn and return when the sky turns orange. The sea is my floor and patience is my tool. What am I?",
-        choices: ["A) A fisherman", "B) A sailor", "C) A diver", "D) A farmer"],
-        answer: "A) A fisherman"
-      },
-      {
-        question: "I am woven from rope and wood, I hold what the ocean gives, but I am not a boat. What am I?",
-        choices: ["A) A net", "B) A basket", "C) A trap", "D) A raft"],
-        answer: "A) A net"
-      },
-      {
-        question: "Every morning he untangled me before the boat left shore. Every evening he folded me back with care. What am I?",
-        choices: ["A) His net", "B) His sail", "C) His rope", "D) His shirt"],
-        answer: "A) His net"
-      },
-      {
-        question: "My family waits on shore. I carry today's catch in my arms. The salt is still on my skin. Who am I going home to?",
-        choices: ["A) His crew", "B) His wife and children", "C) His father", "D) No one"],
-        answer: "B) His wife and children"
-      },
-      {
-        question: "He cast his line every morning not for glory, not for gold — only so they would not go hungry. What drove him?",
-        choices: ["A) Duty", "B) Habit", "C) Love", "D) Fear"],
-        answer: "C) Love"
-      }
-    ];
-  }
+
 
   preload() {
     super.preload();

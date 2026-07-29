@@ -19,35 +19,7 @@ export class FragmentDaughtersDrawing extends BaseBulletHellScene {
   getSoulColor() { return this.currentRainbowColor || 0xb57fee; }
   getTitleColor() { return this.currentRainbowColorStr || "#b57fee"; }
   getTimerFillColor() { return this.currentRainbowColor || 0xb57fee; }
-  getDefaultRiddles() {
-    return [
-      {
-        question: "I made a picture of Papa with wax and bright colors on a paper sheet. What am I?",
-        choices: ["A) Daughter's Drawing", "B) Wooden Toy", "C) Shell Necklace", "D) Songbook"],
-        answer: "A) Daughter's Drawing"
-      },
-      {
-        question: "Even when Papa was far out at sea, he looked at my colorful smiles to feel warm. What am I?",
-        choices: ["A) Daughter's Drawing", "B) Brass Compass", "C) Warm Blanket", "D) Lantern"],
-        answer: "A) Daughter's Drawing"
-      },
-      {
-        question: "Drawn with love by small hands, keeping a family together across the waves. What am I?",
-        choices: ["A) Daughter's Drawing", "B) Ribbon Tie", "C) Fishing Hook", "D) Glass Bead"],
-        answer: "A) Daughter's Drawing"
-      },
-      {
-        question: "I show a big sun, a blue ocean, and a little boat with two stick figures. What am I?",
-        choices: ["A) Daughter's Drawing", "B) Nautical Map", "C) Storybook", "D) Mirror"],
-        answer: "A) Daughter's Drawing"
-      },
-      {
-        question: "What did the young daughter give her father before the great storm took his ship?",
-        choices: ["A) Her drawing", "B) Her ribbon", "C) A seashell", "D) A prayer bead"],
-        answer: "A) Her drawing"
-      }
-    ];
-  }
+
 
   preload() {
     super.preload();

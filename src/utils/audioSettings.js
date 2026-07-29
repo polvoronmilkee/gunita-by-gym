@@ -54,6 +54,14 @@ export const AUDIO_SETTINGS = {
       key: "daughters-letter-boss",
       path: new URL("../assets/sounds/music/daughters_letter_BOSS.mp3", import.meta.url).href,
     },
+    {
+      key: "gameplay-tutorial",
+      path: new URL("../assets/sounds/music/GAMEPLAY_TUTORIAL.mp3", import.meta.url).href,
+    },
+    {
+      key: "finale-fisherman",
+      path: new URL("../assets/sounds/music/FINALESONGV2_fishermans_last_goodbye.mp3", import.meta.url).href,
+    },
   ],
   sfx: {
     button: {

@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { AudioManager } from "../../utils/audioManager.js";
+import riddlesData from "../../data/riddles.json";
 
 export class BaseBulletHellScene extends Phaser.Scene {
   constructor(key) {
@@ -7,6 +8,9 @@ export class BaseBulletHellScene extends Phaser.Scene {
   }
 
   init(data) {
+    const sceneKey = this.scene.key;
+    const jsonRiddles = riddlesData[sceneKey] || this.getDefaultRiddles() || [];
+
     const rawData = data ? (data.riddleData || data.riddleList) : null;
     if (rawData) {
       if (Array.isArray(rawData)) {
@@ -14,13 +18,12 @@ export class BaseBulletHellScene extends Phaser.Scene {
       } else if (rawData.riddles && Array.isArray(rawData.riddles)) {
         this.riddleList = rawData.riddles;
       } else if (rawData.question) {
-        const defaults = this.getDefaultRiddles();
-        this.riddleList = [rawData, ...defaults.filter(r => r.question !== rawData.question)];
+        this.riddleList = [rawData, ...jsonRiddles.filter(r => r.question !== rawData.question)];
       } else {
-        this.riddleList = this.getDefaultRiddles();
+        this.riddleList = [...jsonRiddles];
       }
     } else {
-      this.riddleList = this.getDefaultRiddles();
+      this.riddleList = [...jsonRiddles];
     }
 
     this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
