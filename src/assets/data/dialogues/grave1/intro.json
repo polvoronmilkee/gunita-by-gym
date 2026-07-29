@@ -3,25 +3,31 @@
     {
       "speaker": "Vino",
       "variants": [
-        "I can smell the sea salt... and feel a chilling breeze. We have entered the forgotten memory world.",
-        "The salt air and the cold wind… we've stepped into a memory frozen in time.",
-        "This place reeks of the sea and regret. The memory is strong here."
+        "I can smell the heavy sea salt... and feel a chilling breeze. We have entered a forgotten memory world.",
+        "The salt air is thick here, and the wind carries a quiet sadness. We've stepped into a memory frozen in time.",
+        "This shore feels so familiar, yet hollow. The memory of this village is fading fast.",
+        "Cold wind... smelling of dried fish and wet sand. A memory world lies right before us.",
+        "The fog hangs heavy over the water. We are inside the lost memory of an old coastal barangay."
       ]
     },
     {
       "speaker": "Echo",
       "variants": [
-        "This is Mang Tomas' memory, Vino. A world frozen in time. The black fog of oblivion covers the paths.",
-        "You stand in Mang Tomas' past. Time has stopped. The black fog hides the truth.",
-        "Mang Tomas' memories are trapped here. Shadows of oblivion block the way."
+        "This is Mang Tomas' memory, Vino. A coastal world frozen in time. The black fog of oblivion hides his story.",
+        "You stand in the past of Mang Tomas, an old fisherman. Time stopped here the day he sailed into the storm.",
+        "Mang Tomas' life is trapped in these fading shores. Shadows of oblivion have covered the truth of who he was.",
+        "These fragmented shores belong to Mang Tomas. The village remembers his disappearance, but forgot his heart.",
+        "An old fisherman's soul left these echoes behind. The dark fog obscures the sacrifices he made for his family."
       ]
     },
     {
       "speaker": "Vino",
       "variants": [
-        "I must look for clues and talk to the villagers to reconstruct the truth.",
-        "I need to gather pieces of the past. The villagers hold the answers.",
-        "To uncover what happened, I must speak with the people of this memory."
+        "I must look for clues and talk to the villagers to reconstruct the truth of his life.",
+        "I need to gather the scattered pieces of his past. The ordinary people here hold the key.",
+        "To uncover what truly happened to Mang Tomas, I will listen closely to the memories of his neighbors.",
+        "Every forgotten keepsake in this village has a voice. I will seek out his story.",
+        "He wasn't a famous man, but his memory matters. Let's hear what his community remembers."
       ]
     }
   ]

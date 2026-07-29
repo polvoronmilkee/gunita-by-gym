@@ -4,7 +4,7 @@
 
 Gunita: Reaper of Echoes is a browser-based 2D narrative adventure built with Phaser.js and Vite. You play as Vino, a newly appointed Echo Reaper, as you investigate forgotten memories trapped within Campo Lunan, solve AI-generated riddles, and restore Philippine-inspired stories to peace.
 
-![Gunita main menu](src/assets/main-menu/main-menu-reference.png)
+![Gunita main menu](src/assets/main-menu/main-menu-reference-2.png)
 
 ## About The Game
 

@@ -42,27 +42,68 @@ export class PauseScene extends Phaser.Scene {
 
     this.root.innerHTML = `
       <div class="pause-menu">
-        <div class="pause-menu__inner">
-          <h2 class="pause-menu__title">=== PAUSED ===</h2>
-          <div class="pause-menu__buttons">
-            <button class="pause-menu__btn" id="pm-resume">RESUME</button>
-            <button class="pause-menu__btn" id="pm-memory">MEMORIES</button>
-            <button class="pause-menu__btn" id="pm-music">MUSIC: ${musicEnabled ? "ON" : "OFF"}</button>
-            <button class="pause-menu__btn" id="pm-sfx">SFX: ${sfxEnabled ? "ON" : "OFF"}</button>
-            <button class="pause-menu__btn" id="pm-menu">MAIN MENU</button>
-          </div>
-          <div class="pause-menu__footer">PRESS ESC TO RESUME</div>
+        <div class="pause-menu__header">
+          <h2 class="pause-menu__title">❚❚ JOURNEY PAUSED</h2>
+          <button class="pause-menu__close-btn" id="pm-close" aria-label="Resume game">✕</button>
         </div>
+        <div class="pause-menu__divider"><span>✦</span></div>
+        <div class="pause-menu__buttons">
+          <button class="pause-menu__btn" id="pm-resume">
+            <div class="pm-btn-icon">▶</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title">RESUME JOURNEY</span>
+              <span class="pm-btn-desc">Continue exploring the memory world</span>
+            </div>
+          </button>
+
+          <button class="pause-menu__btn" id="pm-guide">
+            <div class="pm-btn-icon">🕮</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title">SURVIVAL GUIDE</span>
+              <span class="pm-btn-desc">Review lore, controls & game mechanics</span>
+            </div>
+          </button>
+
+          <button class="pause-menu__btn" id="pm-music">
+            <div class="pm-btn-icon">♫</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title">BACKGROUND MUSIC</span>
+              <span class="pm-btn-desc">Toggle ambience and soundtrack</span>
+            </div>
+            <span class="pm-status-badge ${musicEnabled ? "is-on" : ""}" id="pm-music-badge">${musicEnabled ? "ON" : "OFF" }</span>
+          </button>
+
+          <button class="pause-menu__btn" id="pm-sfx">
+            <div class="pm-btn-icon">🕪</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title">SOUND EFFECTS</span>
+              <span class="pm-btn-desc">Toggle interaction and audio feedback</span>
+            </div>
+            <span class="pm-status-badge ${sfxEnabled ? "is-on" : ""}" id="pm-sfx-badge">${sfxEnabled ? "ON" : "OFF"}</span>
+          </button>
+
+          <button class="pause-menu__btn" id="pm-menu">
+            <div class="pm-btn-icon">𖠿</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title">RETURN TO MAIN MENU</span>
+              <span class="pm-btn-desc">Save and leave the current memory</span>
+            </div>
+          </button>
+        </div>
+        <div class="pause-menu__footer">"Every memory waits for someone to listen."</div>
       </div>
     `;
 
     container.appendChild(this.root);
 
     // Bind event listeners
+    const closeBtn = this.root.querySelector("#pm-close");
     const resumeBtn = this.root.querySelector("#pm-resume");
-    const memoryBtn = this.root.querySelector("#pm-memory");
+    const guideBtn = this.root.querySelector("#pm-guide");
     const musicBtn = this.root.querySelector("#pm-music");
+    const musicBadge = this.root.querySelector("#pm-music-badge");
     const sfxBtn = this.root.querySelector("#pm-sfx");
+    const sfxBadge = this.root.querySelector("#pm-sfx-badge");
     const menuBtn = this.root.querySelector("#pm-menu");
 
     const playClickSfx = () => {
@@ -82,17 +123,18 @@ export class PauseScene extends Phaser.Scene {
       }
     };
 
+    closeBtn.addEventListener("click", handleResume);
     resumeBtn.addEventListener("click", handleResume);
 
-    memoryBtn.addEventListener("click", () => {
+    guideBtn.addEventListener("click", () => {
       playClickSfx();
-      this.destroyMenu();
-      this.scene.stop();
-      if (this.parentScene) {
+      if (typeof window.showSurvivalGuide === "function") {
+        window.showSurvivalGuide();
+      } else if (this.parentScene) {
+        this.destroyMenu();
+        this.scene.stop();
         this.parentScene.scene.pause();
         this.parentScene.scene.launch("MemoryScene", { parentScene: this.parentScene });
-      } else {
-        this.scene.launch("MemoryScene");
       }
     });
 
@@ -100,13 +142,19 @@ export class PauseScene extends Phaser.Scene {
       playClickSfx();
       if (this.parentScene && this.parentScene.audioManager) {
         const enabled = this.parentScene.audioManager.toggleMusic();
-        musicBtn.textContent = `MUSIC: ${enabled ? "ON" : "OFF"}`;
+        if (musicBadge) {
+          musicBadge.textContent = enabled ? "ON" : "OFF";
+          musicBadge.classList.toggle("is-on", enabled);
+        }
         if (this.parentScene.hud) {
           this.parentScene.hud.setMusicEnabled(enabled);
         }
       } else {
         musicEnabled = !musicEnabled;
-        musicBtn.textContent = `MUSIC: ${musicEnabled ? "ON" : "OFF"}`;
+        if (musicBadge) {
+          musicBadge.textContent = musicEnabled ? "ON" : "OFF";
+          musicBadge.classList.toggle("is-on", musicEnabled);
+        }
         this.persistFallbackSettings(musicEnabled, sfxEnabled);
       }
     });
@@ -115,27 +163,43 @@ export class PauseScene extends Phaser.Scene {
       playClickSfx();
       if (this.parentScene && this.parentScene.audioManager) {
         const enabled = this.parentScene.audioManager.toggleSfx();
-        sfxBtn.textContent = `SFX: ${enabled ? "ON" : "OFF"}`;
+        if (sfxBadge) {
+          sfxBadge.textContent = enabled ? "ON" : "OFF";
+          sfxBadge.classList.toggle("is-on", enabled);
+        }
         if (this.parentScene.hud) {
           this.parentScene.hud.setSfxEnabled(enabled);
         }
       } else {
         sfxEnabled = !sfxEnabled;
-        sfxBtn.textContent = `SFX: ${sfxEnabled ? "ON" : "OFF"}`;
+        if (sfxBadge) {
+          sfxBadge.textContent = sfxEnabled ? "ON" : "OFF";
+          sfxBadge.classList.toggle("is-on", sfxEnabled);
+        }
         this.persistFallbackSettings(musicEnabled, sfxEnabled);
       }
     });
 
     menuBtn.addEventListener("click", async () => {
       playClickSfx();
-      this.destroyMenu();
-      this.scene.stop();
+      
+      // Add loading state
+      const titleSpan = menuBtn.querySelector(".pm-btn-title");
+      if (titleSpan) {
+        titleSpan.textContent = "SAVING...";
+      }
+      menuBtn.style.pointerEvents = "none";
+      menuBtn.style.opacity = "0.7";
+      
       if (this.parentScene) {
-        this.parentScene.scene.stop();
         if (typeof this.parentScene.saveProgress === "function") {
           await this.parentScene.saveProgress();
         }
+        this.parentScene.scene.stop();
       }
+      
+      this.destroyMenu();
+      this.scene.stop();
       window.returnToGunitaMenu?.();
     });
 

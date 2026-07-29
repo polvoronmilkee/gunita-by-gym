@@ -1,0 +1,204 @@
+.gunita-portal-loading-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  z-index: 9999;
+  overflow: hidden;
+  background-color: #030305;
+  color: #eef6ff;
+  transition: opacity 800ms ease, backdrop-filter 800ms ease;
+}
+
+.gunita-portal-loading-screen.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 800ms ease, visibility 0s 800ms;
+}
+
+/* Add a deep, breathing background glow */
+.gunita-portal-loading-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(30, 20, 80, 0.4) 0%, rgba(5, 5, 10, 0.95) 70%, #000 100%);
+  animation: bgBreathe 4s ease-in-out infinite alternate;
+  z-index: -2;
+}
+
+/* ---------- Title & Subtitle ---------- */
+.gunita-portal-loading-screen__title {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(14px, 2vw, 22px);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: #d8d4ff;
+  text-shadow: 0 0 15px rgba(135, 96, 255, 0.8), 0 0 35px rgba(135, 96, 255, 0.5);
+  animation: fadeInDown 1s ease-out forwards;
+}
+
+.gunita-portal-loading-screen__subtitle {
+  font-size: clamp(24px, 3vw, 40px);
+  font-weight: 300;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: 2px;
+  text-shadow: 0 0 20px rgba(150, 110, 255, 0.6), 0 0 40px rgba(200, 180, 255, 0.3);
+  animation: fadeInUp 1s ease-out forwards 0.2s;
+  opacity: 0;
+}
+
+/* ---------- Portal (The Rift) ---------- */
+.gunita-portal-loading-screen__portal {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: portalEnter 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, portalHover 4s ease-in-out infinite 1s;
+}
+
+/* Dynamic Rift Rings */
+.portal-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  mix-blend-mode: screen;
+}
+
+.portal-ring.outer {
+  width: 280px;
+  height: 280px;
+  border-top: 3px solid rgba(136, 102, 255, 0.8);
+  border-bottom: 3px solid rgba(136, 102, 255, 0.2);
+  box-shadow: 0 0 50px rgba(136, 102, 255, 0.3), inset 0 0 30px rgba(136, 102, 255, 0.2);
+  animation: spinRift 10s linear infinite;
+}
+
+.portal-ring.middle {
+  width: 210px;
+  height: 210px;
+  border-left: 2px solid rgba(90, 232, 255, 0.8);
+  border-right: 2px solid rgba(90, 232, 255, 0.2);
+  box-shadow: 0 0 40px rgba(90, 232, 255, 0.4), inset 0 0 20px rgba(90, 232, 255, 0.2);
+  animation: spinRiftReverse 7s linear infinite;
+}
+
+.portal-ring.inner {
+  width: 140px;
+  height: 140px;
+  border-top: 4px solid rgba(255, 255, 255, 0.9);
+  border-bottom: 2px solid rgba(200, 160, 255, 0.5);
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.5), inset 0 0 40px rgba(200, 160, 255, 0.6);
+  animation: spinRift 4s linear infinite;
+}
+
+/* Core - Blinding Light */
+.portal-core {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 10%, #d4b3ff 40%, #7030e0 70%, transparent 100%);
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.9), 0 0 120px rgba(170, 130, 255, 0.7);
+  animation: pulseCore 2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+/* ---------- Hint ---------- */
+.gunita-portal-loading-screen__hint {
+  width: min(500px, 85vw);
+  text-align: center;
+  color: rgba(200, 210, 255, 0.8);
+  font-size: 16px;
+  line-height: 1.8;
+  font-style: italic;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out forwards 0.4s;
+}
+
+/* ---------- Hyperspace Particles ---------- */
+.portal-particles-container {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  perspective: 1000px;
+}
+
+.particle-layer {
+  position: absolute;
+  inset: -100%;
+  background-image: radial-gradient(circle, rgba(200, 220, 255, 0.8) 1.5px, transparent 1.5px);
+  background-size: 100px 100px;
+  animation: warpDrive 4s linear infinite;
+  opacity: 0;
+}
+
+.particle-layer:nth-child(2) {
+  background-image: radial-gradient(circle, rgba(160, 180, 255, 0.6) 2px, transparent 2px);
+  background-size: 150px 150px;
+  animation-duration: 3s;
+  animation-delay: 1.5s;
+}
+
+.particle-layer:nth-child(3) {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 80px 80px;
+  animation-duration: 5s;
+  animation-delay: 0.5s;
+}
+
+/* ---------- Animations ---------- */
+@keyframes bgBreathe {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinRift {
+  from { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); }
+  to { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes spinRiftReverse {
+  from { transform: rotate(360deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.05); }
+  to { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes pulseCore {
+  0% { transform: scale(0.9); filter: brightness(1); }
+  100% { transform: scale(1.2); filter: brightness(1.3) blur(2px); }
+}
+
+@keyframes warpDrive {
+  0% { transform: translateZ(-1000px) scale(0.5); opacity: 0; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.5; }
+  100% { transform: translateZ(500px) scale(2); opacity: 0; }
+}
+
+@keyframes portalEnter {
+  from { transform: scale(0.2); opacity: 0; filter: blur(10px); }
+  to { transform: scale(1); opacity: 1; filter: blur(0); }
+}
+
+@keyframes portalHover {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
+  100% { transform: translateY(0px) scale(1); }
+}

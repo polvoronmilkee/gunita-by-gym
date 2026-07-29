@@ -1,0 +1,74 @@
+/* Ambient Speech Bubble UI Styles */
+.ambient-bubble-container {
+  pointer-events: none;
+  user-select: none;
+  font-family: 'Press Start 2P', monospace, sans-serif;
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: ambientFloatIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.ambient-bubble-inner {
+  background: rgba(18, 12, 28, 0.92);
+  border: 2px solid #e2b714;
+  border-radius: 6px;
+  padding: 6px 10px;
+  color: #fff8e7;
+  font-size: 8px;
+  line-height: 1.4;
+  max-width: 220px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 6px rgba(226, 183, 20, 0.3);
+  position: relative;
+}
+
+.ambient-bubble-speaker {
+  color: #4be3ac;
+  font-weight: bold;
+  font-size: 7.5px;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ambient-bubble-text {
+  color: #f3f4f6;
+  font-size: 7.5px;
+}
+
+.ambient-bubble-arrow {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #e2b714;
+  margin-top: -1px;
+}
+
+.ambient-bubble-fade-out {
+  animation: ambientFloatOut 0.5s ease-in forwards;
+}
+
+@keyframes ambientFloatIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ambientFloatOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+}

@@ -33,10 +33,6 @@ export class PreloadScene extends Phaser.Scene {
       AUDIO_SETTINGS.sfx.button.path,
     );
     this.load.audio(AUDIO_SETTINGS.sfx.dash.key, AUDIO_SETTINGS.sfx.dash.path);
-    this.load.audio(
-      AUDIO_SETTINGS.sfx.vinoMove.key,
-      AUDIO_SETTINGS.sfx.vinoMove.path,
-    );
     if (AUDIO_SETTINGS.sfx.rainAndThunder) {
       this.load.audio(
         AUDIO_SETTINGS.sfx.rainAndThunder.key,

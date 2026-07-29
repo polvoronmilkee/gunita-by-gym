@@ -8,7 +8,6 @@ export const AUDIO_SETTINGS = {
     music: 0.45,
     button: 0.8,
     dash: 0.65,
-    vinoMove: 0.55,
   },
   tracks: [
     {
@@ -68,13 +67,6 @@ export const AUDIO_SETTINGS = {
       key: "sfx-dash",
       path: new URL("../assets/sounds/sound-effects/dash.mp3", import.meta.url)
         .href,
-    },
-    vinoMove: {
-      key: "sfx-vino-move",
-      path: new URL(
-        "../assets/sounds/sound-effects/vino-move.mp3",
-        import.meta.url,
-      ).href,
     },
     rainAndThunder: {
       key: "sfx-rain-thunder",

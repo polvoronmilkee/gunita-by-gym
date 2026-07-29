@@ -9,6 +9,7 @@ import { getCache, setCache, getEssence, setEssence } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } from "../utils/api.js";
 import characterData from "../data/characters.json";
 import { AudioManager } from "../utils/audioManager.js";
+import { TransitionSystem } from "../systems/TransitionSystem.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -23,6 +24,17 @@ export class Grave1 extends Phaser.Scene {
     this.load.json("random-guy-before", "src/assets/data/dialogues/grave1/random-guy/before-fragments.json");
     this.load.json("random-guy-completed", "src/assets/data/dialogues/grave1/random-guy/completed.json");
     this.load.json("old-fisherman-initial", "src/assets/data/dialogues/grave1/old-fisherman/initial.json");
+    this.load.json("old-fisherman-clue", "src/assets/data/dialogues/grave1/old-fisherman/clue.json");
+    this.load.json("young-fisherman-initial", "src/assets/data/dialogues/grave1/young-fisherman/initial.json");
+    this.load.json("young-fisherman-clue", "src/assets/data/dialogues/grave1/young-fisherman/clue.json");
+    this.load.json("old-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
+    this.load.json("old-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
+    this.load.json("young-daughter-initial", "src/assets/data/dialogues/grave1/young-daughter/initial.json");
+    this.load.json("young-daughter-clue", "src/assets/data/dialogues/grave1/young-daughter/clue.json");
+    this.load.json("random-woman-initial", "src/assets/data/dialogues/grave1/random-woman/initial.json");
+    this.load.json("young-boy-initial", "src/assets/data/dialogues/grave1/young-boy/initial.json");
+    this.load.json("school-girl-initial", "src/assets/data/dialogues/grave1/school-girl/initial.json");
+    this.load.json("debt-collector-initial", "src/assets/data/dialogues/grave1/debt-collector/initial.json");
     this.load.json("riddle-fish-basket", "src/assets/data/dialogues/fragments-riddles/fish-basket.json");
     this.load.json("completed-fish-basket", "src/assets/data/dialogues/fragments-completed/fish-basket.json");
     this.load.json('riddle-weather-warning-flag', 'src/assets/data/dialogues/fragments-riddles/weather-warning-flag.json');
@@ -134,7 +146,17 @@ export class Grave1 extends Phaser.Scene {
     );
   }
 
-  create() {
+  create(data) {
+    // Hide and destroy portal loading screen if passed from previous scene
+    if (data && data.loadingScreen) {
+      setTimeout(() => {
+        data.loadingScreen.hide();
+        setTimeout(() => {
+          data.loadingScreen.destroy();
+        }, 400); // Wait for CSS transition
+      }, 1000); // Wait a bit after scene is created before hiding
+    }
+
     // Intercept Tiled map data to inline external TSX tileset metadata at runtime
     const cachedMap = this.cache.json.get("grave1-map");
     if (!cachedMap) {
@@ -307,7 +329,6 @@ export class Grave1 extends Phaser.Scene {
 
     this.player = new Player(this, spawnX, spawnY, {
       onDashStart: () => this.audioManager.playDashSfx(),
-      onDirectionChange: () => this.audioManager.playVinoMoveSfx(),
     });
     this.player.sprite.setDepth(this.player.sprite.y);
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -338,8 +359,8 @@ export class Grave1 extends Phaser.Scene {
     const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
-        // Skip Wasteland region object (ID 499) so it doesn't create solid collision walls around the rain area
-        if (obj.id === 499 || (obj.name && obj.name.toLowerCase() === "wasteland")) {
+        // Skip Wasteland region object (ID 509) so it doesn't create solid collision walls around the rain area
+        if (obj.id === 509 || (obj.name && obj.name.toLowerCase() === "wasteland")) {
           return;
         }
 
@@ -381,41 +402,61 @@ export class Grave1 extends Phaser.Scene {
     }
     this.physics.add.collider(this.player.sprite, obstacles);
 
-    // Spawn NPCs at designated land coordinates
+    // Spawn NPCs dynamically from CHARS_SPAWNS layer in TMJ map
     this.npcs = this.physics.add.staticGroup();
-    const npcPlacements = [
-      { key: "debt-collector", x: 500, y: 400 },
-      { key: "old-fisherman", x: 1060, y: 540 },   // Stage 1 (Fish Basket) - Testing Spot
-      { key: "young-fisherman", x: 1100, y: 540 }, // Stage 2 (Red Warning Flag) - Testing Spot
-      { key: "old-wife", x: 1140, y: 540 },        // Stage 3 (Rosary) - Testing Spot
-      { key: "young-daughter", x: 1180, y: 540 },   // Stage 4 (Daughter's Drawing) - Testing Spot
-      { key: "random-guy", x: 1100, y: 600 },
-      { key: "random-woman", x: 1150, y: 620 },
-      { key: "school-girl", x: 950, y: 520 },
-      { key: "sick-wife", x: 450, y: 460 },
-      { key: "young-kid", x: 980, y: 530 }
-    ];
+    // Map TMJ character names to sprite keys
+    const characterNameMap = {
+      "OLD-FISHERMAN": "old-fisherman",
+      "YOUNG-FISHERMAN": "young-fisherman",
+      "OLD-WIFE": "old-wife",
+      "OLD-DAUGHTER": "young-daughter",
+      "SCHOOL-GIRL": "school-girl",
+      "YOUNG-KID": "young-kid",
+      "npc-RANDOM-GUY": "random-guy",
+      "npc-RANDOM-WOMAN": "random-woman",
+      "npc-DEBT-COLLECTOR": "debt-collector",
+      "npc-SICK-WFE": "sick-wife"
+    };
 
-    npcPlacements.forEach(placement => {
-      const pos = this.getNearestLandCoordinate(placement.x, placement.y, map);
-      const npc = this.npcs.create(pos.x, pos.y, `npc-${placement.key}`);
-      npc.setDepth(1);
-      if (npc.body) {
-        npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
-        npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
-      }
+    // Get CHARS_SPAWNS layer from map
+    const charsSpawnLayer = map.getObjectLayer("CHARS_SPAWNS");
+    
+    if (charsSpawnLayer && charsSpawnLayer.objects) {
+      charsSpawnLayer.objects.forEach(obj => {
+        // Skip polygon objects, only process point objects
+        if (obj.polygon || !obj.point) {
+          return;
+        }
 
-      const animKey = `npc-anim-${placement.key}`;
-      if (!this.anims.exists(animKey)) {
-        this.anims.create({
-          key: animKey,
-          frames: this.anims.generateFrameNumbers(`npc-${placement.key}`, { start: 0, end: 3 }),
-          frameRate: 4,
-          repeat: -1
-        });
-      }
-      npc.setFrame(0); // Set to default frame (face down) instead of spinning
-    });
+        const charName = obj.name;
+        const spriteKey = characterNameMap[charName];
+        
+        if (spriteKey) {
+          const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
+          const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
+          npc.setDepth(1);
+          if (npc.body) {
+            npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
+            npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
+          }
+
+          const animKey = `npc-anim-${spriteKey}`;
+          if (!this.anims.exists(animKey)) {
+            this.anims.create({
+              key: animKey,
+              frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: 3 }),
+              frameRate: 4,
+              repeat: -1
+            });
+          }
+          npc.setFrame(0); // Set to default frame (face down) instead of spinning
+        } else {
+          console.warn(`Unknown character name in CHARS_SPAWNS: ${charName}`);
+        }
+      });
+    } else {
+      console.warn("CHARS_SPAWNS layer not found in map");
+    }
 
     this.physics.add.collider(this.player.sprite, this.npcs);
     this.storyStage = 1;
@@ -518,7 +559,7 @@ export class Grave1 extends Phaser.Scene {
     this.dimGraphics.setVisible(false);
     this.minimapCamera.ignore(this.dimGraphics);
 
-    // --- DYNAMIC WASTELAND / RAIN SYSTEM FROM TILED MAP (ID 499 / "Wasteland") ---
+    // --- DYNAMIC WASTELAND / RAIN SYSTEM FROM TILED MAP (ID 509 / "Wasteland") ---
     if (!this.anims.exists("rain-fall")) {
       this.anims.create({
         key: "rain-fall",
@@ -532,7 +573,7 @@ export class Grave1 extends Phaser.Scene {
     if (map.objects) {
       map.objects.forEach(layer => {
         if (layer.objects) {
-          const found = layer.objects.find(o => o.id === 499 || (o.name && o.name.toLowerCase() === "wasteland"));
+          const found = layer.objects.find(o => o.id === 509 || (o.name && o.name.toLowerCase() === "wasteland"));
           if (found) wastelandObj = found;
         }
       });
@@ -543,7 +584,7 @@ export class Grave1 extends Phaser.Scene {
       for (const name of objLayers) {
         const layer = map.getObjectLayer(name);
         if (layer && layer.objects) {
-          const found = layer.objects.find(o => o.id === 499 || (o.name && o.name.toLowerCase() === "wasteland"));
+          const found = layer.objects.find(o => o.id === 509 || (o.name && o.name.toLowerCase() === "wasteland"));
           if (found) {
             wastelandObj = found;
             break;
@@ -748,30 +789,40 @@ export class Grave1 extends Phaser.Scene {
         npc.setFrame(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 1) : (dy > 0 ? 0 : 3));
 
         if (this.storyStage === 5) {
-          this.startDialogueSequence([{ speaker: "Villager", text: "The sea is calm now. We remember." }]);
-          return;
+             const compText = this.getRandomVariant("random-guy-completed", "The sea is calm now. We remember Mang Tomas.");
+             this.startDialogueSequence([{ speaker: "Villager", text: compText }]);
+             return;
         }
 
-        if (npcKey === "npc-old-fisherman") {
-          this.storyStage = 1;
-          this.spawnFragment(this.closestNpc, "Old Fisherman", "Always respect the sea, my friend. It gives, but it also takes. Sometimes, it leaves behind a fragment of what it took.");
-        } else if (npcKey === "npc-young-fisherman") {
-          this.storyStage = 2;
-          this.spawnFragment(this.closestNpc, "Young Fisherman", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
-        } else if (npcKey === "npc-old-wife") {
-          this.storyStage = 3;
-          this.spawnFragment(this.closestNpc, "Old Wife", "Before every voyage... Tomas never forgot something precious. I just can't remember what it was.");
-        } else if (npcKey === "npc-young-daughter") {
-          this.storyStage = 4;
-          this.spawnFragment(this.closestNpc, "Daughter", "I made Papa a drawing... but I don't remember where I left it.");
+        if (this.storyStage === 1 && npcKey === "npc-old-fisherman") {
+             const clueText = this.getRandomVariant("old-fisherman-clue", "Always respect the sea, my friend. It gives, but it also takes.");
+             this.spawnFragment(this.closestNpc, "Old Fisherman", clueText);
+        } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman") {
+             const clueText = this.getRandomVariant("young-fisherman-clue", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
+             this.spawnFragment(this.closestNpc, "Young Fisherman", clueText);
+        } else if (this.storyStage === 3 && npcKey === "npc-old-wife") {
+             const clueText = this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious.");
+             this.spawnFragment(this.closestNpc, "Old Wife", clueText);
+        } else if (this.storyStage === 4 && npcKey === "npc-young-daughter") {
+             const clueText = this.getRandomVariant("young-daughter-clue", "I made Papa a drawing... but I don't remember where I left it.");
+             this.spawnFragment(this.closestNpc, "Daughter", clueText);
         } else {
-          let flavor = "(They are staring into the distance, lost in forgotten memories...)";
-          if (npcKey === "npc-random-woman") flavor = "Drying fish takes time. The sea feeds us all, you know.";
-          if (npcKey === "npc-young-kid") flavor = "Mang Tomas had a really big boat! I want one too.";
-          if (npcKey === "npc-debt-collector") flavor = "Where's my money? People always disappear when they owe you.";
-          this.startDialogueSequence([{ speaker: "Villager", text: flavor }]);
+             let speaker = "Villager";
+             let cacheKey = "random-guy-before";
+
+             if (npcKey === "npc-old-fisherman") { speaker = "Old Fisherman"; cacheKey = "old-fisherman-initial"; }
+             else if (npcKey === "npc-young-fisherman") { speaker = "Young Fisherman"; cacheKey = "young-fisherman-initial"; }
+             else if (npcKey === "npc-old-wife") { speaker = "Old Wife"; cacheKey = "old-wife-initial"; }
+             else if (npcKey === "npc-young-daughter") { speaker = "Daughter"; cacheKey = "young-daughter-initial"; }
+             else if (npcKey === "npc-random-woman") { speaker = "Barangay Woman"; cacheKey = "random-woman-initial"; }
+             else if (npcKey === "npc-random-guy") { speaker = "Villager"; cacheKey = "random-guy-before"; }
+             else if (npcKey === "npc-young-kid") { speaker = "Young Boy"; cacheKey = "young-boy-initial"; }
+             else if (npcKey === "npc-school-girl") { speaker = "School Girl"; cacheKey = "school-girl-initial"; }
+             else if (npcKey === "npc-debt-collector") { speaker = "Debt Collector"; cacheKey = "debt-collector-initial"; }
+
+             const flavorText = this.getRandomVariant(cacheKey, "(They are staring into the distance, lost in forgotten memories...)");
+             this.startDialogueSequence([{ speaker: speaker, text: flavorText }]);
         }
-      }
     };
 
     this.input.keyboard.on("keydown-E", handleInteract);
@@ -1061,6 +1112,18 @@ export class Grave1 extends Phaser.Scene {
     }
   }
 
+  getRandomVariant(cacheKey, fallback = "") {
+    const data = this.cache.json.get(cacheKey);
+    if (!data) return fallback;
+    if (Array.isArray(data) && data.length > 0) {
+      return data[Math.floor(Math.random() * data.length)];
+    }
+    if (data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
+      return data.variants[Math.floor(Math.random() * data.variants.length)];
+    }
+    return fallback;
+  }
+
   async saveProgress() {
     const cache = getCache();
     if (!cache || !cache.player_id || !this.player?.sprite) return;
@@ -1276,33 +1339,61 @@ export class Grave1 extends Phaser.Scene {
       dodgeLines = data.dodge_lines;
     }
 
-    this.scene.pause();
-    this.scene.launch(activeScene, {
-      riddleData: riddleData,
-      soulName: soulName,
-      dodgeLines: dodgeLines,
-      bgKey: bgKey || "bg-fish-basket",
-      onComplete: () => {
-        this.dialogueActive = false;
-        this.scene.stop(activeScene);
-        this.scene.resume();
-        this.audioManager?.playTrack("village-v1");
-        onCorrect();
-      },
-      onDeath: async () => {
-        this.dialogueActive = false;
-        this.scene.stop(activeScene);
-        this.scene.resume();
-        this.audioManager?.playTrack("village-v1");
-
-        const cache = getCache();
-        if (cache && cache.player_id) {
-          await resetPlayerRiddles(cache.player_id);
-        }
-        setEssence(5); // reset essence
-
-        // No scene transition to CampoLunan; just stay in Grave1 so the player is in front of the fragment.
-      }
+    // Use the shattered glass transition before launching the bullet hell scene
+    TransitionSystem.shatteredGlassTransition(this, () => {
+      this.scene.pause();
+      this.scene.launch(activeScene, {
+          riddleData: riddleData,
+          soulName: soulName,
+          dodgeLines: dodgeLines,
+          bgKey: bgKey || "bg-fish-basket",
+          onComplete: () => {
+              this.dialogueActive = false;
+              if (this.transitionFadeBlack) {
+                this.transitionFadeBlack.destroy();
+                this.transitionFadeBlack = null;
+              }
+              this.scene.stop(activeScene);
+              this.scene.resume();
+              if (this.physics && typeof this.physics.resume === 'function') {
+                this.physics.resume();
+              }
+              this.audioManager?.playTrack("village-v1");
+              onCorrect();
+          },
+          onDeath: async () => {
+              this.dialogueActive = false;
+              if (this.physics && typeof this.physics.resume === 'function') {
+                this.physics.resume();
+              }
+              this.scene.stop(activeScene);
+              this.scene.resume();
+              this.audioManager?.playTrack("village-v1");
+              
+              const cache = getCache();
+              if (cache && cache.player_id) {
+                  await resetPlayerRiddles(cache.player_id);
+              }
+              setEssence(5); // reset essence
+              
+              // Show Death Screen then transition
+              const blackScreen = this.add.graphics();
+              blackScreen.fillStyle(0x000000, 1);
+              blackScreen.fillRect(0, 0, this.scale.width, this.scale.height);
+              blackScreen.setDepth(9999);
+              blackScreen.setScrollFactor(0);
+              
+              const deathText = this.add.text(this.scale.width/2, this.scale.height/2, "THE ECHOES CONSUMED YOU", {
+                  fontFamily: "'Press Start 2P', monospace",
+                  fontSize: "16px",
+                  color: "#ff4444"
+              }).setOrigin(0.5).setDepth(10000).setScrollFactor(0);
+              
+              this.time.delayedCall(3000, () => {
+                  this.scene.start('CampoLunanScene');
+              });
+          }
+      });
     });
   }
 }
