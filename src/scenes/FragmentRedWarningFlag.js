@@ -191,7 +191,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
       if (this.state !== "DODGE" || !this.soul) return;
       const targetX = this.soul.x;
       const targetY = this.soul.y;
-      const speed = this.isDesperation ? 140 : 120;
+      const speed = this.isDesperation ? 210 : 230;
 
       ringBullets.forEach(b => {
         if (this.bullets.includes(b)) {
@@ -200,7 +200,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
           b.vy = Math.sin(angle) * speed;
           b.speed = speed;
           b.isHoming = true;
-          b.homingTurnSpeed = 0.02;
+          b.homingTurnSpeed = 0.5;
         }
       });
     }));

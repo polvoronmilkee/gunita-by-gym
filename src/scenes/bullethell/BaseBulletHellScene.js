@@ -1021,8 +1021,14 @@ export class BaseBulletHellScene extends Phaser.Scene {
           const targetAngle = Math.atan2(this.soul.y - b.y, this.soul.x - b.x);
           const currentAngle = Math.atan2(b.vy, b.vx);
           
-          if (b.homingTurnSpeed || b.turnRate) {
-            const turnRate = b.homingTurnSpeed || b.turnRate || 0.05;
+          if (b.homingTurnSpeed !== undefined) {
+            const turnRate = b.homingTurnSpeed; // radians per second
+            const newAngle = Phaser.Math.Angle.RotateTo(currentAngle, targetAngle, turnRate * dtSec);
+            const speed = b.speed || Math.hypot(b.vx, b.vy);
+            b.vx = Math.cos(newAngle) * speed;
+            b.vy = Math.sin(newAngle) * speed;
+          } else if (b.turnRate) {
+            const turnRate = b.turnRate || 0.05;
             let diff = Phaser.Math.Angle.Wrap(targetAngle - currentAngle);
             const newAngle = currentAngle + diff * (turnRate * (dtSec / (1/60))); // normalized to 60fps
             const speed = b.speed || Math.hypot(b.vx, b.vy);
