@@ -280,19 +280,69 @@ export class FinalBossFisherman extends BaseBulletHellScene {
 
   // --- From Red Warning Flag ---
   fireCircleBlast(duration, desp) {
-    const interval = desp ? 1600 : 2200;
+    const interval = desp ? 2000 : 2600;
     for (let t = 0; t < duration; t += interval) {
       this.patternTimers.push(this.time.delayedCall(t, () => {
-        const cx = this.crystalEnemy.x;
-        const cy = this.crystalEnemy.y;
-        const count = desp ? 14 : 10;
-        const speed = desp ? 100 : 80;
-        const offset = Math.random() * Math.PI * 2;
+        if (this.state !== "DODGE") return;
+        const count = desp ? 14 : 16;
+        const radius = 140;
+        const centerX = this.crystalEnemy.x;
+        const centerY = this.crystalEnemy.y;
+        const ringBullets = [];
+        const formTime = 500;
+
+        const vortex = this.add.graphics();
+        this.activeWarnings.push(vortex);
+        
+        this.tweens.add({
+          targets: { angle: 0 },
+          angle: 360,
+          duration: formTime + 50,
+          onUpdate: (tw) => {
+            if (!vortex || !vortex.active) return;
+            vortex.clear();
+            vortex.lineStyle(2, 0x06b6d4, 0.5);
+            vortex.beginPath();
+            vortex.arc(centerX, centerY, radius + 15, Phaser.Math.DegToRad(tw.getValue()), Phaser.Math.DegToRad(tw.getValue() + 270), false);
+            vortex.strokePath();
+            vortex.fillStyle(0x0891b2, 0.2);
+            vortex.fillCircle(centerX, centerY, radius + 15);
+          },
+          onComplete: () => {
+            if (vortex && vortex.active) vortex.destroy();
+          }
+        });
 
         for (let i = 0; i < count; i++) {
-          const angle = offset + (i / count) * Math.PI * 2;
-          this.spawnBullet(cx, cy, Math.cos(angle) * speed, Math.sin(angle) * speed, 5, 0xef4444);
+          this.patternTimers.push(this.time.delayedCall(i * (formTime / count), () => {
+            if (this.state !== "DODGE") return;
+            const angle = i * ((2 * Math.PI) / count) + (Math.PI / 4);
+            const bx = centerX + radius * Math.cos(angle);
+            const by = centerY + radius * Math.sin(angle);
+
+            const bullet = { active: true, x: bx, y: by, vx: 0, vy: 0, radius: 4, color: 0x06b6d4, margin: 200 };
+            this.bullets.push(bullet);
+            ringBullets.push(bullet);
+          }));
         }
+
+        this.patternTimers.push(this.time.delayedCall(formTime + 50, () => {
+          if (this.state !== "DODGE" || !this.soul) return;
+          const targetX = this.soul.x;
+          const targetY = this.soul.y;
+          const speed = desp ? 210 : 230;
+
+          ringBullets.forEach(b => {
+            if (this.bullets.includes(b)) {
+              const angle = Phaser.Math.Angle.Between(b.x, b.y, targetX, targetY);
+              b.vx = Math.cos(angle) * speed;
+              b.vy = Math.sin(angle) * speed;
+              b.speed = speed;
+              b.isHoming = true;
+              b.homingTurnSpeed = 1;
+            }
+          });
+        }));
       }));
     }
   }
