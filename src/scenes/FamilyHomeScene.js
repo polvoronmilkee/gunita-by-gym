@@ -15,7 +15,7 @@ export class FamilyHomeScene extends Phaser.Scene {
   preload() {
     const { width, height } = this.scale;
 
-    this.add.text(width / 2, height / 2 - 30, "Loading Family Home...", {
+    this.loadingText = this.add.text(width / 2, height / 2 - 30, "Loading Family Home...", {
       fontFamily: "Arial, Helvetica, sans-serif",
       fontSize: "24px",
       color: "#ffffff",
@@ -34,6 +34,10 @@ export class FamilyHomeScene extends Phaser.Scene {
   }
 
   create(data) {
+    if (this.loadingText) {
+      this.loadingText.destroy();
+    }
+
     // Hide and destroy portal loading screen if passed from previous scene
     if (data && data.loadingScreen) {
       setTimeout(() => {
