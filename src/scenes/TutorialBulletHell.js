@@ -31,8 +31,8 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     }
     if (!this.textures.exists("luma-idle")) {
       this.load.spritesheet("luma-idle", "src/assets/luma-idle-spritesheet.png", {
-        frameWidth: 150,
-        frameHeight: 150,
+        frameWidth: 138.67,
+        frameHeight: 193.67,
       });
     }
   }
@@ -46,7 +46,7 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     this.tutorialHintText = null;
     this.lumaDialogueText = null;
 
-    // Create Luma sprite on the right side of the screen
+    // Create Luma sprite on the left side of the screen
     this.createLumaGuide();
 
     // Create tutorial hint text overlay (bottom-center)
@@ -59,25 +59,25 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       lineSpacing: 6
     }).setOrigin(0.5).setDepth(100).setAlpha(0);
 
-    // Create Luma dialogue bubble
+    // Create Luma dialogue bubble (left side under Luma)
     this.lumaDialogueBg = this.add.graphics().setDepth(99);
-    this.lumaDialogueText = this.add.text(670, 180, "", {
+    this.lumaDialogueText = this.add.text(55, 305, "", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "7px",
+      fontSize: "8px",
       color: "#ffffff",
       align: "left",
-      wordWrap: { width: 200 },
-      lineSpacing: 5
+      wordWrap: { width: 320 },
+      lineSpacing: 6
     }).setOrigin(0, 0).setDepth(100).setAlpha(0);
   }
 
   createLumaGuide() {
-    const lumaX = 710;
-    const lumaY = 130;
+    const lumaX = 215;
+    const lumaY = 170;
 
     if (this.textures.exists("luma-idle")) {
       this.lumaSprite = this.add.sprite(lumaX, lumaY, "luma-idle");
-      this.lumaSprite.setScale(0.45);
+      this.lumaSprite.setScale(0.85);
       this.lumaSprite.setDepth(90);
 
       if (!this.anims.exists("luma-idle-anim")) {
@@ -113,26 +113,26 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     } else {
       this.lumaSprite = this.add.graphics().setDepth(90);
       this.lumaSprite.fillStyle(0xbc80ff, 0.8);
-      this.lumaSprite.fillCircle(lumaX, lumaY, 20);
+      this.lumaSprite.fillCircle(lumaX, lumaY, 30);
     }
 
-    this.lumaLabel = this.add.text(710, 85, "LUMA", {
+    this.lumaLabel = this.add.text(lumaX, lumaY - 95, "LUMA", {
       fontFamily: "'Press Start 2P', monospace",
-      fontSize: "8px",
+      fontSize: "10px",
       color: "#bc80ff"
     }).setOrigin(0.5).setDepth(91);
   }
 
   showLumaDialogue(text, onComplete) {
     this.lumaDialogueBg.clear();
-    this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.9);
-    this.lumaDialogueBg.fillRoundedRect(655, 165, 230, 120, 8);
+    this.lumaDialogueBg.fillStyle(0x1a1a2e, 0.95);
+    this.lumaDialogueBg.fillRoundedRect(40, 290, 350, 140, 8);
     this.lumaDialogueBg.lineStyle(2, 0xbc80ff, 0.8);
-    this.lumaDialogueBg.strokeRoundedRect(655, 165, 230, 120, 8);
+    this.lumaDialogueBg.strokeRoundedRect(40, 290, 350, 140, 8);
     this.lumaDialogueBg.setAlpha(1);
 
     this.lumaDialogueText.setAlpha(1);
-    this.lumaDialogueText.setPosition(670, 178);
+    this.lumaDialogueText.setPosition(55, 305);
 
     this.typewriterText(this.lumaDialogueText, text, 18, () => {
       if (onComplete) {
