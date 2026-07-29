@@ -741,6 +741,12 @@ export class FinalBossFisherman extends BaseBulletHellScene {
         this.bulletGraphics.lineTo(s.x + Math.cos(botAngle) * s.length, s.y + Math.sin(botAngle) * s.length);
         this.bulletGraphics.strokePath();
 
+        // Draw handles (loops) at the back of the blades
+        const handleAng1 = topAngle + Math.PI;
+        const handleAng2 = botAngle + Math.PI;
+        this.bulletGraphics.strokeCircle(s.x + Math.cos(handleAng1) * 15, s.y + Math.sin(handleAng1) * 15, 10);
+        this.bulletGraphics.strokeCircle(s.x + Math.cos(handleAng2) * 15, s.y + Math.sin(handleAng2) * 15, 10);
+
         if (s.timer <= 0) {
           s.state = "SNAPPING";
           s.timer = 0.5;
@@ -767,6 +773,12 @@ export class FinalBossFisherman extends BaseBulletHellScene {
         this.bulletGraphics.moveTo(s.x - Math.cos(botAngle) * 30, s.y - Math.sin(botAngle) * 30);
         this.bulletGraphics.lineTo(s.x + Math.cos(botAngle) * s.length, s.y + Math.sin(botAngle) * s.length);
         this.bulletGraphics.strokePath();
+
+        // Draw handles (loops) at the back of the blades
+        const handleAng1 = topAngle + Math.PI;
+        const handleAng2 = botAngle + Math.PI;
+        this.bulletGraphics.strokeCircle(s.x + Math.cos(handleAng1) * 15, s.y + Math.sin(handleAng1) * 15, 10);
+        this.bulletGraphics.strokeCircle(s.x + Math.cos(handleAng2) * 15, s.y + Math.sin(handleAng2) * 15, 10);
 
         this.bulletGraphics.fillStyle(0xffffff, 1);
         this.bulletGraphics.fillCircle(s.x, s.y, 4);
