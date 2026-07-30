@@ -1050,6 +1050,8 @@ export class Grave1 extends Phaser.Scene {
   }
 
   startFinalRiddleSequence() {
+    this.inFinalRiddle = true;
+    this.updateLumaGuidance();
     const finalRiddleData = this.cache.json.get("final-riddle");
     if (!finalRiddleData) {
       console.error("Failed to load final-riddle.json");
@@ -1092,6 +1094,11 @@ export class Grave1 extends Phaser.Scene {
   }
 
   showFinalEndingModal() {
+    this.grave1Completed = true;
+    if (this.lumaGuidanceBox) {
+      this.lumaGuidanceBox.show();
+    }
+    this.updateLumaGuidance();
     this.dialogueActive = true;
     if (this.player && this.player.sprite && this.player.sprite.body) {
       this.player.sprite.body.setVelocity(0);
@@ -1373,27 +1380,93 @@ export class Grave1 extends Phaser.Scene {
   updateLumaGuidance() {
     if (!this.lumaGuidanceBox) return;
 
+    let title = "LUMA'S GUIDANCE";
     let objective = "";
     let hint = "";
 
-    if (this.currentArtifactKey === "fish-basket" || this.storyStage === 2) {
-      if (this.currentArtifactKey === "fish-basket") {
-        objective = "Examine the restored artifact.";
-        hint = "Hint: Every restored memory<br/>reveals another path.";
-      } else {
-        objective = "Investigate the Memory Crystal.";
-        hint = "Hint: The fragments answer only<br/>those who seek the truth.";
-      }
+    if (this.grave1Completed) {
+      // Objective 16 (Grave 1 Completed Reflection)
+      title = "LUMA'S FAREWELL";
+      objective = "Objective Complete";
+      hint = "Mang Tomas' story has been<br/>remembered once more.<br/><br/>The sea may forget footprints,<br/>but it never forgets the lives<br/>that sailed upon it.";
+    } else if (this.inFinalRiddle) {
+      // Objective 15 (Final Riddle Active)
+      title = "LUMA'S REFLECTION";
+      objective = "Answer Mang Tomas'<br/>final questions.";
+      hint = "Do not answer with what you<br/>remember.<br/><br/>Answer with what you have<br/>learned.";
+    } else if (this.storyStage === 5) {
+      // Objective 14 (Reflect on story after 4th artifact)
+      title = "LUMA'S REFLECTION";
+      objective = "Reflect on Mang Tomas'<br/>story.";
+      hint = "A restored memory is only<br/>complete when its lesson<br/>is understood.";
+    } else if (this.currentArtifactKey === "daughters-drawing") {
+      // Objective 13 (Drawing restored on floor)
+      title = "LUMA'S OBSERVATION";
+      objective = "Examine the Drawing.";
+      hint = "The final piece has returned.<br/>What remains is not a memory...<br/>but its meaning.";
+    } else if (this.storyStage === 4 && this.currentFragment && this.currentFragment.active) {
+      // Objective 12 (Drawing crystal active)
+      title = "LUMA'S OBSERVATION";
+      objective = "Restore the Memory Crystal.";
+      hint = "Love leaves echoes that<br/>time cannot erase.";
+    } else if (this.storyStage === 4) {
+      // Objective 11 (Find Daughter)
+      title = "LUMA'S OBSERVATION";
+      objective = "Find Mang Tomas'<br/>daughter.";
+      hint = "Children remember with<br/>their hearts before their<br/>words.";
+    } else if (this.currentArtifactKey === "rosary") {
+      // Objective 10 (Rosary restored on floor)
+      title = "LUMA'S OBSERVATION";
+      objective = "Examine the Rosary.";
+      hint = "Hope often lives in the<br/>smallest things we carry.";
+    } else if (this.storyStage === 3 && this.currentFragment && this.currentFragment.active) {
+      // Objective 9 (Rosary crystal active)
+      title = "LUMA'S OBSERVATION";
+      objective = "Restore the Memory Crystal.";
+      hint = "Some memories are carried<br/>through faith.";
     } else if (this.storyStage === 3) {
+      // Objective 8 (Speak with Mang Tomas' wife)
+      title = "LUMA'S OBSERVATION";
+      objective = "Speak with Mang Tomas'<br/>wife.";
+      hint = "The heart remembers what<br/>the mind forgets. She is home.";
+    } else if (this.currentArtifactKey === "weather-warning-flag") {
+      // Objective 7 (Warning Flag restored on floor)
+      title = "LUMA'S OBSERVATION";
+      objective = "Examine the Warning Flag.";
+      hint = "The sea gives life...<br/>but asks for respect.";
+    } else if (this.storyStage === 2 && this.currentFragment && this.currentFragment.active) {
+      // Objective 6 (Warning Flag crystal active)
+      title = "LUMA'S GUIDANCE";
+      objective = "Restore the Memory Crystal.";
+      hint = "Not every warning comes<br/>from fear. Some come from<br/>love.";
+    } else if (this.storyStage === 2) {
+      // Objective 5 (Find Young Fisherman)
+      title = "LUMA'S GUIDANCE";
       objective = "Find the Young Fisherman.";
-      hint = "\"He remembers what the sea<br/>tried to warn them about.\"";
+      hint = "Tthe sea raised its warning. Head South-East";
+    } else if (this.currentArtifactKey === "fish-basket") {
+      // Objective 4 (Fish Basket restored on floor)
+      title = "LUMA'S GUIDANCE";
+      objective = "Examine the Fish Basket.";
+      hint = "Ordinary objects often carry<br/>extraordinary memories.";
+    } else if (this.storyStage === 1 && this.currentFragment && this.currentFragment.active) {
+      // Objective 3 (Fish Basket crystal active)
+      title = "LUMA'S GUIDANCE";
+      objective = "Restore the Memory Crystal.";
+      hint = "Fragments resist being remembered. Face the echoes and recover<br/>what has been lost.";
+    } else if (this.arrivedAtPier || this.talkedToOldFisherman) {
+      // Objective 2 (Arrived at Fishing Dock)
+      title = "LUMA'S GUIDANCE";
+      objective = "Speak with the Old Fisherman.";
+      hint = "The sea remembers those who<br/>respect it. Every story begins<br/>with someone willing to tell it.";
     } else {
-      // Default / storyStage 1
-      objective = "Reach the North Eastern Pier.<br/>Speak with the Old Fisherman.";
-      hint = "Hint: The sea remembers those<br/>who respect it.";
+      // Objective 1 (Entering the Memory)
+      title = "LUMA'S GUIDANCE";
+      objective = "Reach the Eastern Pier.";
+      hint = "An old fisherman waits at the<br/>Fishing Dock. Listen before<br/>you search.";
     }
 
-    this.lumaGuidanceBox.update(objective, hint);
+    this.lumaGuidanceBox.update(objective, hint, title);
   }
 
   generateAIDialogues() {
@@ -1567,6 +1640,18 @@ export class Grave1 extends Phaser.Scene {
       const chunkX = Math.floor(this.player.sprite.x / 320);
       const chunkY = Math.floor(this.player.sprite.y / 320);
       this.exploredChunks.add(`${chunkX},${chunkY}`);
+
+      // Check proximity to Old Fisherman for Objective 2 (Arrived at Eastern Pier)
+      if (this.storyStage === 1 && !this.arrivedAtPier && !this.currentFragment && this.npcs) {
+        const fisherman = this.npcs.getChildren().find(n => n.texture && n.texture.key === "npc-old-fisherman");
+        if (fisherman) {
+          const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, fisherman.x, fisherman.y);
+          if (dist < 200) {
+            this.arrivedAtPier = true;
+            this.updateLumaGuidance();
+          }
+        }
+      }
     }
 
     if (this.minimapCamera && this.minimapCamera.visible) {

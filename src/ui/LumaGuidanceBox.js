@@ -13,15 +13,15 @@ export class LumaGuidanceBox {
     starLeft.className = "star";
     starLeft.textContent = "✦";
     
-    const title = document.createElement("h2");
-    title.textContent = "LUMA'S GUIDANCE";
+    this.title = document.createElement("h2");
+    this.title.textContent = "LUMA'S GUIDANCE";
     
     const starRight = document.createElement("span");
     starRight.className = "star";
     starRight.textContent = "✦";
 
     header.appendChild(starLeft);
-    header.appendChild(title);
+    header.appendChild(this.title);
     header.appendChild(starRight);
 
     // Separator
@@ -34,7 +34,7 @@ export class LumaGuidanceBox {
     
     const diamond = document.createElement("span");
     diamond.className = "diamond";
-    diamond.textContent = "♦";
+    diamond.textContent = "";
     
     this.objectiveText = document.createElement("p");
     
@@ -58,7 +58,10 @@ export class LumaGuidanceBox {
     document.getElementById("game-container")?.appendChild(this.container) || document.body.appendChild(this.container);
   }
 
-  update(objectiveHTML, hintTextHTML = "") {
+  update(objectiveHTML, hintTextHTML = "", titleText = "LUMA'S GUIDANCE") {
+    if (this.title) {
+      this.title.textContent = titleText;
+    }
     this.objectiveText.innerHTML = objectiveHTML;
     
     if (hintTextHTML) {
