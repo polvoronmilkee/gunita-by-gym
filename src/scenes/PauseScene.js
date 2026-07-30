@@ -114,16 +114,62 @@ export class PauseScene extends Phaser.Scene {
 
     const handleResume = () => {
       playClickSfx();
-      this.destroyMenu();
-      this.scene.stop();
-      if (this.parentScene) {
-        if (this.parentScene.input && this.parentScene.input.keyboard) {
-          this.parentScene.input.keyboard.resetKeys();
-        }
-        this.scene.resume(this.parentScene.scene.key);
-      } else {
-        this.scene.resume("CampoLunanScene");
+      if (this.root) {
+        this.root.style.display = "none";
       }
+
+      const countdowns = ["3", "2", "1", "GO!"];
+      let countIndex = 0;
+
+      // Create a premium retro-glowing countdown text
+      const countdownText = this.add.text(640, 360, "3", {
+        font: "bold 96px 'Courier New', Courier, monospace",
+        fill: "#f7e8c3",
+        stroke: "#9c6c28",
+        strokeThickness: 8
+      }).setOrigin(0.5);
+
+      countdownText.setShadow(0, 0, '#f7e8c3', 15, true, true);
+
+      const runCount = () => {
+        if (countIndex < countdowns.length) {
+          countdownText.setText(countdowns[countIndex]);
+          countdownText.setScale(0.5);
+          countdownText.setAlpha(0);
+
+          this.tweens.add({
+            targets: countdownText,
+            scaleX: 1.2,
+            scaleY: 1.2,
+            alpha: 1,
+            duration: 250,
+            yoyo: true,
+            hold: 500,
+            ease: "Back.easeOut",
+            onComplete: () => {
+              countIndex++;
+              setTimeout(runCount, 250);
+            }
+          });
+          if (this.parentScene && this.parentScene.audioManager) {
+            this.parentScene.audioManager.playHoverSfx?.();
+          }
+        } else {
+          countdownText.destroy();
+          this.destroyMenu();
+          this.scene.stop();
+          if (this.parentScene) {
+            if (this.parentScene.input && this.parentScene.input.keyboard) {
+              this.parentScene.input.keyboard.resetKeys();
+            }
+            this.scene.resume(this.parentScene.scene.key);
+          } else {
+            this.scene.resume("CampoLunanScene");
+          }
+        }
+      };
+
+      runCount();
     };
 
     closeBtn.addEventListener("click", handleResume);
