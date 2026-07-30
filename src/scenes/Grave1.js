@@ -331,7 +331,7 @@ export class Grave1 extends Phaser.Scene {
     if (this.isNewGame) {
       const charsSpawnLayer = map.getObjectLayer("CHARS_SPAWNS");
       if (charsSpawnLayer && charsSpawnLayer.objects) {
-        const rgObj = charsSpawnLayer.objects.find((o) => o.name === "npc-RANDOM-GUY");
+        const rgObj = charsSpawnLayer.objects.find((o) => o.name === "vino-start");
         if (rgObj) {
           spawnX = rgObj.x;
           spawnY = rgObj.y;
