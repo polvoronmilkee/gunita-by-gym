@@ -6,7 +6,7 @@ import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
 import { getCache, setCache, getEssence, setEssence } from "../save.js";
-import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles, addInventoryItem } from "../utils/api.js";
+import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles, addInventoryItem, loadPlayerInventory } from "../utils/api.js";
 import characterData from "../data/characters.json";
 import { AudioManager } from "../utils/audioManager.js";
 import { TransitionSystem } from "../systems/TransitionSystem.js";
@@ -497,6 +497,7 @@ export class Grave1 extends Phaser.Scene {
     this.map = map;
 
     // Sync database position if available (skip if it's a new game to prevent snapping to old saved coordinates)
+    // Sync database position and reconstruct progress based on inventory
     if (!this.isNewGame && cache && cache.player_id) {
       loadGameState(cache.player_id)
         .then(serverState => {
@@ -518,9 +519,29 @@ export class Grave1 extends Phaser.Scene {
               }
             }
           }
+          return loadPlayerInventory(cache.player_id);
+        })
+        .then(items => {
+          if (items && Array.isArray(items)) {
+            const keys = items.map(item => item.item_key);
+            console.log("Loaded inventory items:", keys);
+            if (keys.includes("daughters-drawing")) {
+              this.storyStage = 5;
+            } else if (keys.includes("rosary")) {
+              this.storyStage = 4;
+            } else if (keys.includes("fish-basket")) {
+              this.storyStage = 3;
+            } else if (keys.includes("red-flag")) {
+              this.storyStage = 2;
+            } else {
+              this.storyStage = 1;
+            }
+            console.log("Reconstructed storyStage from inventory:", this.storyStage);
+            this.updateLumaGuidance();
+          }
         })
         .catch(err => {
-          console.warn("Background coordinates validation failed:", err.message);
+          console.warn("Background loading and validation failed:", err.message);
         });
     }
 
@@ -918,6 +939,16 @@ export class Grave1 extends Phaser.Scene {
           this.currentArtifact.setDepth(1);
           this.currentArtifactKey = artifactKey;
           this.updateLumaGuidance();
+
+          // Save item to player's inventory immediately so progress is persistent
+          const cache = getCache();
+          const inventoryId = cache ? cache.inventory_id : null;
+          if (inventoryId && artifactKey) {
+            addInventoryItem(inventoryId, artifactKey, "memory_fragment");
+          }
+
+          // Trigger autosave/sync immediately
+          this.savePosition();
 
           this.startDialogueSequence([{ speaker: "Vino", text: dialogueText }]);
         }, () => {

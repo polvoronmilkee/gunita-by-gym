@@ -304,8 +304,37 @@ export async function resetPlayerRiddles(playerId) {
       console.warn("Error resetting riddles on server:", err);
     }
   }
-  
-  // No local state reset needed for now, assuming server reset is primary
-  // or that local gamestate will be overridden upon new run.
+}
+
+/**
+ * Load the player's inventory items from server or local cache.
+ */
+export async function loadPlayerInventory(playerId) {
+  const online = await isServerOnline();
+  if (online && playerId && !playerId.startsWith("local_")) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/inventory/${playerId}`).then(r => r.json());
+      localStorage.setItem(`gunita_local_inventory_${playerId}`, JSON.stringify(response.items || []));
+      return response.items || [];
+    } catch (err) {
+      console.warn("Failed to load inventory from server, trying local cache:", err.message);
+    }
+  }
+
+  // Offline / local cache fallback
+  const localItems = JSON.parse(localStorage.getItem(`gunita_local_inventory_${playerId}`) || "[]");
+  const localAll = JSON.parse(localStorage.getItem("gunita_local_inventory_items") || "[]");
+  const filtered = localAll
+    .filter(item => item.inventory_id === playerId)
+    .map(item => ({ item_key: item.item_key, item_type: item.item_type }));
+
+  const combined = [...localItems];
+  filtered.forEach(f => {
+    if (!combined.some(c => c.item_key === f.item_key)) {
+      combined.push(f);
+    }
+  });
+
+  return combined;
 }
 
