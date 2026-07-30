@@ -359,8 +359,8 @@ export class Grave1 extends Phaser.Scene {
     const collisionGroup = map.getObjectLayer("collsions") || map.getObjectLayer("collisions");
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
-        // Skip Wasteland region object (ID 509) so it doesn't create solid collision walls around the rain area
-        if (obj.id === 509 || (obj.name && obj.name.toLowerCase() === "wasteland")) {
+        // Skip Wasteland (ID 509) & Forest darkens (ID 512) region objects so they don't create solid collision walls
+        if (obj.id === 509 || obj.id === 512 || (obj.name && (obj.name.toLowerCase() === "wasteland" || obj.name.toLowerCase() === "forest-darkens"))) {
           return;
         }
 
@@ -649,18 +649,111 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-    // Periodic Thunder Lightning & Camera Shake Effects
+    // --- DYNAMIC FOREST DARKENING & RAIN / LIGHTNING SYSTEM FROM TILED MAP (ID 512 / "forest-darkens") ---
+    let forestObj = null;
+    if (map.objects) {
+      map.objects.forEach(layer => {
+        if (layer.objects) {
+          const found = layer.objects.find(o => o.id === 512 || (o.name && o.name.toLowerCase() === "forest-darkens"));
+          if (found) forestObj = found;
+        }
+      });
+    }
+
+    if (!forestObj) {
+      const objLayers = map.getObjectLayerNames ? map.getObjectLayerNames() : [];
+      for (const name of objLayers) {
+        const layer = map.getObjectLayer(name);
+        if (layer && layer.objects) {
+          const found = layer.objects.find(o => o.id === 512 || (o.name && o.name.toLowerCase() === "forest-darkens"));
+          if (found) {
+            forestObj = found;
+            break;
+          }
+        }
+      }
+    }
+
+    if (forestObj && forestObj.polygon && forestObj.polygon.length > 0) {
+      const originX = forestObj.x;
+      const originY = forestObj.y;
+      const forestPolygonPoints = forestObj.polygon.map(p => ({
+        x: originX + p.x,
+        y: originY + p.y
+      }));
+
+      const xs = forestPolygonPoints.map(p => p.x);
+      const ys = forestPolygonPoints.map(p => p.y);
+      const minX = Math.min(...xs);
+      const maxX = Math.max(...xs);
+      const minY = Math.min(...ys);
+      const maxY = Math.max(...ys);
+      const bboxW = maxX - minX;
+      const bboxH = maxY - minY;
+
+      const forestMaskGraphics = this.make.graphics();
+      forestMaskGraphics.fillStyle(0xffffff);
+      forestMaskGraphics.beginPath();
+      forestMaskGraphics.moveTo(forestPolygonPoints[0].x, forestPolygonPoints[0].y);
+      for (let i = 1; i < forestPolygonPoints.length; i++) {
+        forestMaskGraphics.lineTo(forestPolygonPoints[i].x, forestPolygonPoints[i].y);
+      }
+      forestMaskGraphics.closePath();
+      forestMaskGraphics.fillPath();
+      const forestMask = forestMaskGraphics.createGeometryMask();
+
+      this.forestRainTileSprite = this.add.tileSprite(minX, minY, bboxW, bboxH, "rain-tile");
+      this.forestRainTileSprite.setOrigin(0, 0);
+      this.forestRainTileSprite.setAlpha(0.65);
+      this.forestRainTileSprite.setDepth(9999);
+      this.forestRainTileSprite.setMask(forestMask);
+
+      const forestPolyGeom = new Phaser.Geom.Polygon(forestPolygonPoints);
+      this.forestPolyGeom = forestPolyGeom;
+      this.forestRainSpritesGroup = this.add.group();
+
+      for (let rx = minX + 32; rx < maxX; rx += 96) {
+        for (let ry = minY + 32; ry < maxY; ry += 96) {
+          if (Phaser.Geom.Polygon.Contains(forestPolyGeom, rx, ry)) {
+            const s = this.add.sprite(rx, ry, "rain");
+            s.setOrigin(0.5, 0.5);
+            s.setAlpha(0.7);
+            s.setDepth(9999);
+            s.play("rain-fall");
+            s.setMask(forestMask);
+            this.forestRainSpritesGroup.add(s);
+          }
+        }
+      }
+    }
+
+    // Scary Forest Dark Overlay (ID 512)
+    const { width: scrW, height: scrH } = this.scale;
+    this.forestDarkOverlay = this.add.graphics();
+    this.forestDarkOverlay.fillStyle(0x04020a, 1);
+    this.forestDarkOverlay.fillRect(0, 0, scrW, scrH);
+    this.forestDarkOverlay.setScrollFactor(0);
+    this.forestDarkOverlay.setDepth(997);
+    this.forestDarkOverlay.setAlpha(0);
+    this.minimapCamera.ignore(this.forestDarkOverlay);
+
+    // Periodic Thunder Lightning & Camera Shake Effects for Wasteland (ID 509) and Forest (ID 512)
     this.time.addEvent({
       delay: Phaser.Math.Between(7000, 14000),
       loop: true,
       callback: () => {
-        if (this.wastelandPolyGeom && this.player && this.player.sprite) {
-          const isInside = Phaser.Geom.Polygon.Contains(
+        if (this.player && this.player.sprite) {
+          const inWasteland = this.wastelandPolyGeom && Phaser.Geom.Polygon.Contains(
             this.wastelandPolyGeom,
             this.player.sprite.x,
             this.player.sprite.y
           );
-          if (isInside) {
+          const inForest = this.forestPolyGeom && Phaser.Geom.Polygon.Contains(
+            this.forestPolyGeom,
+            this.player.sprite.x,
+            this.player.sprite.y
+          );
+          if (inWasteland || inForest) {
             // Flash camera white for lightning effect
             this.cameras.main.flash(350, 240, 248, 255);
             // Camera shake effect
@@ -1218,23 +1311,37 @@ export class Grave1 extends Phaser.Scene {
       this.rainTileSprite.tilePositionY += 12;
       this.rainTileSprite.tilePositionX -= 3;
     }
+    if (this.forestRainTileSprite) {
+      this.forestRainTileSprite.tilePositionY += 12;
+      this.forestRainTileSprite.tilePositionX -= 3;
+    }
 
     if (this.player && this.player.sprite) {
       // Dynamic depth sorting: Vino's depth updates dynamically according to Y position so he walks in front of lower objects & behind taller objects
       this.player.sprite.setDepth(this.player.sprite.y);
 
-      // Rain and Thunder Audio SFX triggering when player is inside the Wasteland region
-      if (this.wastelandPolyGeom) {
-        const inWasteland = Phaser.Geom.Polygon.Contains(
-          this.wastelandPolyGeom,
-          this.player.sprite.x,
-          this.player.sprite.y
-        );
-        if (inWasteland) {
-          this.audioManager?.playRainThunder();
-        } else {
-          this.audioManager?.stopRainThunder();
-        }
+      const inWasteland = this.wastelandPolyGeom && Phaser.Geom.Polygon.Contains(
+        this.wastelandPolyGeom,
+        this.player.sprite.x,
+        this.player.sprite.y
+      );
+      const inForest = this.forestPolyGeom && Phaser.Geom.Polygon.Contains(
+        this.forestPolyGeom,
+        this.player.sprite.x,
+        this.player.sprite.y
+      );
+
+      // Rain and Thunder Audio SFX triggering when player is inside the Wasteland (ID 509) or Forest (ID 512)
+      if (inWasteland || inForest) {
+        this.audioManager?.playRainThunder();
+      } else {
+        this.audioManager?.stopRainThunder();
+      }
+
+      // Smooth Darkening Transition for Scary Forest Effect (ID 512)
+      if (this.forestDarkOverlay) {
+        const targetAlpha = inForest ? 0.72 : 0;
+        this.forestDarkOverlay.alpha = Phaser.Math.Linear(this.forestDarkOverlay.alpha, targetAlpha, 0.05);
       }
 
       const chunkX = Math.floor(this.player.sprite.x / 320);
