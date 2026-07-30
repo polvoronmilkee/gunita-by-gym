@@ -117,6 +117,9 @@ export class PauseScene extends Phaser.Scene {
       this.destroyMenu();
       this.scene.stop();
       if (this.parentScene) {
+        if (this.parentScene.input && this.parentScene.input.keyboard) {
+          this.parentScene.input.keyboard.resetKeys();
+        }
         this.scene.resume(this.parentScene.scene.key);
       } else {
         this.scene.resume("CampoLunanScene");
@@ -243,15 +246,17 @@ export class PauseScene extends Phaser.Scene {
       document.activeElement.blur();
     }
 
-    this.menuItems = [resumeBtn, memoryBtn, musicBtn, sfxBtn, menuBtn];
+    this.menuItems = [resumeBtn, guideBtn, musicBtn, sfxBtn, menuBtn];
     this.selectedIndex = 0;
     
     // Add hover listeners to sync index if mouse is used
     this.menuItems.forEach((btn, index) => {
-      btn.addEventListener("pointerenter", () => {
-        this.selectedIndex = index;
-        this.updateMenuSelection();
-      });
+      if (btn) {
+        btn.addEventListener("pointerenter", () => {
+          this.selectedIndex = index;
+          this.updateMenuSelection();
+        });
+      }
     });
     
     this.updateMenuSelection();
@@ -268,6 +273,7 @@ export class PauseScene extends Phaser.Scene {
 
   updateMenuSelection() {
     this.menuItems.forEach((btn, index) => {
+      if (!btn) return;
       if (index === this.selectedIndex) {
         btn.classList.add("selected");
         btn.style.borderColor = "#f7e8c3";
