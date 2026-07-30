@@ -236,7 +236,12 @@ export class PauseScene extends Phaser.Scene {
       }
     };
 
-    this.input.keyboard.on("keydown", this.handleKeyDown);
+    window.addEventListener("keydown", this.handleKeyDown);
+
+    // Blur any focused DOM element (like the pause button) so focus returns to the window
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+      document.activeElement.blur();
+    }
 
     this.menuItems = [resumeBtn, memoryBtn, musicBtn, sfxBtn, menuBtn];
     this.selectedIndex = 0;
@@ -256,9 +261,9 @@ export class PauseScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown);
 
     this.canInput = false;
-    this.time.delayedCall(200, () => {
+    setTimeout(() => {
       this.canInput = true;
-    });
+    }, 200);
   }
 
   updateMenuSelection() {
@@ -291,8 +296,8 @@ export class PauseScene extends Phaser.Scene {
   }
 
   destroyMenu() {
-    if (this.handleKeyDown && this.input && this.input.keyboard) {
-      this.input.keyboard.off("keydown", this.handleKeyDown);
+    if (this.handleKeyDown) {
+      window.removeEventListener("keydown", this.handleKeyDown);
       this.handleKeyDown = null;
     }
     if (this.root) {
