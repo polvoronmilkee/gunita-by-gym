@@ -167,8 +167,13 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys("W,S,A,D,SPACE,ENTER");
     this.selectedButtonIndex = 0;
 
-    // Global pause and escape listeners (both P and ESC trigger the escape confirmation modal in bullet hell)
-    this.input.keyboard.on('keydown-P', this.showEscapeConfirmation, this);
+    // Global pause and escape listeners (ESC triggers the escape confirmation modal)
+    this.cheatWin = () => {
+      this.crystalHP = 0;
+      this.updateCrystalHPUI();
+      this.victorySequence();
+    };
+    this.input.keyboard.on('keydown-P', this.cheatWin, this);
     this.input.keyboard.on('keydown-ESC', this.showEscapeConfirmation, this);
 
     // Mount floating retro buttons (Pause ⏸ & Back ←) using gunita-pause-btn UI style
@@ -194,16 +199,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.backBtnDom.addEventListener("click", () => this.showEscapeConfirmation());
     container.appendChild(this.backBtnDom);
 
-    // Debug shortcuts for testing
-    this.input.keyboard.on("keydown-U", () => {
-      this.cleanupAudioAndTimers();
-      this.scene.start("tutorial-bullet-hell", { returnScene: "Grave1" });
-    });
 
-    this.input.keyboard.on("keydown-I", () => {
-      this.cleanupAudioAndTimers();
-      this.scene.start("final-boss-fisherman", { returnScene: "Grave1" });
-    });
 
     this.events.on('resume', () => {
       this.isPaused = false;
@@ -224,7 +220,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.game.events.emit("game-ready");
 
     this.events.once("shutdown", () => {
-      this.input.keyboard.off('keydown-P', this.showEscapeConfirmation, this);
+      this.input.keyboard.off('keydown-P', this.cheatWin, this);
       this.input.keyboard.off('keydown-ESC', this.showEscapeConfirmation, this);
       if (this.pauseBtnDom) { this.pauseBtnDom.remove(); this.pauseBtnDom = null; }
       if (this.backBtnDom) { this.backBtnDom.remove(); this.backBtnDom = null; }
@@ -1400,15 +1396,19 @@ export class BaseBulletHellScene extends Phaser.Scene {
       const countdowns = ["3", "2", "1", "GO!"];
       let countIndex = 0;
 
-      // Create a premium retro-glowing countdown text
-      const countdownText = this.add.text(640, 360, "3", {
+      // Center of the arena
+      const cx = this.arena.x + this.arena.w / 2;
+      const cy = this.arena.y + this.arena.h / 2;
+
+      // Create a premium retro countdown text
+      const countdownText = this.add.text(cx, cy, "3", {
         font: "bold 96px 'Courier New', Courier, monospace",
         fill: "#f7e8c3",
         stroke: "#9c6c28",
         strokeThickness: 8
       }).setOrigin(0.5);
 
-      countdownText.setShadow(0, 0, '#f7e8c3', 15, true, true);
+      countdownText.setShadow(3, 3, 'rgba(0, 0, 0, 0.6)', 2, false, true);
       countdownText.setDepth(2000);
 
       const runCount = () => {

@@ -209,15 +209,7 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-P", () => this.handlePause());
     this.input.keyboard.on("keydown-ESC", () => this.handlePause());
 
-    this.input.keyboard.on("keydown-U", () => {
-      if (this.audioManager) this.audioManager.stopMusic();
-      this.scene.start("tutorial-bullet-hell", { returnScene: "FamilyHomeScene" });
-    });
 
-    this.input.keyboard.on("keydown-I", () => {
-      if (this.audioManager) this.audioManager.stopMusic();
-      this.scene.start("final-boss-fisherman", { returnScene: "FamilyHomeScene" });
-    });
 
     // Advance dialogue sequence with E or SPACE
     const handleInteract = () => {

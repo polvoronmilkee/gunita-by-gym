@@ -592,15 +592,7 @@ export class Grave1 extends Phaser.Scene {
       this.scene.pause();
     });
 
-    this.input.keyboard.on("keydown-U", () => {
-      if (this.audioManager) this.audioManager.stopMusic();
-      this.scene.start("tutorial-bullet-hell", { returnScene: "Grave1" });
-    });
 
-    this.input.keyboard.on("keydown-I", () => {
-      if (this.audioManager) this.audioManager.stopMusic();
-      this.scene.start("final-boss-fisherman", { returnScene: "Grave1" });
-    });
 
     this.mapOverlay = new MapOverlay(this);
 
@@ -1950,7 +1942,9 @@ export class Grave1 extends Phaser.Scene {
                 this.physics.resume();
               }
               this.audioManager?.playTrack("village-v1");
-              onCorrect();
+              this.time.delayedCall(100, () => {
+                onCorrect();
+              });
           },
           onDeath: async () => {
               this.dialogueActive = false;

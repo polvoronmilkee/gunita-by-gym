@@ -429,15 +429,7 @@ export class CampoLunanScene extends Phaser.Scene {
       this.scene.pause();
     });
 
-    this.input.keyboard.on("keydown-U", () => {
-      if (this.audioManager) this.audioManager.stopMusic();
-      this.scene.start("tutorial-bullet-hell", { returnScene: "CampoLunanScene" });
-    });
 
-    this.input.keyboard.on("keydown-I", () => {
-      if (this.audioManager) this.audioManager.stopMusic();
-      this.scene.start("final-boss-fisherman", { returnScene: "CampoLunanScene" });
-    });
 
     this.mapOverlay = new MapOverlay(this);
 
