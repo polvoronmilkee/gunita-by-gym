@@ -1,8 +1,8 @@
 import { AUDIO_SETTINGS } from "../utils/audioSettings.js";
 
-const clampIndex = (value, max) => {
+const clampIndex = (value, max, defaultValue = 1) => {
   if (!Number.isFinite(value) || value < 0 || value >= max) {
-    return 0;
+    return defaultValue;
   }
   return Math.floor(value);
 };
@@ -62,7 +62,7 @@ export class MenuAudioController {
     const fallback = {
       musicEnabled: AUDIO_SETTINGS.defaults.musicEnabled,
       sfxEnabled: AUDIO_SETTINGS.defaults.sfxEnabled,
-      trackIndex: 0,
+      trackIndex: 1,
     };
 
     try {
@@ -81,7 +81,7 @@ export class MenuAudioController {
           typeof parsed.sfxEnabled === "boolean"
             ? parsed.sfxEnabled
             : fallback.sfxEnabled,
-        trackIndex: clampIndex(parsed.trackIndex, AUDIO_SETTINGS.tracks.length),
+        trackIndex: clampIndex(parsed.trackIndex, AUDIO_SETTINGS.tracks.length, 1),
       };
     } catch {
       return fallback;
