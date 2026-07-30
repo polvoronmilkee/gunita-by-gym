@@ -99,7 +99,7 @@ async function initializeMenuScreen() {
   await Promise.all(menuAssetUrls.map((src) => preloadImage(src)));
 
   loadingScreen.hide();
-  menuScreen?.classList.remove("hidden");
+  setMenuVisible(true);
 }
 
 initializeMenuScreen();
