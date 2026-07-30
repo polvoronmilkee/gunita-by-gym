@@ -118,18 +118,51 @@ export class PauseScene extends Phaser.Scene {
         this.root.style.display = "none";
       }
 
+      const isBulletHell = Boolean(
+        this.parentScene && (this.parentScene.arena || this.parentScene.crystalEnemy || this.parentScene.soul)
+      );
+
+      const finishResume = () => {
+        this.destroyMenu();
+        this.scene.stop();
+        if (this.parentScene) {
+          if (this.parentScene.input && this.parentScene.input.keyboard) {
+            this.parentScene.input.keyboard.resetKeys();
+          }
+          this.scene.resume(this.parentScene.scene.key);
+          if (this.parentScene.physics && typeof this.parentScene.physics.resume === "function") {
+            this.parentScene.physics.resume();
+          }
+        } else {
+          this.scene.resume("CampoLunanScene");
+        }
+      };
+
+      if (!isBulletHell) {
+        finishResume();
+        return;
+      }
+
       const countdowns = ["3", "2", "1", "GO!"];
       let countIndex = 0;
 
-      // Create a premium retro-glowing countdown text
-      const countdownText = this.add.text(640, 360, "3", {
+      // Check if parent scene has an arena (bullet hell)
+      let cx = 640;
+      let cy = 360;
+      if (this.parentScene && this.parentScene.arena && typeof this.parentScene.arena.x === "number" && typeof this.parentScene.arena.w === "number") {
+        cx = this.parentScene.arena.x + this.parentScene.arena.w / 2;
+        cy = this.parentScene.arena.y + this.parentScene.arena.h / 2;
+      }
+
+      // Create a premium retro countdown text
+      const countdownText = this.add.text(cx, cy, "3", {
         font: "bold 96px 'Courier New', Courier, monospace",
         fill: "#f7e8c3",
         stroke: "#9c6c28",
         strokeThickness: 8
       }).setOrigin(0.5);
 
-      countdownText.setShadow(0, 0, '#f7e8c3', 15, true, true);
+      countdownText.setShadow(3, 3, 'rgba(0, 0, 0, 0.6)', 2, false, true);
 
       const runCount = () => {
         if (countIndex < countdowns.length) {
@@ -156,16 +189,7 @@ export class PauseScene extends Phaser.Scene {
           }
         } else {
           countdownText.destroy();
-          this.destroyMenu();
-          this.scene.stop();
-          if (this.parentScene) {
-            if (this.parentScene.input && this.parentScene.input.keyboard) {
-              this.parentScene.input.keyboard.resetKeys();
-            }
-            this.scene.resume(this.parentScene.scene.key);
-          } else {
-            this.scene.resume("CampoLunanScene");
-          }
+          finishResume();
         }
       };
 

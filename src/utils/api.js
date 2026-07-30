@@ -332,10 +332,19 @@ export async function loadPlayerInventory(playerId) {
   }
 
   // Offline / local cache fallback
+  const localPlayers = JSON.parse(localStorage.getItem("gunita_local_players") || "{}");
+  let inventoryId = playerId;
+  for (const key in localPlayers) {
+    if (localPlayers[key].id === playerId) {
+      inventoryId = localPlayers[key].inventory_id;
+      break;
+    }
+  }
+
   const localItems = JSON.parse(localStorage.getItem(`gunita_local_inventory_${playerId}`) || "[]");
   const localAll = JSON.parse(localStorage.getItem("gunita_local_inventory_items") || "[]");
   const filtered = localAll
-    .filter(item => item.inventory_id === playerId)
+    .filter(item => item.inventory_id === inventoryId || item.inventory_id === playerId)
     .map(item => ({ item_key: item.item_key, item_type: item.item_type }));
 
   const combined = [...localItems];

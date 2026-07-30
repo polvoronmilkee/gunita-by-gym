@@ -95,11 +95,10 @@ function preloadImage(src) {
   });
 }
 
-async function initializeMenuScreen() {
-  await Promise.all(menuAssetUrls.map((src) => preloadImage(src)));
-
+function initializeMenuScreen() {
   loadingScreen.hide();
   setMenuVisible(true);
+  Promise.all(menuAssetUrls.map((src) => preloadImage(src))).catch(() => {});
 }
 
 initializeMenuScreen();
@@ -297,6 +296,15 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
 });
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
+  setCache({
+    player_id: "guest_account",
+    username: "Guest",
+    is_guest: true,
+    current_world: "Lunan",
+    current_area: "Campo Lunan",
+    position_x: 320,
+    position_y: 360,
+  });
   startGame("CampoLunanScene");
 });
 

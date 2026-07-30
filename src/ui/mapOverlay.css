@@ -4,9 +4,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 100;
   pointer-events: none;
   transition: opacity 0.2s ease;
@@ -20,12 +17,10 @@
 .map-modal {
   /* Transparent center so Phaser's camera shows through */
   border: 4px solid #ffffff;
-  width: 500px;
-  height: 400px;
-  position: relative;
+  position: absolute;
   overflow: visible;
   box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 
 .map-title-container {

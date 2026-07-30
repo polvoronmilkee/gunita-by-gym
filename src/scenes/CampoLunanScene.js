@@ -685,6 +685,19 @@ export class CampoLunanScene extends Phaser.Scene {
         }
       }
 
+      const cache = getCache();
+      if (cache?.is_guest || cache?.player_id === "guest_account") {
+        this.dialogue.showText(
+          "Grave I",
+          "This Memory World is sealed for Guest accounts. Register a Codename in the Main Menu to enter World 1!",
+          () => {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        );
+        return;
+      }
+
       let step = 0;
       const steps = [
         {
@@ -696,7 +709,7 @@ export class CampoLunanScene extends Phaser.Scene {
           text: '"The sea remembers... but the village does not."',
         },
         {
-          speaker: "Campo Lunan",
+          speaker: "Grave I",
           text: "A forgotten fisherman waits beyond these echoes. Discover the memories he left behind and reveal the truth hidden beneath the waves.",
         },
         { speaker: "Campo Lunan", text: "Will you answer the sea's call?" },
@@ -718,10 +731,10 @@ export class CampoLunanScene extends Phaser.Scene {
               // Keep dialogueActive = true so Vino stays still during portal transition!
 
               // Set the area cache to Grave 1 before transitioning
-              const cache = getCache();
-              if (cache) {
+              const currentCache = getCache();
+              if (currentCache) {
                 setCache({
-                  ...cache,
+                  ...currentCache,
                   current_area: "Grave 1",
                   position_x: 1137,
                   position_y: 550,
@@ -751,38 +764,50 @@ export class CampoLunanScene extends Phaser.Scene {
       runDialogue();
     };
 
-    const triggerFrogDialogue = () => {
+    this.hasTalkedToCreatures = false;
+
+    const triggerCreaturesDialogue = () => {
       this.dialogueActive = true;
       if (this.player?.sprite?.body) {
         this.player.sprite.body.setVelocity(0);
         this.player.sprite.anims.stop();
       }
 
-      this.dialogue.showText(
-        "Pink Frog",
-        "Ribbit... Did you bring any flies?",
-        () => {
-          this.dialogue.hide();
-          this.dialogueActive = false;
-        },
-      );
-    };
-
-    const triggerShroomDialogue = () => {
-      this.dialogueActive = true;
-      if (this.player?.sprite?.body) {
-        this.player.sprite.body.setVelocity(0);
-        this.player.sprite.anims.stop();
+      if (this.hasTalkedToCreatures) {
+        this.dialogue.showText(
+          "Vino",
+          "Maybe not a good idea",
+          () => {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        );
+        return;
       }
 
-      this.dialogue.showText(
-        "Poison Shroom",
-        "I wouldn't touch me if I were you...",
-        () => {
+      const sequence = [
+        { speaker: "Pink Frog", text: "DE WAYYYY!!!!!" },
+        { speaker: "Poison Shroom", text: "the frog has been saying that for a while i just wanna sleep" },
+        { speaker: "Poison Shroom", text: "peanut or done?" },
+        { speaker: "Vino", text: "those two are weird better leave them be" }
+      ];
+
+      let step = 0;
+      const runStep = () => {
+        if (step < sequence.length) {
+          const current = sequence[step];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            step++;
+            runStep();
+          });
+        } else {
           this.dialogue.hide();
           this.dialogueActive = false;
-        },
-      );
+          this.hasTalkedToCreatures = true;
+        }
+      };
+
+      runStep();
     };
 
     // Keyboard bindings for dialogue & interaction
@@ -791,10 +816,8 @@ export class CampoLunanScene extends Phaser.Scene {
         this.dialogue.onComplete();
       } else if (this.isNearGrave) {
         triggerGraveDialogue();
-      } else if (this.isNearFrog) {
-        triggerFrogDialogue();
-      } else if (this.isNearShroom) {
-        triggerShroomDialogue();
+      } else if (this.isNearCreatures) {
+        triggerCreaturesDialogue();
       }
     });
 
@@ -923,7 +946,7 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     }
 
-    // Distance checks for NPCs
+    // Distance checks for NPCs / Creatures
     const distFrog = Phaser.Math.Distance.Between(
       this.player.sprite.x,
       this.player.sprite.y,
@@ -936,9 +959,16 @@ export class CampoLunanScene extends Phaser.Scene {
       this.poisonShroom.x,
       this.poisonShroom.y,
     );
+    const midX = (this.pinkFrog.x + this.poisonShroom.x) / 2;
+    const midY = (this.pinkFrog.y + this.poisonShroom.y) / 2;
+    const distMid = Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      midX,
+      midY,
+    );
 
-    this.isNearFrog = distFrog < 40;
-    this.isNearShroom = distShroom < 40;
+    this.isNearCreatures = distMid < 55 || distFrog < 45 || distShroom < 45;
 
     if (nearestDist < 40) {
       nearGrave = true;
@@ -946,15 +976,10 @@ export class CampoLunanScene extends Phaser.Scene {
       if (this.interactionPrompt && closestGravePos) {
         this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE", -15);
       }
-    } else if (this.isNearFrog) {
-      this.hud.setStatus("PRESS [E] TO TALK TO THE PINK FROG");
+    } else if (this.isNearCreatures) {
+      this.hud.setStatus("PRESS [E] TO TALK TO THE CREATURES");
       if (this.interactionPrompt) {
-        this.interactionPrompt.show({ x: this.pinkFrog.x, y: this.pinkFrog.y - 20 }, "E", "TALK");
-      }
-    } else if (this.isNearShroom) {
-      this.hud.setStatus("PRESS [E] TO TALK TO THE POISON SHROOM");
-      if (this.interactionPrompt) {
-        this.interactionPrompt.show({ x: this.poisonShroom.x, y: this.poisonShroom.y - 20 }, "E", "TALK");
+        this.interactionPrompt.show({ x: midX, y: midY - 20 }, "E", "TALK");
       }
     } else {
       this.hud.setStatus(

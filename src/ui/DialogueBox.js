@@ -103,13 +103,38 @@ export class DialogueBox {
     const container = document.getElementById("game-container") || document.body;
     container.appendChild(this.root);
 
-    // Initial setup
-    this.showText(options.speaker ?? "Vino", options.text ?? "", this.onComplete, options.portrait, options.theme);
+    this.isTyping = false;
+    this.fullFormattedText = "";
+    this.typewriterInterval = null;
 
-    // Click handler
-    this.root.addEventListener("click", () => {
-      this.onComplete();
-    });
+    // Initial setup
+    if (options.text) {
+      this.showText(options.speaker ?? "Vino", options.text ?? "", this.onComplete, options.portrait, options.theme);
+    }
+
+    // Click handler: if typing, complete instantly; if finished, trigger onComplete
+    const handleAdvance = (e) => {
+      if (this.root.style.display === "none") return;
+      if (e) e.stopPropagation();
+      if (this.isTyping) {
+        this.finishTypewriter();
+      } else {
+        if (this.onComplete) this.onComplete();
+      }
+    };
+
+    this.root.addEventListener("click", handleAdvance);
+
+    // Global Key Listener for Space / Enter / E when dialogue is active
+    this.keydownHandler = (e) => {
+      if (this.root.style.display === "none") return;
+      if (e.key === " " || e.key === "Enter" || e.key === "e" || e.key === "E") {
+        e.preventDefault();
+        e.stopPropagation();
+        handleAdvance();
+      }
+    };
+    document.addEventListener("keydown", this.keydownHandler);
 
     // Scene cleanup
     this.handleShutdown = () => this.destroy();
@@ -153,21 +178,95 @@ export class DialogueBox {
       formattedText = formattedText.replace(regex, `<span class="highlight-blue">$1</span>`);
     });
 
-    this.messageText.innerHTML = formattedText;
-
+    this.fullFormattedText = formattedText;
     this.root.style.display = "block";
     if (onComplete) {
       this.onComplete = onComplete;
     }
+
+    this.startTypewriter(formattedText);
+  }
+
+  startTypewriter(formattedText) {
+    if (this.typewriterInterval) {
+      clearInterval(this.typewriterInterval);
+      this.typewriterInterval = null;
+    }
+
+    // Split HTML string by tags so we don't break HTML tags during letter-by-letter output
+    const tokens = formattedText.split(/(<[^>]*>)/g);
+    let totalChars = 0;
+    tokens.forEach(tok => {
+      if (!tok.startsWith("<")) {
+        totalChars += tok.length;
+      }
+    });
+
+    if (totalChars === 0) {
+      this.messageText.innerHTML = formattedText;
+      this.isTyping = false;
+      this.nextIndicator.style.opacity = "1";
+      return;
+    }
+
+    this.isTyping = true;
+    this.nextIndicator.style.opacity = "0.3";
+    let currentCharCount = 0;
+
+    const renderStep = () => {
+      let output = "";
+      let remaining = currentCharCount;
+
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
+        if (tok.startsWith("<")) {
+          output += tok;
+        } else {
+          if (remaining >= tok.length) {
+            output += tok;
+            remaining -= tok.length;
+          } else if (remaining > 0) {
+            output += tok.substring(0, remaining);
+            remaining = 0;
+          }
+        }
+      }
+
+      this.messageText.innerHTML = output;
+
+      if (currentCharCount >= totalChars) {
+        this.finishTypewriter();
+      } else {
+        currentCharCount++;
+      }
+    };
+
+    renderStep();
+    this.typewriterInterval = setInterval(renderStep, 18);
+  }
+
+  finishTypewriter() {
+    if (this.typewriterInterval) {
+      clearInterval(this.typewriterInterval);
+      this.typewriterInterval = null;
+    }
+    this.messageText.innerHTML = this.fullFormattedText;
+    this.isTyping = false;
+    this.nextIndicator.style.opacity = "1";
   }
 
   hide() {
+    this.finishTypewriter();
     this.root.style.display = "none";
   }
 
   destroy() {
     if (this.destroyed) return;
     this.destroyed = true;
+    this.finishTypewriter();
+    if (this.keydownHandler) {
+      document.removeEventListener("keydown", this.keydownHandler);
+    }
     this.root?.remove();
   }
 }

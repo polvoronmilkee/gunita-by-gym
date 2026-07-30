@@ -15,7 +15,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
       "Hold fast to your memory!"
     ];
   }
-  getFallbackBgKey() { return "bg-fish-basket"; }
+  getFallbackBgKey() { return "red-warning-flag"; }
   getAudioBossKey() { return "chaotic-fragment"; }
   getSoulColor() { return 0x2dd4bf; }
   getTitleColor() { return "#ff5533"; }
@@ -156,7 +156,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
   fireCircleBlast() {
     if (this.state !== "DODGE") return;
     const count = this.isDesperation ? 14 : 16;
-    const radius = 140;
+    const radius = 65;
     const centerX = this.crystalEnemy.x;
     const centerY = this.crystalEnemy.y;
     const ringBullets = [];
