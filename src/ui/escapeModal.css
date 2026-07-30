@@ -1,0 +1,155 @@
+/* Styling for Gunita Bullet Hell Escape Confirmation Modal */
+
+.gunita-escape-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(4, 6, 14, 0.82);
+  backdrop-filter: blur(8px);
+  background-image: radial-gradient(circle at center, transparent 30%, rgba(20, 8, 35, 0.85) 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  box-sizing: border-box;
+  animation: gunitaFadeIn 0.2s ease-out;
+}
+
+@keyframes gunitaFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.gunita-escape-modal {
+  background: linear-gradient(180deg, rgba(22, 16, 32, 0.98), rgba(10, 8, 18, 0.98));
+  border: 2px solid rgba(176, 126, 255, 0.6);
+  border-radius: 14px;
+  padding: 26px 32px;
+  box-shadow:
+    0 24px 50px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 30px rgba(176, 126, 255, 0.3);
+  width: min(90vw, 440px);
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.gunita-escape-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.gunita-escape-modal__icon {
+  font-size: 20px;
+  animation: pulseRotate 3s infinite linear;
+}
+
+@keyframes pulseRotate {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.gunita-escape-modal__title {
+  color: #b07eff;
+  font-size: 13px;
+  margin: 0;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 10px rgba(176, 126, 255, 0.6);
+}
+
+.gunita-escape-modal__divider {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.gunita-escape-modal__divider::before,
+.gunita-escape-modal__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(176, 126, 255, 0.5), transparent);
+}
+
+.gunita-escape-modal__divider span {
+  padding: 0 10px;
+  color: #4be3ac;
+  font-size: 10px;
+  text-shadow: 0 0 6px #4be3ac;
+}
+
+.gunita-escape-modal__body {
+  margin-bottom: 22px;
+}
+
+.gunita-escape-modal__message {
+  color: #ffffff;
+  font-size: 10px;
+  line-height: 1.7;
+  margin: 0 0 12px 0;
+}
+
+.gunita-escape-modal__subtext {
+  color: #f7c948;
+  font-size: 8px;
+  line-height: 1.6;
+  margin: 0;
+  background: rgba(247, 201, 72, 0.1);
+  border: 1px dashed rgba(247, 201, 72, 0.4);
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+
+.gunita-escape-modal__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gunita-escape-btn {
+  appearance: none;
+  border: none;
+  padding: 12px 16px;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.5px;
+}
+
+.gunita-escape-btn--leave {
+  background: rgba(255, 85, 119, 0.15);
+  color: #ff5577;
+  border: 1.5px solid rgba(255, 85, 119, 0.6);
+}
+
+.gunita-escape-btn--leave:hover {
+  background: #ff5577;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(255, 85, 119, 0.6);
+  transform: translateY(-1px);
+}
+
+.gunita-escape-btn--stay {
+  background: rgba(75, 227, 172, 0.15);
+  color: #4be3ac;
+  border: 1.5px solid rgba(75, 227, 172, 0.6);
+}
+
+.gunita-escape-btn--stay:hover {
+  background: #4be3ac;
+  color: #000000;
+  box-shadow: 0 0 14px rgba(75, 227, 172, 0.6);
+  transform: translateY(-1px);
+}

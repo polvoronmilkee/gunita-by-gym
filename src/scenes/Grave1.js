@@ -434,7 +434,7 @@ export class Grave1 extends Phaser.Scene {
         if (spriteKey) {
           const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
           const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
-          npc.setDepth(1);
+          npc.setDepth(pos.y);
           if (npc.body) {
             npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
             npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
@@ -803,11 +803,53 @@ export class Grave1 extends Phaser.Scene {
         const npc = this.closestNpc;
         const npcKey = npc.texture.key;
 
-        // Stop spinning and face the player
+        // Stop spinning and face the player (Vino)
         npc.anims.stop();
-        const dx = this.player.x - npc.x;
-        const dy = this.player.y - npc.y;
-        npc.setFrame(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 2 : 1) : (dy > 0 ? 0 : 3));
+        npc.setFlipX(false);
+
+        const playerX = this.player?.sprite ? this.player.sprite.x : (this.player?.x || 0);
+        const playerY = this.player?.sprite ? this.player.sprite.y : (this.player?.y || 0);
+        const dx = playerX - npc.x;
+        const dy = playerY - npc.y;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+          if (dx > 0) {
+            npc.setFrame(2); // Face right towards Vino
+          } else {
+            npc.setFrame(1); // Face left towards Vino
+          }
+        } else {
+          if (dy > 0) {
+            npc.setFrame(0); // Face down towards Vino
+          } else {
+            npc.setFrame(3); // Face up towards Vino
+          }
+        }
+
+        // Make Vino face the NPC as well
+        if (this.player && this.player.sprite) {
+          const vinoDx = npc.x - playerX;
+          const vinoDy = npc.y - playerY;
+          if (this.player.sprite.body) {
+            this.player.sprite.body.setVelocity(0);
+          }
+          if (Math.abs(vinoDx) > Math.abs(vinoDy)) {
+            if (vinoDx > 0) {
+              if (this.anims.exists("vino-moving-right")) this.player.sprite.play("vino-moving-right", true);
+            } else {
+              if (this.anims.exists("vino-moving-left")) this.player.sprite.play("vino-moving-left", true);
+            }
+          } else {
+            if (vinoDy > 0) {
+              if (this.anims.exists("vino-moving-down")) this.player.sprite.play("vino-moving-down", true);
+            } else {
+              if (this.anims.exists("vino-moving-up")) this.player.sprite.play("vino-moving-up", true);
+            }
+          }
+          if (this.player.sprite.anims) {
+            this.player.sprite.anims.stop();
+          }
+        }
 
         if (this.storyStage === 5) {
              const compText = this.getRandomVariant("random-guy-completed", "The sea is calm now. We remember Mang Tomas.");
@@ -1314,7 +1356,14 @@ export class Grave1 extends Phaser.Scene {
     let tileX = Math.floor(startX / 32);
     let tileY = Math.floor(startY / 32);
 
-    for (let r = 0; r < 10; r++) {
+    if (tileX >= 0 && tileX < map.width && tileY >= 0 && tileY < map.height) {
+      const waterTile = map.getTileAt(tileX, tileY, true, "water");
+      if (!waterTile || waterTile.index === -1) {
+        return { x: startX, y: startY };
+      }
+    }
+
+    for (let r = 1; r < 10; r++) {
       for (let dx = -r; dx <= r; dx++) {
         for (let dy = -r; dy <= r; dy++) {
           if (Math.abs(dx) !== r && Math.abs(dy) !== r) continue;
@@ -1382,7 +1431,19 @@ export class Grave1 extends Phaser.Scene {
           riddleData: riddleData,
           soulName: soulName,
           dodgeLines: dodgeLines,
-          bgKey: bgKey || "bg-fish-basket",
+          onExit: () => {
+              this.dialogueActive = false;
+              if (this.transitionFadeBlack) {
+                this.transitionFadeBlack.destroy();
+                this.transitionFadeBlack = null;
+              }
+              this.scene.stop(activeScene);
+              this.scene.resume();
+              if (this.physics && typeof this.physics.resume === 'function') {
+                this.physics.resume();
+              }
+              this.audioManager?.playTrack("village-v1");
+          },
           onComplete: () => {
               this.dialogueActive = false;
               if (this.transitionFadeBlack) {
