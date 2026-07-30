@@ -936,7 +936,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
 
   update(time, delta) {
     // Prevent inputs from leaking when paused
-    if (this.scene.isPaused()) return;
+    if (this.scene.isPaused() || this.isPaused) return;
     
     if (this.titleText) {
       this.titleText.setColor(this.getTitleColor());
@@ -1317,7 +1317,81 @@ export class BaseBulletHellScene extends Phaser.Scene {
     const container = document.getElementById("game-container") || document.body;
     container.appendChild(overlay);
 
+    // Blur active elements to clear keyboard focus
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+      document.activeElement.blur();
+    }
+
+    const closeBtn = overlay.querySelector("#pm-close");
+    const continueBtn = overlay.querySelector("#pm-continue");
+    const escapeBtn = overlay.querySelector("#pm-escape");
+
+    const buttons = [continueBtn, escapeBtn];
+    let selectedIdx = 0;
+
+    const updateSelection = () => {
+      buttons.forEach((btn, index) => {
+        if (!btn) return;
+        if (index === selectedIdx) {
+          btn.classList.add("selected");
+          btn.style.borderColor = index === 1 ? "rgba(255, 85, 119, 1)" : "#f7e8c3";
+          btn.style.backgroundColor = index === 1 ? "rgba(255, 85, 119, 0.2)" : "#9c6c28";
+          btn.style.color = "#ffffff";
+        } else {
+          btn.classList.remove("selected");
+          btn.style.borderColor = index === 1 ? "rgba(255, 85, 119, 0.6)" : "";
+          btn.style.backgroundColor = "";
+          btn.style.color = "";
+        }
+      });
+    };
+
+    updateSelection();
+
+    // Sync hover
+    buttons.forEach((btn, index) => {
+      if (btn) {
+        btn.addEventListener("pointerenter", () => {
+          selectedIdx = index;
+          updateSelection();
+        });
+      }
+    });
+
+    const escKeyHandler = (e) => {
+      if (!this.escapeModalOpen) return;
+      const key = e.key.toUpperCase();
+
+      if (key === "ESCAPE" || key === "P") {
+        e.preventDefault();
+        e.stopPropagation();
+        window.removeEventListener("keydown", escKeyHandler);
+        closeSelf();
+        return;
+      }
+
+      if (key === "ARROWUP" || key === "W") {
+        e.preventDefault();
+        e.stopPropagation();
+        selectedIdx = 0;
+        updateSelection();
+        if (this.audioManager) this.audioManager.playHoverSfx?.();
+      } else if (key === "ARROWDOWN" || key === "S") {
+        e.preventDefault();
+        e.stopPropagation();
+        selectedIdx = 1;
+        updateSelection();
+        if (this.audioManager) this.audioManager.playHoverSfx?.();
+      } else if (key === "ENTER" || key === " " || key === "SPACE" || key === "SPACEBAR") {
+        e.preventDefault();
+        e.stopPropagation();
+        window.removeEventListener("keydown", escKeyHandler);
+        buttons[selectedIdx]?.click();
+      }
+    };
+
     const closeSelf = () => {
+      window.removeEventListener("keydown", escKeyHandler);
       if (this.currentEscapeOverlay) {
         this.currentEscapeOverlay.remove();
         this.currentEscapeOverlay = null;
@@ -1332,31 +1406,23 @@ export class BaseBulletHellScene extends Phaser.Scene {
       }
     };
 
-    const closeBtn = overlay.querySelector("#pm-close");
-    const continueBtn = overlay.querySelector("#pm-continue");
-    const escapeBtn = overlay.querySelector("#pm-escape");
-
     if (closeBtn) closeBtn.addEventListener("click", () => closeSelf());
     if (continueBtn) continueBtn.addEventListener("click", () => closeSelf());
 
     if (escapeBtn) {
       escapeBtn.addEventListener("click", () => {
+        window.removeEventListener("keydown", escKeyHandler);
         if (this.currentEscapeOverlay) {
           this.currentEscapeOverlay.remove();
           this.currentEscapeOverlay = null;
         }
         this.escapeModalOpen = false;
+        this.isPaused = false;
         this.exitToGrave1();
       });
     }
 
-    const keyHandler = (e) => {
-      if ((e.key === "Escape" || e.key === "p" || e.key === "P") && this.escapeModalOpen) {
-        window.removeEventListener("keydown", keyHandler);
-        closeSelf();
-      }
-    };
-    window.addEventListener("keydown", keyHandler);
+    window.addEventListener("keydown", escKeyHandler);
   }
 
   exitToGrave1() {
