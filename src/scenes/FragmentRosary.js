@@ -129,12 +129,12 @@ export class FragmentRosary extends BaseBulletHellScene {
     // Pattern 3: Candle Rain
     // Tweak speed, count, and drop frequency inside fireCandleRain() to customize.
     } else if (patternId === 3) {
-      const baseSpeed = desp ? 95 : 75;
+      const baseSpeed = desp ? 85 : 75;
       let speedInc = 0;
       for (let t = 0; t < duration; t += 1800) {
         const speed = baseSpeed + speedInc;
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireCandleRain(speed)));
-        speedInc += 8;
+        speedInc += desp ? 5 : 8;
       }
     // Pattern 4: Incense Spiral
     // Tweak arm count, spacing, and rotation speed inside fireIncenseSpiral() to customize.
@@ -202,7 +202,7 @@ export class FragmentRosary extends BaseBulletHellScene {
       active: false,
       dropping: true,
       pulseTimer: 0,
-      pulseInterval: desp ? 1500 : 2000,
+      pulseInterval: desp ? 2500 : 2000,
       shootTimer: 0,
       shootInterval: desp ? 600 : 800,
       pulseRings: []
@@ -272,7 +272,7 @@ export class FragmentRosary extends BaseBulletHellScene {
     const spawnCycle = (startTime, cycleDuration) => {
       const numArms = desp ? 3 : 2;
       const armSpacing = (Math.PI * 2) / numArms;
-      const rotSpeed = 1.5;
+      const rotSpeed = desp ? 1.2 : 1.5;
       const spawnInterval = 250;
       let baseAngle = Math.random() * Math.PI * 2;
 
@@ -286,7 +286,7 @@ export class FragmentRosary extends BaseBulletHellScene {
             const a = angle + arm * armSpacing;
             const spawnX = cx + maxRadius * Math.cos(a);
             const spawnY = cy + maxRadius * Math.sin(a);
-            const speed = 75;
+            const speed = desp ? 65 : 75;
             const dirX = (cx - spawnX) / maxRadius;
             const dirY = (cy - spawnY) / maxRadius;
 
@@ -336,7 +336,7 @@ export class FragmentRosary extends BaseBulletHellScene {
         const scatterCount = desp ? 8 : 6;
         for (let s = 0; s < scatterCount; s++) {
           const sAngle = (s / scatterCount) * Math.PI * 2 + (Math.PI / 6);
-          const bounceSpeed = desp ? 145 : 130;
+          const bounceSpeed = desp ? 130 : 130;
           this.bullets.push({
             active: true,
             x: ex,
@@ -345,7 +345,7 @@ export class FragmentRosary extends BaseBulletHellScene {
             vy: Math.sin(sAngle) * bounceSpeed,
             radius: 5,
             color: 0xe8a317,
-            bounces: 2
+            bounces: desp ? 1 : 2
           });
         }
       }
@@ -507,7 +507,7 @@ export class FragmentRosary extends BaseBulletHellScene {
           cross.pulseRings.push({ radius: 10, alpha: 0.9 });
           if (this.soul) {
             this.playerSlowed = true;
-            this.slowTimer = 1200;
+            this.slowTimer = this.isDesperation ? 800 : 1200;
           }
           this.flashBoxColor(0xf7c948);
         }
@@ -549,4 +549,4 @@ export class FragmentRosary extends BaseBulletHellScene {
     }
     }
   }
-}
+
