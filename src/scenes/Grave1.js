@@ -1942,9 +1942,9 @@ export class Grave1 extends Phaser.Scene {
                 this.physics.resume();
               }
               this.audioManager?.playTrack("village-v1");
-              this.time.delayedCall(100, () => {
+              setTimeout(() => {
                 onCorrect();
-              });
+              }, 150);
           },
           onDeath: async () => {
               this.dialogueActive = false;
