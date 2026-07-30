@@ -229,14 +229,14 @@ export class PauseScene extends Phaser.Scene {
         if (this.selectedIndex >= this.menuItems.length) this.selectedIndex = 0;
         this.updateMenuSelection();
         if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
-      } else if (key === "ENTER" || key === " " || key === "SPACE") {
+      } else if (key === "ENTER" || key === " " || key === "SPACE" || key === "SPACEBAR") {
         e.preventDefault();
         e.stopPropagation();
         this.menuItems[this.selectedIndex]?.click();
       }
     };
 
-    window.addEventListener("keydown", this.handleKeyDown);
+    this.input.keyboard.on("keydown", this.handleKeyDown);
 
     this.menuItems = [resumeBtn, memoryBtn, musicBtn, sfxBtn, menuBtn];
     this.selectedIndex = 0;
@@ -291,8 +291,8 @@ export class PauseScene extends Phaser.Scene {
   }
 
   destroyMenu() {
-    if (this.handleKeyDown) {
-      window.removeEventListener("keydown", this.handleKeyDown);
+    if (this.handleKeyDown && this.input && this.input.keyboard) {
+      this.input.keyboard.off("keydown", this.handleKeyDown);
       this.handleKeyDown = null;
     }
     if (this.root) {
