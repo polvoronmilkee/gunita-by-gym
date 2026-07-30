@@ -262,7 +262,17 @@ export async function syncOfflineData() {
  * Add an item to the player's inventory, falling back to local storage if offline.
  */
 export async function addInventoryItem(inventoryId, itemKey, itemType) {
-  // Always save locally first
+  // Always update main game cache first for instant sync
+  const cache = getCache();
+  if (cache) {
+    if (!cache.inventory) cache.inventory = [];
+    if (!cache.inventory.includes(itemKey)) {
+      cache.inventory.push(itemKey);
+      setCache(cache);
+    }
+  }
+
+  // Then save to local fallback inventory storage
   const localItems = JSON.parse(localStorage.getItem("gunita_local_inventory_items") || "[]");
   const exists = localItems.some(item => item.inventory_id === inventoryId && item.item_key === itemKey);
   if (!exists) {

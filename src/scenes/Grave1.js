@@ -490,10 +490,14 @@ export class Grave1 extends Phaser.Scene {
     }
 
     this.physics.add.collider(this.player.sprite, this.npcs);
+    
+    // Create progression blocker towards the Northern Path
+    this.storyBlocker = this.physics.add.staticImage(3615, 2061, null).setSize(200, 50).setVisible(false);
+    this.physics.add.collider(this.player.sprite, this.storyBlocker);
+    
     this.storyStage = 1;
     this.currentFragment = null;
     this.currentArtifactKey = null;
-    this.currentArtifact = null;
     this.map = map;
 
     // Sync database position if available (skip if it's a new game to prevent snapping to old saved coordinates)
@@ -537,6 +541,14 @@ export class Grave1 extends Phaser.Scene {
               this.storyStage = 1;
             }
             console.log("Reconstructed storyStage from inventory:", this.storyStage);
+            
+            if (keys.includes("red-flag") && keys.includes("fish-basket") && keys.includes("rosary") && keys.includes("daughters-drawing")) {
+              if (this.storyBlocker) {
+                this.storyBlocker.destroy();
+                this.storyBlocker = null;
+              }
+            }
+            
             this.updateLumaGuidance();
           }
         })
@@ -854,6 +866,20 @@ export class Grave1 extends Phaser.Scene {
       window.returnToGunitaMenu?.();
     });
 
+    // Objective Compass Arrow
+    this.objectiveArrow = this.add.graphics();
+    this.objectiveArrow.setDepth(15);
+    this.objectiveArrow.lineStyle(2, 0xffd700, 1);
+    this.objectiveArrow.fillStyle(0xffd700, 0.8);
+    // Draw a simple triangle pointing right
+    this.objectiveArrow.beginPath();
+    this.objectiveArrow.moveTo(10, 0);
+    this.objectiveArrow.lineTo(-10, 5);
+    this.objectiveArrow.lineTo(-10, -5);
+    this.objectiveArrow.closePath();
+    this.objectiveArrow.fillPath();
+    this.objectiveArrow.strokePath();
+
     // Autosave timer every 5 seconds
     this.time.addEvent({
       delay: 5000,
@@ -923,14 +949,8 @@ export class Grave1 extends Phaser.Scene {
         const riddlesToPass = riddleData.riddles || riddleData;
         this.startFragmentChallenge(riddlesToPass, () => {
           if (this.currentFragment) {
-            const fragmentX = this.currentFragment.x;
-            const fragmentY = this.currentFragment.y;
             this.currentFragment.destroy();
             this.currentFragment = null;
-
-            this.currentArtifact = this.physics.add.sprite(fragmentX, fragmentY, artifactKey);
-            this.currentArtifact.setDepth(1);
-            this.currentArtifactKey = artifactKey;
           }
           this.updateLumaGuidance();
 
@@ -944,33 +964,44 @@ export class Grave1 extends Phaser.Scene {
           // Trigger autosave/sync immediately
           this.savePosition();
 
-          this.startDialogueSequence([{ speaker: "Vino", text: dialogueText }]);
+          this.showArtifactClaimModal(artifactKey, () => {
+            // Remove the blocker if we have all 4
+            const localCache = getCache();
+            if (localCache && localCache.inventory) {
+                const keys = localCache.inventory;
+                if (keys.includes("red-flag") && keys.includes("fish-basket") && keys.includes("rosary") && keys.includes("daughters-drawing")) {
+                    if (this.storyBlocker) {
+                        this.storyBlocker.destroy();
+                        this.storyBlocker = null;
+                    }
+                }
+            }
+
+            // Read the completed dialogue
+            let completedData = this.cache.json.get(`completed-${artifactKey}`);
+            if (completedData) {
+                const interactions = completedData.interactions;
+                const randomInteraction = interactions[Math.floor(Math.random() * interactions.length)];
+                const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
+                
+                this.startDialogueSequence(steps, () => {
+                    this.storyStage++;
+                    this.updateLumaGuidance();
+                    if (this.storyStage === 5) {
+                        this.startFinalRiddleSequence();
+                    }
+                });
+            } else {
+                this.storyStage++;
+                this.updateLumaGuidance();
+                if (this.storyStage === 5) {
+                    this.startFinalRiddleSequence();
+                }
+            }
+          });
         }, () => {
           this.startDialogueSequence([{ speaker: "Vino", text: "That answer doesn't seem right... I should try again." }]);
         }, bgKey, sceneKey);
-      } else if (!this.dialogueActive && this.currentArtifact && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentArtifact.x, this.currentArtifact.y) < 60) {
-        let completedData = this.cache.json.get(`completed-${this.currentArtifactKey}`);
-        const interactions = completedData.interactions;
-        const randomInteraction = interactions[Math.floor(Math.random() * interactions.length)];
-        const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
-
-        // Save item to player's inventory
-        const cache = getCache();
-        const inventoryId = cache ? cache.inventory_id : null;
-        if (inventoryId && this.currentArtifactKey) {
-          addInventoryItem(inventoryId, this.currentArtifactKey, "memory_fragment");
-        }
-
-        this.startDialogueSequence(steps, () => {
-          this.currentArtifact.destroy();
-          this.currentArtifact = null;
-          this.currentArtifactKey = null;
-          this.storyStage++;
-          this.updateLumaGuidance();
-          if (this.storyStage === 5) {
-            this.startFinalRiddleSequence();
-          }
-        });
       } else if (!this.dialogueActive && this.nearHouseDoor) {
         this.enterFamilyHouse();
       } else if (!this.dialogueActive && this.nearNpc) {
@@ -1754,14 +1785,6 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-    let nearArtifact = false;
-    if (this.currentArtifact && this.currentArtifact.active) {
-      const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentArtifact.x, this.currentArtifact.y);
-      if (dist < 60) {
-        nearArtifact = true;
-      }
-    }
-
     let nearHouseDoor = false;
     const houseDoorX = 3044;
     const houseDoorY = 320;
@@ -1773,18 +1796,12 @@ export class Grave1 extends Phaser.Scene {
     this.nearNpc = nearNpc;
     this.closestNpc = closestNpc;
     this.nearFragment = nearFragment;
-    this.nearArtifact = nearArtifact;
     this.nearHouseDoor = nearHouseDoor;
 
     if (nearFragment) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO SOLVE RIDDLE");
       if (this.interactionPrompt && this.currentFragment) {
         this.interactionPrompt.show(this.currentFragment, "E", "SOLVE RIDDLE");
-      }
-    } else if (nearArtifact) {
-      this.hud.setStatus("PRESS [E] OR [SPACE] TO INSPECT ARTIFACT");
-      if (this.interactionPrompt && this.currentArtifact) {
-        this.interactionPrompt.show(this.currentArtifact, "E", "INSPECT ARTIFACT");
       }
     } else if (nearHouseDoor) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO ENTER HOUSE");
@@ -1804,6 +1821,33 @@ export class Grave1 extends Phaser.Scene {
     }
 
     this.player.update(this.cursors);
+    
+    // Update Objective Compass Arrow
+    if (this.objectiveArrow && this.player && this.player.sprite && this.storyStage >= 1 && this.storyStage <= 4) {
+      let targetKey = "";
+      if (this.storyStage === 1) targetKey = "npc-old-fisherman";
+      else if (this.storyStage === 2) targetKey = "npc-young-fisherman";
+      else if (this.storyStage === 3) targetKey = "npc-old-wife";
+      else if (this.storyStage === 4) targetKey = "npc-young-daughter";
+      
+      const targetNpc = this.npcs?.getChildren().find(n => n.texture && n.texture.key === targetKey);
+      
+      if (targetNpc) {
+        this.objectiveArrow.setVisible(true);
+        const px = this.player.sprite.x;
+        const py = this.player.sprite.y;
+        const angle = Phaser.Math.Angle.Between(px, py, targetNpc.x, targetNpc.y);
+        
+        const radius = 60;
+        this.objectiveArrow.x = px + Math.cos(angle) * radius;
+        this.objectiveArrow.y = py + Math.sin(angle) * radius;
+        this.objectiveArrow.rotation = angle;
+      } else {
+        this.objectiveArrow.setVisible(false);
+      }
+    } else if (this.objectiveArrow) {
+      this.objectiveArrow.setVisible(false);
+    }
   }
 
   getNearestLandCoordinate(startX, startY, map) {
@@ -1833,6 +1877,104 @@ export class Grave1 extends Phaser.Scene {
       }
     }
     return { x: startX, y: startY };
+  }
+  showArtifactClaimModal(artifactKey, onContinue) {
+    this.dialogueActive = true;
+    const container = document.getElementById("game-container") || document.body;
+    
+    const modalBg = document.createElement("div");
+    modalBg.style.position = "absolute";
+    modalBg.style.top = "0";
+    modalBg.style.left = "0";
+    modalBg.style.width = "100%";
+    modalBg.style.height = "100%";
+    modalBg.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    modalBg.style.display = "flex";
+    modalBg.style.justifyContent = "center";
+    modalBg.style.alignItems = "center";
+    modalBg.style.zIndex = "9999";
+    modalBg.style.backdropFilter = "blur(8px)";
+    modalBg.style.fontFamily = "'Courier New', Courier, monospace";
+    
+    const modalContent = document.createElement("div");
+    modalContent.style.backgroundColor = "rgba(20, 10, 30, 0.9)";
+    modalContent.style.border = "2px solid #9c6c28";
+    modalContent.style.padding = "40px";
+    modalContent.style.borderRadius = "12px";
+    modalContent.style.textAlign = "center";
+    modalContent.style.boxShadow = "0 0 20px rgba(156, 108, 40, 0.5)";
+    modalContent.style.maxWidth = "500px";
+    
+    const title = document.createElement("h1");
+    title.style.color = "#f7e8c3";
+    title.style.margin = "0 0 20px 0";
+    title.style.textTransform = "uppercase";
+    title.style.textShadow = "0 0 10px #f7e8c3";
+    title.textContent = `${artifactKey.replace(/-/g, ' ')} CLAIMED!`;
+    
+    const img = document.createElement("img");
+    img.src = `src/assets/grave1-elements/${artifactKey}.png`;
+    img.style.width = "100px";
+    img.style.height = "100px";
+    img.style.objectFit = "contain";
+    img.style.margin = "0 auto 20px auto";
+    img.style.display = "block";
+    
+    const descriptions = {
+      "red-flag": "A torn piece of red fabric. It feels heavy with the memory of a distant warning.",
+      "fish-basket": "An old woven basket. The smell of the sea and echoes of a storm linger within.",
+      "rosary": "A wooden rosary, worn smooth by years of desperate prayer.",
+      "daughters-drawing": "A child's drawing, faded but preserved with immense love and grief."
+    };
+    
+    const desc = document.createElement("p");
+    desc.style.color = "#ccc";
+    desc.style.fontSize = "18px";
+    desc.style.lineHeight = "1.5";
+    desc.style.margin = "0 0 30px 0";
+    desc.textContent = descriptions[artifactKey] || "An old memory artifact.";
+    
+    const continueBtn = document.createElement("button");
+    continueBtn.textContent = "CONTINUE";
+    continueBtn.className = "gunita-modal-btn";
+    continueBtn.style.padding = "10px 30px";
+    continueBtn.style.fontSize = "20px";
+    continueBtn.style.backgroundColor = "transparent";
+    continueBtn.style.color = "#f7e8c3";
+    continueBtn.style.border = "2px solid #9c6c28";
+    continueBtn.style.cursor = "pointer";
+    continueBtn.style.transition = "all 0.2s ease";
+    
+    continueBtn.addEventListener("mouseover", () => {
+      continueBtn.style.backgroundColor = "#9c6c28";
+      continueBtn.style.color = "#111";
+    });
+    continueBtn.addEventListener("mouseout", () => {
+      continueBtn.style.backgroundColor = "transparent";
+      continueBtn.style.color = "#f7e8c3";
+    });
+    
+    continueBtn.addEventListener("click", () => {
+      if (this.audioManager) this.audioManager.playClickSfx();
+      modalBg.remove();
+      this.dialogueActive = false;
+      if (onContinue) onContinue();
+    });
+    
+    modalContent.appendChild(title);
+    modalContent.appendChild(img);
+    modalContent.appendChild(desc);
+    modalContent.appendChild(continueBtn);
+    modalBg.appendChild(modalContent);
+    container.appendChild(modalBg);
+    
+    if (this.audioManager) {
+      if (typeof this.audioManager.playLumaSwishSfx === "function") {
+        this.audioManager.playLumaSwishSfx();
+      } else if (typeof this.audioManager.playLumaSwish === "function") {
+        this.audioManager.playLumaSwish();
+      }
+    }
   }
 
   startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey, sceneKey) {
