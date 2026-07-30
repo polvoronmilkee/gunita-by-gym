@@ -18,7 +18,7 @@ export class MenuAudioController {
     const persisted = this.readPersistedState();
     this.musicEnabled = persisted.musicEnabled;
     this.sfxEnabled = persisted.sfxEnabled;
-    this.currentTrackIndex = persisted.trackIndex;
+    this.currentTrackIndex = 1; // Force bg-2.mp3 (index 1) on load
 
     this.musicTracks = AUDIO_SETTINGS.tracks.map((track) => {
       const audio = new Audio(track.path);
