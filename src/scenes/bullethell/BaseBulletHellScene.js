@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import { AudioManager } from "../../utils/audioManager.js";
 import riddlesData from "../../data/riddles.json";
+import "../../ui/pauseMenu.css";
+import "../../ui/hudOverlay.css";
 
 export class BaseBulletHellScene extends Phaser.Scene {
   constructor(key) {
@@ -37,6 +39,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.onCompleteCallback = data.onComplete;
     this.onDeathCallback = data.onDeath;
     this.returnScene = data ? data.returnScene : null;
+    this.onExitCallback = data.onExit;
     this.bgKey = (data && (data.bgKey || data.bgImage)) || this.getFallbackBgKey();
 
     this.crystalHP = 6;
@@ -111,6 +114,11 @@ export class BaseBulletHellScene extends Phaser.Scene {
   }
 
   create() {
+    const lumaBox = document.querySelector(".luma-guidance-container");
+    if (lumaBox) {
+      lumaBox.classList.remove("visible");
+    }
+
     const { width, height } = this.scale;
     const centerX = width / 2;
 
@@ -159,9 +167,32 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.keys = this.input.keyboard.addKeys("W,S,A,D,SPACE,ENTER");
     this.selectedButtonIndex = 0;
 
-    // Global pause listeners
-    this.input.keyboard.on('keydown-P', this.handlePause, this);
-    this.input.keyboard.on('keydown-ESC', this.handlePause, this);
+    // Global pause and escape listeners (both P and ESC trigger the escape confirmation modal in bullet hell)
+    this.input.keyboard.on('keydown-P', this.showEscapeConfirmation, this);
+    this.input.keyboard.on('keydown-ESC', this.showEscapeConfirmation, this);
+
+    // Mount floating retro buttons (Pause ⏸ & Back ←) using gunita-pause-btn UI style
+    const container = document.getElementById("game-container") || document.body;
+
+    this.pauseBtnDom = document.createElement("button");
+    this.pauseBtnDom.type = "button";
+    this.pauseBtnDom.className = "gunita-pause-btn";
+    this.pauseBtnDom.textContent = "⏸";
+    this.pauseBtnDom.title = "Pause / Escape";
+    this.pauseBtnDom.style.left = "140px";
+    this.pauseBtnDom.style.top = "30px";
+    this.pauseBtnDom.addEventListener("click", () => this.showEscapeConfirmation());
+    container.appendChild(this.pauseBtnDom);
+
+    this.backBtnDom = document.createElement("button");
+    this.backBtnDom.type = "button";
+    this.backBtnDom.className = "gunita-pause-btn";
+    this.backBtnDom.textContent = "⮜";
+    this.backBtnDom.title = "Escape Fragmented Memory";
+    this.backBtnDom.style.left = "185px";
+    this.backBtnDom.style.top = "30px";
+    this.backBtnDom.addEventListener("click", () => this.showEscapeConfirmation());
+    container.appendChild(this.backBtnDom);
 
     // Debug shortcuts for testing
     this.input.keyboard.on("keydown-U", () => {
@@ -193,8 +224,14 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.game.events.emit("game-ready");
 
     this.events.once("shutdown", () => {
-      this.input.keyboard.off('keydown-P', this.handlePause, this);
-      this.input.keyboard.off('keydown-ESC', this.handlePause, this);
+      this.input.keyboard.off('keydown-P', this.showEscapeConfirmation, this);
+      this.input.keyboard.off('keydown-ESC', this.showEscapeConfirmation, this);
+      if (this.pauseBtnDom) { this.pauseBtnDom.remove(); this.pauseBtnDom = null; }
+      if (this.backBtnDom) { this.backBtnDom.remove(); this.backBtnDom = null; }
+      if (this.currentEscapeOverlay) {
+        this.currentEscapeOverlay.remove();
+        this.currentEscapeOverlay = null;
+      }
       this.cleanupProjectiles();
       if (this.bulletGraphics) {
         this.bulletGraphics.destroy();
@@ -1229,8 +1266,127 @@ export class BaseBulletHellScene extends Phaser.Scene {
     });
   }
 
-  handlePause() {
+  showEscapeConfirmation() {
     if (this.state === "DEAD" || this.state === "DEAD_SCREEN" || this.state === "VICTORY") return;
+    if (this.escapeModalOpen) return;
+
+    this.escapeModalOpen = true;
+    this.isPaused = true;
+
+    if (this.physics && typeof this.physics.pause === 'function') {
+      this.physics.pause();
+    }
+    if (this.anims && typeof this.anims.pauseAll === 'function') {
+      this.anims.pauseAll();
+    }
+
+    const overlay = document.createElement("div");
+    overlay.className = "pause-menu-overlay";
+    this.currentEscapeOverlay = overlay;
+
+    overlay.innerHTML = `
+      <div class="pause-menu">
+        <div class="pause-menu__header">
+          <h2 class="pause-menu__title"><span>🌀</span> ESCAPE MEMORY?</h2>
+          <button class="pause-menu__close-btn" id="pm-close" aria-label="Close modal">✕</button>
+        </div>
+        <div class="pause-menu__divider"><span>✦</span></div>
+        <div class="pause-menu__buttons">
+          <button class="pause-menu__btn" id="pm-continue">
+            <div class="pm-btn-icon">▶</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title">CONTINUE CHALLENGE</span>
+              <span class="pm-btn-desc">Stay and attempt to solve the riddle</span>
+            </div>
+          </button>
+
+          <button class="pause-menu__btn" id="pm-escape" style="border-color: rgba(255, 85, 119, 0.6);">
+            <div class="pm-btn-icon" style="color: #ff5577; text-shadow: 0 0 8px rgba(255, 85, 119, 0.6);">⮜</div>
+            <div class="pm-btn-body">
+              <span class="pm-btn-title" style="color: #ff7799;">ESCAPE TO SAFETY</span>
+              <span class="pm-btn-desc">Leave this fragment and return to Mang Tomas' memory world.y</span>
+            </div>
+          </button>
+        </div>
+        <div class="pause-menu__footer">
+          PROGRESS IN THIS CHALLENGE WILL BE LOST
+        </div>
+      </div>
+    `;
+
+    const container = document.getElementById("game-container") || document.body;
+    container.appendChild(overlay);
+
+    const closeSelf = () => {
+      if (this.currentEscapeOverlay) {
+        this.currentEscapeOverlay.remove();
+        this.currentEscapeOverlay = null;
+      }
+      this.escapeModalOpen = false;
+      this.isPaused = false;
+      if (this.physics && typeof this.physics.resume === 'function') {
+        this.physics.resume();
+      }
+      if (this.anims && typeof this.anims.resumeAll === 'function') {
+        this.anims.resumeAll();
+      }
+    };
+
+    const closeBtn = overlay.querySelector("#pm-close");
+    const continueBtn = overlay.querySelector("#pm-continue");
+    const escapeBtn = overlay.querySelector("#pm-escape");
+
+    if (closeBtn) closeBtn.addEventListener("click", () => closeSelf());
+    if (continueBtn) continueBtn.addEventListener("click", () => closeSelf());
+
+    if (escapeBtn) {
+      escapeBtn.addEventListener("click", () => {
+        if (this.currentEscapeOverlay) {
+          this.currentEscapeOverlay.remove();
+          this.currentEscapeOverlay = null;
+        }
+        this.escapeModalOpen = false;
+        this.exitToGrave1();
+      });
+    }
+
+    const keyHandler = (e) => {
+      if ((e.key === "Escape" || e.key === "p" || e.key === "P") && this.escapeModalOpen) {
+        window.removeEventListener("keydown", keyHandler);
+        closeSelf();
+      }
+    };
+    window.addEventListener("keydown", keyHandler);
+  }
+
+  exitToGrave1() {
+    this.cleanupProjectiles();
+    this.tweens.killAll();
+
+    if (this.sound) {
+      this.sound.stopAll();
+    }
+
+    if (typeof this.onExitCallback === 'function') {
+      this.onExitCallback();
+    } else if (this.scene.get("Grave1")) {
+      this.scene.stop();
+      this.scene.resume("Grave1");
+      const grave1 = this.scene.get("Grave1");
+      if (grave1) {
+        grave1.dialogueActive = false;
+        if (grave1.physics && typeof grave1.physics.resume === 'function') {
+          grave1.physics.resume();
+        }
+        grave1.audioManager?.playTrack("village-v1");
+      }
+    } else {
+      this.scene.stop();
+    }
+  }
+
+  handlePause() {
+    if (this.state === "DEAD" || this.state === "DEAD_SCREEN" || this.state === "VICTORY" || this.escapeModalOpen) return;
     this.isPaused = true;
     this.scene.pause();
     this.scene.launch("PauseScene", { parentScene: this });

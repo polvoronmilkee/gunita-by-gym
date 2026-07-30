@@ -44,6 +44,10 @@ export class PreloadScene extends Phaser.Scene {
       frameHeight: 64,
     });
     this.load.image("rain-tile", "src/assets/grave1-v2/rain.png");
+    this.load.spritesheet("luma-idle", "src/assets/luma-idle-spritesheet.png", {
+      frameWidth: 138.67,
+      frameHeight: 193.67,
+    });
   }
 
   create() {
