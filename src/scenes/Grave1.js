@@ -1884,11 +1884,13 @@ export class Grave1 extends Phaser.Scene {
       dodgeLines = data.dodge_lines;
     }
 
-    // Use the shattered glass transition before launching the bullet hell scene
     TransitionSystem.shatteredGlassTransition(this, () => {
       if (this.audioManager) this.audioManager.stopMusic();
       if (this.lumaGuidanceBox) {
         this.lumaGuidanceBox.hide();
+      }
+      if (this.interactionPrompt) {
+        this.interactionPrompt.hide();
       }
       this.scene.pause();
       this.scene.launch(activeScene, {
