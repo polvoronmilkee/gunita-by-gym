@@ -523,8 +523,8 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
         const spawnX = this.crystalEnemy.x;
         const spawnY = this.crystalEnemy.y;
         
-        const speed = this.isDesperation ? 70 : 80;
-        const radius = 18; 
+        const speed = this.isDesperation ? 100 : 90;
+        const radius = 16; 
         
         const createOrb = (xOffset) => {
           return {
