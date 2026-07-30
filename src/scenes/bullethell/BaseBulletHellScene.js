@@ -81,9 +81,15 @@ export class BaseBulletHellScene extends Phaser.Scene {
 
     // If all patterns have been used (the bag is empty), reset the bag!
     if (available.length === 0) {
+      const lastUsed = this.usedPatterns[this.usedPatterns.length - 1];
       // Keep only patterns that are NOT in the current pool
       this.usedPatterns = this.usedPatterns.filter(used => !pool.some(p => isSame(used, p)));
-      available = [...pool];
+      
+      if (pool.length > 1 && lastUsed !== undefined) {
+        available = pool.filter(p => !isSame(lastUsed, p));
+      } else {
+        available = [...pool];
+      }
     }
 
     // Pick a random pattern from the available ones
