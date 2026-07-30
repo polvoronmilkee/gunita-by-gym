@@ -181,10 +181,19 @@ function setMenuVisible(visible) {
     return;
   }
 
-  menuScreen.classList.toggle("hidden", !visible);
-
   if (visible) {
+    menuScreen.style.display = "block";
+    requestAnimationFrame(() => {
+      menuScreen.classList.remove("hidden");
+    });
     menuAudioController.resumeMusicIfEnabled();
+  } else {
+    menuScreen.classList.add("hidden");
+    setTimeout(() => {
+      if (menuScreen.classList.contains("hidden")) {
+        menuScreen.style.display = "none";
+      }
+    }, 450);
   }
 }
 

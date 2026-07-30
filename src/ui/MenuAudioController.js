@@ -45,6 +45,17 @@ export class MenuAudioController {
     this.bindUi();
     this.bindUnlockHandlers();
     this.syncButtonLabels();
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this.stopMusic();
+      } else {
+        const menuScreen = document.getElementById("menu-screen");
+        if (menuScreen && !menuScreen.classList.contains("hidden")) {
+          this.resumeMusicIfEnabled();
+        }
+      }
+    });
   }
 
   readPersistedState() {
