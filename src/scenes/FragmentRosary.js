@@ -154,6 +154,8 @@ export class FragmentRosary extends BaseBulletHellScene {
     const { x, y, w, h } = this.arena;
     const desp = this.isDesperation;
 
+    this.sharedRosaryGapIndex = Phaser.Math.Between(3, 8);
+
     const createPendulum = (isOpposite) => {
       const start = isOpposite ? -Math.PI / 2 : Math.PI / 2;
       const end = isOpposite ? Math.PI / 2 : -Math.PI / 2;
@@ -164,12 +166,11 @@ export class FragmentRosary extends BaseBulletHellScene {
         segmentLength: 22,
         beadRadius: 10,
         hitboxRadius: 9,
-        missingBeadIndex: Phaser.Math.Between(4, 9),
         swingState: "HOLD",
         holdDelay: 0.8,
         isInitialHold: true,
         swingProgress: 0,
-        swingDuration: 1600,
+        swingDuration: 2200, // Slower swing duration (was 1600)
         startAngle: start,
         endAngle: end,
         angleHistory: [],
@@ -379,7 +380,11 @@ export class FragmentRosary extends BaseBulletHellScene {
               const temp = p.startAngle;
               p.startAngle = p.endAngle;
               p.endAngle = temp;
-              p.missingBeadIndex = Phaser.Math.Between(2, 4);
+              
+              // Only randomize the shared gap index once per full cycle
+              if (pi === 0) {
+                this.sharedRosaryGapIndex = Phaser.Math.Between(3, 8);
+              }
             }
           }
         } else if (p.swingState === "SWING") {
@@ -422,7 +427,8 @@ export class FragmentRosary extends BaseBulletHellScene {
           this.bulletGraphics.fillStyle(0xf7c948, trailAlpha);
 
           for (let i = 0; i < p.numBeads; i++) {
-            if (i === p.missingBeadIndex || i === p.missingBeadIndex + 1) continue;
+            // Check if within the 4-beads-wide gap
+            if (i >= this.sharedRosaryGapIndex && i <= this.sharedRosaryGapIndex + 3) continue;
             const dist = (i + 1) * p.segmentLength;
             const bx = p.anchorX + dist * Math.sin(hAngle);
             const by = p.anchorY + dist * Math.cos(hAngle);
@@ -442,7 +448,8 @@ export class FragmentRosary extends BaseBulletHellScene {
           const bx = p.anchorX + dist * Math.sin(swingAngle);
           const by = p.anchorY + dist * Math.cos(swingAngle);
 
-          if (i === p.missingBeadIndex || i === p.missingBeadIndex + 1) {
+          // Check if within the 4-beads-wide gap
+          if (i >= this.sharedRosaryGapIndex && i <= this.sharedRosaryGapIndex + 3) {
             const gapAlpha = isHolding ? 0.9 : 0.6;
             this.bulletGraphics.lineStyle(2, 0xffffff, gapAlpha);
             this.bulletGraphics.strokeCircle(bx, by, p.beadRadius + 2);
