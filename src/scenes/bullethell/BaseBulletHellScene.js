@@ -169,9 +169,8 @@ export class BaseBulletHellScene extends Phaser.Scene {
 
     // Global pause and escape listeners (ESC triggers the escape confirmation modal)
     this.cheatWin = () => {
-      this.crystalHP = 0;
+      this.crystalHP = 1;
       this.updateCrystalHPUI();
-      this.victorySequence();
     };
     this.input.keyboard.on('keydown-P', this.cheatWin, this);
     this.input.keyboard.on('keydown-ESC', this.showEscapeConfirmation, this);
