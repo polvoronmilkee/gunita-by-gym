@@ -561,12 +561,37 @@ export class FinalBossFisherman extends BaseBulletHellScene {
     // Reset water Y level to bottom of the arena
     this.floodWaterY = this.arena.y + this.arena.h;
 
-    // Tween the water level rising to the top of the arena over 3.5 seconds (during warning)
-    this.tweens.add({
-      targets: this,
-      floodWaterY: this.arena.y,
-      duration: 3500,
-      ease: "Quad.easeOut"
+    // Spawn shield safe zone immediately at the start of desperation
+    const shieldX = Phaser.Math.Between(this.arena.x + 60, this.arena.x + this.arena.w - 60);
+    const shieldY = Phaser.Math.Between(this.arena.y + 60, this.arena.y + this.arena.h - 60);
+    this.shieldZone = { x: shieldX, y: shieldY, radius: this.shieldRadius, pulsePhase: 0 };
+
+    // Tween the water level rising to the top of the arena, delayed by 1200ms
+    this.time.delayedCall(1200, () => {
+      if (this.state !== "DODGE") return;
+      this.tweens.add({
+        targets: this,
+        floodWaterY: this.arena.y,
+        duration: 2300,
+        ease: "Quad.easeOut"
+      });
+
+      // Water particles rising during wind-up
+      this.time.addEvent({
+        delay: 80,
+        repeat: 24,
+        callback: () => {
+          const px = Phaser.Math.Between(this.arena.x, this.arena.x + this.arena.w);
+          const py = this.arena.y + this.arena.h;
+          this.waterParticles.push({
+            x: px,
+            y: py,
+            vy: -Phaser.Math.Between(30, 80),
+            alpha: 0.7,
+            size: Phaser.Math.Between(2, 5)
+          });
+        }
+      });
     });
 
     // Step 1: Wind-up warning (3 seconds)
@@ -584,30 +609,6 @@ export class FinalBossFisherman extends BaseBulletHellScene {
       repeat: 2,
       duration: 500,
       ease: "Sine.easeInOut"
-    });
-
-    // Water particles rising during wind-up
-    this.time.addEvent({
-      delay: 100,
-      repeat: 29,
-      callback: () => {
-        const px = Phaser.Math.Between(this.arena.x, this.arena.x + this.arena.w);
-        const py = this.arena.y + this.arena.h;
-        this.waterParticles.push({
-          x: px,
-          y: py,
-          vy: -Phaser.Math.Between(30, 80),
-          alpha: 0.7,
-          size: Phaser.Math.Between(2, 5)
-        });
-      }
-    });
-
-    // Step 2: Spawn shield safe zone (at 2.5s)
-    this.time.delayedCall(2500, () => {
-      const shieldX = Phaser.Math.Between(this.arena.x + 60, this.arena.x + this.arena.w - 60);
-      const shieldY = Phaser.Math.Between(this.arena.y + 60, this.arena.y + this.arena.h - 60);
-      this.shieldZone = { x: shieldX, y: shieldY, radius: this.shieldRadius, pulsePhase: 0 };
     });
 
     // Step 3: Flood begins (at 3.5s, lasts 2.5s)
