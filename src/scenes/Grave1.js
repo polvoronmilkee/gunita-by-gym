@@ -1379,18 +1379,18 @@ export class Grave1 extends Phaser.Scene {
     if (this.currentArtifactKey === "fish-basket" || this.storyStage === 2) {
       if (this.currentArtifactKey === "fish-basket") {
         objective = "Examine the restored artifact.";
-        hint = "\"Every restored memory<br/>reveals another path.\"";
+        hint = "Hint: Every restored memory<br/>reveals another path.";
       } else {
         objective = "Investigate the Memory Crystal.";
-        hint = "\"The fragments answer only<br/>those who seek the truth.\"";
+        hint = "Hint: The fragments answer only<br/>those who seek the truth.";
       }
     } else if (this.storyStage === 3) {
       objective = "Find the Young Fisherman.";
       hint = "\"He remembers what the sea<br/>tried to warn them about.\"";
     } else {
       // Default / storyStage 1
-      objective = "Reach the Eastern Pier.<br/>Speak with the Old Fisherman.";
-      hint = "\"The sea remembers those<br/>who respect it.\"";
+      objective = "Reach the North Eastern Pier.<br/>Speak with the Old Fisherman.";
+      hint = "Hint: The sea remembers those<br/>who respect it.";
     }
 
     this.lumaGuidanceBox.update(objective, hint);
