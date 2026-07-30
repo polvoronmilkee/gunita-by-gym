@@ -545,22 +545,8 @@ export class FragmentRosary extends BaseBulletHellScene {
           }
         }
 
-        if (this.soul) {
-          const dist = Phaser.Math.Distance.Between(this.soul.x, this.soul.y, cross.x, cross.y);
-          if (dist < 8) {
-            this.triggerPlayerHit();
-            return;
-          }
-          if (Math.abs(this.soul.x - cross.x) < 4 && this.soul.y > cross.y - s && this.soul.y < cross.y + s) {
-            this.triggerPlayerHit();
-            return;
-          }
-          if (Math.abs(this.soul.y - cross.y) < 4 && this.soul.x > cross.x - s && this.soul.x < cross.x + s) {
-            this.triggerPlayerHit();
-            return;
-          }
-        }
       }
+    }
     }
   }
 }
