@@ -930,14 +930,16 @@ export class Grave1 extends Phaser.Scene {
 
         const riddlesToPass = riddleData.riddles || riddleData;
         this.startFragmentChallenge(riddlesToPass, () => {
-          const fragmentX = this.currentFragment.x;
-          const fragmentY = this.currentFragment.y;
-          this.currentFragment.destroy();
-          this.currentFragment = null;
+          if (this.currentFragment) {
+            const fragmentX = this.currentFragment.x;
+            const fragmentY = this.currentFragment.y;
+            this.currentFragment.destroy();
+            this.currentFragment = null;
 
-          this.currentArtifact = this.physics.add.sprite(fragmentX, fragmentY, artifactKey);
-          this.currentArtifact.setDepth(1);
-          this.currentArtifactKey = artifactKey;
+            this.currentArtifact = this.physics.add.sprite(fragmentX, fragmentY, artifactKey);
+            this.currentArtifact.setDepth(1);
+            this.currentArtifactKey = artifactKey;
+          }
           this.updateLumaGuidance();
 
           // Save item to player's inventory immediately so progress is persistent
