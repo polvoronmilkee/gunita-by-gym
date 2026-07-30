@@ -1884,6 +1884,7 @@ export class Grave1 extends Phaser.Scene {
       dodgeLines = data.dodge_lines;
     }
 
+    // Use the shattered glass transition before launching the bullet hell scene
     TransitionSystem.shatteredGlassTransition(this, () => {
       if (this.audioManager) this.audioManager.stopMusic();
       if (this.lumaGuidanceBox) {
@@ -1891,6 +1892,13 @@ export class Grave1 extends Phaser.Scene {
       }
       if (this.interactionPrompt) {
         this.interactionPrompt.hide();
+      }
+      if (this.hud) {
+        this.hud.setPauseVisible(false);
+      }
+      if (this.dialogue) {
+        this.dialogue.destroy();
+        this.dialogue = null;
       }
       this.scene.pause();
       this.scene.launch(activeScene, {
@@ -1901,6 +1909,12 @@ export class Grave1 extends Phaser.Scene {
               this.dialogueActive = false;
               if (this.lumaGuidanceBox) {
                 this.lumaGuidanceBox.show();
+              }
+              if (this.interactionPrompt) {
+                this.interactionPrompt.hide();
+              }
+              if (this.hud) {
+                this.hud.setPauseVisible(true);
               }
               if (this.transitionFadeBlack) {
                 this.transitionFadeBlack.destroy();
@@ -1917,6 +1931,12 @@ export class Grave1 extends Phaser.Scene {
               this.dialogueActive = false;
               if (this.lumaGuidanceBox) {
                 this.lumaGuidanceBox.show();
+              }
+              if (this.interactionPrompt) {
+                this.interactionPrompt.hide();
+              }
+              if (this.hud) {
+                this.hud.setPauseVisible(true);
               }
               if (this.transitionFadeBlack) {
                 this.transitionFadeBlack.destroy();
