@@ -9065,6 +9065,7 @@
         {
          "draworder":"topdown",
          "id":32,
+         "locked":true,
          "name":"effects",
          "objects":[
                 {
@@ -9914,6 +9915,19 @@
                  "width":0,
                  "x":1056,
                  "y":1704
+                }, 
+                {
+                 "height":0,
+                 "id":513,
+                 "name":"VINO",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":409.333333333333,
+                 "y":1928.66666666667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -9922,7 +9936,7 @@
          "y":0
         }],
  "nextlayerid":33,
- "nextobjectid":513,
+ "nextobjectid":514,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

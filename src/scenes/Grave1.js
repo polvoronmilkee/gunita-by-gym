@@ -10,6 +10,7 @@ import { saveGameState, loadGameState, syncOfflineData, resetPlayerRiddles } fro
 import characterData from "../data/characters.json";
 import { AudioManager } from "../utils/audioManager.js";
 import { TransitionSystem } from "../systems/TransitionSystem.js";
+import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -320,10 +321,40 @@ export class Grave1 extends Phaser.Scene {
       });
     }
 
-    // Retrieve position from cache or default spawn
+    // Retrieve position from cache or default spawn near npc-RANDOM-GUY (x: 576, y: 1920)
     const cache = getCache();
-    const spawnX = (cache && cache.current_area === "Grave 1" && cache.position_x !== undefined) ? cache.position_x : 1137;
-    const spawnY = (cache && cache.current_area === "Grave 1" && cache.position_y !== undefined) ? cache.position_y : 550;
+    this.isNewGame = (!cache || cache.position_x === undefined || !cache.played_grave1_intro || data?.isNewGame);
+    
+    let spawnX = 576;
+    let spawnY = 1920;
+
+    if (this.isNewGame) {
+      const charsSpawnLayer = map.getObjectLayer("CHARS_SPAWNS");
+      if (charsSpawnLayer && charsSpawnLayer.objects) {
+        const rgObj = charsSpawnLayer.objects.find((o) => o.name === "npc-RANDOM-GUY");
+        if (rgObj) {
+          spawnX = rgObj.x;
+          spawnY = rgObj.y;
+        }
+      }
+    } else {
+      spawnX = cache.position_x;
+      spawnY = cache.position_y;
+    }
+
+    const safeSpawn = this.getNearestLandCoordinate(spawnX, spawnY, map);
+    spawnX = safeSpawn.x;
+    spawnY = safeSpawn.y;
+
+    if (this.isNewGame && cache) {
+      setCache({
+        ...cache,
+        position_x: spawnX,
+        position_y: spawnY
+      });
+    }
+
+    this.lumaGuidanceBox = new LumaGuidanceBox();
 
     this.audioManager = new AudioManager(this, "village-v1");
 
@@ -465,22 +496,26 @@ export class Grave1 extends Phaser.Scene {
     this.currentArtifact = null;
     this.map = map;
 
-    // Sync database position if available
-    if (cache && cache.player_id) {
+    // Sync database position if available (skip if it's a new game to prevent snapping to old saved coordinates)
+    if (!this.isNewGame && cache && cache.player_id) {
       loadGameState(cache.player_id)
         .then(serverState => {
           if (serverState && serverState.current_area === "Grave 1" && (serverState.position_x !== cache.position_x || serverState.position_y !== cache.position_y)) {
-            console.log("Supabase coordinates differ from cache. Snapping player to match server...");
-            this.player.sprite.setPosition(serverState.position_x, serverState.position_y);
-            const freshCache = getCache();
-            if (freshCache) {
-              setCache({
-                ...freshCache,
-                position_x: serverState.position_x,
-                position_y: serverState.position_y,
-                current_world: serverState.current_world || freshCache.current_world,
-                current_area: serverState.current_area || freshCache.current_area
-              });
+            // Verify server coordinates are on land and not water
+            const safeServer = this.getNearestLandCoordinate(serverState.position_x, serverState.position_y, map);
+            if (Math.hypot(safeServer.x - serverState.position_x, safeServer.y - serverState.position_y) < 20) {
+              console.log("Supabase coordinates differ from cache. Snapping player to match server...");
+              this.player.sprite.setPosition(safeServer.x, safeServer.y);
+              const freshCache = getCache();
+              if (freshCache) {
+                setCache({
+                  ...freshCache,
+                  position_x: safeServer.x,
+                  position_y: safeServer.y,
+                  current_world: serverState.current_world || freshCache.current_world,
+                  current_area: serverState.current_area || freshCache.current_area
+                });
+              }
             }
           }
         })
@@ -822,9 +857,11 @@ export class Grave1 extends Phaser.Scene {
 
     if (shouldPlayIntro) {
       this.dialogueActive = true;
-      this.startDialogueWithAI();
+      this.playLumaIntroCutscene();
     } else {
       this.dialogueActive = false;
+      this.lumaGuidanceBox.show();
+      this.updateLumaGuidance();
     }
 
     // Advance dialogue with key down events
@@ -870,6 +907,7 @@ export class Grave1 extends Phaser.Scene {
           this.currentArtifact = this.physics.add.sprite(fragmentX, fragmentY, artifactKey);
           this.currentArtifact.setDepth(1);
           this.currentArtifactKey = artifactKey;
+          this.updateLumaGuidance();
 
           this.startDialogueSequence([{ speaker: "Vino", text: dialogueText }]);
         }, () => {
@@ -886,6 +924,7 @@ export class Grave1 extends Phaser.Scene {
           this.currentArtifact = null;
           this.currentArtifactKey = null;
           this.storyStage++;
+          this.updateLumaGuidance();
           if (this.storyStage === 5) {
             this.startFinalRiddleSequence();
           }
@@ -1000,6 +1039,10 @@ export class Grave1 extends Phaser.Scene {
       this.currentFragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
       this.currentFragment.setDepth(1);
       this.currentFragment.play("fragment-anim");
+      
+      // Update Luma Guidance for the spawned fragment
+      this.updateLumaGuidance();
+
       this.startDialogueSequence([
         { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
       ]);
@@ -1174,6 +1217,183 @@ export class Grave1 extends Phaser.Scene {
 
     const container = document.getElementById("game-container") || document.body;
     container.appendChild(modalBg);
+  }
+
+  playLumaIntroCutscene() {
+    this.dialogueActive = true;
+    if (this.player?.sprite?.body) {
+      this.player.sprite.body.setVelocity(0, 0); // Lock player
+      if (this.player.sprite.anims) {
+        this.player.sprite.anims.stop();
+      }
+    }
+
+    if (!this.dialogue) {
+      this.dialogue = new DialogueBox(this);
+    }
+    this.dialogue.hide();
+
+    const spawnX = this.player.sprite.x;
+    const spawnY = this.player.sprite.y;
+
+    const lumaLand = this.getNearestLandCoordinate(spawnX + 36, spawnY - 30, this.map);
+
+    // Create Luma sprite (initially hidden/invisible) near Vino (matches Campo Lunan positioning)
+    this.lumaSprite = this.physics.add.sprite(lumaLand.x, lumaLand.y, "luma-idle");
+    this.lumaSprite.setScale(0.3); // matches Vino's scale/proportion
+    this.lumaSprite.setDepth(this.lumaSprite.y);
+    this.lumaSprite.setImmovable(true);
+    this.lumaSprite.setVisible(false);
+    this.lumaSprite.setAlpha(0);
+
+    if (!this.anims.exists("luma-idle-anim")) {
+      this.anims.create({
+        key: "luma-idle-anim",
+        frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+        frameRate: 5,
+        repeat: -1
+      });
+    }
+    this.lumaSprite.play("luma-idle-anim");
+
+    // Add purple glowing effect to Luma (similar to Campo Lunan)
+    if (this.cameras.main.postFX) {
+      this.lumaGlow = this.lumaSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+      this.tweens.add({
+        targets: this.lumaGlow,
+        outerStrength: 1.3,
+        innerStrength: 0.9,
+        duration: 1200,
+        yoyo: true,
+        repeat: -1,
+        ease: "Sine.easeInOut"
+      });
+    }
+
+    // Camera shake & sound effect
+    this.cameras.main.shake(350, 0.004);
+    if (this.audioManager) {
+      if (typeof this.audioManager.playLumaSwishSfx === "function") {
+        this.audioManager.playLumaSwishSfx();
+      } else if (typeof this.audioManager.playLumaSwish === "function") {
+        this.audioManager.playLumaSwish();
+      }
+    }
+
+    // Create crystal-spark particle effect gathering around Luma's entrance
+    if (!this.textures.exists("crystal-spark")) {
+      const g = this.make.graphics({ x: 0, y: 0 });
+      g.fillStyle(0xffffff, 1);
+      g.fillRect(0, 0, 4, 4);
+      g.generateTexture("crystal-spark", 4, 4);
+      g.destroy();
+    }
+
+    const emitter = this.add.particles(spawnX + 36, spawnY - 60, "crystal-spark", {
+      speed: { min: 15, max: 50 },
+      angle: { min: 0, max: 360 },
+      scale: { start: 1.5, end: 0 },
+      alpha: { start: 0.8, end: 0 },
+      tint: [0x50c0ff, 0xbc80ff, 0xffffff],
+      lifespan: 1200,
+      quantity: 3,
+      frequency: 45,
+      maxParticles: 35,
+      blendMode: "SCREEN"
+    });
+    emitter.setDepth(this.lumaSprite.y + 1);
+
+    // Fade in Luma (ghostly entrance)
+    this.lumaSprite.setVisible(true);
+    this.tweens.add({
+      targets: this.lumaSprite,
+      alpha: 1,
+      duration: 1500,
+      onComplete: () => {
+        emitter.destroy();
+
+        const forestIntroDialogues = [
+          { speaker: "Vino", text: "Luma... You're here." },
+          { speaker: "Luma", text: "Our first journey begins here." },
+          { speaker: "Vino", text: "This place feels... empty." },
+          { speaker: "Luma", text: "Memories fade from their edges first. We mustn't let them disappear." },
+          { speaker: "Luma", text: "Head north-west. An old fisherman waits at the Eastern Pier." },
+          { speaker: "Vino", text: "Got it. I'll find him." },
+          { speaker: "Luma", text: "Listen more than you speak, Vino... Every memory has something to teach." },
+          { speaker: "Luma", text: "...And Vino." },
+          { speaker: "Vino", text: "Yeah?" },
+          { speaker: "Luma", text: "When you listen to their memories... don't search only for answers." },
+          { speaker: "Luma", text: "Search for the person they once were." },
+          { speaker: "Vino", text: "...I'll remember that." }
+        ];
+
+        let step = 0;
+        const runDialogueStep = () => {
+          if (step < forestIntroDialogues.length) {
+            const current = forestIntroDialogues[step];
+            this.dialogue.showText(current.speaker, current.text, () => {
+              step++;
+              runDialogueStep();
+            });
+          } else {
+            // Dialogue complete: hide dialogue box, play sound, fade out Luma
+            this.dialogue.hide();
+
+            if (this.audioManager) {
+              if (typeof this.audioManager.playLumaSwishSfx === "function") {
+                this.audioManager.playLumaSwishSfx();
+              } else if (typeof this.audioManager.playLumaSwish === "function") {
+                this.audioManager.playLumaSwish();
+              }
+            }
+
+            this.tweens.add({
+              targets: this.lumaSprite,
+              alpha: 0,
+              duration: 1600,
+              onComplete: () => {
+                this.lumaSprite.destroy();
+                this.dialogueActive = false;
+
+                // Show objective box
+                if (this.lumaGuidanceBox) {
+                  this.lumaGuidanceBox.show();
+                  this.updateLumaGuidance();
+                }
+              }
+            });
+          }
+        };
+
+        runDialogueStep();
+      }
+    });
+  }
+
+  updateLumaGuidance() {
+    if (!this.lumaGuidanceBox) return;
+
+    let objective = "";
+    let hint = "";
+
+    if (this.currentArtifactKey === "fish-basket" || this.storyStage === 2) {
+      if (this.currentArtifactKey === "fish-basket") {
+        objective = "Examine the restored artifact.";
+        hint = "\"Every restored memory<br/>reveals another path.\"";
+      } else {
+        objective = "Investigate the Memory Crystal.";
+        hint = "\"The fragments answer only<br/>those who seek the truth.\"";
+      }
+    } else if (this.storyStage === 3) {
+      objective = "Find the Young Fisherman.";
+      hint = "\"He remembers what the sea<br/>tried to warn them about.\"";
+    } else {
+      // Default / storyStage 1
+      objective = "Reach the Eastern Pier.<br/>Speak with the Old Fisherman.";
+      hint = "\"The sea remembers those<br/>who respect it.\"";
+    }
+
+    this.lumaGuidanceBox.update(objective, hint);
   }
 
   generateAIDialogues() {
@@ -1533,6 +1753,9 @@ export class Grave1 extends Phaser.Scene {
 
     // Use the shattered glass transition before launching the bullet hell scene
     TransitionSystem.shatteredGlassTransition(this, () => {
+      if (this.lumaGuidanceBox) {
+        this.lumaGuidanceBox.hide();
+      }
       this.scene.pause();
       this.scene.launch(activeScene, {
           riddleData: riddleData,
@@ -1540,6 +1763,9 @@ export class Grave1 extends Phaser.Scene {
           dodgeLines: dodgeLines,
           onExit: () => {
               this.dialogueActive = false;
+              if (this.lumaGuidanceBox) {
+                this.lumaGuidanceBox.show();
+              }
               if (this.transitionFadeBlack) {
                 this.transitionFadeBlack.destroy();
                 this.transitionFadeBlack = null;
@@ -1553,6 +1779,9 @@ export class Grave1 extends Phaser.Scene {
           },
           onComplete: () => {
               this.dialogueActive = false;
+              if (this.lumaGuidanceBox) {
+                this.lumaGuidanceBox.show();
+              }
               if (this.transitionFadeBlack) {
                 this.transitionFadeBlack.destroy();
                 this.transitionFadeBlack = null;
@@ -1567,6 +1796,9 @@ export class Grave1 extends Phaser.Scene {
           },
           onDeath: async () => {
               this.dialogueActive = false;
+              if (this.lumaGuidanceBox) {
+                this.lumaGuidanceBox.show();
+              }
               if (this.physics && typeof this.physics.resume === 'function') {
                 this.physics.resume();
               }

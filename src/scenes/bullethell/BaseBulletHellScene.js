@@ -73,6 +73,11 @@ export class BaseBulletHellScene extends Phaser.Scene {
   }
 
   create() {
+    const lumaBox = document.querySelector(".luma-guidance-container");
+    if (lumaBox) {
+      lumaBox.classList.remove("visible");
+    }
+
     const { width, height } = this.scale;
     const centerX = width / 2;
 
