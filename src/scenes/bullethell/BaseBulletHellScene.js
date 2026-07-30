@@ -1096,24 +1096,24 @@ export class BaseBulletHellScene extends Phaser.Scene {
         let bounced = false;
         
         if (b.bounces !== undefined && b.bounces > 0) {
-          if (b.x - b.radius < this.arena.x) {
+          if (b.x - b.radius < this.arena.x && b.vx < 0) {
             b.x = this.arena.x + b.radius;
             b.vx *= -1;
             b.bounces--;
             bounced = true;
-          } else if (b.x + b.radius > this.arena.x + this.arena.w) {
+          } else if (b.x + b.radius > this.arena.x + this.arena.w && b.vx > 0) {
             b.x = this.arena.x + this.arena.w - b.radius;
             b.vx *= -1;
             b.bounces--;
             bounced = true;
           }
 
-          if (b.y - b.radius < this.arena.y) {
+          if (b.y - b.radius < this.arena.y && b.vy < 0) {
             b.y = this.arena.y + b.radius;
             b.vy *= -1;
             b.bounces--;
             bounced = true;
-          } else if (b.y + b.radius > this.arena.y + this.arena.h) {
+          } else if (b.y + b.radius > this.arena.y + this.arena.h && b.vy > 0) {
             b.y = this.arena.y + this.arena.h - b.radius;
             b.vy *= -1;
             b.bounces--;
