@@ -102,6 +102,9 @@ export class Grave1 extends Phaser.Scene {
     this.load.spritesheet("npc-sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", {
       frameWidth: 40, frameHeight: 43
     });
+    this.load.spritesheet("npc-man-mowing", "src/assets/grave1-v2/more-characters/man-mowing.png", {
+      frameWidth: 40, frameHeight: 43
+    });
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
     // Load player animations sheets
@@ -464,7 +467,8 @@ export class Grave1 extends Phaser.Scene {
       "npc-RANDOM-GUY": "random-guy",
       "npc-RANDOM-WOMAN": "random-woman",
       "npc-DEBT-COLLECTOR": "debt-collector",
-      "npc-SICK-WFE": "sick-wife"
+      "npc-SICK-WFE": "sick-wife",
+      "man-mowing": "man-mowing"
     };
 
     // Get CHARS_SPAWNS layer from map
@@ -481,6 +485,8 @@ export class Grave1 extends Phaser.Scene {
         const spriteKey = characterNameMap[charName];
         
         if (spriteKey) {
+              if (spriteKey === "man-mowing") return;
+
           const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
           const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
           npc.setDepth(pos.y);
@@ -503,9 +509,38 @@ export class Grave1 extends Phaser.Scene {
           console.warn(`Unknown character name in CHARS_SPAWNS: ${charName}`);
         }
       });
-    } else {
-      console.warn("CHARS_SPAWNS layer not found in map");
     }
+
+    // Explicitly spawn man-mowing at ID 517 only
+    const spawnedIds = new Set();
+    const mapObjects = map.objects || [];
+    mapObjects.forEach(layer => {
+      if (layer && layer.objects) {
+        layer.objects.forEach(obj => {
+          if (obj.id === 517 && !spawnedIds.has(obj.id)) {
+            spawnedIds.add(obj.id);
+            const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
+            const npc = this.npcs.create(pos.x, pos.y, "npc-man-mowing");
+            npc.setDepth(pos.y);
+            if (npc.body) {
+              npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
+              npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
+            }
+
+            const animKey = "npc-anim-man-mowing";
+            if (!this.anims.exists(animKey)) {
+              this.anims.create({
+                key: animKey,
+                frames: this.anims.generateFrameNumbers("npc-man-mowing", { start: 0, end: 2 }),
+                frameRate: 5,
+                repeat: -1
+              });
+            }
+            npc.play(animKey);
+          }
+        });
+      }
+    });
 
     this.physics.add.collider(this.player.sprite, this.npcs);
     
