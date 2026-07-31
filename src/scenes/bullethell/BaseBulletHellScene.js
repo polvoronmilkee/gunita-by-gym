@@ -196,7 +196,9 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.backBtnDom.style.left = "185px";
     this.backBtnDom.style.top = "30px";
     this.backBtnDom.addEventListener("click", () => this.showEscapeConfirmation());
-    container.appendChild(this.backBtnDom);
+    if (this.scene.key !== "tutorial-bullet-hell") {
+      container.appendChild(this.backBtnDom);
+    }
 
 
 
@@ -1316,13 +1318,15 @@ export class BaseBulletHellScene extends Phaser.Scene {
             </div>
           </button>
 
+          ${this.scene.key === "tutorial-bullet-hell" ? "" : `
           <button class="pause-menu__btn" id="pm-escape" style="border-color: rgba(255, 85, 119, 0.6);">
             <div class="pm-btn-icon" style="color: #ff5577; text-shadow: 0 0 8px rgba(255, 85, 119, 0.6);">⮜</div>
             <div class="pm-btn-body">
               <span class="pm-btn-title" style="color: #ff7799;">ESCAPE TO SAFETY</span>
-              <span class="pm-btn-desc">Leave this fragment and return to Mang Tomas' memory world.y</span>
+              <span class="pm-btn-desc">Leave this fragment and return to Mang Tomas' memory world.</span>
             </div>
           </button>
+          `}
         </div>
         <div class="pause-menu__footer">
           PROGRESS IN THIS CHALLENGE WILL BE LOST
@@ -1342,7 +1346,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
     const continueBtn = overlay.querySelector("#pm-continue");
     const escapeBtn = overlay.querySelector("#pm-escape");
 
-    const buttons = [continueBtn, escapeBtn];
+    const buttons = [continueBtn, escapeBtn].filter(Boolean);
     let selectedIdx = 0;
 
     const updateSelection = () => {

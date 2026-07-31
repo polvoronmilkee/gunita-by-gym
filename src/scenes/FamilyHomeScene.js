@@ -376,7 +376,7 @@ export class FamilyHomeScene extends Phaser.Scene {
     }
   }
 
-  async saveProgress() {
+  async saveProgress(forceBackendSave = false) {
     if (window.isExplorationMode) return;
     const cache = getCache();
     if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
@@ -385,19 +385,36 @@ export class FamilyHomeScene extends Phaser.Scene {
       current_world: "Lunan",
       current_area: "FamilyHomeScene",
       position_x: Math.round(this.player.sprite.x),
-      position_y: Math.round(this.player.sprite.y)
+      position_y: Math.round(this.player.sprite.y),
+      has_talked_to_luma: cache.has_talked_to_luma || false,
+      has_completed_tutorial: cache.has_completed_tutorial || false,
+      played_post_tutorial_dialogue: cache.played_post_tutorial_dialogue || false,
+      essence: cache.essence !== undefined ? cache.essence : 5,
     };
+
+    const stateString = JSON.stringify(state);
+    const hasStateChanged = this.lastSavedStateString !== stateString;
 
     setCache({
       ...cache,
       ...state
     });
 
+    if (!forceBackendSave && !hasStateChanged) {
+      return;
+    }
+
+    if (this.isSaving) return;
+    this.isSaving = true;
+
     try {
       await saveGameState(cache.player_id, state);
+      this.lastSavedStateString = stateString;
       syncOfflineData();
     } catch (err) {
       console.error("Autosave database sync failed:", err.message);
+    } finally {
+      this.isSaving = false;
     }
   }
 }

@@ -16,8 +16,8 @@ import { FinalBossFisherman } from "./scenes/FinalBossFisherman.js";
 import { FamilyHomeScene } from "./scenes/FamilyHomeScene.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { MenuAudioController } from "./ui/MenuAudioController.js";
-import { getCache, setCache, clearCache } from "./save.js";
-import { loginPlayer, signupPlayer, loadGameState } from "./utils/api.js";
+import { getCache, setCache, clearCache, getAllSlots, deleteSlot, setActiveSlot } from "./save.js";
+import { connectAndUnlock } from "./utils/portalApi.js";
 
 const menuAssetUrls = [
   "/src/assets/main-menu/main-menu-bg-purple.png",
@@ -103,19 +103,18 @@ function initializeMenuScreen() {
 
 initializeMenuScreen();
 
-const continueModal = document.getElementById("continue-journey-modal");
-const continueInput = document.getElementById("continue-username-input");
-const continueError = document.getElementById("continue-modal-error");
-const continueConfirmBtn = document.getElementById(
-  "continue-modal-confirm-btn",
-);
-const continueCloseBtn = document.getElementById("continue-modal-close-btn");
-
-const newModal = document.getElementById("new-journey-modal");
-const newInput = document.getElementById("new-username-input");
-const newError = document.getElementById("new-modal-error");
-const newConfirmBtn = document.getElementById("new-modal-confirm-btn");
-const newCancelBtn = document.getElementById("new-modal-cancel-btn");
+const saveModal = document.getElementById("save-slot-modal");
+const saveSlotsContainer = document.getElementById("save-slots-container");
+const saveError = document.getElementById("save-modal-error");
+const saveCloseBtn = document.getElementById("save-modal-close-btn");
+if (saveCloseBtn) {
+  saveCloseBtn.addEventListener("click", () => {
+    hideSaveModal();
+  });
+}
+const continueBtn = document.getElementById("continue-journey-btn");
+const newBtn = document.getElementById("new-journey-btn");
+const connectPortalBtn = document.getElementById("connect-portal-btn");
 const guideButton = document.getElementById("menu-guide");
 const guideOverlay = document.getElementById("survival-guide-overlay");
 const guideCloseButton = document.getElementById("survival-guide-close");
@@ -147,32 +146,156 @@ function hideGuide() {
   guideOverlay.setAttribute("aria-hidden", "true");
 }
 
-function showContinueModal() {
-  if (!continueModal) return;
-  continueError.textContent = "";
-  continueInput.value = "";
-  continueModal.classList.remove("hidden");
-  continueInput.focus();
+function showConfirmModal(title, message, onConfirm) {
+  const modal = document.getElementById("confirm-modal");
+  const titleEl = document.getElementById("confirm-modal-title");
+  const msgEl = document.getElementById("confirm-modal-message");
+  const yesBtn = document.getElementById("confirm-modal-yes-btn");
+  const cancelBtn = document.getElementById("confirm-modal-cancel-btn");
+
+  if (!modal) return;
+
+  titleEl.textContent = title;
+  msgEl.textContent = message;
+
+  const cleanup = () => {
+    modal.classList.add("hidden");
+    yesBtn.onclick = null;
+    cancelBtn.onclick = null;
+  };
+
+  yesBtn.onclick = () => {
+    cleanup();
+    onConfirm();
+  };
+
+  cancelBtn.onclick = () => {
+    cleanup();
+  };
+
+  modal.classList.remove("hidden");
 }
 
-function hideContinueModal() {
-  if (!continueModal) return;
-  continueModal.classList.add("hidden");
-  continueError.textContent = "";
+let currentModalMode = "continue"; // 'continue' or 'new'
+
+function renderSaveSlots(mode = currentModalMode) {
+  currentModalMode = mode;
+  if (!saveSlotsContainer) return;
+  saveSlotsContainer.innerHTML = "";
+  if (saveError) saveError.textContent = "";
+  const slots = getAllSlots();
+  
+  let slotsToRender = slots;
+  if (mode === "continue") {
+    slotsToRender = slots.filter(slot => !slot.isEmpty);
+    if (slotsToRender.length === 0) {
+      saveSlotsContainer.innerHTML = `<p style="color: var(--text-light); text-align: center; font-family: 'VT323'; font-size: 1.2rem; padding: 20px;">No saved memories found. Please start a New Memory.</p>`;
+      return;
+    }
+  }
+
+  slotsToRender.forEach(slot => {
+    const slotDiv = document.createElement("div");
+    slotDiv.style.width = "360px";
+    slotDiv.style.height = "52px";
+    slotDiv.style.boxSizing = "border-box";
+    slotDiv.style.display = "flex";
+    slotDiv.style.justifyContent = "space-between";
+    slotDiv.style.alignItems = "center";
+    slotDiv.style.padding = "0 16px";
+    slotDiv.style.border = "1px solid rgba(45, 212, 191, 0.4)";
+    slotDiv.style.borderRadius = "4px";
+    slotDiv.style.background = "rgba(20, 23, 43, 0.9)";
+    slotDiv.style.cursor = "pointer";
+    slotDiv.style.transition = "border-color 0.2s, box-shadow 0.2s";
+
+    slotDiv.onmouseenter = () => {
+      slotDiv.style.borderColor = "var(--teal)";
+      slotDiv.style.boxShadow = "0 0 8px rgba(45, 212, 191, 0.3)";
+    };
+    slotDiv.onmouseleave = () => {
+      slotDiv.style.borderColor = "rgba(45, 212, 191, 0.4)";
+      slotDiv.style.boxShadow = "none";
+    };
+
+    if (slot.isEmpty) {
+      slotDiv.innerHTML = `
+        <span style="color: var(--text-light); font-family: 'VT323'; font-size: 1.2rem;">Slot ${slot.slotIndex}: — Empty —</span>
+      `;
+      slotDiv.onclick = () => {
+        showConfirmModal(
+          "✦ START NEW MEMORY ✦",
+          `Create a new save file on Slot ${slot.slotIndex}?`,
+          () => {
+            setActiveSlot(slot.slotIndex);
+            setCache({
+              current_world: "Lunan",
+              current_area: "Campo Lunan",
+              position_x: 320,
+              position_y: 360,
+            });
+            hideSaveModal();
+            startGame(null, { title: "Entering Campo Lunan", subtitle: "Awakening the Echoes", hint: "Creating new journey..." });
+          }
+        );
+      };
+    } else {
+      slotDiv.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="color: var(--gold-accent); font-family: 'VT323'; font-size: 1.2rem;">Slot ${slot.slotIndex}</span>
+          <span style="color: var(--text-light); font-family: 'VT323'; font-size: 1.05rem;">Area: ${slot.area}</span>
+        </div>
+        <button class="delete-slot-btn" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 1.1rem; transition: all 0.2s;" title="Delete Slot">🗑️</button>
+      `;
+      
+      slotDiv.onclick = () => {
+        if (mode === "continue") {
+          setActiveSlot(slot.slotIndex);
+          hideSaveModal();
+          startGame(null, { title: "Continuing Journey", subtitle: "Resuming Saved Echoes", hint: "Restoring your memories..." });
+        } else {
+          if (saveError) saveError.textContent = "Please delete the slot first to start a new game here.";
+        }
+      };
+
+      const delBtn = slotDiv.querySelector(".delete-slot-btn");
+      if (delBtn) {
+        delBtn.onmouseenter = () => {
+          delBtn.style.background = "rgba(239, 68, 68, 0.3)";
+          delBtn.style.borderColor = "#ef4444";
+        };
+        delBtn.onmouseleave = () => {
+          delBtn.style.background = "rgba(239, 68, 68, 0.15)";
+          delBtn.style.borderColor = "rgba(239, 68, 68, 0.4)";
+        };
+        delBtn.onclick = (e) => {
+          e.stopPropagation();
+          showConfirmModal(
+            "✦ DELETE SAVE SLOT ✦",
+            `Are you sure you want to delete Slot ${slot.slotIndex}? This cannot be undone.`,
+            () => {
+              deleteSlot(slot.slotIndex);
+              renderSaveSlots(mode);
+            }
+          );
+        };
+      }
+    }
+    
+    saveSlotsContainer.appendChild(slotDiv);
+  });
 }
 
-function showNewModal() {
-  if (!newModal) return;
-  newError.textContent = "";
-  newInput.value = "";
-  newModal.classList.remove("hidden");
-  newInput.focus();
+function showSaveModal(mode) {
+  if (!saveModal) return;
+  renderSaveSlots(mode);
+  saveModal.classList.remove("hidden");
 }
 
-function hideNewModal() {
-  if (!newModal) return;
-  newModal.classList.add("hidden");
-  newError.textContent = "";
+function hideSaveModal() {
+  if (!saveModal) return;
+  saveModal.classList.add("hidden");
+  if (saveError) saveError.textContent = "";
 }
 
 function setMenuVisible(visible) {
@@ -279,25 +402,39 @@ window.returnToGunitaMenu = () => {
   }, 450);
 };
 
-// Continue Journey Button Event
-document.getElementById("continue-journey")?.addEventListener("click", () => {
-  const cache = getCache();
-  if (cache && cache.player_id) {
-    // Instantly load game if cache is present!
-    startGame(null, {
-      title: "Continuing Journey",
-      subtitle: "Resuming Saved Echoes",
-      hint: "Restoring your memories...",
-    });
+// Initial UI State (Bypassed Portal Auth for testing)
+// Buttons are already visible via HTML structure, no dynamic overrides needed now
+
+connectPortalBtn?.addEventListener("click", async () => {
+  const title = document.getElementById("connect-portal-title");
+  const desc = document.getElementById("connect-portal-desc");
+  if (title) title.textContent = "CONNECTING...";
+  if (desc) desc.textContent = "Please authorize in the new tab";
+  
+  // Unlock Artifact 1 (Vino Soul) at start
+  const GAME_ID_1 = "YOUR_GAME_ID_1_HERE"; 
+  const success = await connectAndUnlock(GAME_ID_1);
+  
+  if (success) {
+    localStorage.setItem("gunita_portal_authorized", "true");
+    if (connectPortalBtn) connectPortalBtn.style.display = "none";
+    if (playBtn) playBtn.style.display = "flex";
   } else {
-    // Show continue journey login modal
-    showContinueModal();
+    if (title) title.textContent = "CONNECTION FAILED";
+    if (desc) desc.textContent = "Click to try again";
   }
 });
 
-// Start Again (New Game) Button Event
-document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
-  showNewModal();
+// Continue Journey Button Event
+continueBtn?.addEventListener("click", () => {
+  document.querySelector(".gunita-modal__title").textContent = "✦ CONTINUE JOURNEY ✦";
+  showSaveModal("continue");
+});
+
+// New Journey Button Event
+newBtn?.addEventListener("click", () => {
+  document.querySelector(".gunita-modal__title").textContent = "✦ START NEW MEMORY ✦";
+  showSaveModal("new");
 });
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
@@ -328,8 +465,8 @@ guideTabButtons.forEach((button) => {
 // Main Menu Keyboard Navigation
 let selectedMenuIndex = 0;
 const menuButtons = [
-  document.getElementById("continue-journey"),
-  document.getElementById("enter-campo-lunan"),
+  document.getElementById("continue-journey-btn"),
+  document.getElementById("new-journey-btn"),
   document.getElementById("tale-untold"),
   document.getElementById("menu-guide")
 ].filter(Boolean);
@@ -364,10 +501,16 @@ setTimeout(updateMenuSelection, 300);
 
 document.addEventListener("keydown", (event) => {
   const guideOpen = guideOverlay && !guideOverlay.classList.contains("hidden");
+  const saveOpen = document.getElementById("save-slot-modal") && !document.getElementById("save-slot-modal").classList.contains("hidden");
   
-  if (event.key === "Escape" && guideOpen) {
-    hideGuide();
-    return;
+  if (event.key === "Escape") {
+    if (guideOpen) {
+      hideGuide();
+      return;
+    } else if (saveOpen) {
+      hideSaveModal();
+      return;
+    }
   }
 
   // Handle main menu navigation when menu is active and no modals are open
@@ -394,106 +537,5 @@ document.addEventListener("keydown", (event) => {
 window.showSurvivalGuide = showGuide;
 window.hideSurvivalGuide = hideGuide;
 
-// Continue Modal Listeners
-continueCloseBtn?.addEventListener("click", hideContinueModal);
-
-// New Modal Listeners
-document.getElementById("new-modal-close-btn")?.addEventListener("click", hideNewModal);
-newCancelBtn?.addEventListener("click", hideNewModal);
-
-continueConfirmBtn?.addEventListener("click", async () => {
-  const username = continueInput.value.trim().toLowerCase();
-  if (!username) {
-    if (continueError) continueError.textContent = "CODENAME IS REQUIRED";
-    return;
-  }
-
-  try {
-    if (continueError) continueError.textContent = "LOGGING IN...";
-    const player = await loginPlayer(username);
-
-    // Attempt to load existing game state from server
-    let state;
-    try {
-      state = await loadGameState(player.id);
-    } catch (e) {
-      console.warn("No gamestate found on server, using defaults", e);
-      state = {
-        current_world: "Lunan",
-        current_area: "Campo Lunan",
-        position_x: 320,
-        position_y: 360,
-      };
-    }
-
-    const currentCache = getCache();
-    if (currentCache && currentCache.username !== username) {
-      clearCache();
-    }
-
-    setCache({
-      player_id: player.id,
-      username: player.username,
-      inventory_id: player.inventory_id,
-      current_world: state.current_world || "Lunan",
-      current_area: state.current_area || "Campo Lunan",
-      position_x: state.has_completed_tutorial && state.position_x !== undefined ? state.position_x : 1278,
-      position_y: state.has_completed_tutorial && state.position_y !== undefined ? state.position_y : 1779,
-      has_completed_tutorial: state.has_completed_tutorial || false,
-    });
-
-    hideContinueModal();
-    startGame(null, {
-      title: "Continuing Journey",
-      subtitle: "Resuming Saved Echoes",
-      hint: "Restoring your memories...",
-    });
-  } catch (err) {
-    if (continueError) {
-      continueError.textContent = err.message.toUpperCase();
-    }
-  }
-});
-
-newConfirmBtn?.addEventListener("click", async () => {
-  const username = newInput.value.trim().toLowerCase();
-  if (!username) {
-    if (newError) newError.textContent = "CODENAME IS REQUIRED";
-    return;
-  }
-
-  try {
-    if (newError) newError.textContent = "REGISTERING...";
-    const player = await signupPlayer(username);
-
-    const defaultState = {
-      current_world: "Lunan",
-      current_area: "Campo Lunan",
-      position_x: 320,
-      position_y: 360,
-    };
-
-    const currentCache = getCache();
-    if (currentCache && currentCache.username !== username) {
-      clearCache();
-    }
-
-    setCache({
-      player_id: player.id,
-      username: player.username,
-      inventory_id: player.inventory_id,
-      ...defaultState,
-    });
-
-    hideNewModal();
-    startGame(null, {
-      title: "Entering Campo Lunan",
-      subtitle: "Awakening the Echoes",
-      hint: "Creating new journey...",
-    });
-  } catch (err) {
-    if (newError) {
-      newError.textContent = err.message.toUpperCase();
-    }
-  }
-});
+// Modal Listeners
+saveCloseBtn?.addEventListener("click", hideSaveModal);

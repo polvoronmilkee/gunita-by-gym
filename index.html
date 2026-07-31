@@ -1173,18 +1173,25 @@
           />
           <div class="menu-divider"><span>✦</span></div>
           <div class="menu-buttons">
-            <button class="memory-tablet" id="continue-journey">
+            <button class="memory-tablet" id="continue-journey-btn">
               <div class="tablet-icon">✦</div>
               <div class="tablet-content">
                 <span class="tablet-title">CONTINUE JOURNEY</span>
-                <span class="tablet-desc">Resume Vino's search for forgotten memories</span>
+                <span class="tablet-desc">Resume your saved progress</span>
               </div>
             </button>
-            <button class="memory-tablet" id="enter-campo-lunan">
+            <button class="memory-tablet" id="new-journey-btn">
               <div class="tablet-icon">⟳</div>
               <div class="tablet-content">
-                <span class="tablet-title">START A NEW MEMORY</span>
-                <span class="tablet-desc">Begin Vino's journey from the beginning</span>
+                <span class="tablet-title">START NEW MEMORY</span>
+                <span class="tablet-desc">Begin a new save file</span>
+              </div>
+            </button>
+            <button class="memory-tablet" id="connect-portal-btn" style="display: none;">
+              <div class="tablet-icon">✦</div>
+              <div class="tablet-content">
+                <span class="tablet-title" id="connect-portal-title">CONNECT TO GAMEON</span>
+                <span class="tablet-desc" id="connect-portal-desc">Authorize account (Optional)</span>
               </div>
             </button>
             <button class="memory-tablet" id="tale-untold">
@@ -1206,58 +1213,33 @@
       </div>
     </div>
 
-    <!-- Continue Journey Modal Overlay (Gunita Theme) -->
-    <div id="continue-journey-modal" class="gunita-modal-overlay hidden">
-      <div class="gunita-modal">
+    <!-- Save Slot Modal Overlay (Gunita Theme) -->
+    <div id="save-slot-modal" class="gunita-modal-overlay hidden">
+      <div class="gunita-modal" style="width: 440px; max-width: 95vw;">
         <!-- Close (X) button in top-right -->
-        <button id="continue-modal-close-btn" class="gunita-modal__close-x">
+        <button id="save-modal-close-btn" class="gunita-modal__close-x">
           ✕
         </button>
         <div class="gunita-modal__inner">
-          <h2 class="gunita-modal__title">✦ CONTINUE JOURNEY ✦</h2>
-          <input
-            type="text"
-            id="continue-username-input"
-            class="gunita-modal__input"
-            placeholder="ENTER CODENAME"
-            maxlength="15"
-          />
-          <!-- Confirm button in middle bottom -->
-          <button
-            id="continue-modal-confirm-btn"
-            class="gunita-modal__btn--confirm-centered"
-          >
-            CONFIRM
-          </button>
-          <div id="continue-modal-error" class="gunita-modal__error"></div>
+          <h2 class="gunita-modal__title">✦ SELECT SAVE SLOT ✦</h2>
+          <div id="save-slots-container" style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px; width: 100%; align-items: center;">
+            <!-- Slots injected here by JS -->
+          </div>
+          <div id="save-modal-error" class="gunita-modal__error"></div>
         </div>
       </div>
     </div>
 
-    <!-- New Journey Modal Overlay (Gunita Theme) -->
-    <div id="new-journey-modal" class="gunita-modal-overlay hidden">
-      <div class="gunita-modal">
-        <button id="new-modal-close-btn" class="gunita-modal__close-x">
-          ✕
-        </button>
+    <!-- Generic Confirmation Modal Overlay (Gunita Theme) -->
+    <div id="confirm-modal" class="gunita-modal-overlay hidden" style="z-index: 10000;">
+      <div class="gunita-modal" style="width: 420px; max-width: 90vw;">
         <div class="gunita-modal__inner">
-          <h2 class="gunita-modal__title">✦ START NEW JOURNEY ✦</h2>
-          <input
-            type="text"
-            id="new-username-input"
-            class="gunita-modal__input"
-            placeholder="ENTER CODENAME"
-            maxlength="15"
-          />
-          <div class="gunita-modal__actions">
-            <button id="new-modal-confirm-btn" class="gunita-modal__btn">
-              CONFIRM
-            </button>
-            <button id="new-modal-cancel-btn" class="gunita-modal__btn">
-              CANCEL
-            </button>
+          <h2 class="gunita-modal__title" id="confirm-modal-title">✦ CONFIRMATION ✦</h2>
+          <p id="confirm-modal-message" style="color: var(--text-light); text-align: center; font-family: 'VT323'; font-size: 1.3rem; margin: 20px 0;"></p>
+          <div class="gunita-modal__actions" style="display: flex; gap: 15px; justify-content: center; margin-top: 15px;">
+            <button id="confirm-modal-yes-btn" class="gunita-modal__btn">CONFIRM</button>
+            <button id="confirm-modal-cancel-btn" class="gunita-modal__btn">CANCEL</button>
           </div>
-          <div id="new-modal-error" class="gunita-modal__error"></div>
         </div>
       </div>
     </div>

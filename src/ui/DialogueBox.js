@@ -258,6 +258,7 @@ export class DialogueBox {
   hide() {
     this.finishTypewriter();
     this.root.style.display = "none";
+    this.onComplete = null; // Clear callback to prevent stale spacebar spamming
   }
 
   destroy() {

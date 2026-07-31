@@ -12,6 +12,7 @@ import { AudioManager } from "../utils/audioManager.js";
 import { TransitionSystem } from "../systems/TransitionSystem.js";
 import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
 import { showArtifactClaimModal as displayArtifactClaimModal } from "../ui/ArtifactClaimModal.js";
+import { connectAndUnlock } from "../utils/portalApi.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -1673,7 +1674,7 @@ export class Grave1 extends Phaser.Scene {
     return fallback;
   }
 
-  async saveProgress() {
+  async saveProgress(forceBackendSave = false) {
     if (window.isExplorationMode) return;
     const cache = getCache();
     if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
@@ -1683,19 +1684,36 @@ export class Grave1 extends Phaser.Scene {
       current_area: "Grave 1",
       position_x: Math.round(this.player.sprite.x),
       position_y: Math.round(this.player.sprite.y),
-      explored_chunks: Array.from(this.exploredChunks || [])
+      explored_chunks: Array.from(this.exploredChunks || []),
+      has_talked_to_luma: cache.has_talked_to_luma || false,
+      has_completed_tutorial: cache.has_completed_tutorial || false,
+      played_post_tutorial_dialogue: cache.played_post_tutorial_dialogue || false,
+      essence: cache.essence !== undefined ? cache.essence : 5,
     };
+
+    const stateString = JSON.stringify(state);
+    const hasStateChanged = this.lastSavedStateString !== stateString;
 
     setCache({
       ...cache,
       ...state
     });
 
+    if (!forceBackendSave && !hasStateChanged) {
+      return;
+    }
+
+    if (this.isSaving) return;
+    this.isSaving = true;
+
     try {
       await saveGameState(cache.player_id, state);
+      this.lastSavedStateString = stateString;
       syncOfflineData();
     } catch (err) {
       console.error("Autosave database sync failed:", err.message);
+    } finally {
+      this.isSaving = false;
     }
   }
 
@@ -2038,6 +2056,9 @@ export class Grave1 extends Phaser.Scene {
               setTimeout(() => {
                 try {
                   onCorrect();
+                  if (activeScene === "final-boss-fisherman") {
+                    this.showFinalArtifactButton();
+                  }
                 } catch (err) {
                   console.error("Error in onCorrect:", err);
                   this.dialogueActive = false;
@@ -2069,6 +2090,48 @@ export class Grave1 extends Phaser.Scene {
           }
       });
     });
+  }
+
+  showFinalArtifactButton() {
+    const btn = document.createElement("button");
+    btn.className = "memory-tablet";
+    btn.style.position = "fixed";
+    btn.style.top = "50%";
+    btn.style.left = "50%";
+    btn.style.transform = "translate(-50%, -50%)";
+    btn.style.zIndex = "9999";
+    btn.style.boxShadow = "0 0 20px rgba(45, 212, 191, 0.5)";
+    
+    btn.innerHTML = `
+      <div class="tablet-icon">🏆</div>
+      <div class="tablet-content">
+        <span class="tablet-title" id="final-artifact-title">CLAIM FINAL ARTIFACT</span>
+        <span class="tablet-desc" id="final-artifact-desc">Connect to GameOn to claim</span>
+      </div>
+    `;
+
+    btn.onclick = async () => {
+      const title = document.getElementById("final-artifact-title");
+      const desc = document.getElementById("final-artifact-desc");
+      if (title) title.textContent = "CONNECTING...";
+      if (desc) desc.textContent = "Please authorize in the new tab";
+      
+      const GAME_ID_2 = "YOUR_GAME_ID_2_HERE";
+      const success = await connectAndUnlock(GAME_ID_2);
+      
+      if (success) {
+        if (title) title.textContent = "ARTIFACT CLAIMED!";
+        if (desc) desc.textContent = "Congratulations!";
+        setTimeout(() => {
+          btn.remove();
+        }, 3000);
+      } else {
+        if (title) title.textContent = "CONNECTION FAILED";
+        if (desc) desc.textContent = "Click to try again";
+      }
+    };
+
+    document.body.appendChild(btn);
   }
 
   enterFamilyHouse() {
