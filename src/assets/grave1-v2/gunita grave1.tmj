@@ -9979,8 +9979,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1798,
-                 "y":1378
+                 "x":1773,
+                 "y":1319.33333333333
                 }, 
                 {
                  "height":0,
@@ -9992,8 +9992,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":3904.66666666667,
-                 "y":844
+                 "x":3964.66666666667,
+                 "y":814.666666666667
                 }, 
                 {
                  "height":0,
@@ -10005,8 +10005,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":928,
-                 "y":256
+                 "x":1074.66666666667,
+                 "y":306.333333333333
                 }, 
                 {
                  "height":0,
@@ -10135,8 +10135,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":1480.72727272727,
-                 "y":1394.18181818182
+                 "x":1484.39393939394,
+                 "y":1397.68181818182
                 }, 
                 {
                  "height":0,
@@ -10189,6 +10189,32 @@
                  "width":0,
                  "x":1792,
                  "y":1504
+                }, 
+                {
+                 "height":0,
+                 "id":536,
+                 "name":"man-mowing-3",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3532,
+                 "y":1323
+                }, 
+                {
+                 "height":0,
+                 "id":537,
+                 "name":"man-mowing-4",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3630.33333333333,
+                 "y":1095.33333333333
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -10197,7 +10223,7 @@
          "y":0
         }],
  "nextlayerid":33,
- "nextobjectid":536,
+ "nextobjectid":538,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

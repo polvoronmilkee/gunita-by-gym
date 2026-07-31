@@ -14,7 +14,9 @@ export class PreloadScene extends Phaser.Scene {
   preload() {
     const { width, height } = this.scale;
 
-    this.load.image(GROUND_TILE_TEXTURE_KEY, GROUND_TILE_TEXTURE_URL);
+    if (GROUND_TILE_TEXTURE_KEY && GROUND_TILE_TEXTURE_URL) {
+      this.load.image(GROUND_TILE_TEXTURE_KEY, GROUND_TILE_TEXTURE_URL);
+    }
 
     for (const track of AUDIO_SETTINGS.tracks) {
       this.load.audio(track.key, track.path);
