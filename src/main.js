@@ -42,6 +42,8 @@ const sceneManager = new SceneManager([
   FamilyHomeScene,
 ]);
 
+window.sceneManager = sceneManager;
+
 const config = {
   type: Phaser.AUTO,
   parent: "game-container",
@@ -230,6 +232,7 @@ function startGame(initialScene, loadingOptions = {}) {
   if (!game) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
+    window.game = game;
     game.events.once("game-ready", () => {
       loadingScreen.hide();
     });
@@ -278,6 +281,8 @@ window.returnToGunitaMenu = () => {
     }, 600);
   }, 450);
 };
+
+window.startGame = startGame;
 
 // Continue Journey Button Event
 document.getElementById("continue-journey")?.addEventListener("click", () => {
