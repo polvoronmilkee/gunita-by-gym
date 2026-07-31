@@ -42,6 +42,8 @@ const sceneManager = new SceneManager([
   FamilyHomeScene,
 ]);
 
+window.sceneManager = sceneManager;
+
 const config = {
   type: Phaser.AUTO,
   parent: "game-container",
@@ -353,6 +355,7 @@ function startGame(initialScene, loadingOptions = {}) {
   if (!game) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
+    window.game = game;
     game.events.once("game-ready", () => {
       loadingScreen.hide();
     });
@@ -424,6 +427,8 @@ connectPortalBtn?.addEventListener("click", async () => {
     if (desc) desc.textContent = "Click to try again";
   }
 });
+
+window.startGame = startGame;
 
 // Continue Journey Button Event
 continueBtn?.addEventListener("click", () => {

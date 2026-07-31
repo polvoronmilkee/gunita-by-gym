@@ -40,6 +40,11 @@ export class TutorialBulletHell extends BaseBulletHellScene {
   create() {
     super.create();
 
+    // Disable escape button and logic for tutorial
+    if (this.backBtnDom) {
+      this.backBtnDom.style.display = 'none';
+    }
+
     // Lesson tracking
     this.currentLesson = 0;
     this.totalLessons = 6;
@@ -448,6 +453,10 @@ export class TutorialBulletHell extends BaseBulletHellScene {
 
   getPlayerSpeedModifier() {
     return this.isTimeStopped ? 0 : 1;
+  }
+
+  showEscapeConfirmation() {
+    // Escape is disabled in the tutorial
   }
 
   fireDioTimeStop() {

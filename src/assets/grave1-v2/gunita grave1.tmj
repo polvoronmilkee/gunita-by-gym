@@ -9051,7 +9051,7 @@
                         }],
                  "rotation":0,
                  "type":"",
-                 "visible":true,
+                 "visible":false,
                  "width":0,
                  "x":1568,
                  "y":3840
@@ -9535,7 +9535,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":false,
+         "visible":true,
          "x":0,
          "y":0
         }, 
@@ -9632,8 +9632,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":576,
-                 "y":1920
+                 "x":1506.30303030303,
+                 "y":1395.75757575758
                 }, 
                 {
                  "height":0,
@@ -9928,6 +9928,32 @@
                  "width":0,
                  "x":409.333333333333,
                  "y":1928.66666666667
+                }, 
+                {
+                 "height":0,
+                 "id":514,
+                 "name":"luma-final-spawn",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3646.36363636364,
+                 "y":1999.27272727273
+                }, 
+                {
+                 "height":0,
+                 "id":515,
+                 "name":"mang-tomas-final",
+                 "opacity":1,
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2151.51515151515,
+                 "y":3712.12121212121
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -9936,7 +9962,7 @@
          "y":0
         }],
  "nextlayerid":33,
- "nextobjectid":514,
+ "nextobjectid":516,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.12.2",

@@ -63,6 +63,16 @@ export function deleteSlot(slotIndex) {
  * @returns {Object|null}
  */
 export function getCache() {
+  let savedData = null;
+  try {
+    const data = localStorage.getItem(CACHE_KEY);
+    if (data) {
+      savedData = JSON.parse(data);
+    }
+  } catch (e) {
+    console.error("Failed to parse cached save:", e);
+  }
+
   if (window.isExplorationMode) {
     return {
       player_id: "explorer",
@@ -72,6 +82,9 @@ export function getCache() {
       current_area: "Campo Lunan",
       position_x: 320,
       position_y: 360,
+      has_talked_to_luma: true,
+      has_completed_tutorial: savedData ? savedData.has_completed_tutorial : false,
+      played_post_tutorial_dialogue: savedData ? savedData.played_post_tutorial_dialogue : false,
     };
   }
   try {

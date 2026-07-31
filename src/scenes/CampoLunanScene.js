@@ -1039,6 +1039,7 @@ export class CampoLunanScene extends Phaser.Scene {
           fragment.setScale(0);
           fragment.setDepth(luma2Sprite.y + 1);
           fragment.play("fragment-idle-anim");
+          this.tutorialFragment = fragment;
 
           this.tweens.add({
             targets: fragment,
@@ -1068,7 +1069,7 @@ export class CampoLunanScene extends Phaser.Scene {
                   this.scene.stop("tutorial-bullet-hell");
                   this.scene.resume("CampoLunanScene");
                   if (this.luma2PersistentSprite) this.luma2PersistentSprite.destroy();
-                  if (fragment) fragment.destroy();
+                  if (this.tutorialFragment) this.tutorialFragment.destroy();
                   if (this.hud) this.hud.setPauseVisible(true);
                   if (this.lumaGuidanceBox) this.lumaGuidanceBox.show();
                   this.triggerPostTutorialSequence();
@@ -1079,6 +1080,41 @@ export class CampoLunanScene extends Phaser.Scene {
         }
       };
       runDialogue();
+    };
+
+    this.reenterTutorial = () => {
+      if (!this.tutorialFragment) return;
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+      
+      TransitionSystem.shatteredGlassTransition(this, () => {
+        if (this.audioManager) this.audioManager.stopMusic();
+        if (this.lumaGuidanceBox) this.lumaGuidanceBox.hide();
+        if (this.interactionPrompt) this.interactionPrompt.hide();
+        if (this.hud) this.hud.setPauseVisible(false);
+        if (this.objectiveArrow) this.objectiveArrow.setVisible(false);
+
+        this.scene.pause();
+        this.scene.launch("tutorial-bullet-hell", {
+          returnScene: "CampoLunanScene",
+          onComplete: () => {
+            const cache = getCache() || {};
+            cache.has_completed_tutorial = true;
+            setCache(cache);
+
+            this.scene.stop("tutorial-bullet-hell");
+            this.scene.resume("CampoLunanScene");
+            if (this.luma2PersistentSprite) this.luma2PersistentSprite.destroy();
+            if (this.tutorialFragment) this.tutorialFragment.destroy();
+            if (this.hud) this.hud.setPauseVisible(true);
+            if (this.lumaGuidanceBox) this.lumaGuidanceBox.show();
+            this.triggerPostTutorialSequence();
+          }
+        });
+      });
     };
 
 
@@ -1159,6 +1195,8 @@ export class CampoLunanScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-E", () => {
       if (this.dialogueActive) {
         this.dialogue.onComplete();
+      } else if (this.isNearTutorialFragment) {
+        this.reenterTutorial();
       } else if (this.isNearLuma2) {
         this.triggerLumaSecondAppearance();
       } else if (this.isNearGrave) {
@@ -1365,7 +1403,26 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.isNearCreatures = distFrog < 60 || distShroom < 60 || distMid < 80;
 
-    if (nearestDist < 80) {
+    let nearTutorialFragment = false;
+    if (this.tutorialFragment && this.tutorialFragment.active && !currentCache.has_completed_tutorial) {
+      const distFrag = Phaser.Math.Distance.Between(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.tutorialFragment.x,
+        this.tutorialFragment.y
+      );
+      if (distFrag < 50) {
+        nearTutorialFragment = true;
+      }
+    }
+    this.isNearTutorialFragment = nearTutorialFragment;
+
+    if (nearTutorialFragment) {
+      this.hud.setStatus("PRESS [E] TO TOUCH THE FRAGMENT");
+      if (this.interactionPrompt && this.tutorialFragment) {
+        this.interactionPrompt.show(this.tutorialFragment, "E", "TOUCH", -15);
+      }
+    } else if (nearestDist < 80) {
       nearGrave = true;
       this.currentGraveCluster = closestGraveCluster;
       if (closestGraveCluster.isGrave1) {
