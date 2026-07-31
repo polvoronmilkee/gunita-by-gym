@@ -114,7 +114,14 @@ export class CampoLunanScene extends Phaser.Scene {
     );
   }
 
-  create() {
+  create(data) {
+    if (data && data.loadingScreen) {
+      data.loadingScreen.hide();
+      setTimeout(() => {
+        data.loadingScreen.destroy();
+      }, 200);
+    }
+
     const cachedMap = this.cache.json.get("campo-lunan-map");
     if (!cachedMap) {
       console.error("Failed to load campo-lunan-map JSON from cache.");
@@ -749,7 +756,7 @@ export class CampoLunanScene extends Phaser.Scene {
                           setCache(freshCache);
                           this.hasTalkedToLuma = true;
                           this.updateLumaObjective();
-                          this.saveProgress();
+                          this.saveProgress(true);
                         }
                       });
                     }
@@ -974,7 +981,10 @@ export class CampoLunanScene extends Phaser.Scene {
         this.player.sprite.anims.stop();
       }
 
-      const luma2Sprite = this.luma2PersistentSprite || this.physics.add.sprite(luma2TargetX, luma2TargetY, "luma-idle");
+      if (!this.luma2PersistentSprite) {
+        this.luma2PersistentSprite = this.physics.add.sprite(luma2TargetX, luma2TargetY, "luma-idle");
+      }
+      const luma2Sprite = this.luma2PersistentSprite;
       luma2Sprite.setScale(0.3);
       luma2Sprite.setDepth(luma2Sprite.y);
 
@@ -1015,7 +1025,8 @@ export class CampoLunanScene extends Phaser.Scene {
           });
         } else {
           this.dialogue.hide();
-          this.dialogueActive = false;
+          this.dialogue.onComplete = null; // PREVENT SPACEBAR SPAM
+          // Keep dialogueActive = true during transition to prevent interaction prompts
 
           if (this.audioManager) {
             this.audioManager.playLumaSwishSfx();
@@ -1231,10 +1242,16 @@ export class CampoLunanScene extends Phaser.Scene {
     this.game.events.emit("game-ready");
   }
 
-  async saveProgress() {
+  async saveProgress(forceBackendSave = false) {
     if (window.isExplorationMode) return;
     const cache = getCache();
     if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
+
+    // During intro tutorial sequence, don't blindly autosave coordinates to backend
+    // to avoid spam, unless a manual forceBackendSave (like dialogue finish) is called.
+    if (!cache.has_completed_tutorial && !forceBackendSave) {
+      return; 
+    }
 
     const state = {
       current_world: "Lunan",
@@ -1242,7 +1259,15 @@ export class CampoLunanScene extends Phaser.Scene {
       position_x: Math.round(this.player.sprite.x),
       position_y: Math.round(this.player.sprite.y),
       explored_chunks: Array.from(this.exploredChunks || []),
+      // Sync tutorial and game flags to backend
+      has_talked_to_luma: cache.has_talked_to_luma || false,
+      has_completed_tutorial: cache.has_completed_tutorial || false,
+      played_post_tutorial_dialogue: cache.played_post_tutorial_dialogue || false,
+      essence: cache.essence !== undefined ? cache.essence : 5,
     };
+
+    const stateString = JSON.stringify(state);
+    const hasStateChanged = this.lastSavedStateString !== stateString;
 
     // Update local cache immediately
     setCache({
@@ -1250,12 +1275,23 @@ export class CampoLunanScene extends Phaser.Scene {
       ...state,
     });
 
+    // Skip backend API call if nothing changed, to throttle network requests
+    if (!forceBackendSave && !hasStateChanged) {
+      return; 
+    }
+
+    if (this.isSaving) return; // Prevent overlapping API calls
+    this.isSaving = true;
+
     // Save/sync with Supabase backend in the background
     try {
       await saveGameState(cache.player_id, state);
+      this.lastSavedStateString = stateString;
       syncOfflineData();
     } catch (err) {
       console.error("Autosave database sync failed:", err.message);
+    } finally {
+      this.isSaving = false;
     }
   }
 
@@ -1367,10 +1403,12 @@ export class CampoLunanScene extends Phaser.Scene {
     ) : Infinity;
 
     const currentCache = getCache() || {};
-    if (distLuma2 < 40 && !currentCache.has_completed_tutorial && !this.hasTriggeredLumaSecondAppearance) {
+    if (distLuma2 < 75 && !currentCache.has_completed_tutorial && !this.hasTriggeredLumaSecondAppearance) {
       this.triggerLumaSecondAppearance();
       return;
     }
+
+    this.isNearCreatures = distFrog < 60 || distShroom < 60 || distMid < 80;
 
     let nearTutorialFragment = false;
     if (this.tutorialFragment && this.tutorialFragment.active && !currentCache.has_completed_tutorial) {

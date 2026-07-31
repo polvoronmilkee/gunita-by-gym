@@ -31,6 +31,8 @@ export class Grave1 extends Phaser.Scene {
     this.load.json("young-fisherman-clue", "src/assets/data/dialogues/grave1/young-fisherman/clue.json");
     this.load.json("old-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
     this.load.json("old-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
+    this.load.json("sick-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
+    this.load.json("sick-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
     this.load.json("young-daughter-initial", "src/assets/data/dialogues/grave1/young-daughter/initial.json");
     this.load.json("young-daughter-clue", "src/assets/data/dialogues/grave1/young-daughter/clue.json");
     this.load.json("random-woman-initial", "src/assets/data/dialogues/grave1/random-woman/initial.json");
@@ -96,6 +98,28 @@ export class Grave1 extends Phaser.Scene {
         frameWidth: npc.fw, frameHeight: npc.fh
       });
     });
+    const newNpcList = [
+      { key: "man-mowing", file: "man-mowing.png", fw: 40, fh: 43 },
+      { key: "man-mowing-2", file: "man-mowing-2.png", fw: 40, fh: 43 },
+      { key: "man-searching", file: "man-searching.png", fw: 40, fh: 43 },
+      { key: "man-talking", file: "man-talking.png", fw: 40, fh: 43 },
+      { key: "mang-tomas", file: "mang-tomas.png", fw: 40, fh: 43 },
+      { key: "woman-picking-flowers", file: "woman-picking-flowers.png", fw: 40, fh: 43 },
+      { key: "woman-searching", file: "woman-searching.png", fw: 40, fh: 43 },
+      { key: "woman-thinking", file: "woman-thinking.png", fw: 40, fh: 43 },
+      { key: "woman-with-broom", file: "woman-with-broom.png", fw: 40, fh: 43 },
+    ];
+    newNpcList.forEach(npc => {
+      this.load.spritesheet(`npc-${npc.key}`, `src/assets/grave1-v2/more-characters/${npc.file}`, {
+        frameWidth: npc.fw, frameHeight: npc.fh
+      });
+    });
+    if (!this.textures.exists("luma-idle")) {
+      this.load.spritesheet("luma-idle", "src/assets/luma-idle-spritesheet.png", {
+        frameWidth: 200,
+        frameHeight: 200,
+      });
+    }
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
     // Load player animations sheets
@@ -146,24 +170,11 @@ export class Grave1 extends Phaser.Scene {
   }
 
   create(data) {
-    // Hide and destroy portal loading screen if passed from previous scene or left in DOM
-    const removeLoadingScreens = () => {
-      document.querySelectorAll(".gunita-portal-loading-screen").forEach(el => {
-        el.classList.add("hidden");
-        setTimeout(() => el.remove(), 400);
-      });
-    };
-
     if (data && data.loadingScreen) {
+      data.loadingScreen.hide();
       setTimeout(() => {
-        data.loadingScreen.hide();
-        setTimeout(() => {
-          data.loadingScreen.destroy();
-          removeLoadingScreens();
-        }, 400);
-      }, 500);
-    } else {
-      removeLoadingScreens();
+        data.loadingScreen.destroy();
+      }, 200);
     }
 
     // Intercept Tiled map data to inline external TSX tileset metadata at runtime
@@ -379,6 +390,7 @@ export class Grave1 extends Phaser.Scene {
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
     this.cameras.main.setZoom(3);
+    this.cameras.main.fadeIn(400, 0, 0, 0);
 
     // Build top layers (drawn above ground elements, but below player dynamic Y-depth unless roof level)
     const topLayerNames = [
@@ -421,11 +433,12 @@ export class Grave1 extends Phaser.Scene {
             if (length > 0) {
               const midX = (p1.x + p2.x) / 2;
               const midY = (p1.y + p2.y) / 2;
-              const thickness = 12; // Wall thickness for polygon edges
+              const thickness = 16; // Wall thickness for polygon edges
 
-              // Create edge box zone along the polygon segment
-              const width = Math.max(thickness, Math.abs(dx));
-              const height = Math.max(thickness, Math.abs(dy));
+              // Create thin edge box zone along the polygon segment instead of expanding into giant solid rectangle block
+              const isHorizontal = Math.abs(dx) >= Math.abs(dy);
+              const width = isHorizontal ? Math.max(thickness, Math.abs(dx)) : thickness;
+              const height = !isHorizontal ? Math.max(thickness, Math.abs(dy)) : thickness;
 
               const zone = this.add.zone(midX, midY, width, height);
               this.physics.add.existing(zone, true);
@@ -450,14 +463,38 @@ export class Grave1 extends Phaser.Scene {
     const characterNameMap = {
       "OLD-FISHERMAN": "old-fisherman",
       "YOUNG-FISHERMAN": "young-fisherman",
-      "OLD-WIFE": "old-wife",
+      "OLD-WIFE": "sick-wife",
+      "SICK-WIFE": "sick-wife",
       "OLD-DAUGHTER": "young-daughter",
       "SCHOOL-GIRL": "school-girl",
       "YOUNG-KID": "young-kid",
       "npc-RANDOM-GUY": "random-guy",
       "npc-RANDOM-WOMAN": "random-woman",
       "npc-DEBT-COLLECTOR": "debt-collector",
-      "npc-SICK-WFE": "sick-wife"
+      "npc-SICK-WFE": "sick-wife",
+      "man-mowing": "man-mowing",
+      "man-mowing-2": "man-mowing-2",
+      "man-searching": "man-searching",
+      "man-talking": "man-talking",
+      "mang-tomas": "mang-tomas",
+      "sick-wife": "sick-wife",
+      "woman-picking-flowers": "woman-picking-flowers",
+      "woman-searching": "woman-searching",
+      "woman-thinking": "woman-thinking",
+      "woman-with-broom": "woman-with-broom",
+    };
+
+    const newNpcFrameCounts = {
+      "man-mowing": 3,
+      "man-mowing-2": 3,
+      "man-searching": 4,
+      "man-talking": 4,
+      "mang-tomas": 16,
+      "sick-wife": 8,
+      "woman-picking-flowers": 3,
+      "woman-searching": 3,
+      "woman-thinking": 4,
+      "woman-with-broom": 3,
     };
 
     // Get CHARS_SPAWNS layer from map
@@ -465,39 +502,88 @@ export class Grave1 extends Phaser.Scene {
     
     if (charsSpawnLayer && charsSpawnLayer.objects) {
       charsSpawnLayer.objects.forEach(obj => {
-        // Skip polygon objects, only process point objects
-        if (obj.polygon || !obj.point) {
+        // Skip polygon objects, non-point objects, or non-NPC markers
+        if (obj.polygon || !obj.point || obj.name === "vino-start" || obj.name === "luma-final-spawn" || obj.name === "FOREST-LUMA") {
           return;
         }
 
         const charName = obj.name;
-        const spriteKey = characterNameMap[charName];
+        const cleanedName = charName.replace(/-\d+$/, '');
+        let spriteKey = characterNameMap[charName] || characterNameMap[cleanedName] || cleanedName;
         
-        if (spriteKey) {
-          const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
-          const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
-          npc.setDepth(pos.y);
-          if (npc.body) {
-            npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
-            npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
-          }
+        // Fallback if specific key like man-mowing-2 isn't preloaded
+        if (!this.textures.exists(`npc-${spriteKey}`) && this.textures.exists(`npc-${cleanedName}`)) {
+          spriteKey = cleanedName;
+        }
 
-          const animKey = `npc-anim-${spriteKey}`;
-          if (!this.anims.exists(animKey)) {
-            this.anims.create({
-              key: animKey,
-              frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: 3 }),
-              frameRate: 4,
-              repeat: -1
-            });
+        if (this.textures.exists(`npc-${spriteKey}`)) {
+          try {
+            const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
+            const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
+            npc.setDepth(pos.y);
+
+            const isNewCharacter = newNpcFrameCounts[spriteKey] !== undefined;
+
+            if (isNewCharacter) {
+              npc.setScale(0.8);
+              if (npc.body) {
+                npc.body.setSize(npc.width * 0.7, npc.height * 0.4);
+                npc.body.setOffset(npc.width * 0.15, npc.height * 0.5);
+              }
+
+              const frameCount = newNpcFrameCounts[spriteKey] || 3;
+              const animKey = `npc-anim-${spriteKey}`;
+              if (!this.anims.exists(animKey)) {
+                try {
+                  const frames = this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: Math.max(0, frameCount - 1) });
+                  if (frames && frames.length > 0 && !frames.some(f => !f || f.frame === undefined)) {
+                    this.anims.create({
+                      key: animKey,
+                      frames: frames,
+                      frameRate: 4,
+                      repeat: -1
+                    });
+                  }
+                } catch (e) {
+                  console.warn(`Failed to create anim for npc-${spriteKey}:`, e);
+                }
+              }
+              if (this.anims.exists(animKey)) {
+                npc.play(animKey);
+              } else {
+                npc.setFrame(0);
+              }
+            } else {
+              if (npc.body) {
+                npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
+                npc.body.setOffset(npc.width * 0.15, npc.height * 0.5);
+              }
+
+              const animKey = `npc-anim-${spriteKey}`;
+              if (!this.anims.exists(animKey)) {
+                try {
+                  const frames = this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: 3 });
+                  if (frames && frames.length > 0 && !frames.some(f => !f || f.frame === undefined)) {
+                    this.anims.create({
+                      key: animKey,
+                      frames: frames,
+                      frameRate: 4,
+                      repeat: -1
+                    });
+                  }
+                } catch (e) {
+                  console.warn(`Failed to create anim for npc-${spriteKey}:`, e);
+                }
+              }
+              npc.setFrame(0);
+            }
+          } catch (err) {
+            console.warn(`Error creating NPC ${charName}:`, err);
           }
-          npc.setFrame(0); // Set to default frame (face down) instead of spinning
         } else {
           console.warn(`Unknown character name in CHARS_SPAWNS: ${charName}`);
         }
       });
-    } else {
-      console.warn("CHARS_SPAWNS layer not found in map");
     }
 
     this.physics.add.collider(this.player.sprite, this.npcs);
@@ -516,23 +602,29 @@ export class Grave1 extends Phaser.Scene {
     if (!this.isNewGame && cache && cache.player_id) {
       loadGameState(cache.player_id)
         .then(serverState => {
-          if (serverState && serverState.current_area === "Grave 1" && (serverState.position_x !== cache.position_x || serverState.position_y !== cache.position_y)) {
-            // Verify server coordinates are on land and not water
-            const safeServer = this.getNearestLandCoordinate(serverState.position_x, serverState.position_y, map);
-            if (Math.hypot(safeServer.x - serverState.position_x, safeServer.y - serverState.position_y) < 20) {
-              console.log("Supabase coordinates differ from cache. Snapping player to match server...");
-              this.player.sprite.setPosition(safeServer.x, safeServer.y);
-              const freshCache = getCache();
-              if (freshCache) {
-                setCache({
-                  ...freshCache,
-                  position_x: safeServer.x,
-                  position_y: safeServer.y,
-                  current_world: serverState.current_world || freshCache.current_world,
-                  current_area: serverState.current_area || freshCache.current_area
-                });
+          if (serverState) {
+            const freshCache = getCache() || {};
+            const updatedCache = {
+              ...freshCache,
+              ...serverState,
+            };
+
+            if (serverState.explored_chunks && Array.isArray(serverState.explored_chunks)) {
+              serverState.explored_chunks.forEach(chunk => this.exploredChunks.add(chunk));
+              updatedCache.explored_chunks = Array.from(this.exploredChunks);
+            }
+
+            if (serverState.current_area === "Grave 1" && serverState.position_x !== undefined && serverState.position_y !== undefined) {
+              const safeServer = this.getNearestLandCoordinate(serverState.position_x, serverState.position_y, map);
+              if (Math.hypot(safeServer.x - serverState.position_x, safeServer.y - serverState.position_y) < 50) {
+                console.log("[Grave1] Restoring player position from database:", safeServer);
+                this.player.sprite.setPosition(safeServer.x, safeServer.y);
+                updatedCache.position_x = safeServer.x;
+                updatedCache.position_y = safeServer.y;
               }
             }
+
+            setCache(updatedCache);
           }
           return loadPlayerInventory(cache.player_id);
         })
@@ -717,24 +809,9 @@ export class Grave1 extends Phaser.Scene {
       this.rainTileSprite.setDepth(9999);
       this.rainTileSprite.setMask(rainMask);
 
-      // Animated rain drop sprites placed dynamically across polygon bounds
+      // Polygon geometry for Wasteland region
       const rainPolyGeom = new Phaser.Geom.Polygon(rainPolygonPoints);
       this.wastelandPolyGeom = rainPolyGeom;
-      this.rainSpritesGroup = this.add.group();
-
-      for (let rx = minX + 32; rx < maxX; rx += 96) {
-        for (let ry = minY + 32; ry < maxY; ry += 96) {
-          if (Phaser.Geom.Polygon.Contains(rainPolyGeom, rx, ry)) {
-            const s = this.add.sprite(rx, ry, "rain");
-            s.setOrigin(0.5, 0.5);
-            s.setAlpha(0.7);
-            s.setDepth(9999);
-            s.play("rain-fall");
-            s.setMask(rainMask);
-            this.rainSpritesGroup.add(s);
-          }
-        }
-      }
     }
 
     // --- DYNAMIC FOREST DARKENING & RAIN / LIGHTNING SYSTEM FROM TILED MAP (ID 512 / "forest-darkens") ---
@@ -796,23 +873,9 @@ export class Grave1 extends Phaser.Scene {
       this.forestRainTileSprite.setDepth(9999);
       this.forestRainTileSprite.setMask(forestMask);
 
+      // Polygon geometry for Forest region
       const forestPolyGeom = new Phaser.Geom.Polygon(forestPolygonPoints);
       this.forestPolyGeom = forestPolyGeom;
-      this.forestRainSpritesGroup = this.add.group();
-
-      for (let rx = minX + 32; rx < maxX; rx += 96) {
-        for (let ry = minY + 32; ry < maxY; ry += 96) {
-          if (Phaser.Geom.Polygon.Contains(forestPolyGeom, rx, ry)) {
-            const s = this.add.sprite(rx, ry, "rain");
-            s.setOrigin(0.5, 0.5);
-            s.setAlpha(0.7);
-            s.setDepth(9999);
-            s.play("rain-fall");
-            s.setMask(forestMask);
-            this.forestRainSpritesGroup.add(s);
-          }
-        }
-      }
     }
 
     // Scary Forest Dark Overlay (ID 512)
@@ -934,9 +997,19 @@ export class Grave1 extends Phaser.Scene {
     // Advance dialogue with key down events
     const handleInteract = () => {
       if (this.scene.isPaused()) return;
-      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
-        this.dialogue.onComplete();
-      } else if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
+      if (this.dialogueActive) return;
+
+      if (this.nearCampoPortal) {
+        this.returnToCampoLunan();
+        return;
+      }
+
+      if (this.nearHouseDoor) {
+        this.enterFamilyHouse();
+        return;
+      }
+
+      if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
         let riddleData, artifactKey, dialogueText, sceneKey, bgKey;
         if (this.storyStage === 1) {
           riddleData = this.cache.json.get("riddle-fish-basket");
@@ -984,9 +1057,9 @@ export class Grave1 extends Phaser.Scene {
           }
 
           try {
-            this.savePosition();
+            this.saveProgress(true);
           } catch (e) {
-            console.warn("Failed to save position:", e);
+            console.warn("Failed to save progress:", e);
           }
 
           this.showArtifactClaimModal(artifactKey, () => {
@@ -1093,9 +1166,9 @@ export class Grave1 extends Phaser.Scene {
         } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman") {
              const clueText = this.getRandomVariant("young-fisherman-clue", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
              this.spawnFragment(this.closestNpc, "Young Fisherman", clueText);
-        } else if (this.storyStage === 3 && npcKey === "npc-old-wife") {
-             const clueText = this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious.");
-             this.spawnFragment(this.closestNpc, "Old Wife", clueText);
+        } else if (this.storyStage === 3 && (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife")) {
+             const clueText = this.getRandomVariant("sick-wife-clue", this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious."));
+             this.spawnFragment(this.closestNpc, "Sick Wife", clueText);
         } else if (this.storyStage === 4 && npcKey === "npc-young-daughter") {
              const clueText = this.getRandomVariant("young-daughter-clue", "I made Papa a drawing... but I don't remember where I left it.");
              this.spawnFragment(this.closestNpc, "Daughter", clueText);
@@ -1105,7 +1178,7 @@ export class Grave1 extends Phaser.Scene {
 
              if (npcKey === "npc-old-fisherman") { speaker = "Old Fisherman"; cacheKey = "old-fisherman-initial"; }
              else if (npcKey === "npc-young-fisherman") { speaker = "Young Fisherman"; cacheKey = "young-fisherman-initial"; }
-             else if (npcKey === "npc-old-wife") { speaker = "Old Wife"; cacheKey = "old-wife-initial"; }
+             else if (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife") { speaker = "Sick Wife"; cacheKey = "sick-wife-initial"; }
              else if (npcKey === "npc-young-daughter") { speaker = "Daughter"; cacheKey = "young-daughter-initial"; }
              else if (npcKey === "npc-random-woman") { speaker = "Barangay Woman"; cacheKey = "random-woman-initial"; }
              else if (npcKey === "npc-random-guy") { speaker = "Villager"; cacheKey = "random-guy-before"; }
@@ -1339,31 +1412,41 @@ export class Grave1 extends Phaser.Scene {
     }
     this.dialogue.hide();
 
-    const spawnX = this.player.sprite.x;
-    const spawnY = this.player.sprite.y;
+    const spawnX = this.player?.sprite?.x || 576;
+    const spawnY = this.player?.sprite?.y || 1920;
 
-    const lumaLand = this.getNearestLandCoordinate(spawnX + 36, spawnY - 30, this.map);
+    try {
+      const lumaLand = this.getNearestLandCoordinate(spawnX + 36, spawnY - 30, this.map);
 
-    // Create Luma sprite (initially hidden/invisible) near Vino (matches Campo Lunan positioning)
-    this.lumaSprite = this.physics.add.sprite(lumaLand.x, lumaLand.y, "luma-idle");
-    this.lumaSprite.setScale(0.3); // matches Vino's scale/proportion
-    this.lumaSprite.setDepth(this.lumaSprite.y);
-    this.lumaSprite.setImmovable(true);
-    this.lumaSprite.setVisible(false);
-    this.lumaSprite.setAlpha(0);
+      // Create Luma sprite (initially hidden/invisible) near Vino (matches Campo Lunan positioning)
+      this.lumaSprite = this.physics.add.sprite(lumaLand.x, lumaLand.y, "luma-idle");
+      this.lumaSprite.setScale(0.3); // matches Vino's scale/proportion
+      this.lumaSprite.setDepth(this.lumaSprite.y);
+      this.lumaSprite.setImmovable(true);
+      this.lumaSprite.setVisible(false);
+      this.lumaSprite.setAlpha(0);
 
-    if (!this.anims.exists("luma-idle-anim")) {
-      this.anims.create({
-        key: "luma-idle-anim",
-        frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
-        frameRate: 5,
-        repeat: -1
-      });
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      this.lumaSprite.play("luma-idle-anim");
+    } catch (err) {
+      console.warn("Failed to create Luma intro sprite:", err);
+      this.dialogueActive = false;
+      if (this.lumaGuidanceBox) {
+        this.lumaGuidanceBox.show();
+        this.updateLumaGuidance();
+      }
+      return;
     }
-    this.lumaSprite.play("luma-idle-anim");
 
     // Add purple glowing effect to Luma (similar to Campo Lunan)
-    if (this.cameras.main.postFX) {
+    if (this.cameras.main.postFX && this.lumaSprite) {
       this.lumaGlow = this.lumaSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
       this.tweens.add({
         targets: this.lumaGlow,
@@ -1395,7 +1478,10 @@ export class Grave1 extends Phaser.Scene {
       g.destroy();
     }
 
-    const emitter = this.add.particles(spawnX + 36, spawnY - 60, "crystal-spark", {
+    const targetX = this.lumaSprite ? this.lumaSprite.x : spawnX + 36;
+    const targetY = this.lumaSprite ? this.lumaSprite.y : spawnY - 60;
+
+    const emitter = this.add.particles(targetX, targetY, "crystal-spark", {
       speed: { min: 15, max: 50 },
       angle: { min: 0, max: 360 },
       scale: { start: 1.5, end: 0 },
@@ -1407,7 +1493,9 @@ export class Grave1 extends Phaser.Scene {
       maxParticles: 35,
       blendMode: "SCREEN"
     });
-    emitter.setDepth(this.lumaSprite.y + 1);
+    if (this.lumaSprite) {
+      emitter.setDepth(this.lumaSprite.y + 1);
+    }
 
     // Fade in Luma (ghostly entrance)
     this.lumaSprite.setVisible(true);
@@ -1433,45 +1521,36 @@ export class Grave1 extends Phaser.Scene {
           { speaker: "Vino", text: "...I'll remember that." }
         ];
 
-        let step = 0;
-        const runDialogueStep = () => {
-          if (step < forestIntroDialogues.length) {
-            const current = forestIntroDialogues[step];
-            this.dialogue.showText(current.speaker, current.text, () => {
-              step++;
-              runDialogueStep();
-            });
-          } else {
-            // Dialogue complete: hide dialogue box, play sound, fade out Luma
-            this.dialogue.hide();
+        this.startDialogueSequence(forestIntroDialogues, () => {
+          this.dialogueActive = false;
 
-            if (this.audioManager) {
-              if (typeof this.audioManager.playLumaSwishSfx === "function") {
-                this.audioManager.playLumaSwishSfx();
-              } else if (typeof this.audioManager.playLumaSwish === "function") {
-                this.audioManager.playLumaSwish();
-              }
+          if (this.audioManager) {
+            if (typeof this.audioManager.playLumaSwishSfx === "function") {
+              this.audioManager.playLumaSwishSfx();
+            } else if (typeof this.audioManager.playLumaSwish === "function") {
+              this.audioManager.playLumaSwish();
             }
+          }
 
+          if (this.lumaSprite) {
             this.tweens.add({
               targets: this.lumaSprite,
               alpha: 0,
               duration: 1600,
               onComplete: () => {
-                this.lumaSprite.destroy();
-                this.dialogueActive = false;
-
-                // Show objective box
-                if (this.lumaGuidanceBox) {
-                  this.lumaGuidanceBox.show();
-                  this.updateLumaGuidance();
+                if (this.lumaSprite) {
+                  this.lumaSprite.destroy();
+                  this.lumaSprite = null;
                 }
               }
             });
           }
-        };
 
-        runDialogueStep();
+          if (this.lumaGuidanceBox) {
+            this.lumaGuidanceBox.show();
+            this.updateLumaGuidance();
+          }
+        });
       }
     });
   }
@@ -1673,7 +1752,7 @@ export class Grave1 extends Phaser.Scene {
     return fallback;
   }
 
-  async saveProgress() {
+  async saveProgress(forceBackendSave = false) {
     if (window.isExplorationMode) return;
     const cache = getCache();
     if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
@@ -1683,19 +1762,36 @@ export class Grave1 extends Phaser.Scene {
       current_area: "Grave 1",
       position_x: Math.round(this.player.sprite.x),
       position_y: Math.round(this.player.sprite.y),
-      explored_chunks: Array.from(this.exploredChunks || [])
+      explored_chunks: Array.from(this.exploredChunks || []),
+      has_talked_to_luma: cache.has_talked_to_luma || false,
+      has_completed_tutorial: cache.has_completed_tutorial || false,
+      played_post_tutorial_dialogue: cache.played_post_tutorial_dialogue || false,
+      essence: cache.essence !== undefined ? cache.essence : 5,
     };
+
+    const stateString = JSON.stringify(state);
+    const hasStateChanged = this.lastSavedStateString !== stateString;
 
     setCache({
       ...cache,
       ...state
     });
 
+    if (!forceBackendSave && !hasStateChanged) {
+      return;
+    }
+
+    if (this.isSaving) return;
+    this.isSaving = true;
+
     try {
       await saveGameState(cache.player_id, state);
+      this.lastSavedStateString = stateString;
       syncOfflineData();
     } catch (err) {
       console.error("Autosave database sync failed:", err.message);
+    } finally {
+      this.isSaving = false;
     }
   }
 
@@ -1766,8 +1862,10 @@ export class Grave1 extends Phaser.Scene {
         this.lastExploredChunksSize = this.exploredChunks.size;
         this.minimapFow.clear();
         this.minimapFow.fillStyle(0x222222, 1);
-        for (let cx = -30; cx < 80; cx++) {
-          for (let cy = -30; cy < 80; cy++) {
+        const maxChunkX = Math.ceil((this.worldWidth || 4000) / 320);
+        const maxChunkY = Math.ceil((this.worldHeight || 4000) / 320);
+        for (let cx = 0; cx <= maxChunkX; cx++) {
+          for (let cy = 0; cy <= maxChunkY; cy++) {
             if (!this.exploredChunks.has(`${cx},${cy}`)) {
               this.minimapFow.fillRect(cx * 320, cy * 320, 320, 320);
             }
@@ -1820,10 +1918,27 @@ export class Grave1 extends Phaser.Scene {
       nearHouseDoor = true;
     }
 
+    let nearCampoPortal = false;
+    const campoPortalX = 576;
+    const campoPortalY = 1950;
+    const distToCampo1 = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, campoPortalX, campoPortalY);
+    const distToCampo2 = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, 1137, 580);
+    let activeCampoPortalPos = { x: campoPortalX, y: campoPortalY };
+
+    if (distToCampo1 < 60) {
+      nearCampoPortal = true;
+      activeCampoPortalPos = { x: campoPortalX, y: campoPortalY };
+    } else if (distToCampo2 < 60) {
+      nearCampoPortal = true;
+      activeCampoPortalPos = { x: 1137, y: 580 };
+    }
+
     this.nearNpc = nearNpc;
     this.closestNpc = closestNpc;
     this.nearFragment = nearFragment;
     this.nearHouseDoor = nearHouseDoor;
+    this.nearCampoPortal = nearCampoPortal;
+    this.activeCampoPortalPos = activeCampoPortalPos;
 
     if (nearFragment) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO SOLVE RIDDLE");
@@ -1834,6 +1949,11 @@ export class Grave1 extends Phaser.Scene {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO ENTER HOUSE");
       if (this.interactionPrompt) {
         this.interactionPrompt.show({ x: houseDoorX, y: houseDoorY - 20 }, "E", "ENTER HOUSE");
+      }
+    } else if (nearCampoPortal) {
+      this.hud.setStatus("PRESS [E] OR [SPACE] TO RETURN TO CAMPO LUNAN");
+      if (this.interactionPrompt) {
+        this.interactionPrompt.show({ x: activeCampoPortalPos.x, y: activeCampoPortalPos.y - 20 }, "E", "EXIT TO CAMPO LUNAN");
       }
     } else if (nearNpc) {
       this.hud.setStatus("PRESS [E] OR [SPACE] TO TALK");
@@ -1854,10 +1974,10 @@ export class Grave1 extends Phaser.Scene {
       let targetKey = "";
       if (this.storyStage === 1) targetKey = "npc-old-fisherman";
       else if (this.storyStage === 2) targetKey = "npc-young-fisherman";
-      else if (this.storyStage === 3) targetKey = "npc-old-wife";
+      else if (this.storyStage === 3) targetKey = "npc-sick-wife";
       else if (this.storyStage === 4) targetKey = "npc-young-daughter";
       
-      const targetNpc = this.npcs?.getChildren().find(n => n.texture && n.texture.key === targetKey);
+      const targetNpc = this.npcs?.getChildren().find(n => n.texture && (n.texture.key === targetKey || (targetKey === "npc-sick-wife" && n.texture.key === "npc-old-wife")));
       
       if (targetNpc) {
         this.objectiveArrow.setVisible(true);
@@ -2098,6 +2218,40 @@ export class Grave1 extends Phaser.Scene {
       setTimeout(() => {
         import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
           TransitionSystem.fadeToScene(this, "FamilyHomeScene", { loadingScreen });
+        });
+      }, 250);
+    });
+  }
+
+  returnToCampoLunan() {
+    this.dialogueActive = true;
+    if (this.player && this.player.sprite && this.player.sprite.body) {
+      this.player.sprite.body.setVelocity(0);
+      this.player.sprite.anims.stop();
+    }
+
+    const cache = getCache();
+    if (cache) {
+      setCache({
+        ...cache,
+        current_area: "Campo Lunan",
+        position_x: 1278,
+        position_y: 1779,
+      });
+    }
+
+    this.saveProgress();
+
+    import("../ui/portalLoadingScreen.js").then(({ PortalLoadingScreen }) => {
+      const loadingScreen = new PortalLoadingScreen({
+        title: "CAMPO LUNAN",
+        subtitle: "Returning to Graveyard",
+        hint: "Leaving the memory world..."
+      });
+
+      setTimeout(() => {
+        import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
+          TransitionSystem.fadeToScene(this, "CampoLunanScene", { loadingScreen });
         });
       }, 250);
     });

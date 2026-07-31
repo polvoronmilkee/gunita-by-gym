@@ -60,6 +60,7 @@ export class LoadingScreen {
   }
 
   show() {
+    this.root.style.display = "flex";
     this.root.classList.remove("hidden");
     this.root.setAttribute("aria-busy", "true");
   }
@@ -67,6 +68,11 @@ export class LoadingScreen {
   hide() {
     this.root.classList.add("hidden");
     this.root.setAttribute("aria-busy", "false");
+    setTimeout(() => {
+      if (this.root && this.root.classList.contains("hidden")) {
+        this.root.style.display = "none";
+      }
+    }, 320);
   }
 
   destroy() {

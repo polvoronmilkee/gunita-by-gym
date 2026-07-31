@@ -68,7 +68,7 @@ export class PreloadScene extends Phaser.Scene {
     } else if (currentArea && this.scene.get(currentArea)) {
       this.scene.start(currentArea);
     } else {
-      this.scene.start("Grave1");
+      this.scene.start("CampoLunanScene");
     }
   }
 }

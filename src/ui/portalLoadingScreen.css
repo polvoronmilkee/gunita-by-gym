@@ -10,14 +10,14 @@
   overflow: hidden;
   background-color: #030305;
   color: #eef6ff;
-  transition: opacity 800ms ease, backdrop-filter 800ms ease;
+  transition: opacity 200ms ease, backdrop-filter 200ms ease;
 }
 
 .gunita-portal-loading-screen.hidden {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transition: opacity 800ms ease, visibility 0s 800ms;
+  transition: opacity 200ms ease, visibility 0s 200ms;
 }
 
 /* Add a deep, breathing background glow */

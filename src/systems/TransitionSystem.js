@@ -50,6 +50,17 @@ export class TransitionSystem {
     const fadeBlack = scene.add.rectangle(screenCenterX, screenCenterY, width, height, 0x000000);
     fadeBlack.setScrollFactor(0).setDepth(10005).setAlpha(0).setVisible(false);
 
+    scene.transitionVoidBg = voidBg;
+    scene.transitionFadeBlack = fadeBlack;
+
+    const cleanupOverlays = () => {
+      if (voidBg && voidBg.active) voidBg.destroy();
+      if (fadeBlack && fadeBlack.active) fadeBlack.destroy();
+    };
+
+    scene.events.once("shutdown", cleanupOverlays);
+    scene.events.once("destroy", cleanupOverlays);
+
     const shards = [];
     const numShards = 16;
     const maxRadius = Math.max(width, height) * 1.5;

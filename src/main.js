@@ -233,9 +233,13 @@ function startGame(initialScene, loadingOptions = {}) {
     game = new Phaser.Game(config);
     sceneManager.bindGame(game);
     window.game = game;
-    game.events.once("game-ready", () => {
+
+    const hideLoader = () => {
       loadingScreen.hide();
-    });
+    };
+
+    game.events.once("game-ready", hideLoader);
+    setTimeout(hideLoader, 2000);
   } else {
     if (initialScene) {
       sceneManager.start(initialScene);
@@ -437,14 +441,15 @@ continueConfirmBtn?.addEventListener("click", async () => {
     }
 
     setCache({
+      ...(state || {}),
       player_id: player.id,
       username: player.username,
       inventory_id: player.inventory_id,
-      current_world: state.current_world || "Lunan",
-      current_area: state.current_area || "Campo Lunan",
-      position_x: state.has_completed_tutorial && state.position_x !== undefined ? state.position_x : 1278,
-      position_y: state.has_completed_tutorial && state.position_y !== undefined ? state.position_y : 1779,
-      has_completed_tutorial: state.has_completed_tutorial || false,
+      current_world: state?.current_world || "Lunan",
+      current_area: state?.current_area || "Campo Lunan",
+      position_x: state?.position_x !== undefined ? state.position_x : (state?.has_completed_tutorial ? 1278 : 320),
+      position_y: state?.position_y !== undefined ? state.position_y : (state?.has_completed_tutorial ? 1779 : 360),
+      has_completed_tutorial: state?.has_completed_tutorial || false,
     });
 
     hideContinueModal();

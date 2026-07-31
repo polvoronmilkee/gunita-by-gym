@@ -137,11 +137,16 @@ export async function loadGameState(playerId) {
   const online = await isServerOnline();
   if (online && !playerId.startsWith("local_")) {
     try {
-      const state = await fetch(`${API_BASE_URL}/gamestate/${playerId}`).then(r => r.json());
-      const localStates = JSON.parse(localStorage.getItem("gunita_local_gamestates") || "{}");
-      localStates[playerId] = state;
-      localStorage.setItem("gunita_local_gamestates", JSON.stringify(localStates));
-      return state;
+      const response = await fetch(`${API_BASE_URL}/gamestate/${playerId}`);
+      if (response.ok) {
+        const state = await response.json();
+        if (state && !state.error) {
+          const localStates = JSON.parse(localStorage.getItem("gunita_local_gamestates") || "{}");
+          localStates[playerId] = state;
+          localStorage.setItem("gunita_local_gamestates", JSON.stringify(localStates));
+          return state;
+        }
+      }
     } catch (err) {
       console.warn("Failed to load from server, trying local states:", err.message);
     }
