@@ -877,8 +877,8 @@ export class Grave1 extends Phaser.Scene {
     // Objective Compass Arrow
     this.objectiveArrow = this.add.graphics();
     this.objectiveArrow.setDepth(15);
-    this.objectiveArrow.lineStyle(2, 0xffd700, 1);
-    this.objectiveArrow.fillStyle(0xffd700, 0.8);
+    this.objectiveArrow.lineStyle(2, 0x6ee7b7, 1);
+    this.objectiveArrow.fillStyle(0x6ee7b7, 0.8);
     // Draw a simple triangle pointing right
     this.objectiveArrow.beginPath();
     this.objectiveArrow.moveTo(6, 0);
