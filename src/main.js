@@ -229,7 +229,6 @@ function startGame(initialScene, loadingOptions = {}) {
 
   if (!game) {
     game = new Phaser.Game(config);
-    window.phaserGame = game;
     sceneManager.bindGame(game);
     game.events.once("game-ready", () => {
       loadingScreen.hide();
