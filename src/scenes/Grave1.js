@@ -1924,7 +1924,7 @@ export class Grave1 extends Phaser.Scene {
       const chunkY = Math.floor(this.player.sprite.y / 320);
       this.exploredChunks.add(`${chunkX},${chunkY}`);
 
-      if (!this.finalLumaSpawned && this.lumaFinalSpawnPoint && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.lumaFinalSpawnPoint.x, this.lumaFinalSpawnPoint.y) < 250) {
+      if (!this.finalLumaSpawned && this.lumaFinalSpawnPoint && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.lumaFinalSpawnPoint.x, this.lumaFinalSpawnPoint.y) < 40) {
         this.finalLumaSpawned = true;
         this.spawnFinalLuma(this.lumaFinalSpawnPoint.x, this.lumaFinalSpawnPoint.y);
       }

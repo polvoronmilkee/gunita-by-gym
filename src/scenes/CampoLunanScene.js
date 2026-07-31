@@ -1403,7 +1403,7 @@ export class CampoLunanScene extends Phaser.Scene {
     ) : Infinity;
 
     const currentCache = getCache() || {};
-    if (distLuma2 < 75 && !currentCache.has_completed_tutorial && !this.hasTriggeredLumaSecondAppearance) {
+    if (distLuma2 < 35 && !currentCache.has_completed_tutorial && !this.hasTriggeredLumaSecondAppearance) {
       this.triggerLumaSecondAppearance();
       return;
     }
