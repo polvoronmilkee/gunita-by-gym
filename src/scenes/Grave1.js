@@ -55,6 +55,7 @@ export class Grave1 extends Phaser.Scene {
       frameHeight: 64,
     });
     this.load.image('rain-tile', 'src/assets/grave1-v2/rain-new-sprite.png');
+    this.load.image('mang-tomas', 'src/assets/grave1-v2/more-characters/mang-tomas.png');
 
     // Mappings for grave1-v2 tilesets
     const mappings = {
@@ -506,6 +507,16 @@ export class Grave1 extends Phaser.Scene {
     this.storyBlocker = this.physics.add.staticImage(3615, 2061, null).setSize(200, 50).setVisible(false);
     this.physics.add.collider(this.player.sprite, this.storyBlocker);
     
+    this.lumaFinalSpawnPoint = { x: 3646.36, y: 1999.27 };
+    this.mangTomasFinalPoint = { x: 2151.51, y: 3712.12 };
+
+    this.mangTomasSprite = this.physics.add.sprite(this.mangTomasFinalPoint.x, this.mangTomasFinalPoint.y, "mang-tomas");
+    this.mangTomasSprite.setDepth(this.mangTomasFinalPoint.y);
+    this.mangTomasSprite.setImmovable(true);
+    
+    this.finalLumaSpawned = false;
+    this.lumaFinalSprite = null;
+
     this.storyStage = 1;
     this.currentFragment = null;
     this.currentArtifactKey = null;
@@ -1325,6 +1336,81 @@ export class Grave1 extends Phaser.Scene {
     container.appendChild(modalBg);
   }
 
+  spawnFinalLuma(x, y) {
+    this.lumaFinalSprite = this.physics.add.sprite(x, y, "luma-idle");
+    this.lumaFinalSprite.setScale(0.3);
+    this.lumaFinalSprite.setDepth(this.lumaFinalSprite.y);
+    this.lumaFinalSprite.setImmovable(true);
+    
+    if (this.anims.exists("luma-idle-anim")) {
+      this.lumaFinalSprite.play("luma-idle-anim");
+    }
+
+    if (this.lumaFinalSprite.preFX) {
+      this.lumaFinalGlow = this.lumaFinalSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+      this.tweens.add({
+        targets: this.lumaFinalGlow,
+        outerStrength: 25,
+        yoyo: true,
+        loop: -1,
+        ease: 'Sine.easeInOut',
+        duration: 2000
+      });
+    }
+
+    if (this.audioManager && typeof this.audioManager.playLumaSwishSfx === "function") {
+      this.audioManager.playLumaSwishSfx();
+    } else if (this.audioManager && typeof this.audioManager.playLumaSwish === "function") {
+      this.audioManager.playLumaSwish();
+    }
+
+    // Particle effect
+    if (this.textures.exists("fragment-idle")) {
+      const emitter = this.add.particles(x, y, "fragment-idle", {
+        speed: { min: 20, max: 60 },
+        scale: { start: 0.1, end: 0 },
+        alpha: { start: 0.8, end: 0 },
+        lifespan: 1500,
+        blendMode: "ADD",
+        tint: 0xbc80ff
+      });
+      emitter.setDepth(this.lumaFinalSprite.y + 1);
+      this.time.delayedCall(1000, () => emitter.stop());
+    }
+
+    if (this.storyStage !== 5) {
+      this.startDialogueSequence([
+        { speaker: "Luma", text: "You cannot enter here, Vino." },
+        { speaker: "Luma", text: "You have to solve and find all the artifacts first to finally save Mang Tomas' story!" }
+      ], () => {
+         this.tweens.add({
+            targets: this.lumaFinalSprite,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => {
+               this.lumaFinalSprite.destroy();
+               // allow triggering again if Vino walks away and comes back
+               this.time.delayedCall(2000, () => { this.finalLumaSpawned = false; });
+            }
+         });
+      });
+    } else {
+      this.startDialogueSequence([
+        { speaker: "Luma", text: "You've gathered everything needed, Vino. The barrier has cleared." },
+        { speaker: "Luma", text: "I wish you luck to completely finish this... enter the wasteland to find Mang Tomas for the last time!" }
+      ], () => {
+         this.tweens.add({
+            targets: this.lumaFinalSprite,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => {
+               this.lumaFinalSprite.destroy();
+            }
+         });
+      });
+    }
+  }
+
   playLumaIntroCutscene() {
     this.dialogueActive = true;
     if (this.player?.sprite?.body) {
@@ -1495,9 +1581,9 @@ export class Grave1 extends Phaser.Scene {
       hint = "Do not answer with what you<br/>remember.<br/><br/>Answer with what you have<br/>learned.";
     } else if (this.storyStage === 5) {
       // Objective 14 (Reflect on story after 4th artifact)
-      title = "LUMA'S REFLECTION";
-      objective = "Reflect on Mang Tomas'<br/>story.";
-      hint = "A restored memory is only<br/>complete when its lesson<br/>is understood.";
+      title = "LUMA'S GUIDANCE";
+      objective = "Enter the Wasteland<br/>and find Mang Tomas.";
+      hint = "I trust you with this, Vino.<br/>I know you already know<br/>his story.";
     } else if (this.currentArtifactKey === "daughters-drawing") {
       // Objective 13 (Drawing restored on floor)
       title = "LUMA'S OBSERVATION";
@@ -1740,6 +1826,11 @@ export class Grave1 extends Phaser.Scene {
       const chunkX = Math.floor(this.player.sprite.x / 320);
       const chunkY = Math.floor(this.player.sprite.y / 320);
       this.exploredChunks.add(`${chunkX},${chunkY}`);
+
+      if (!this.finalLumaSpawned && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.lumaFinalSpawnPoint.x, this.lumaFinalSpawnPoint.y) < 250) {
+        this.finalLumaSpawned = true;
+        this.spawnFinalLuma(this.lumaFinalSpawnPoint.x, this.lumaFinalSpawnPoint.y);
+      }
 
       // Check proximity to Old Fisherman for Objective 2 (Arrived at Eastern Pier)
       if (this.storyStage === 1 && !this.arrivedAtPier && !this.currentFragment && this.npcs) {
