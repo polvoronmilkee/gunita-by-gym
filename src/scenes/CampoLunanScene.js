@@ -260,14 +260,25 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Add Pink Frog at (1359, 1075) with Physics
-    this.pinkFrog = this.physics.add.sprite(1359, 1075, "pink-frog");
+    // Parse chars layer objects from TMJ map
+    const charsLayer = map.getObjectLayer("chars");
+    const pinkObj = charsLayer?.objects?.find((o) => o.id === 66 || o.name === "pink shroom" || o.name === "pink-frog");
+    const poisonObj = charsLayer?.objects?.find((o) => o.id === 67 || o.name === "poison-idle" || o.name === "poison-shroom");
+    const luma2Obj = charsLayer?.objects?.find((o) => o.id === 69 || o.name === "luma-second-appearance");
+
+    const pinkX = pinkObj ? pinkObj.x : 1359;
+    const pinkY = pinkObj ? pinkObj.y : 1075;
+    const poisonX = poisonObj ? poisonObj.x : 1384;
+    const poisonY = poisonObj ? poisonObj.y : 1074;
+
+    // Add Pink Frog (id 66) with Physics
+    this.pinkFrog = this.physics.add.sprite(pinkX, pinkY, "pink-frog");
     this.pinkFrog.setScale(0.75);
     this.pinkFrog.play("pink-frog-idle");
     this.pinkFrog.setImmovable(true); // Prevents Vino from pushing it
 
-    // Add Poison Shroom at (1384, 1074) with Physics
-    this.poisonShroom = this.physics.add.sprite(1384, 1074, "poison-shroom");
+    // Add Poison Shroom (id 67) with Physics
+    this.poisonShroom = this.physics.add.sprite(poisonX, poisonY, "poison-shroom");
     this.poisonShroom.setScale(0.75);
     this.poisonShroom.play("poison-shroom-idle");
     this.poisonShroom.setImmovable(true); // Prevents Vino from pushing it
@@ -810,6 +821,170 @@ export class CampoLunanScene extends Phaser.Scene {
       runStep();
     };
 
+    // Luma Second Appearance (TMJ Object ID 68)
+    const luma68Obj = charsLayer?.objects?.find((o) => o.id === 68 || o.name === "luma");
+
+    const luma2TargetX = luma68Obj ? luma68Obj.x : 1410;
+    const luma2TargetY = luma68Obj ? luma68Obj.y : 1074;
+    this.luma2Pos = { x: luma2TargetX, y: luma2TargetY };
+
+    this.hasTriggeredLumaSecondAppearance = activeCache.luma_second_appearance_done || false;
+
+    this.triggerLumaSecondAppearance = () => {
+      if (this.hasTriggeredLumaSecondAppearance) return;
+      this.hasTriggeredLumaSecondAppearance = true;
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+
+      // Create Luma sprite (initially hidden) at target position
+      const luma2Sprite = this.physics.add.sprite(luma2TargetX, luma2TargetY, "luma-idle");
+      luma2Sprite.setScale(0.3);
+      luma2Sprite.setDepth(luma2Sprite.y);
+      luma2Sprite.setImmovable(true);
+      luma2Sprite.setVisible(false);
+      luma2Sprite.setAlpha(0);
+
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      luma2Sprite.play("luma-idle-anim");
+
+      // Glowing effect
+      if (this.cameras.main.postFX) {
+        const glow = luma2Sprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+        this.tweens.add({
+          targets: glow,
+          outerStrength: 1.3,
+          innerStrength: 0.9,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+
+      // Camera shake & sound effect
+      this.cameras.main.shake(350, 0.004);
+      if (this.audioManager) {
+        if (typeof this.audioManager.playLumaSwishSfx === "function") {
+          this.audioManager.playLumaSwishSfx();
+        } else if (typeof this.audioManager.playLumaSwish === "function") {
+          this.audioManager.playLumaSwish();
+        }
+      }
+
+      // Crystal spark particles gathering
+      if (!this.textures.exists("crystal-spark")) {
+        const g = this.make.graphics({ x: 0, y: 0 });
+        g.fillStyle(0xffffff, 1);
+        g.fillRect(0, 0, 4, 4);
+        g.generateTexture("crystal-spark", 4, 4);
+        g.destroy();
+      }
+
+      const emitter = this.add.particles(luma2TargetX, luma2TargetY, "crystal-spark", {
+        speed: { min: 15, max: 50 },
+        angle: { min: 0, max: 360 },
+        scale: { start: 1.5, end: 0 },
+        alpha: { start: 0.8, end: 0 },
+        tint: [0x50c0ff, 0xbc80ff, 0xffffff],
+        lifespan: 1200,
+        quantity: 3,
+        frequency: 45,
+        maxParticles: 35,
+        blendMode: "SCREEN"
+      });
+      emitter.setDepth(luma2Sprite.y + 1);
+
+      // Fade in Luma
+      luma2Sprite.setVisible(true);
+      this.tweens.add({
+        targets: luma2Sprite,
+        alpha: 1,
+        duration: 1500,
+        onComplete: () => {
+          emitter.destroy();
+
+          const lumaSecondDialogues = [
+            { speaker: "Vino", text: "This place..." },
+            { speaker: "Vino", text: "It feels..." },
+            { speaker: "Vino", text: "Broken." },
+            { speaker: "Luma", text: "It wasn't always." },
+            { speaker: "Luma", text: "There was a time when every lantern burned brightly." },
+            { speaker: "Luma", text: "Every grave carried a name." },
+            { speaker: "Luma", text: "And every soul found peace." },
+            { speaker: "Vino", text: "What happened?" },
+            { speaker: "Luma", text: "..." },
+            { speaker: "Luma", text: "Memories were forgotten." },
+            { speaker: "Luma", text: "When a story disappears..." },
+            { speaker: "Luma", text: "So does the soul." },
+            { speaker: "Vino", text: "Can they be saved?" },
+            { speaker: "Luma", text: "They can." },
+            { speaker: "Luma", text: "But not by force." },
+            { speaker: "Luma", text: "Only by remembering." },
+            { speaker: "Vino", text: "What do I have to do?" },
+            { speaker: "Luma", text: "Walk among the graves." },
+            { speaker: "Luma", text: "Listen to those left behind." },
+            { speaker: "Luma", text: "Restore what has been scattered." },
+            { speaker: "Luma", text: "When enough memories return..." },
+            { speaker: "Luma", text: "The soul will remember its own name." },
+            { speaker: "Vino", text: "And then?" },
+            { speaker: "Luma", text: "They may finally rest." },
+            { speaker: "Vino", text: "Have you done this before?" },
+            { speaker: "Luma", text: "..." },
+            { speaker: "Luma", text: "For longer than I care to remember." }
+          ];
+
+          let step = 0;
+          const runDialogue = () => {
+            if (step < lumaSecondDialogues.length) {
+              const current = lumaSecondDialogues[step];
+              this.dialogue.showText(current.speaker, current.text, () => {
+                step++;
+                runDialogue();
+              });
+            } else {
+              // Dialogue complete: sound FX & fade out
+              this.dialogue.hide();
+              this.dialogueActive = false;
+
+              if (this.audioManager) {
+                if (typeof this.audioManager.playLumaSwishSfx === "function") {
+                  this.audioManager.playLumaSwishSfx();
+                } else if (typeof this.audioManager.playLumaSwish === "function") {
+                  this.audioManager.playLumaSwish();
+                }
+              }
+
+              this.tweens.add({
+                targets: luma2Sprite,
+                alpha: 0,
+                duration: 1600,
+                onComplete: () => {
+                  luma2Sprite.destroy();
+
+                  this.hasTriggeredLumaSecondAppearance = true;
+                  const freshCache = getCache() || {};
+                  freshCache.luma_second_appearance_done = true;
+                  setCache(freshCache);
+                  this.saveProgress();
+                }
+              });
+            }
+          };
+          runDialogue();
+        }
+      });
+    };
+
     // Keyboard bindings for dialogue & interaction
     this.input.keyboard.on("keydown-E", () => {
       if (this.dialogueActive) {
@@ -967,6 +1142,18 @@ export class CampoLunanScene extends Phaser.Scene {
       midX,
       midY,
     );
+
+    const distLuma2 = this.luma2Pos ? Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      this.luma2Pos.x,
+      this.luma2Pos.y,
+    ) : Infinity;
+
+    if (distLuma2 < 60 && !this.hasTriggeredLumaSecondAppearance) {
+      this.triggerLumaSecondAppearance();
+      return;
+    }
 
     this.isNearCreatures = distMid < 55 || distFrog < 45 || distShroom < 45;
 
