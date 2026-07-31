@@ -63,14 +63,22 @@ export function deleteSlot(slotIndex) {
  * @returns {Object|null}
  */
 export function getCache() {
-  let savedData = null;
+  let parsed = null;
   try {
-    const data = localStorage.getItem(CACHE_KEY);
+    const activeSlotKey = getSlotKey(getActiveSlot());
+    const data = localStorage.getItem(activeSlotKey);
     if (data) {
-      savedData = JSON.parse(data);
+      parsed = JSON.parse(data);
     }
   } catch (e) {
     console.error("Failed to parse cached save:", e);
+    return null;
+  }
+
+  if (parsed && (parsed.is_exploration_mode || parsed.player_id === "explorer")) {
+    const activeSlotKey = getSlotKey(getActiveSlot());
+    localStorage.removeItem(activeSlotKey);
+    parsed = null;
   }
 
   if (window.isExplorationMode) {
@@ -83,24 +91,12 @@ export function getCache() {
       position_x: 320,
       position_y: 360,
       has_talked_to_luma: true,
-      has_completed_tutorial: savedData ? savedData.has_completed_tutorial : false,
-      played_post_tutorial_dialogue: savedData ? savedData.played_post_tutorial_dialogue : false,
+      has_completed_tutorial: parsed ? parsed.has_completed_tutorial : false,
+      played_post_tutorial_dialogue: parsed ? parsed.played_post_tutorial_dialogue : false,
     };
   }
-  try {
-    const activeSlotKey = getSlotKey(getActiveSlot());
-    const data = localStorage.getItem(activeSlotKey);
-    if (!data) return null;
-    const parsed = JSON.parse(data);
-    if (parsed && (parsed.is_exploration_mode || parsed.player_id === "explorer")) {
-      localStorage.removeItem(activeSlotKey);
-      return null;
-    }
-    return parsed;
-  } catch (e) {
-    console.error("Failed to parse cached save:", e);
-    return null;
-  }
+
+  return parsed;
 }
 
 /**
