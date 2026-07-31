@@ -205,11 +205,11 @@ function setGameVisible(visible) {
   gameShell.classList.toggle("hidden", !visible);
 }
 
-function startGame(initialScene) {
+function startGame(initialScene, loadingOptions = {}) {
   loadingScreen.setContent({
-    title: "Entering Campo Lunan",
-    subtitle: "Awakening the Echoes",
-    hint: "Please wait",
+    title: loadingOptions.title || "Entering Campo Lunan",
+    subtitle: loadingOptions.subtitle || "Awakening the Echoes",
+    hint: loadingOptions.hint || "Please wait",
   });
   loadingScreen.show();
 
@@ -283,7 +283,11 @@ document.getElementById("continue-journey")?.addEventListener("click", () => {
   const cache = getCache();
   if (cache && cache.player_id) {
     // Instantly load game if cache is present!
-    startGame();
+    startGame(null, {
+      title: "Continuing Journey",
+      subtitle: "Resuming Saved Echoes",
+      hint: "Restoring your memories...",
+    });
   } else {
     // Show continue journey login modal
     showContinueModal();
@@ -445,7 +449,11 @@ continueConfirmBtn?.addEventListener("click", async () => {
     });
 
     hideContinueModal();
-    startGame();
+    startGame(null, {
+      title: "Continuing Journey",
+      subtitle: "Resuming Saved Echoes",
+      hint: "Restoring your memories...",
+    });
   } catch (err) {
     if (continueError) {
       continueError.textContent = err.message.toUpperCase();
@@ -484,7 +492,11 @@ newConfirmBtn?.addEventListener("click", async () => {
     });
 
     hideNewModal();
-    startGame();
+    startGame(null, {
+      title: "Entering Campo Lunan",
+      subtitle: "Awakening the Echoes",
+      hint: "Creating new journey...",
+    });
   } catch (err) {
     if (newError) {
       newError.textContent = err.message.toUpperCase();
