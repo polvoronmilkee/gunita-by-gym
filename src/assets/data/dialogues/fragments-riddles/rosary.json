@@ -2,24 +2,499 @@
   "artifact": "Rosary",
   "riddles": [
     {
-      "question": "Before facing the waves, many hold me while whispering a prayer. What am I?",
-      "choices": ["Rosary", "Compass", "Anchor", "Fishing Hook"],
-      "answer": "Rosary"
+      "question": "I am a small round object on a string used for counting.",
+      "choices": [
+        "Bead",
+        "Marble",
+        "Stone",
+        "Coin"
+      ],
+      "answer": "Bead",
+      "difficulty": "easy"
     },
     {
-      "question": "I am not a weapon, yet I bring courage through faith. What am I?",
-      "choices": ["Rosary", "Knife", "Lantern", "Fishing Net"],
-      "answer": "Rosary"
+      "question": "I am the shape of two intersecting lines, a symbol of faith.",
+      "choices": [
+        "Cross",
+        "Star",
+        "Circle",
+        "Square"
+      ],
+      "answer": "Cross",
+      "difficulty": "easy"
     },
     {
-      "question": "Families hold me close when asking for protection. What am I?",
-      "choices": ["Rosary", "Basket", "Paddle", "Shell"],
-      "answer": "Rosary"
+      "question": "I am the quiet words spoken from the heart to the heavens.",
+      "choices": [
+        "Prayer",
+        "Song",
+        "Poem",
+        "Speech"
+      ],
+      "answer": "Prayer",
+      "difficulty": "easy"
     },
     {
-      "question": "Small beads tied together, carried with hope into uncertain days. What am I?",
-      "choices": ["Rosary", "Necklace", "Bracelet", "Fishing Rope"],
-      "answer": "Rosary"
+      "question": "I am a building where people gather to worship and pray.",
+      "choices": [
+        "Church",
+        "School",
+        "House",
+        "Store"
+      ],
+      "answer": "Church",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a small flame on a wax stick lit in remembrance.",
+      "choices": [
+        "Candle",
+        "Torch",
+        "Match",
+        "Fire"
+      ],
+      "answer": "Candle",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the holy book containing ancient scripture.",
+      "choices": [
+        "Bible",
+        "Journal",
+        "Novel",
+        "Dictionary"
+      ],
+      "answer": "Bible",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I have wings and a halo, serving as a messenger from above.",
+      "choices": [
+        "Angel",
+        "Bird",
+        "Cloud",
+        "Star"
+      ],
+      "answer": "Angel",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the mother figure highly honored in the rosary.",
+      "choices": [
+        "Mary",
+        "Eve",
+        "Sarah",
+        "Ruth"
+      ],
+      "answer": "Mary",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the string that binds the beads together.",
+      "choices": [
+        "Chain",
+        "Rope",
+        "Thread",
+        "Wire"
+      ],
+      "answer": "Chain",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the act of bending down on one or both knees in reverence.",
+      "choices": [
+        "Kneeling",
+        "Bowing",
+        "Standing",
+        "Sitting"
+      ],
+      "answer": "Kneeling",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a sacred song or hymn sung in worship.",
+      "choices": [
+        "Psalm",
+        "Poem",
+        "Chant",
+        "Lullaby"
+      ],
+      "answer": "Psalm",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the day of the week usually reserved for rest and worship.",
+      "choices": [
+        "Sunday",
+        "Monday",
+        "Friday",
+        "Saturday"
+      ],
+      "answer": "Sunday",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the spiritual part of a person, enduring beyond the body.",
+      "choices": [
+        "Soul",
+        "Mind",
+        "Heart",
+        "Brain"
+      ],
+      "answer": "Soul",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the sweet-smelling smoke burned during holy ceremonies.",
+      "choices": [
+        "Incense",
+        "Perfume",
+        "Smoke",
+        "Dust"
+      ],
+      "answer": "Incense",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the ringing metal object that calls people to mass.",
+      "choices": [
+        "Bell",
+        "Chime",
+        "Gong",
+        "Whistle"
+      ],
+      "answer": "Bell",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the set of ten beads in a rosary representing a decade.",
+      "choices": [
+        "Decade",
+        "Century",
+        "Dozen",
+        "Score"
+      ],
+      "answer": "Decade",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the central piece that joins the loop of beads to the cross.",
+      "choices": [
+        "Centerpiece",
+        "Clasp",
+        "Knot",
+        "Medal"
+      ],
+      "answer": "Centerpiece",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the reflective events in the life of Christ pondered during prayer.",
+      "choices": [
+        "Mysteries",
+        "Stories",
+        "Parables",
+        "Legends"
+      ],
+      "answer": "Mysteries",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a sacred container used to hold holy water.",
+      "choices": [
+        "Font",
+        "Chalice",
+        "Bowl",
+        "Cup"
+      ],
+      "answer": "Font",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the cup used to hold the sacramental wine.",
+      "choices": [
+        "Chalice",
+        "Goblet",
+        "Mug",
+        "Vial"
+      ],
+      "answer": "Chalice",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a small chapel or a sacred place of worship.",
+      "choices": [
+        "Shrine",
+        "Altar",
+        "Pulpit",
+        "Pew"
+      ],
+      "answer": "Shrine",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the raised platform where the scripture is read aloud.",
+      "choices": [
+        "Pulpit",
+        "Altar",
+        "Balcony",
+        "Stage"
+      ],
+      "answer": "Pulpit",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the long wooden bench where the congregation sits.",
+      "choices": [
+        "Pew",
+        "Chair",
+        "Stool",
+        "Couch"
+      ],
+      "answer": "Pew",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a holy person recognized for their exceptional virtue.",
+      "choices": [
+        "Saint",
+        "Priest",
+        "Bishop",
+        "Deacon"
+      ],
+      "answer": "Saint",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a journey taken for a religious or spiritual purpose.",
+      "choices": [
+        "Pilgrimage",
+        "Vacation",
+        "Crusade",
+        "Exodus"
+      ],
+      "answer": "Pilgrimage",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the practice of abstaining from food for spiritual focus.",
+      "choices": [
+        "Fasting",
+        "Feasting",
+        "Dieting",
+        "Starving"
+      ],
+      "answer": "Fasting",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the act of making amends for a wrong or a sin.",
+      "choices": [
+        "Penance",
+        "Revenge",
+        "Forgiveness",
+        "Guilt"
+      ],
+      "answer": "Penance",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a large, elaborate church, usually the seat of a bishop.",
+      "choices": [
+        "Cathedral",
+        "Chapel",
+        "Parish",
+        "Abbey"
+      ],
+      "answer": "Cathedral",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a community of monks living under religious vows.",
+      "choices": [
+        "Monastery",
+        "Convent",
+        "Seminary",
+        "Diocese"
+      ],
+      "answer": "Monastery",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the protective garment worn by a priest during liturgy.",
+      "choices": [
+        "Vestment",
+        "Robe",
+        "Cloak",
+        "Tunic"
+      ],
+      "answer": "Vestment",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the set of Joyful, Sorrowful, Glorious, and Luminous reflections.",
+      "choices": [
+        "Rosary Mysteries",
+        "Beatitudes",
+        "Commandments",
+        "Sacraments"
+      ],
+      "answer": "Rosary Mysteries",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the vessel used to display the consecrated host for adoration.",
+      "choices": [
+        "Monstrance",
+        "Ciborium",
+        "Tabernacle",
+        "Reliquary"
+      ],
+      "answer": "Monstrance",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the ornate box in which the Eucharist is reserved.",
+      "choices": [
+        "Tabernacle",
+        "Monstrance",
+        "Ciborium",
+        "Altar"
+      ],
+      "answer": "Tabernacle",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a covered cup used to hold the hosts for communion.",
+      "choices": [
+        "Ciborium",
+        "Chalice",
+        "Cruet",
+        "Paten"
+      ],
+      "answer": "Ciborium",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the small plate used to hold the Eucharistic bread.",
+      "choices": [
+        "Paten",
+        "Ciborium",
+        "Chalice",
+        "Pyx"
+      ],
+      "answer": "Paten",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a small, round container used to carry the Eucharist to the sick.",
+      "choices": [
+        "Pyx",
+        "Paten",
+        "Cruet",
+        "Reliquary"
+      ],
+      "answer": "Pyx",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a container for holy relics.",
+      "choices": [
+        "Reliquary",
+        "Tabernacle",
+        "Monstrance",
+        "Ciborium"
+      ],
+      "answer": "Reliquary",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the liturgical censer used to burn incense during mass.",
+      "choices": [
+        "Thurible",
+        "Cruet",
+        "Aspergillum",
+        "Pyx"
+      ],
+      "answer": "Thurible",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the implement used to sprinkle holy water.",
+      "choices": [
+        "Aspergillum",
+        "Thurible",
+        "Cruet",
+        "Crosier"
+      ],
+      "answer": "Aspergillum",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the stylized staff carried by a high-ranking cleric.",
+      "choices": [
+        "Crosier",
+        "Miter",
+        "Pallium",
+        "Scepter"
+      ],
+      "answer": "Crosier",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the tall, pointed hat worn by a bishop.",
+      "choices": [
+        "Miter",
+        "Zucchetto",
+        "Biretta",
+        "Crosier"
+      ],
+      "answer": "Miter",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the small skullcap worn by clerics.",
+      "choices": [
+        "Zucchetto",
+        "Miter",
+        "Biretta",
+        "Cowl"
+      ],
+      "answer": "Zucchetto",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the square cap with three or four peaks worn by clergy.",
+      "choices": [
+        "Biretta",
+        "Zucchetto",
+        "Miter",
+        "Fasciola"
+      ],
+      "answer": "Biretta",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the short cape worn over the shoulders by some clerics.",
+      "choices": [
+        "Mozzetta",
+        "Chasuble",
+        "Stole",
+        "Alb"
+      ],
+      "answer": "Mozzetta",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the long white linen tunic worn by liturgical ministers.",
+      "choices": [
+        "Alb",
+        "Chasuble",
+        "Surplice",
+        "Cincture"
+      ],
+      "answer": "Alb",
+      "difficulty": "hard"
     }
   ]
 }

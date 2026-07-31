@@ -1,25 +1,500 @@
 {
-  "artifact": "Red Weather Warning Flag",
+  "artifact": "Red Warning Flag",
   "riddles": [
     {
-      "question": "I am raised before danger arrives, warning everyone to stay ashore. What am I?",
-      "choices": ["Red Weather Flag", "Church Bell", "Lighthouse", "Anchor"],
-      "answer": "Red Weather Flag"
+      "question": "I blow hard and make the trees sway.",
+      "choices": [
+        "Wind",
+        "Rain",
+        "Sun",
+        "Snow"
+      ],
+      "answer": "Wind",
+      "difficulty": "easy"
     },
     {
-      "question": "Ignoring me may lead a sailor into great danger. What am I?",
-      "choices": ["Red Weather Flag", "Boat Paddle", "Fishing Hook", "Compass"],
-      "answer": "Red Weather Flag"
+      "question": "I fall in drops from the clouds to the earth.",
+      "choices": [
+        "Rain",
+        "Snow",
+        "Hail",
+        "Wind"
+      ],
+      "answer": "Rain",
+      "difficulty": "easy"
     },
     {
-      "question": "When I wave in the wind, fishermen know the sea is angry. What am I?",
-      "choices": ["Red Weather Flag", "Fishing Net", "Lantern", "Shell"],
-      "answer": "Red Weather Flag"
+      "question": "I am a flash of bright light in the sky during a storm.",
+      "choices": [
+        "Lightning",
+        "Thunder",
+        "Cloud",
+        "Sun"
+      ],
+      "answer": "Lightning",
+      "difficulty": "easy"
     },
     {
-      "question": "The village watches me before every journey at sea. What am I?",
-      "choices": ["Red Weather Flag", "Rosary", "Boat", "Basket"],
-      "answer": "Red Weather Flag"
+      "question": "I am the loud boom that follows the bright flash.",
+      "choices": [
+        "Thunder",
+        "Lightning",
+        "Wind",
+        "Rain"
+      ],
+      "answer": "Thunder",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a dark, fluffy mass in the sky that brings the rain.",
+      "choices": [
+        "Storm Cloud",
+        "Sun",
+        "Moon",
+        "Star"
+      ],
+      "answer": "Storm Cloud",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a tall, spinning funnel of wind that touches the ground.",
+      "choices": [
+        "Tornado",
+        "Hurricane",
+        "Blizzard",
+        "Tsunami"
+      ],
+      "answer": "Tornado",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a massive spinning storm over the ocean.",
+      "choices": [
+        "Hurricane",
+        "Tornado",
+        "Blizzard",
+        "Drought"
+      ],
+      "answer": "Hurricane",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the color of danger and the warning flag.",
+      "choices": [
+        "Red",
+        "Green",
+        "Blue",
+        "Yellow"
+      ],
+      "answer": "Red",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a cloth on a pole used to send a signal.",
+      "choices": [
+        "Flag",
+        "Shirt",
+        "Sail",
+        "Kite"
+      ],
+      "answer": "Flag",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a loud siren that warns the town of danger.",
+      "choices": [
+        "Alarm",
+        "Bell",
+        "Whistle",
+        "Horn"
+      ],
+      "answer": "Alarm",
+      "difficulty": "easy"
+    },
+    {
+      "question": "When water rises too high and covers the streets.",
+      "choices": [
+        "Flood",
+        "Drought",
+        "Fire",
+        "Earthquake"
+      ],
+      "answer": "Flood",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am frozen rain that falls as hard ice balls.",
+      "choices": [
+        "Hail",
+        "Snow",
+        "Sleet",
+        "Rain"
+      ],
+      "answer": "Hail",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am an area meant to keep you safe from the storm.",
+      "choices": [
+        "Shelter",
+        "Boat",
+        "Tree",
+        "Field"
+      ],
+      "answer": "Shelter",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I block the sun and make the day dark.",
+      "choices": [
+        "Cloud",
+        "Bird",
+        "Plane",
+        "Kite"
+      ],
+      "answer": "Cloud",
+      "difficulty": "easy"
+    },
+    {
+      "question": "You hold me over your head to stay dry.",
+      "choices": [
+        "Umbrella",
+        "Hat",
+        "Coat",
+        "Shield"
+      ],
+      "answer": "Umbrella",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the calm, clear center of a spinning hurricane.",
+      "choices": [
+        "Eye",
+        "Core",
+        "Heart",
+        "Vortex"
+      ],
+      "answer": "Eye",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a tool that measures how much rain has fallen.",
+      "choices": [
+        "Rain Gauge",
+        "Thermometer",
+        "Barometer",
+        "Compass"
+      ],
+      "answer": "Rain Gauge",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I measure the speed of the blowing wind.",
+      "choices": [
+        "Anemometer",
+        "Barometer",
+        "Thermometer",
+        "Seismograph"
+      ],
+      "answer": "Anemometer",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I measure the pressure of the air to predict the weather.",
+      "choices": [
+        "Barometer",
+        "Anemometer",
+        "Thermometer",
+        "Hygrometer"
+      ],
+      "answer": "Barometer",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I measure the amount of moisture in the air.",
+      "choices": [
+        "Hygrometer",
+        "Barometer",
+        "Anemometer",
+        "Thermometer"
+      ],
+      "answer": "Hygrometer",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a sudden, powerful forward movement of the sea driven by a storm.",
+      "choices": [
+        "Storm Surge",
+        "Tsunami",
+        "Tide",
+        "Wave"
+      ],
+      "answer": "Storm Surge",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the loud wail heard across the coast when a storm approaches.",
+      "choices": [
+        "Siren",
+        "Bell",
+        "Horn",
+        "Whistle"
+      ],
+      "answer": "Siren",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am an emergency radio channel used to broadcast warnings.",
+      "choices": [
+        "Broadcast",
+        "Frequency",
+        "Channel",
+        "Signal"
+      ],
+      "answer": "Broadcast",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a visual signal, raised high to tell boats to stay in port.",
+      "choices": [
+        "Gale Warning Flag",
+        "White Flag",
+        "Jolly Roger",
+        "Pennant"
+      ],
+      "answer": "Gale Warning Flag",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the sudden, fierce burst of wind before the rain begins.",
+      "choices": [
+        "Squall",
+        "Breeze",
+        "Gust",
+        "Draft"
+      ],
+      "answer": "Squall",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a wall built to hold back the rising floodwaters.",
+      "choices": [
+        "Levee",
+        "Bridge",
+        "Pier",
+        "Dock"
+      ],
+      "answer": "Levee",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am bags filled with grit used to block water from entering homes.",
+      "choices": [
+        "Sandbags",
+        "Bricks",
+        "Wood",
+        "Stones"
+      ],
+      "answer": "Sandbags",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the act of leaving a dangerous area for a safe one.",
+      "choices": [
+        "Evacuation",
+        "Rescue",
+        "Shelter",
+        "Migration"
+      ],
+      "answer": "Evacuation",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a temporary loss of electricity caused by a storm.",
+      "choices": [
+        "Blackout",
+        "Outage",
+        "Short",
+        "Surge"
+      ],
+      "answer": "Blackout",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a massive wave caused by an underwater quake, not the wind.",
+      "choices": [
+        "Tsunami",
+        "Tide",
+        "Surge",
+        "Ripple"
+      ],
+      "answer": "Tsunami",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the spiraling wind pattern caused by the Earth's rotation.",
+      "choices": [
+        "Coriolis Effect",
+        "Vortex",
+        "Cyclone",
+        "Eddy"
+      ],
+      "answer": "Coriolis Effect",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a severe tropical cyclone originating in the northwestern Pacific.",
+      "choices": [
+        "Typhoon",
+        "Hurricane",
+        "Monsoon",
+        "Willy-Willy"
+      ],
+      "answer": "Typhoon",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a seasonal wind that brings heavy rains to South Asia.",
+      "choices": [
+        "Monsoon",
+        "Trade Wind",
+        "Jet Stream",
+        "Squall"
+      ],
+      "answer": "Monsoon",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a sudden, localized downdraft that causes severe wind shear.",
+      "choices": [
+        "Microburst",
+        "Tornado",
+        "Waterspout",
+        "Squall"
+      ],
+      "answer": "Microburst",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a tornado that forms over a body of water.",
+      "choices": [
+        "Waterspout",
+        "Whirlpool",
+        "Cyclone",
+        "Typhoon"
+      ],
+      "answer": "Waterspout",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the scale used to categorize hurricane wind speeds.",
+      "choices": [
+        "Saffir-Simpson",
+        "Fujita",
+        "Richter",
+        "Beaufort"
+      ],
+      "answer": "Saffir-Simpson",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the scale used to categorize tornado damage intensity.",
+      "choices": [
+        "Fujita",
+        "Saffir-Simpson",
+        "Richter",
+        "Mercalli"
+      ],
+      "answer": "Fujita",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the scale that relates wind speed to observed conditions at sea.",
+      "choices": [
+        "Beaufort",
+        "Saffir-Simpson",
+        "Fujita",
+        "Kelvin"
+      ],
+      "answer": "Beaufort",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the line of intense thunderstorms advancing ahead of a cold front.",
+      "choices": [
+        "Squall Line",
+        "Supercell",
+        "Derecho",
+        "Mesocyclone"
+      ],
+      "answer": "Squall Line",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a widespread, long-lived, straight-line windstorm.",
+      "choices": [
+        "Derecho",
+        "Tornado",
+        "Hurricane",
+        "Typhoon"
+      ],
+      "answer": "Derecho",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the rotating updraft deep within a severe thunderstorm.",
+      "choices": [
+        "Mesocyclone",
+        "Microburst",
+        "Vortex",
+        "Eye Wall"
+      ],
+      "answer": "Mesocyclone",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a highly organized thunderstorm capable of producing tornadoes.",
+      "choices": [
+        "Supercell",
+        "Squall Line",
+        "Cumulonimbus",
+        "Derecho"
+      ],
+      "answer": "Supercell",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the boundary where a cold air mass displaces a warm air mass.",
+      "choices": [
+        "Cold Front",
+        "Warm Front",
+        "Occluded Front",
+        "Stationary Front"
+      ],
+      "answer": "Cold Front",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the ring of violent thunderstorms surrounding a hurricane's center.",
+      "choices": [
+        "Eye Wall",
+        "Rain Band",
+        "Mesocyclone",
+        "Vortex"
+      ],
+      "answer": "Eye Wall",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the term for the atmospheric pressure dropping rapidly.",
+      "choices": [
+        "Bombogenesis",
+        "Cyclogenesis",
+        "Depression",
+        "Sublimation"
+      ],
+      "answer": "Bombogenesis",
+      "difficulty": "hard"
     }
   ]
 }

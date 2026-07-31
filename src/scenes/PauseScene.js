@@ -114,13 +114,86 @@ export class PauseScene extends Phaser.Scene {
 
     const handleResume = () => {
       playClickSfx();
-      this.destroyMenu();
-      this.scene.stop();
-      if (this.parentScene) {
-        this.scene.resume(this.parentScene.scene.key);
-      } else {
-        this.scene.resume("CampoLunanScene");
+      if (this.root) {
+        this.root.style.display = "none";
       }
+
+      const isBulletHell = Boolean(
+        this.parentScene && (this.parentScene.arena || this.parentScene.crystalEnemy || this.parentScene.soul)
+      );
+
+      const finishResume = () => {
+        this.destroyMenu();
+        this.scene.stop();
+        if (this.parentScene) {
+          if (this.parentScene.input && this.parentScene.input.keyboard) {
+            this.parentScene.input.keyboard.resetKeys();
+          }
+          this.scene.resume(this.parentScene.scene.key);
+          if (this.parentScene.physics && typeof this.parentScene.physics.resume === "function") {
+            this.parentScene.physics.resume();
+          }
+        } else {
+          this.scene.resume("CampoLunanScene");
+        }
+      };
+
+      if (!isBulletHell) {
+        finishResume();
+        return;
+      }
+
+      const countdowns = ["3", "2", "1", "GO!"];
+      let countIndex = 0;
+
+      // Check if parent scene has an arena (bullet hell)
+      let cx = 640;
+      let cy = 360;
+      if (this.parentScene && this.parentScene.arena && typeof this.parentScene.arena.x === "number" && typeof this.parentScene.arena.w === "number") {
+        cx = this.parentScene.arena.x + this.parentScene.arena.w / 2;
+        cy = this.parentScene.arena.y + this.parentScene.arena.h / 2;
+      }
+
+      // Create a premium retro countdown text
+      const countdownText = this.add.text(cx, cy, "3", {
+        font: "bold 96px 'Courier New', Courier, monospace",
+        fill: "#f7e8c3",
+        stroke: "#9c6c28",
+        strokeThickness: 8
+      }).setOrigin(0.5);
+
+      countdownText.setShadow(3, 3, 'rgba(0, 0, 0, 0.6)', 2, false, true);
+
+      const runCount = () => {
+        if (countIndex < countdowns.length) {
+          countdownText.setText(countdowns[countIndex]);
+          countdownText.setScale(0.5);
+          countdownText.setAlpha(0);
+
+          this.tweens.add({
+            targets: countdownText,
+            scaleX: 1.2,
+            scaleY: 1.2,
+            alpha: 1,
+            duration: 250,
+            yoyo: true,
+            hold: 500,
+            ease: "Back.easeOut",
+            onComplete: () => {
+              countIndex++;
+              setTimeout(runCount, 250);
+            }
+          });
+          if (this.parentScene && this.parentScene.audioManager) {
+            this.parentScene.audioManager.playHoverSfx?.();
+          }
+        } else {
+          countdownText.destroy();
+          finishResume();
+        }
+      };
+
+      runCount();
     };
 
     closeBtn.addEventListener("click", handleResume);
@@ -203,25 +276,90 @@ export class PauseScene extends Phaser.Scene {
       window.returnToGunitaMenu?.();
     });
 
-    // Keyboard controls for ESC and P key resume
-    this.escKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    this.pKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    // Global keyboard listener on window for 100% reliable input
+    this.handleKeyDown = (e) => {
+      if (!this.canInput) return;
+      const key = e.key.toUpperCase();
+
+      if (key === "ESCAPE" || key === "P") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.menuItems[0]?.click(); // Simulate clicking resume
+        return;
+      }
+
+      if (key === "ARROWUP" || key === "W") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectedIndex--;
+        if (this.selectedIndex < 0) this.selectedIndex = this.menuItems.length - 1;
+        this.updateMenuSelection();
+        if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
+      } else if (key === "ARROWDOWN" || key === "S") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.selectedIndex++;
+        if (this.selectedIndex >= this.menuItems.length) this.selectedIndex = 0;
+        this.updateMenuSelection();
+        if (this.parentScene && this.parentScene.audioManager) this.parentScene.audioManager.playHoverSfx?.();
+      } else if (key === "ENTER" || key === " " || key === "SPACE" || key === "SPACEBAR") {
+        e.preventDefault();
+        e.stopPropagation();
+        this.menuItems[this.selectedIndex]?.click();
+      }
+    };
+
+    window.addEventListener("keydown", this.handleKeyDown);
+
+    // Blur any focused DOM element (like the pause button) so focus returns to the window
+    if (document.activeElement && typeof document.activeElement.blur === "function") {
+      document.activeElement.blur();
+    }
+
+    this.menuItems = [resumeBtn, guideBtn, musicBtn, sfxBtn, menuBtn];
+    this.selectedIndex = 0;
+    
+    // Add hover listeners to sync index if mouse is used
+    this.menuItems.forEach((btn, index) => {
+      if (btn) {
+        btn.addEventListener("pointerenter", () => {
+          this.selectedIndex = index;
+          this.updateMenuSelection();
+        });
+      }
+    });
+    
+    this.updateMenuSelection();
 
     this.handleShutdown = () => this.destroyMenu();
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown);
     this.events.once(Phaser.Scenes.Events.DESTROY, this.handleShutdown);
+
+    this.canInput = false;
+    setTimeout(() => {
+      this.canInput = true;
+    }, 200);
+  }
+
+  updateMenuSelection() {
+    this.menuItems.forEach((btn, index) => {
+      if (!btn) return;
+      if (index === this.selectedIndex) {
+        btn.classList.add("selected");
+        btn.style.borderColor = "#f7e8c3";
+        btn.style.color = "#ffffff";
+        btn.style.backgroundColor = "#9c6c28";
+      } else {
+        btn.classList.remove("selected");
+        btn.style.borderColor = "";
+        btn.style.color = "";
+        btn.style.backgroundColor = "";
+      }
+    });
   }
 
   update() {
-    if (Phaser.Input.Keyboard.JustDown(this.escKey) || Phaser.Input.Keyboard.JustDown(this.pKey)) {
-      this.destroyMenu();
-      this.scene.stop();
-      if (this.parentScene) {
-        this.scene.resume(this.parentScene.scene.key);
-      } else {
-        this.scene.resume("CampoLunanScene");
-      }
-    }
+    // Handled via window keydown listener
   }
 
   persistFallbackSettings(musicEnabled, sfxEnabled) {
@@ -234,6 +372,10 @@ export class PauseScene extends Phaser.Scene {
   }
 
   destroyMenu() {
+    if (this.handleKeyDown) {
+      window.removeEventListener("keydown", this.handleKeyDown);
+      this.handleKeyDown = null;
+    }
     if (this.root) {
       this.root.remove();
       this.root = null;

@@ -7,7 +7,13 @@ import { Grave1 } from "./scenes/Grave1.js";
 import { MemoryScene } from "./scenes/MemoryScene.js";
 import { UIScene } from "./scenes/UIScene.js";
 import { PauseScene } from "./scenes/PauseScene.js";
-import { BulletHellScene } from "./scenes/BulletHellScene.js";
+import { FragmentRedWarningFlag } from "./scenes/FragmentRedWarningFlag.js";
+import { FragmentRosary } from "./scenes/FragmentRosary.js";
+import { FragmentFishBasket } from "./scenes/FragmentFishBasket.js";
+import { FragmentDaughtersDrawing } from "./scenes/FragmentDaughtersDrawing.js";
+import { TutorialBulletHell } from "./scenes/TutorialBulletHell.js";
+import { FinalBossFisherman } from "./scenes/FinalBossFisherman.js";
+import { FamilyHomeScene } from "./scenes/FamilyHomeScene.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { MenuAudioController } from "./ui/MenuAudioController.js";
 import { getCache, setCache, clearCache } from "./save.js";
@@ -27,7 +33,13 @@ const sceneManager = new SceneManager([
   MemoryScene,
   UIScene,
   PauseScene,
-  BulletHellScene,
+  FragmentRedWarningFlag,
+  FragmentRosary,
+  FragmentFishBasket,
+  FragmentDaughtersDrawing,
+  TutorialBulletHell,
+  FinalBossFisherman,
+  FamilyHomeScene,
 ]);
 
 const config = {
@@ -52,7 +64,7 @@ const config = {
     default: "arcade",
     arcade: {
       gravity: { y: 0 },
-      debug: false,
+      debug: true,
     },
   },
   scene: sceneManager.build(),
@@ -83,11 +95,10 @@ function preloadImage(src) {
   });
 }
 
-async function initializeMenuScreen() {
-  await Promise.all(menuAssetUrls.map((src) => preloadImage(src)));
-
+function initializeMenuScreen() {
   loadingScreen.hide();
-  menuScreen?.classList.remove("hidden");
+  setMenuVisible(true);
+  Promise.all(menuAssetUrls.map((src) => preloadImage(src))).catch(() => {});
 }
 
 initializeMenuScreen();
@@ -169,10 +180,19 @@ function setMenuVisible(visible) {
     return;
   }
 
-  menuScreen.classList.toggle("hidden", !visible);
-
   if (visible) {
+    menuScreen.style.display = "block";
+    requestAnimationFrame(() => {
+      menuScreen.classList.remove("hidden");
+    });
     menuAudioController.resumeMusicIfEnabled();
+  } else {
+    menuScreen.classList.add("hidden");
+    setTimeout(() => {
+      if (menuScreen.classList.contains("hidden")) {
+        menuScreen.style.display = "none";
+      }
+    }, 450);
   }
 }
 
@@ -185,11 +205,11 @@ function setGameVisible(visible) {
   gameShell.classList.toggle("hidden", !visible);
 }
 
-function startGame(initialScene) {
+function startGame(initialScene, loadingOptions = {}) {
   loadingScreen.setContent({
-    title: "Entering Campo Lunan",
-    subtitle: "Awakening the Echoes",
-    hint: "Please wait",
+    title: loadingOptions.title || "Entering Campo Lunan",
+    subtitle: loadingOptions.subtitle || "Awakening the Echoes",
+    hint: loadingOptions.hint || "Please wait",
   });
   loadingScreen.show();
 
@@ -221,6 +241,8 @@ function startGame(initialScene) {
       const currentArea = cache?.current_area;
       if (currentArea === "Grave 1" || currentArea === "Grave1") {
         sceneManager.start("Grave1");
+      } else if (currentArea === "FamilyHomeScene" || currentArea === "FamilyHome") {
+        sceneManager.start("FamilyHomeScene");
       } else {
         sceneManager.start("CampoLunanScene");
       }
@@ -232,6 +254,7 @@ function startGame(initialScene) {
 
 window.startGunitaGame = startGame;
 window.returnToGunitaMenu = () => {
+  window.isExplorationMode = false;
   loadingScreen.setContent({
     title: "RETURNING",
     subtitle: "BACK TO MAIN MENU",
@@ -261,7 +284,11 @@ document.getElementById("continue-journey")?.addEventListener("click", () => {
   const cache = getCache();
   if (cache && cache.player_id) {
     // Instantly load game if cache is present!
-    startGame();
+    startGame(null, {
+      title: "Continuing Journey",
+      subtitle: "Resuming Saved Echoes",
+      hint: "Restoring your memories...",
+    });
   } else {
     // Show continue journey login modal
     showContinueModal();
@@ -274,6 +301,7 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
 });
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
+  window.isExplorationMode = true;
   startGame("CampoLunanScene");
 });
 
@@ -297,13 +325,69 @@ guideTabButtons.forEach((button) => {
   });
 });
 
+// Main Menu Keyboard Navigation
+let selectedMenuIndex = 0;
+const menuButtons = [
+  document.getElementById("continue-journey"),
+  document.getElementById("enter-campo-lunan"),
+  document.getElementById("tale-untold"),
+  document.getElementById("menu-guide")
+].filter(Boolean);
+
+function updateMenuSelection() {
+  menuButtons.forEach((btn, idx) => {
+    if (idx === selectedMenuIndex) {
+      btn.classList.add("selected");
+      btn.focus();
+    } else {
+      btn.classList.remove("selected");
+    }
+  });
+}
+
+// Sync mouse hover with keyboard selection
+menuButtons.forEach((btn, idx) => {
+  btn.addEventListener("mouseover", () => {
+    const continueModalOpen = document.getElementById("continue-journey-modal") && !document.getElementById("continue-journey-modal").classList.contains("hidden");
+    const newModalOpen = document.getElementById("new-journey-modal") && !document.getElementById("new-journey-modal").classList.contains("hidden");
+    const guideOpen = guideOverlay && !guideOverlay.classList.contains("hidden");
+    
+    if (!continueModalOpen && !newModalOpen && !guideOpen) {
+      selectedMenuIndex = idx;
+      updateMenuSelection();
+    }
+  });
+});
+
+// Set initial selection once DOM is fully ready
+setTimeout(updateMenuSelection, 300);
+
 document.addEventListener("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    guideOverlay &&
-    !guideOverlay.classList.contains("hidden")
-  ) {
+  const guideOpen = guideOverlay && !guideOverlay.classList.contains("hidden");
+  
+  if (event.key === "Escape" && guideOpen) {
     hideGuide();
+    return;
+  }
+
+  // Handle main menu navigation when menu is active and no modals are open
+  const menuActive = menuScreen && !menuScreen.classList.contains("hidden");
+  const continueModalOpen = document.getElementById("continue-journey-modal") && !document.getElementById("continue-journey-modal").classList.contains("hidden");
+  const newModalOpen = document.getElementById("new-journey-modal") && !document.getElementById("new-journey-modal").classList.contains("hidden");
+
+  if (menuActive && !continueModalOpen && !newModalOpen && !guideOpen) {
+    if (event.key === "ArrowUp" || event.key === "w" || event.key === "W") {
+      event.preventDefault();
+      selectedMenuIndex = (selectedMenuIndex - 1 + menuButtons.length) % menuButtons.length;
+      updateMenuSelection();
+    } else if (event.key === "ArrowDown" || event.key === "s" || event.key === "S") {
+      event.preventDefault();
+      selectedMenuIndex = (selectedMenuIndex + 1) % menuButtons.length;
+      updateMenuSelection();
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      menuButtons[selectedMenuIndex]?.click();
+    }
   }
 });
 
@@ -353,12 +437,17 @@ continueConfirmBtn?.addEventListener("click", async () => {
       inventory_id: player.inventory_id,
       current_world: state.current_world || "Lunan",
       current_area: state.current_area || "Campo Lunan",
-      position_x: state.position_x !== undefined ? state.position_x : 320,
-      position_y: state.position_y !== undefined ? state.position_y : 360,
+      position_x: state.has_completed_tutorial && state.position_x !== undefined ? state.position_x : 1278,
+      position_y: state.has_completed_tutorial && state.position_y !== undefined ? state.position_y : 1779,
+      has_completed_tutorial: state.has_completed_tutorial || false,
     });
 
     hideContinueModal();
-    startGame();
+    startGame(null, {
+      title: "Continuing Journey",
+      subtitle: "Resuming Saved Echoes",
+      hint: "Restoring your memories...",
+    });
   } catch (err) {
     if (continueError) {
       continueError.textContent = err.message.toUpperCase();
@@ -397,7 +486,11 @@ newConfirmBtn?.addEventListener("click", async () => {
     });
 
     hideNewModal();
-    startGame();
+    startGame(null, {
+      title: "Entering Campo Lunan",
+      subtitle: "Awakening the Echoes",
+      hint: "Creating new journey...",
+    });
   } catch (err) {
     if (newError) {
       newError.textContent = err.message.toUpperCase();

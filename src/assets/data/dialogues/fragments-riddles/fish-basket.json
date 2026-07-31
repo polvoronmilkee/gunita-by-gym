@@ -2,24 +2,499 @@
   "artifact": "Fish Basket",
   "riddles": [
     {
-      "question": "Every morning I leave empty, hoping to return full. What am I?",
-      "choices": ["Fishing Basket", "Wooden Boat", "Fishing Net", "Lantern"],
-      "answer": "Fishing Basket"
+      "question": "I have holes but I hold a catch. I am tossed into the sea to bring food back.",
+      "choices": [
+        "Fishing Net",
+        "Bucket",
+        "Sieve",
+        "Bowl"
+      ],
+      "answer": "Fishing Net",
+      "difficulty": "easy"
     },
     {
-      "question": "I carry today's catch from the sea back to the family. What am I?",
-      "choices": ["Fishing Basket", "Bucket", "Sack of Rice", "Wooden Crate"],
-      "answer": "Fishing Basket"
+      "question": "I am sharp and shiny, disguised with a snack to trick the unwary.",
+      "choices": [
+        "Fishing Hook",
+        "Spear",
+        "Knife",
+        "Anchor"
+      ],
+      "answer": "Fishing Hook",
+      "difficulty": "easy"
     },
     {
-      "question": "Without me, a fisher has nowhere to keep the day's harvest. What am I?",
-      "choices": ["Fishing Basket", "Paddle", "Anchor", "Rope"],
-      "answer": "Fishing Basket"
+      "question": "I am the tasty treat that hides the trap beneath.",
+      "choices": [
+        "Bait",
+        "Kelp",
+        "Coral",
+        "Sand"
+      ],
+      "answer": "Bait",
+      "difficulty": "easy"
     },
     {
-      "question": "I begin the day empty and end it with hope. What am I?",
-      "choices": ["Fishing Basket", "Lantern", "Hat", "Compass"],
-      "answer": "Fishing Basket"
+      "question": "I am a wooden vessel that dances on the waves.",
+      "choices": [
+        "Boat",
+        "Log",
+        "Bridge",
+        "Pier"
+      ],
+      "answer": "Boat",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am heavy and sink to the bottom to keep you in place.",
+      "choices": [
+        "Anchor",
+        "Stone",
+        "Weight",
+        "Chain"
+      ],
+      "answer": "Anchor",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I catch the wind to push the boat forward.",
+      "choices": [
+        "Sail",
+        "Flag",
+        "Kite",
+        "Net"
+      ],
+      "answer": "Sail",
+      "difficulty": "easy"
+    },
+    {
+      "question": "You hold my handle and push the water to move along.",
+      "choices": [
+        "Oar",
+        "Stick",
+        "Pole",
+        "Rudder"
+      ],
+      "answer": "Oar",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I breathe water instead of air and swim all day.",
+      "choices": [
+        "Fish",
+        "Crab",
+        "Turtle",
+        "Bird"
+      ],
+      "answer": "Fish",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I walk sideways and have pinchers for hands.",
+      "choices": [
+        "Crab",
+        "Lobster",
+        "Shrimp",
+        "Clam"
+      ],
+      "answer": "Crab",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a hard house found on the beach. You can hold me to your ear.",
+      "choices": [
+        "Shell",
+        "Rock",
+        "Glass",
+        "Wood"
+      ],
+      "answer": "Shell",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am made of tiny grains and meet the ocean at the shore.",
+      "choices": [
+        "Sand",
+        "Dirt",
+        "Mud",
+        "Dust"
+      ],
+      "answer": "Sand",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I crash onto the shore but I am not broken.",
+      "choices": [
+        "Wave",
+        "Rock",
+        "Boat",
+        "Wind"
+      ],
+      "answer": "Wave",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a shiny treasure hidden inside an oyster.",
+      "choices": [
+        "Pearl",
+        "Coin",
+        "Gem",
+        "Diamond"
+      ],
+      "answer": "Pearl",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a tall tower that shines a light to guide sailors.",
+      "choices": [
+        "Lighthouse",
+        "Beacon",
+        "Torch",
+        "Star"
+      ],
+      "answer": "Lighthouse",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am vast, blue, and full of salt.",
+      "choices": [
+        "Ocean",
+        "River",
+        "Lake",
+        "Pond"
+      ],
+      "answer": "Ocean",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I rise and fall by the pull of the moon.",
+      "choices": [
+        "Tide",
+        "Wave",
+        "Current",
+        "Wind"
+      ],
+      "answer": "Tide",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am an invisible river flowing within the ocean.",
+      "choices": [
+        "Current",
+        "Tide",
+        "Whirlpool",
+        "Breeze"
+      ],
+      "answer": "Current",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I always point north, though I have no eyes.",
+      "choices": [
+        "Compass",
+        "Map",
+        "Star",
+        "Arrow"
+      ],
+      "answer": "Compass",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a long spear thrown by hand to catch large beasts.",
+      "choices": [
+        "Harpoon",
+        "Trident",
+        "Javelin",
+        "Hook"
+      ],
+      "answer": "Harpoon",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I attach myself to rocks and hulls, stubbornly staying put.",
+      "choices": [
+        "Barnacle",
+        "Algae",
+        "Sponge",
+        "Coral"
+      ],
+      "answer": "Barnacle",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I look like a colorful rock but I am a living reef.",
+      "choices": [
+        "Coral",
+        "Anemone",
+        "Kelp",
+        "Urchin"
+      ],
+      "answer": "Coral",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I squawk loudly and dive for my lunch.",
+      "choices": [
+        "Seagull",
+        "Pelican",
+        "Crow",
+        "Eagle"
+      ],
+      "answer": "Seagull",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am wood that has been smoothed and washed ashore.",
+      "choices": [
+        "Driftwood",
+        "Log",
+        "Plank",
+        "Stick"
+      ],
+      "answer": "Driftwood",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the wooden platform where ships load their cargo.",
+      "choices": [
+        "Wharf",
+        "Deck",
+        "Hull",
+        "Mast"
+      ],
+      "answer": "Wharf",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I float on the surface to mark a safe path or a trap below.",
+      "choices": [
+        "Buoy",
+        "Float",
+        "Marker",
+        "Balloon"
+      ],
+      "answer": "Buoy",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the green forest beneath the waves.",
+      "choices": [
+        "Seaweed",
+        "Grass",
+        "Moss",
+        "Algae"
+      ],
+      "answer": "Seaweed",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I have five arms but no hands, resting on the seabed.",
+      "choices": [
+        "Starfish",
+        "Octopus",
+        "Squid",
+        "Jellyfish"
+      ],
+      "answer": "Starfish",
+      "difficulty": "medium"
+    },
+    {
+      "question": "We are the silver armor worn by the swimmers of the deep.",
+      "choices": [
+        "Scales",
+        "Fins",
+        "Shells",
+        "Teeth"
+      ],
+      "answer": "Scales",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the slits that let the swimmer breathe the water.",
+      "choices": [
+        "Gills",
+        "Lungs",
+        "Mouth",
+        "Nose"
+      ],
+      "answer": "Gills",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I have a huge pouch in my beak for a massive catch.",
+      "choices": [
+        "Pelican",
+        "Seagull",
+        "Heron",
+        "Stork"
+      ],
+      "answer": "Pelican",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the hidden, pulling force beneath the crashing waves.",
+      "choices": [
+        "Undertow",
+        "Riptide",
+        "Tsunami",
+        "Whirlpool"
+      ],
+      "answer": "Undertow",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a measure of depth, exactly six feet long.",
+      "choices": [
+        "Fathom",
+        "League",
+        "Knot",
+        "Mile"
+      ],
+      "answer": "Fathom",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I use the stars and horizon to tell a sailor where they are.",
+      "choices": [
+        "Sextant",
+        "Compass",
+        "Telescope",
+        "Clock"
+      ],
+      "answer": "Sextant",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the ancient disk used to navigate by the heavens.",
+      "choices": [
+        "Astrolabe",
+        "Sundial",
+        "Sextant",
+        "Map"
+      ],
+      "answer": "Astrolabe",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the bottom spine of a ship, keeping it steady.",
+      "choices": [
+        "Keel",
+        "Hull",
+        "Mast",
+        "Bow"
+      ],
+      "answer": "Keel",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a sturdy boat that drags a massive net across the sea floor.",
+      "choices": [
+        "Trawler",
+        "Galleon",
+        "Schooner",
+        "Dinghy"
+      ],
+      "answer": "Trawler",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the side of the ship facing the incoming breeze.",
+      "choices": [
+        "Windward",
+        "Leeward",
+        "Port",
+        "Starboard"
+      ],
+      "answer": "Windward",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the right side of the ship when looking forward.",
+      "choices": [
+        "Starboard",
+        "Port",
+        "Bow",
+        "Stern"
+      ],
+      "answer": "Starboard",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the left side of the ship, named after the harbor.",
+      "choices": [
+        "Port",
+        "Starboard",
+        "Bow",
+        "Stern"
+      ],
+      "answer": "Port",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the calm, windless equatorial waters where ships get stuck.",
+      "choices": [
+        "Doldrums",
+        "Abyss",
+        "Lagoon",
+        "Trench"
+      ],
+      "answer": "Doldrums",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am cargo deliberately thrown overboard to lighten the ship.",
+      "choices": [
+        "Jetsam",
+        "Flotsam",
+        "Ballast",
+        "Wreckage"
+      ],
+      "answer": "Jetsam",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am debris floating on the sea from a sunken ship.",
+      "choices": [
+        "Flotsam",
+        "Jetsam",
+        "Driftwood",
+        "Waste"
+      ],
+      "answer": "Flotsam",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the microscopic drifter that feeds the giants of the sea.",
+      "choices": [
+        "Plankton",
+        "Krill",
+        "Algae",
+        "Amoeba"
+      ],
+      "answer": "Plankton",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the heavily salted water used to preserve the catch.",
+      "choices": [
+        "Brine",
+        "Broth",
+        "Marinade",
+        "Syrup"
+      ],
+      "answer": "Brine",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the general term for anything relating to the sea and ships.",
+      "choices": [
+        "Maritime",
+        "Nautical",
+        "Naval",
+        "Aquatic"
+      ],
+      "answer": "Maritime",
+      "difficulty": "hard"
     }
   ]
 }

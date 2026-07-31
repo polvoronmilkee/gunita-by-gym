@@ -259,7 +259,8 @@
         left: 150%;
       }
 
-      .memory-tablet:hover {
+      .memory-tablet:hover,
+      .memory-tablet.selected {
         border-color: var(--cyan-primary);
         background: linear-gradient(135deg, rgba(28, 34, 60, 0.92), rgba(14, 18, 36, 0.96));
         box-shadow:
@@ -286,7 +287,8 @@
         transition: transform 200ms ease;
       }
 
-      .memory-tablet:hover .tablet-icon {
+      .memory-tablet:hover .tablet-icon,
+      .memory-tablet.selected .tablet-icon {
         transform: scale(1.2) rotate(-5deg);
         color: #ffffff;
         text-shadow: 0 0 14px rgba(102, 230, 255, 0.9);
@@ -307,7 +309,8 @@
         transition: color 200ms ease;
       }
 
-      .memory-tablet:hover .tablet-title {
+      .memory-tablet:hover .tablet-title,
+      .memory-tablet.selected .tablet-title {
         color: #ffffff;
         text-shadow: 0 0 8px rgba(102, 230, 255, 0.6);
       }
@@ -319,7 +322,8 @@
         line-height: 1.1;
       }
 
-      .memory-tablet:hover .tablet-desc {
+      .memory-tablet:hover .tablet-desc,
+      .memory-tablet.selected .tablet-desc {
         color: #d1d5db;
       }
 

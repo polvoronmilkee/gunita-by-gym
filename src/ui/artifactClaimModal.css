@@ -1,0 +1,558 @@
+/* Styling for Gunita Artifact Restored / Story Modal */
+
+@keyframes artifactModalFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes shellGlow {
+0%,100%{
+box-shadow:
+0 0 30px rgba(181,127,238,.45),
+0 0 60px rgba(181,127,238,.22),
+0 0 90px rgba(45,212,191,.12),
+0 30px 80px rgba(0,0,0,.7);
+}
+  
+}
+
+@keyframes valueShine{
+
+0%{left:-70%;}
+
+100%{left:130%;}
+
+}
+
+@keyframes artifactShimmer{
+
+0%,100%{
+
+filter:
+
+drop-shadow(0 6px 10px rgba(0,0,0,.8))
+
+drop-shadow(0 0 8px rgba(255,220,120,.2));
+
+}
+
+50%{
+
+filter:
+
+drop-shadow(0 6px 10px rgba(0,0,0,.8))
+
+drop-shadow(0 0 22px rgba(255,220,120,.9));
+
+}
+
+}
+
+@keyframes artifactBackdropFadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes artifactParticles{
+
+0%{
+transform:rotate(0deg);
+}
+
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+@keyframes artifactFloat {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes artifactGlowPulse {
+  0% {
+    box-shadow: 0 0 20px rgba(255, 244, 93, 0.4), inset 0 0 15px rgba(102, 230, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 35px rgba(229, 170, 51, 0.7), inset 0 0 25px rgba(102, 230, 255, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 20px rgba(139, 93, 255, 0.4), inset 0 0 15px rgba(102, 230, 255, 0.15);
+  }
+}
+
+.artifact-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  /* background: radial-gradient(circle at center, rgba(16, 14, 30, 0.88) 0%, rgba(5, 4, 12, 0.96) 100%); */
+  backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999999;
+  pointer-events: auto;
+  animation: artifactBackdropFadeIn 0.3s ease-out forwards;
+  box-sizing: border-box;
+  padding: 20px;
+}
+
+.artifact-modal-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(56, 36, 68, 0.98) 0%, rgba(13, 10, 26, 0.99) 100%);
+  border: 2px solid rgba(157, 107, 250, 0.65);
+  box-shadow: 
+    0 0 0 1px rgba(255, 217, 107, 0.25),
+    0 20px 60px rgba(0, 0, 0, 0.95),
+    0 0 40px rgba(139, 93, 255, 0.35),
+    inset 0 0 30px rgba(102, 230, 255, 0.05);
+  border-radius: 18px;
+  width: min(92vw, 830px);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 32px 30px 28px 30px;
+  color: #ecefff;
+  font-family: 'VT323', monospace;
+  /* animation: artifactModalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; */
+  overflow: hidden;
+  animation: shellGlow 4s ease-in-out infinite;
+}
+
+.artifact-modal-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 18px;
+  padding: 5px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffe18a,
+      #ffd96b,
+      #8b5dff,
+      #66e6ff,
+      #ffe18a
+    );
+
+  -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+
+  opacity: .9;
+}
+
+.artifact-modal-card::after{
+
+content:"";
+
+position:absolute;
+
+top:-120px;
+
+left:50%;
+
+transform:translateX(-50%);
+
+width:500px;
+
+height:500px;
+
+border-radius:50%;
+
+background:
+
+radial-gradient(circle,
+
+rgba(255,220,120,.08),
+
+transparent 70%);
+
+pointer-events:none;
+
+z-index:-1;
+
+}
+
+/* Custom Scrollbar for Modal Content */
+.artifact-modal-scroll-body {
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-right: -4px;
+}
+
+.artifact-modal-scroll-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.artifact-modal-scroll-body::-webkit-scrollbar-track {
+  background: rgba(10, 8, 20, 0.6);
+  border-radius: 4px;
+}
+
+.artifact-modal-scroll-body::-webkit-scrollbar-thumb {
+  background: rgba(139, 93, 255, 0.6);
+  border-radius: 4px;
+}
+
+.artifact-modal-scroll-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 230, 255, 0.8);
+}
+
+/* Header Section */
+.artifact-modal__header {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.artifact-modal__badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 13px;
+  color: #ffd96b;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(255, 217, 107, 0.8), 0 2px 4px rgba(0, 0, 0, 0.8);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.artifact-modal__badge-icon {
+  color: #8b5dff;
+  font-size: 14px;
+}
+
+.artifact-modal__divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0 14px 0;
+  opacity: 0.8;
+}
+
+.artifact-modal__divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(139, 93, 255, 0.6), transparent);
+}
+
+.artifact-modal__divider-diamond {
+  color: #66e6ff;
+  font-size: 10px;
+  text-shadow: 0 0 8px #66e6ff;
+}
+
+.artifact-modal__title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(16px, 2.5vw, 20px);
+  color: #ffffff;
+  margin: 4px 0 6px 0;
+  text-shadow: 0 0 15px rgba(102, 230, 255, 0.6), 0 4px 6px rgba(0, 0, 0, 0.9);
+  letter-spacing: 1px;
+  line-height: 1.35;
+}
+
+.artifact-modal__tagline {
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  color: #a78bfa;
+  font-style: italic;
+  margin: 0;
+  text-shadow: 0 0 8px rgba(167, 139, 250, 0.4);
+}
+
+/* Image Showcase */
+.artifact-modal__hero {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0 18px 0;
+    position: relative;
+    padding-top: 22px;
+}
+
+.artifact-modal__hero::before,
+.artifact-modal__hero::after{
+    content:"";
+    position:absolute;
+    width:220px;
+    height:220px;
+    border-radius:50%;
+    pointer-events:none;
+}
+
+.artifact-modal__hero::before{
+    background:
+        radial-gradient(circle,#ffe18a 2px,transparent 3px),
+        radial-gradient(circle,#66e6ff 2px,transparent 3px),
+        radial-gradient(circle,#ffd96b 2px,transparent 3px);
+
+    background-size:
+        45px 45px,
+        60px 60px,
+        70px 70px;
+
+    opacity:.45;
+
+    animation:artifactParticles 12s linear infinite;
+}
+
+.artifact-modal__hero::after{
+    background:
+        radial-gradient(circle,rgba(255,225,138,.45),transparent 70%);
+    filter:blur(25px);
+}
+
+.artifact-modal__img-container {
+  width: 190px;
+  height: 190px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* margin-top: ; */
+background:
+radial-gradient(circle,
+rgba(125, 134, 255, 0.488) 0%,
+rgba(108, 70, 203, 0.22) 45%,
+rgba(8,8,16,.95) 100%);  border: 2px dashed rgba(255, 225, 106, 0.45);
+  border-radius: 16px;
+  animation: artifactGlowPulse 4s infinite ease-in-out;
+  padding: 12px;
+  box-sizing: border-box;
+
+box-shadow:
+
+0 0 45px rgba(255,217,107,.30),
+
+0 0 70px rgba(255,217,107,.18),
+
+0 0 120px rgba(255,217,107,.08),
+
+inset 0 0 25px rgba(255,255,255,.05);
+
+}
+
+.artifact-modal__img {
+  width: 130px;
+  height: 130px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.9));
+  
+animation:
+
+artifactFloat 4s ease-in-out infinite,
+
+artifactShimmer 2.5s ease-in-out infinite;
+}
+
+.artifact-modal__corner-accent {
+  position: absolute;
+  color: #ffd96b;
+  font-size: 10px;
+  opacity: 0.7;
+}
+.artifact-modal__corner-accent--tl { top: 6px; left: 8px; }
+.artifact-modal__corner-accent--tr { top: 6px; right: 8px; }
+.artifact-modal__corner-accent--bl { bottom: 6px; left: 8px; }
+.artifact-modal__corner-accent--br { bottom: 6px; right: 8px; }
+
+/* Section Content Blocks */
+.artifact-modal__section {
+  margin-bottom: 16px;
+  text-align: left;
+  background: rgba(15, 12, 28, 0.5);
+  border-left: 3px solid rgba(139, 93, 255, 0.6);
+  padding: 14px 18px;
+  border-radius: 0 10px 10px 0;
+}
+
+.artifact-modal__section-label{
+
+color:#ffd96b;
+
+text-shadow:
+
+0 0 10px rgba(255,217,107,.8);
+
+}
+
+.artifact-modal__section--story .artifact-modal__section-label {
+  color: #66e6ff;
+}
+
+.artifact-modal__section-text {
+  font-size: 21px;
+  line-height: 1.5;
+  color: #e2e8f0;
+  margin: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  white-space: pre-line;
+}
+
+/* Filipino Value Highlight Card */
+.artifact-modal__value-card {
+  background: linear-gradient(145deg, rgba(255, 217, 107, 0.10), rgba(139, 93, 255, 0.10));
+  border: 2px solid rgba(255, 217, 107, 0.45);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 18px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(255, 217, 107, 0.15), inset 0 0 25px rgba(255, 217, 107, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.artifact-modal__value-card::before{
+
+content:"";
+
+position:absolute;
+
+top:0;
+
+left:-60%;
+
+width:50%;
+
+height:100%;
+
+background:
+
+linear-gradient(
+
+90deg,
+
+transparent,
+
+rgba(255,255,255,.18),
+
+transparent
+
+);
+
+transform:skewX(-25deg);
+
+animation:valueShine 5s infinite;
+
+}
+
+.artifact-modal__value-badge {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 9px;
+  color: #ffc857;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: inline-block;
+  opacity: 0.95;
+}
+
+.artifact-modal__value-title {
+  font-family: 'VT323', monospace;
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffd96b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 4px 0;
+  text-shadow: 0 0 10px rgba(255, 217, 107, 0.5);
+  line-height: 1.25;
+}
+
+.artifact-modal__value-sub {
+  font-size: 18px;
+  color: #a78bfa;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.artifact-modal__value-desc {
+  font-size: 20px;
+  line-height: 1.45;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+/* Reflection Quote */
+.artifact-modal__reflection {
+  position: relative;
+  padding: 16px 22px;
+  margin: 10px 0 18px 0;
+  text-align: center;
+  border-left: 3px solid #ffd96b;
+  background: rgba(255, 217, 107, 0.05);
+  border-radius: 10px;
+}
+
+.artifact-modal__quote {
+  font-family: 'VT323', monospace;
+  font-size: 23px;
+  color: #66e6ff;
+  font-style: italic;
+  margin: 0;
+  text-shadow: 0 0 12px rgba(102, 230, 255, 0.4), 0 2px 4px rgba(0,0,0,0.8);
+  line-height: 1.4;
+}
+
+/* Footer / Continue Button */
+.artifact-modal__footer {
+  text-align: center;
+  padding-top: 10px;
+  flex-shrink: 0;
+}
+
+.artifact-modal__continue-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #24170a;
+  background: linear-gradient(180deg, #ffe18a 0%, #e5aa33 100%);
+  border: 2px solid #ffe18a;
+  border-radius: 30px;
+  padding: 14px 44px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 0 20px rgba(255, 217, 107, 0.45), 0 8px 20px rgba(0, 0, 0, 0.45);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-weight: bold;
+}
+
+.artifact-modal__continue-btn:hover {
+  background: linear-gradient(180deg, #fff1a6 0%, #ffd96b 100%);
+  border-color: #ffffff;
+  color: #1a0f05;
+  box-shadow: 0 0 35px rgba(255, 217, 107, 0.75), 0 0 15px rgba(255, 255, 255, 0.5);
+  transform: translateY(-3px) scale(1.04);
+}
+
+.artifact-modal__continue-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 0 12px rgba(255, 217, 107, 0.4);
+}

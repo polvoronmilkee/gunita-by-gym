@@ -1,0 +1,159 @@
+{
+  "artifact": "The Fisherman",
+  "riddles": [
+    {
+      "question": "What was the fisherman's most treasured possession from the sea?",
+      "choices": [
+        "His net",
+        "His boat",
+        "His fish basket",
+        "His hat"
+      ],
+      "answer": "His fish basket",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What did the fisherman use to gather his catch from the ocean?",
+      "choices": [
+        "A net",
+        "A rod",
+        "A spear",
+        "A trap"
+      ],
+      "answer": "A net",
+      "difficulty": "easy"
+    },
+    {
+      "question": "Whose memories are we trying to restore in Campo Lunan?",
+      "choices": [
+        "Mang Tomas",
+        "Vino",
+        "Luma",
+        "The villagers"
+      ],
+      "answer": "Mang Tomas",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What guide is helping Vino navigate through the memories?",
+      "choices": [
+        "Luma",
+        "Tomas",
+        "The guide",
+        "A spirit"
+      ],
+      "answer": "Luma",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What is the ultimate goal of restoring all the memory fragments?",
+      "choices": [
+        "To free his soul",
+        "To find treasure",
+        "To become famous",
+        "To buy a boat"
+      ],
+      "answer": "To free his soul",
+      "difficulty": "easy"
+    },
+    {
+      "question": "What did the fisherman hang above his door for protection?",
+      "choices": [
+        "A rosary",
+        "A flag",
+        "A lantern",
+        "A bell"
+      ],
+      "answer": "A rosary",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What warning did the old fisherman never heed?",
+      "choices": [
+        "The red warning flag",
+        "The lighthouse beam",
+        "The church bell",
+        "The storm forecast"
+      ],
+      "answer": "The red warning flag",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What did his daughter leave behind in his home?",
+      "choices": [
+        "A drawing",
+        "A letter",
+        "A photograph",
+        "A toy"
+      ],
+      "answer": "A drawing",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What color was the warning flag that foretold the storm?",
+      "choices": [
+        "Red",
+        "Blue",
+        "Black",
+        "Yellow"
+      ],
+      "answer": "Red",
+      "difficulty": "medium"
+    },
+    {
+      "question": "What element of nature represents both life and danger in his story?",
+      "choices": [
+        "The sea",
+        "The mountain",
+        "The forest",
+        "The wind"
+      ],
+      "answer": "The sea",
+      "difficulty": "medium"
+    },
+    {
+      "question": "Who is the soul that stands before you now in the final fight?",
+      "choices": [
+        "The Fisherman",
+        "A stranger",
+        "A merchant",
+        "A soldier"
+      ],
+      "answer": "The Fisherman",
+      "difficulty": "hard"
+    },
+    {
+      "question": "What binds all four fragments together in the story of Mang Tomas?",
+      "choices": [
+        "Love and Memory",
+        "Anger",
+        "Fear",
+        "Gold"
+      ],
+      "answer": "Love and Memory",
+      "difficulty": "hard"
+    },
+    {
+      "question": "Before sailing, Mang Tomas paused to pray with his rosary. What Filipino value does this represent?",
+      "choices": [
+        "Faith and Trust in God",
+        "Superstition",
+        "Fear",
+        "Tradition without meaning"
+      ],
+      "answer": "Faith and Trust in God",
+      "difficulty": "hard"
+    },
+    {
+      "question": "What is the heart of Mang Tomas' legacy?",
+      "choices": [
+        "A person's legacy is measured by love and sacrifice.",
+        "Success comes from taking risks.",
+        "Money solves every problem.",
+        "Only strong people become heroes."
+      ],
+      "answer": "A person's legacy is measured by love and sacrifice.",
+      "difficulty": "hard"
+    }
+  ]
+}

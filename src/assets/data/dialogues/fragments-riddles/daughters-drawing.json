@@ -2,24 +2,499 @@
   "artifact": "Daughter's Drawing",
   "riddles": [
     {
-      "question": "Drawn with crayons and love, I hold a child's happiest memory. What am I?",
-      "choices": ["Daughter's Drawing", "School Book", "Photo", "Letter"],
-      "answer": "Daughter's Drawing"
+      "question": "I have many colors and appear after the rain.",
+      "choices": [
+        "Rainbow",
+        "Sun",
+        "Cloud",
+        "Star"
+      ],
+      "answer": "Rainbow",
+      "difficulty": "easy"
     },
     {
-      "question": "I show a family smiling beneath the sun, hoping tomorrow will be just as bright. What am I?",
-      "choices": ["Daughter's Drawing", "Painting", "Map", "Journal"],
-      "answer": "Daughter's Drawing"
+      "question": "I am used to make marks on paper, filled with lead or colors.",
+      "choices": [
+        "Pencil",
+        "Brush",
+        "Eraser",
+        "Chalk"
+      ],
+      "answer": "Pencil",
+      "difficulty": "easy"
     },
     {
-      "question": "Though made of paper, I carry a father's greatest treasure. What am I?",
-      "choices": ["Daughter's Drawing", "Rosary", "Letter", "Flag"],
-      "answer": "Daughter's Drawing"
+      "question": "I hold the paint before it goes on the canvas.",
+      "choices": [
+        "Palette",
+        "Easel",
+        "Cup",
+        "Tray"
+      ],
+      "answer": "Palette",
+      "difficulty": "easy"
     },
     {
-      "question": "A child created me to remember the people she loved most. What am I?",
-      "choices": ["Daughter's Drawing", "Homework", "Book", "Certificate"],
-      "answer": "Daughter's Drawing"
+      "question": "I am a picture you make by dragging colors across paper.",
+      "choices": [
+        "Drawing",
+        "Sculpture",
+        "Song",
+        "Dance"
+      ],
+      "answer": "Drawing",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I have soft bristles and love to swim in paint.",
+      "choices": [
+        "Paintbrush",
+        "Comb",
+        "Broom",
+        "Mop"
+      ],
+      "answer": "Paintbrush",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I make your mistakes vanish without a trace.",
+      "choices": [
+        "Eraser",
+        "Whiteout",
+        "Water",
+        "Cloth"
+      ],
+      "answer": "Eraser",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a waxy stick of bright colors children love to use.",
+      "choices": [
+        "Crayon",
+        "Marker",
+        "Chalk",
+        "Pen"
+      ],
+      "answer": "Crayon",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the color of the sun and a happy smiling face.",
+      "choices": [
+        "Yellow",
+        "Blue",
+        "Red",
+        "Green"
+      ],
+      "answer": "Yellow",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the color of the grass where children run and play.",
+      "choices": [
+        "Green",
+        "Blue",
+        "Red",
+        "Yellow"
+      ],
+      "answer": "Green",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the color of the sky on a clear day.",
+      "choices": [
+        "Blue",
+        "Green",
+        "Red",
+        "Yellow"
+      ],
+      "answer": "Blue",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am the color of an apple or a loving heart.",
+      "choices": [
+        "Red",
+        "Green",
+        "Blue",
+        "Yellow"
+      ],
+      "answer": "Red",
+      "difficulty": "easy"
+    },
+    {
+      "question": "You put me in a frame and hang me on a wall.",
+      "choices": [
+        "Picture",
+        "Mirror",
+        "Window",
+        "Door"
+      ],
+      "answer": "Picture",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a simple line that closes to make a round face.",
+      "choices": [
+        "Circle",
+        "Square",
+        "Triangle",
+        "Line"
+      ],
+      "answer": "Circle",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am folded into an airplane to fly across the room.",
+      "choices": [
+        "Paper",
+        "Cardboard",
+        "Cloth",
+        "Plastic"
+      ],
+      "answer": "Paper",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a stick that leaves a trail of ink.",
+      "choices": [
+        "Pen",
+        "Pencil",
+        "Brush",
+        "Crayon"
+      ],
+      "answer": "Pen",
+      "difficulty": "easy"
+    },
+    {
+      "question": "I am a three-legged stand that holds a painter's work.",
+      "choices": [
+        "Easel",
+        "Tripod",
+        "Table",
+        "Stool"
+      ],
+      "answer": "Easel",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a sketch meant to capture a person's face.",
+      "choices": [
+        "Portrait",
+        "Landscape",
+        "Still Life",
+        "Mural"
+      ],
+      "answer": "Portrait",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a thick liquid that turns into a permanent color layer.",
+      "choices": [
+        "Acrylic Paint",
+        "Water",
+        "Ink",
+        "Chalk"
+      ],
+      "answer": "Acrylic Paint",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the outline of a figure filled with solid black.",
+      "choices": [
+        "Silhouette",
+        "Shadow",
+        "Sketch",
+        "Doodle"
+      ],
+      "answer": "Silhouette",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a drawing of mountains, trees, or a wide view.",
+      "choices": [
+        "Landscape",
+        "Portrait",
+        "Still Life",
+        "Mural"
+      ],
+      "answer": "Landscape",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a messy, casual drawing done without much thought.",
+      "choices": [
+        "Doodle",
+        "Masterpiece",
+        "Blueprint",
+        "Draft"
+      ],
+      "answer": "Doodle",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a rough drawing created to test a composition.",
+      "choices": [
+        "Sketch",
+        "Painting",
+        "Sculpture",
+        "Mural"
+      ],
+      "answer": "Sketch",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the blending of colors to create smooth transitions.",
+      "choices": [
+        "Gradient",
+        "Outline",
+        "Shading",
+        "Contrast"
+      ],
+      "answer": "Gradient",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the woven fabric stretched over a frame for painting.",
+      "choices": [
+        "Canvas",
+        "Paper",
+        "Cardboard",
+        "Wood"
+      ],
+      "answer": "Canvas",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a massive painting applied directly to a wall.",
+      "choices": [
+        "Mural",
+        "Portrait",
+        "Fresco",
+        "Graffiti"
+      ],
+      "answer": "Mural",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am created by mixing red and yellow together.",
+      "choices": [
+        "Orange",
+        "Purple",
+        "Green",
+        "Brown"
+      ],
+      "answer": "Orange",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am created by mixing blue and red together.",
+      "choices": [
+        "Purple",
+        "Green",
+        "Orange",
+        "Brown"
+      ],
+      "answer": "Purple",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a technique using light and dark to create depth.",
+      "choices": [
+        "Shading",
+        "Highlighting",
+        "Outlining",
+        "Erasing"
+      ],
+      "answer": "Shading",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a stick of colored chalk used for soft, dusty art.",
+      "choices": [
+        "Pastel",
+        "Crayon",
+        "Charcoal",
+        "Marker"
+      ],
+      "answer": "Pastel",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am burned wood used for deep black sketching.",
+      "choices": [
+        "Charcoal",
+        "Graphite",
+        "Ink",
+        "Lead"
+      ],
+      "answer": "Charcoal",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a painting done rapidly in watercolor on wet plaster.",
+      "choices": [
+        "Fresco",
+        "Mural",
+        "Mosaic",
+        "Canvas"
+      ],
+      "answer": "Fresco",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the technique of using small dots to form an image.",
+      "choices": [
+        "Pointillism",
+        "Cubism",
+        "Surrealism",
+        "Realism"
+      ],
+      "answer": "Pointillism",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a composition made by gluing various materials to a backing.",
+      "choices": [
+        "Collage",
+        "Montage",
+        "Mosaic",
+        "Fresco"
+      ],
+      "answer": "Collage",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the dark pigment used in traditional wash painting.",
+      "choices": [
+        "India Ink",
+        "Charcoal",
+        "Graphite",
+        "Watercolor"
+      ],
+      "answer": "India Ink",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the visual property that creates the illusion of 3D space.",
+      "choices": [
+        "Perspective",
+        "Proportion",
+        "Contrast",
+        "Hue"
+      ],
+      "answer": "Perspective",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a color scheme using variations of a single hue.",
+      "choices": [
+        "Monochromatic",
+        "Analogous",
+        "Complementary",
+        "Triadic"
+      ],
+      "answer": "Monochromatic",
+      "difficulty": "hard"
+    },
+    {
+      "question": "We are colors opposite each other on the color wheel.",
+      "choices": [
+        "Complementary",
+        "Primary",
+        "Secondary",
+        "Tertiary"
+      ],
+      "answer": "Complementary",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the pure state of a color, without tint or shade.",
+      "choices": [
+        "Hue",
+        "Saturation",
+        "Value",
+        "Tone"
+      ],
+      "answer": "Hue",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a hue mixed with white to make it lighter.",
+      "choices": [
+        "Tint",
+        "Shade",
+        "Tone",
+        "Gradient"
+      ],
+      "answer": "Tint",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a hue mixed with black to make it darker.",
+      "choices": [
+        "Shade",
+        "Tint",
+        "Tone",
+        "Gradient"
+      ],
+      "answer": "Shade",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a picture made of small, colored pieces of glass or stone.",
+      "choices": [
+        "Mosaic",
+        "Collage",
+        "Fresco",
+        "Mural"
+      ],
+      "answer": "Mosaic",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a technique of scraping through a layer to reveal the one beneath.",
+      "choices": [
+        "Sgraffito",
+        "Impasto",
+        "Glazing",
+        "Stippling"
+      ],
+      "answer": "Sgraffito",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a thick application of paint that stands out from the surface.",
+      "choices": [
+        "Impasto",
+        "Glazing",
+        "Wash",
+        "Fresco"
+      ],
+      "answer": "Impasto",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am a transparent layer of paint applied over a dried layer.",
+      "choices": [
+        "Glazing",
+        "Impasto",
+        "Wash",
+        "Scumbling"
+      ],
+      "answer": "Glazing",
+      "difficulty": "hard"
+    },
+    {
+      "question": "I am the dry, stiff brush technique used to create texture.",
+      "choices": [
+        "Scumbling",
+        "Glazing",
+        "Stippling",
+        "Washing"
+      ],
+      "answer": "Scumbling",
+      "difficulty": "hard"
     }
   ]
 }

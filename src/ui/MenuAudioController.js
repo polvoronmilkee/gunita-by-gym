@@ -1,8 +1,8 @@
 import { AUDIO_SETTINGS } from "../utils/audioSettings.js";
 
-const clampIndex = (value, max) => {
+const clampIndex = (value, max, defaultValue = 1) => {
   if (!Number.isFinite(value) || value < 0 || value >= max) {
-    return 0;
+    return defaultValue;
   }
   return Math.floor(value);
 };
@@ -18,7 +18,7 @@ export class MenuAudioController {
     const persisted = this.readPersistedState();
     this.musicEnabled = persisted.musicEnabled;
     this.sfxEnabled = persisted.sfxEnabled;
-    this.currentTrackIndex = persisted.trackIndex;
+    this.currentTrackIndex = 1; // Force bg-2.mp3 (index 1) on load
 
     this.musicTracks = AUDIO_SETTINGS.tracks.map((track) => {
       const audio = new Audio(track.path);
@@ -45,13 +45,24 @@ export class MenuAudioController {
     this.bindUi();
     this.bindUnlockHandlers();
     this.syncButtonLabels();
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this.stopMusic();
+      } else {
+        const menuScreen = document.getElementById("menu-screen");
+        if (menuScreen && !menuScreen.classList.contains("hidden")) {
+          this.resumeMusicIfEnabled();
+        }
+      }
+    });
   }
 
   readPersistedState() {
     const fallback = {
       musicEnabled: AUDIO_SETTINGS.defaults.musicEnabled,
       sfxEnabled: AUDIO_SETTINGS.defaults.sfxEnabled,
-      trackIndex: 0,
+      trackIndex: 1,
     };
 
     try {
@@ -70,7 +81,7 @@ export class MenuAudioController {
           typeof parsed.sfxEnabled === "boolean"
             ? parsed.sfxEnabled
             : fallback.sfxEnabled,
-        trackIndex: clampIndex(parsed.trackIndex, AUDIO_SETTINGS.tracks.length),
+        trackIndex: clampIndex(parsed.trackIndex, AUDIO_SETTINGS.tracks.length, 1),
       };
     } catch {
       return fallback;
@@ -182,6 +193,11 @@ export class MenuAudioController {
 
   playCurrentTrack() {
     if (!this.musicEnabled || this.musicTracks.length === 0) {
+      return;
+    }
+
+    const menuScreen = document.getElementById("menu-screen");
+    if (menuScreen && menuScreen.classList.contains("hidden")) {
       return;
     }
 

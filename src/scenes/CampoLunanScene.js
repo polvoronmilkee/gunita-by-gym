@@ -5,9 +5,11 @@ import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
+import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
+import { TransitionSystem } from "../systems/TransitionSystem.js";
 
 export class CampoLunanScene extends Phaser.Scene {
   constructor() {
@@ -260,30 +262,46 @@ export class CampoLunanScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // Add Pink Frog at (1359, 1075) with Physics
-    this.pinkFrog = this.physics.add.sprite(1359, 1075, "pink-frog");
+    // Parse chars layer objects from TMJ map
+    const charsLayer = map.getObjectLayer("chars");
+    const pinkObj = charsLayer?.objects?.find((o) => o.id === 66 || o.name === "pink shroom" || o.name === "pink-frog");
+    const poisonObj = charsLayer?.objects?.find((o) => o.id === 67 || o.name === "poison-idle" || o.name === "poison-shroom");
+    const luma2Obj = charsLayer?.objects?.find((o) => o.id === 69 || o.name === "luma-second-appearance");
+
+    const pinkX = pinkObj ? pinkObj.x : 1359;
+    const pinkY = pinkObj ? pinkObj.y : 1075;
+    const poisonX = poisonObj ? poisonObj.x : 1384;
+    const poisonY = poisonObj ? poisonObj.y : 1074;
+
+    // Add Pink Frog (id 66) with Physics
+    this.pinkFrog = this.physics.add.sprite(pinkX, pinkY, "pink-frog");
     this.pinkFrog.setScale(0.75);
     this.pinkFrog.play("pink-frog-idle");
     this.pinkFrog.setImmovable(true); // Prevents Vino from pushing it
 
-    // Add Poison Shroom at (1384, 1074) with Physics
-    this.poisonShroom = this.physics.add.sprite(1384, 1074, "poison-shroom");
+    // Add Poison Shroom (id 67) with Physics
+    this.poisonShroom = this.physics.add.sprite(poisonX, poisonY, "poison-shroom");
     this.poisonShroom.setScale(0.75);
     this.poisonShroom.play("poison-shroom-idle");
     this.poisonShroom.setImmovable(true); // Prevents Vino from pushing it
 
     // Retrieve coordinates from local cache immediately, default to (1278, 1779)
-    const cache = getCache();
-    let spawnX =
-      cache && cache.position_x !== undefined ? cache.position_x : 1278;
-    let spawnY =
-      cache && cache.position_y !== undefined ? cache.position_y : 1779;
+    const cache = getCache() || {};
+    
+    if (!cache.has_completed_tutorial && !cache.has_talked_to_luma) {
+        cache.position_x = 1278;
+        cache.position_y = 1779;
+        setCache(cache);
+    }
 
-    // Sanitize spawn coordinates to prevent spawning inside map boundary walls
-    if (spawnY < 440) spawnY = 1779;
-    if (spawnX < 360) spawnX = 1278;
-    if (spawnX > 2180) spawnX = 1278;
-    if (spawnY > 1880) spawnY = 1779;
+    let spawnX =
+      cache.position_x !== undefined && cache.position_x !== null ? Number(cache.position_x) : 1278;
+    let spawnY =
+      cache.position_y !== undefined && cache.position_y !== null ? Number(cache.position_y) : 1779;
+
+    // Sanitize spawn coordinates to prevent spawning inside map boundary walls or crashing camera with NaN
+    if (isNaN(spawnX) || spawnX < 360 || spawnX > 2180) spawnX = 1278;
+    if (isNaN(spawnY) || spawnY < 440 || spawnY > 1880) spawnY = 1779;
 
     this.audioManager = new AudioManager(this, "campo-lunan");
 
@@ -327,6 +345,51 @@ export class CampoLunanScene extends Phaser.Scene {
       });
     }
 
+    this.graveClusters = [];
+    if (this.grave1Positions && this.grave1Positions.length > 0) {
+      this.grave1Positions.forEach(pos => {
+        let found = false;
+        for (let cluster of this.graveClusters) {
+          const dx = cluster.x - pos.x;
+          const dy = cluster.y - pos.y;
+          if (Math.sqrt(dx * dx + dy * dy) < 200) {
+            cluster.tiles.push(pos);
+            cluster.x = cluster.tiles.reduce((sum, t) => sum + t.x, 0) / cluster.tiles.length;
+            cluster.y = cluster.tiles.reduce((sum, t) => sum + t.y, 0) / cluster.tiles.length;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          this.graveClusters.push({ x: pos.x, y: pos.y, tiles: [pos] });
+        }
+      });
+      
+      this.graveClusters.sort((a, b) => a.x - b.x);
+      
+      const mapCenterX = map.widthInPixels / 2;
+      let grave1Idx = -1;
+      let minDistRight = Infinity;
+      this.graveClusters.forEach((cluster, idx) => {
+        if (cluster.x > mapCenterX) {
+          const dist = cluster.x - mapCenterX;
+          if (dist < minDistRight) {
+            minDistRight = dist;
+            grave1Idx = idx;
+          }
+        }
+      });
+      
+      if (grave1Idx === -1 && this.graveClusters.length > 0) {
+        grave1Idx = Math.floor(this.graveClusters.length / 2); 
+      }
+      
+      this.graveClusters.forEach((cluster, idx) => {
+        cluster.isGrave1 = (idx === grave1Idx);
+        cluster.id = cluster.isGrave1 ? 1 : (idx < grave1Idx ? idx + 2 : idx + 1);
+      });
+    }
+
     //Load static map collisions from Tiled
     this.collisionGroup = this.physics.add.staticGroup();
     const collisionLayer =
@@ -348,7 +411,7 @@ export class CampoLunanScene extends Phaser.Scene {
     }
 
     // Background verify cache with Supabase
-    if (cache && cache.player_id) {
+    if (cache && cache.player_id && cache.has_completed_tutorial) {
       loadGameState(cache.player_id)
         .then((serverState) => {
           if (
@@ -429,6 +492,8 @@ export class CampoLunanScene extends Phaser.Scene {
       this.scene.pause();
     });
 
+
+
     this.mapOverlay = new MapOverlay(this);
 
     // Setup minimap camera perfectly centered within the 500x400 modal
@@ -507,6 +572,31 @@ export class CampoLunanScene extends Phaser.Scene {
     const activeCache = getCache() || {};
     this.hasTalkedToLuma = activeCache.has_talked_to_luma || false;
 
+    // Create and configure LumaGuidanceBox for Campo Lunan objectives
+    this.lumaGuidanceBox = new LumaGuidanceBox();
+    this.updateLumaObjective();
+
+    // Check if returning after completing tutorial for the first time
+    if (activeCache.has_completed_tutorial && !activeCache.played_post_tutorial_dialogue) {
+      this.time.delayedCall(400, () => {
+        this.triggerPostTutorialSequence();
+      });
+    }
+
+    // Objective Compass Arrow
+    this.objectiveArrow = this.add.graphics();
+    this.objectiveArrow.setDepth(15);
+    this.objectiveArrow.lineStyle(2, 0x6ee7b7, 1);
+    this.objectiveArrow.fillStyle(0x6ee7b7, 0.8);
+    this.objectiveArrow.beginPath();
+    this.objectiveArrow.moveTo(6, 0);
+    this.objectiveArrow.lineTo(-6, 4);
+    this.objectiveArrow.lineTo(-6, -4);
+    this.objectiveArrow.closePath();
+    this.objectiveArrow.fillPath();
+    this.objectiveArrow.strokePath();
+    this.objectiveArrow.setVisible(false);
+
     // Always create DialogueBox instance for Campo Lunan interactions
     this.dialogue = new DialogueBox(this);
     this.dialogue.hide();
@@ -573,7 +663,7 @@ export class CampoLunanScene extends Phaser.Scene {
             // Part B transition sequence: slow wind gust (camera shake + blue particles)
             this.cameras.main.shake(350, 0.004);
             if (this.audioManager) {
-              this.audioManager.playButtonSfx();
+              this.audioManager.playLumaSwishSfx();
             }
 
             // Create crystal-spark texture at runtime if needed for wisps particle effect
@@ -622,7 +712,7 @@ export class CampoLunanScene extends Phaser.Scene {
                   { speaker: "Luma", text: "Because... Campo Lunan needs someone who can still hear the *echoes*." },
                   { speaker: "Vino", text: "I don't understand." },
                   { speaker: "Luma", text: "You will, Vino. *In time.*" },
-                  { speaker: "Vino", text: "Hoy, wait lang!" },
+                  { speaker: "Vino", text: "Hoy, wait lang!" }
                 ];
 
                 let stepB = 0;
@@ -639,6 +729,10 @@ export class CampoLunanScene extends Phaser.Scene {
                       this.dialogue.hide();
                       this.dialogueActive = false;
 
+                      if (this.audioManager) {
+                        this.audioManager.playLumaSwishSfx();
+                      }
+
                       this.tweens.add({
                         targets: this.lumaSprite,
                         alpha: 0,
@@ -653,6 +747,8 @@ export class CampoLunanScene extends Phaser.Scene {
                           const freshCache = getCache() || {};
                           freshCache.has_talked_to_luma = true;
                           setCache(freshCache);
+                          this.hasTalkedToLuma = true;
+                          this.updateLumaObjective();
                           this.saveProgress();
                         }
                       });
@@ -666,6 +762,36 @@ export class CampoLunanScene extends Phaser.Scene {
         };
         runPartA();
       });
+    } else if (this.hasTalkedToLuma && !activeCache.has_completed_tutorial) {
+      // Spawn persistent glowing Luma NPC at upper pathway until tutorial is finished
+      const targetX = 1410;
+      const targetY = 1074;
+      this.luma2PersistentSprite = this.physics.add.sprite(targetX, targetY, "luma-idle");
+      this.luma2PersistentSprite.setScale(0.3);
+      this.luma2PersistentSprite.setDepth(this.luma2PersistentSprite.y);
+      this.luma2PersistentSprite.setImmovable(true);
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      this.luma2PersistentSprite.play("luma-idle-anim");
+      if (this.cameras.main.postFX) {
+        const glow = this.luma2PersistentSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+        this.tweens.add({
+          targets: glow,
+          outerStrength: 1.3,
+          innerStrength: 0.9,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+      this.physics.add.collider(this.player.sprite, this.luma2PersistentSprite);
     } else {
       this.dialogueActive = false;
     }
@@ -679,6 +805,44 @@ export class CampoLunanScene extends Phaser.Scene {
         }
       }
 
+      if (!this.currentGraveCluster || !this.currentGraveCluster.isGrave1) {
+        const customGraves = {
+          2: { title: "Grave II\nSinulid ng Panahon (Threads of Time)", desc: "A memory of traditional weaving. (Cannot enter yet)" },
+          3: { title: "Grave III\nAng Huling Tinig (The Last Voice)", desc: "A memory of Philippine folklore and oral tradition. (Cannot enter yet)" },
+          4: { title: "Grave IV\nGinto at Asin (Gold and Salt)", desc: "A memory of regional trade and barter. (Cannot enter yet)" },
+          5: { title: "Grave V\nAng Pinunong Iniwan (The Abandoned King)", desc: "A memory of pre-colonial civilization and leadership. (Cannot enter yet)" },
+          6: { title: "Grave VI\nLihim ng Kalikasan (Secret of Nature)", desc: "A memory of indigenous farming and harmony with the land. (Cannot enter yet)" },
+          7: { title: "Grave VII\nAwit ng Bagani (Song of the Warrior)", desc: "A memory of traditional martial arts and defense. (Cannot enter yet)" },
+          8: { title: "Grave VIII\nSayaw ng Pagsamo (Dance of Supplication)", desc: "A memory of pre-colonial rituals and spirituality. (Cannot enter yet)" },
+        };
+        
+        const id = this.currentGraveCluster ? this.currentGraveCluster.id : 2;
+        const graveData = customGraves[id] || { title: `Grave ${id}\nUnknown Memory`, desc: "A forgotten memory waiting to be discovered. (Cannot enter yet)" };
+
+        this.dialogue.showText(
+          "Tombstone",
+          `${graveData.title}\n\n${graveData.desc}`,
+          () => {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        );
+        return;
+      }
+
+      const cache = getCache();
+      if (cache?.is_exploration_mode) {
+        this.dialogue.showText(
+          "Grave I",
+          "You are wandering Campo Lunan. Teleporting to Memory Worlds is disabled in this exploration mode.",
+          () => {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        );
+        return;
+      }
+
       let step = 0;
       const steps = [
         {
@@ -690,7 +854,7 @@ export class CampoLunanScene extends Phaser.Scene {
           text: '"The sea remembers... but the village does not."',
         },
         {
-          speaker: "Campo Lunan",
+          speaker: "Grave I",
           text: "A forgotten fisherman waits beyond these echoes. Discover the memories he left behind and reveal the truth hidden beneath the waves.",
         },
         { speaker: "Campo Lunan", text: "Will you answer the sea's call?" },
@@ -712,14 +876,19 @@ export class CampoLunanScene extends Phaser.Scene {
               // Keep dialogueActive = true so Vino stays still during portal transition!
 
               // Set the area cache to Grave 1 before transitioning
-              const cache = getCache();
-              if (cache) {
+              const currentCache = getCache();
+              if (currentCache) {
                 setCache({
-                  ...cache,
+                  ...currentCache,
                   current_area: "Grave 1",
                   position_x: 1137,
                   position_y: 550,
                 });
+              }
+
+              if (this.lumaGuidanceBox) {
+                this.lumaGuidanceBox.destroy();
+                this.lumaGuidanceBox = null;
               }
 
               import("../ui/portalLoadingScreen.js").then(({ PortalLoadingScreen }) => {
@@ -745,50 +914,253 @@ export class CampoLunanScene extends Phaser.Scene {
       runDialogue();
     };
 
-    const triggerFrogDialogue = () => {
+    this.hasTalkedToCreatures = false;
+
+    const triggerCreaturesDialogue = () => {
       this.dialogueActive = true;
       if (this.player?.sprite?.body) {
         this.player.sprite.body.setVelocity(0);
         this.player.sprite.anims.stop();
       }
 
-      this.dialogue.showText(
-        "Pink Frog",
-        "Ribbit... Did you bring any flies?",
-        () => {
+      if (this.hasTalkedToCreatures) {
+        this.dialogue.showText(
+          "Vino",
+          "Maybe not a good idea",
+          () => {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        );
+        return;
+      }
+
+      const sequence = [
+        { speaker: "Pink Frog", text: "DE WAYYYY!!!!!" },
+        { speaker: "Poison Shroom", text: "the frog has been saying that for a while i just wanna sleep" },
+        { speaker: "Poison Shroom", text: "peanut or done?" },
+        { speaker: "Vino", text: "those two are weird better leave them be" }
+      ];
+
+      let step = 0;
+      const runStep = () => {
+        if (step < sequence.length) {
+          const current = sequence[step];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            step++;
+            runStep();
+          });
+        } else {
           this.dialogue.hide();
           this.dialogueActive = false;
-        },
-      );
+          this.hasTalkedToCreatures = true;
+        }
+      };
+
+      runStep();
     };
 
-    const triggerShroomDialogue = () => {
+    // Luma Second Appearance (Upper Pathway ID 68)
+    const luma2TargetX = 1410;
+    const luma2TargetY = 1074;
+    this.luma2Pos = { x: luma2TargetX, y: luma2TargetY };
+
+    this.triggerLumaSecondAppearance = () => {
+      if (this.hasTriggeredLumaSecondAppearance) return;
+      this.hasTriggeredLumaSecondAppearance = true;
       this.dialogueActive = true;
       if (this.player?.sprite?.body) {
         this.player.sprite.body.setVelocity(0);
         this.player.sprite.anims.stop();
       }
 
-      this.dialogue.showText(
-        "Poison Shroom",
-        "I wouldn't touch me if I were you...",
-        () => {
+      const luma2Sprite = this.luma2PersistentSprite || this.physics.add.sprite(luma2TargetX, luma2TargetY, "luma-idle");
+      luma2Sprite.setScale(0.3);
+      luma2Sprite.setDepth(luma2Sprite.y);
+
+      // Camera shake & sound effect
+      this.cameras.main.shake(350, 0.004);
+      if (this.audioManager) {
+        this.audioManager.playLumaSwishSfx();
+      }
+
+      const lumaSecondDialogues = [
+        { speaker: "Vino", text: "This place..." },
+        { speaker: "Vino", text: "It feels..." },
+        { speaker: "Vino", text: "Broken." },
+        { speaker: "Luma", text: "It wasn't always." },
+        { speaker: "Luma", text: "There was a time when every lantern burned brightly." },
+        { speaker: "Luma", text: "Every grave carried a name." },
+        { speaker: "Luma", text: "And every soul found peace." },
+        { speaker: "Vino", text: "What happened?" },
+        { speaker: "Luma", text: "..." },
+        { speaker: "Luma", text: "Memories were forgotten." },
+        { speaker: "Luma", text: "When a story disappears..." },
+        { speaker: "Luma", text: "So does the soul." },
+        { speaker: "Vino", text: "Can they be saved?" },
+        { speaker: "Luma", text: "They can. But not by force. Only by remembering." },
+        { speaker: "Vino", text: "What do I have to do?" },
+        { speaker: "Luma", text: "A soul's memory is shattered into glowing glass fragments." },
+        { speaker: "Luma", text: "To save a soul, you must break its glass seals and restore its scattered fragments." },
+        { speaker: "Luma", text: "Here... let me show you how to face a fragment." }
+      ];
+
+      let step = 0;
+      const runDialogue = () => {
+        if (step < lumaSecondDialogues.length) {
+          const current = lumaSecondDialogues[step];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            step++;
+            runDialogue();
+          });
+        } else {
           this.dialogue.hide();
           this.dialogueActive = false;
-        },
-      );
+
+          if (this.audioManager) {
+            this.audioManager.playLumaSwishSfx();
+          }
+
+          // Create practice fragment sprite
+          if (!this.anims.exists("fragment-idle-anim")) {
+            this.anims.create({
+              key: "fragment-idle-anim",
+              frames: this.anims.generateFrameNumbers("fragment-idle"),
+              frameRate: 6,
+              repeat: -1,
+            });
+          }
+
+          const fragment = this.add.sprite(luma2TargetX - 35, luma2TargetY + 15, "fragment-idle");
+          fragment.setScale(0);
+          fragment.setDepth(luma2Sprite.y + 1);
+          fragment.play("fragment-idle-anim");
+
+          this.tweens.add({
+            targets: fragment,
+            scaleX: 32 / 64,
+            scaleY: 32 / 64,
+            duration: 800,
+            ease: "Back.easeOut"
+          });
+
+          // Play shattered glass transition & auto-dive into tutorial!
+          this.time.delayedCall(800, () => {
+            TransitionSystem.shatteredGlassTransition(this, () => {
+              if (this.audioManager) this.audioManager.stopMusic();
+              if (this.lumaGuidanceBox) this.lumaGuidanceBox.hide();
+              if (this.interactionPrompt) this.interactionPrompt.hide();
+              if (this.hud) this.hud.setPauseVisible(false);
+              if (this.objectiveArrow) this.objectiveArrow.setVisible(false);
+
+              this.scene.pause();
+              this.scene.launch("tutorial-bullet-hell", {
+                returnScene: "CampoLunanScene",
+                onComplete: () => {
+                  const cache = getCache() || {};
+                  cache.has_completed_tutorial = true;
+                  setCache(cache);
+
+                  this.scene.stop("tutorial-bullet-hell");
+                  this.scene.resume("CampoLunanScene");
+                  if (this.luma2PersistentSprite) this.luma2PersistentSprite.destroy();
+                  if (fragment) fragment.destroy();
+                  if (this.hud) this.hud.setPauseVisible(true);
+                  if (this.lumaGuidanceBox) this.lumaGuidanceBox.show();
+                  this.triggerPostTutorialSequence();
+                }
+              });
+            });
+          });
+        }
+      };
+      runDialogue();
+    };
+
+
+
+
+
+    this.triggerPostTutorialSequence = () => {
+      const activeCache = getCache() || {};
+      if (activeCache.played_post_tutorial_dialogue) return;
+      activeCache.played_post_tutorial_dialogue = true;
+      setCache(activeCache);
+
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+
+      const px = this.player?.sprite?.x || 1410;
+      const py = this.player?.sprite?.y || 1074;
+
+      const postLuma = this.physics.add.sprite(px + 36, py - 40, "luma-idle");
+      postLuma.setScale(0.3);
+      postLuma.setDepth(postLuma.y);
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      postLuma.play("luma-idle-anim");
+
+      const postTutorialDialogues = [
+        { speaker: "Luma", text: "Well done, Vino. You now know how to shatter the glass seals and restore a soul's memory." },
+        { speaker: "Luma", text: "Now, walk among the forgotten graves. Listen to those left behind... restore what has been scattered." }
+      ];
+
+      let postStep = 0;
+      const runPostDialogue = () => {
+        if (postStep < postTutorialDialogues.length) {
+          const current = postTutorialDialogues[postStep];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            postStep++;
+            runPostDialogue();
+          });
+        } else {
+          this.dialogue.hide();
+          this.dialogueActive = false;
+
+          if (this.audioManager) {
+            if (typeof this.audioManager.playLumaSwishSfx === "function") {
+              this.audioManager.playLumaSwishSfx();
+            } else if (typeof this.audioManager.playLumaSwish === "function") {
+              this.audioManager.playLumaSwish();
+            }
+          }
+
+          this.tweens.add({
+            targets: postLuma,
+            alpha: 0,
+            duration: 1400,
+            onComplete: () => {
+              postLuma.destroy();
+              this.updateLumaObjective();
+            }
+          });
+        }
+      };
+
+      this.time.delayedCall(400, () => {
+        runPostDialogue();
+      });
     };
 
     // Keyboard bindings for dialogue & interaction
     this.input.keyboard.on("keydown-E", () => {
       if (this.dialogueActive) {
         this.dialogue.onComplete();
+      } else if (this.isNearLuma2) {
+        this.triggerLumaSecondAppearance();
       } else if (this.isNearGrave) {
         triggerGraveDialogue();
-      } else if (this.isNearFrog) {
-        triggerFrogDialogue();
-      } else if (this.isNearShroom) {
-        triggerShroomDialogue();
+      } else if (this.isNearCreatures) {
+        triggerCreaturesDialogue();
       }
     });
 
@@ -809,12 +1181,22 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     });
 
+    this.events.on("resume", () => {
+      this.cameras.main.fadeIn(300, 0, 0, 0);
+      if (this.transitionFadeBlack) {
+        this.transitionFadeBlack.destroy();
+        this.transitionFadeBlack = null;
+      }
+    });
+
+    this.cameras.main.fadeIn(500, 0, 0, 0);
     this.game.events.emit("game-ready");
   }
 
   async saveProgress() {
+    if (window.isExplorationMode) return;
     const cache = getCache();
-    if (!cache || !cache.player_id || !this.player?.sprite) return;
+    if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
 
     const state = {
       current_world: "Lunan",
@@ -898,26 +1280,26 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.player.update(this.cursors);
 
-    // Proximity check for Grave 1
     let nearGrave = false;
     let nearestDist = Infinity;
-    let closestGravePos = null;
-    if (this.grave1Positions && this.grave1Positions.length > 0) {
-      for (const pos of this.grave1Positions) {
+    let closestGraveCluster = null;
+    
+    if (this.graveClusters && this.graveClusters.length > 0) {
+      for (const cluster of this.graveClusters) {
         const dist = Phaser.Math.Distance.Between(
           this.player.sprite.x,
           this.player.sprite.y,
-          pos.x,
-          pos.y,
+          cluster.x,
+          cluster.y,
         );
         if (dist < nearestDist) {
           nearestDist = dist;
-          closestGravePos = pos;
+          closestGraveCluster = cluster;
         }
       }
     }
 
-    // Distance checks for NPCs
+    // Distance checks for NPCs / Creatures
     const distFrog = Phaser.Math.Distance.Between(
       this.player.sprite.x,
       this.player.sprite.y,
@@ -930,25 +1312,43 @@ export class CampoLunanScene extends Phaser.Scene {
       this.poisonShroom.x,
       this.poisonShroom.y,
     );
+    const midX = (this.pinkFrog.x + this.poisonShroom.x) / 2;
+    const midY = (this.pinkFrog.y + this.poisonShroom.y) / 2;
+    const distMid = Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      midX,
+      midY,
+    );
 
-    this.isNearFrog = distFrog < 40;
-    this.isNearShroom = distShroom < 40;
+    const distLuma2 = this.luma2Pos ? Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      this.luma2Pos.x,
+      this.luma2Pos.y,
+    ) : Infinity;
 
-    if (nearestDist < 40) {
+    const currentCache = getCache() || {};
+    if (distLuma2 < 100 && !currentCache.has_completed_tutorial && !this.hasTriggeredLumaSecondAppearance) {
+      this.triggerLumaSecondAppearance();
+      return;
+    }
+
+    if (nearestDist < 80) {
       nearGrave = true;
-      this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
-      if (this.interactionPrompt && closestGravePos) {
-        this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE", -15);
+      this.currentGraveCluster = closestGraveCluster;
+      if (closestGraveCluster.isGrave1) {
+        this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S GRAVE");
+      } else {
+        this.hud.setStatus(`PRESS [E] TO INSPECT GRAVE ${closestGraveCluster.id}`);
       }
-    } else if (this.isNearFrog) {
-      this.hud.setStatus("PRESS [E] TO TALK TO THE PINK FROG");
-      if (this.interactionPrompt) {
-        this.interactionPrompt.show({ x: this.pinkFrog.x, y: this.pinkFrog.y - 20 }, "E", "TALK");
+      if (this.interactionPrompt && closestGraveCluster) {
+        this.interactionPrompt.show(closestGraveCluster, "E", "INSPECT GRAVE", -15);
       }
-    } else if (this.isNearShroom) {
-      this.hud.setStatus("PRESS [E] TO TALK TO THE POISON SHROOM");
+    } else if (this.isNearCreatures) {
+      this.hud.setStatus("PRESS [E] TO TALK TO THE CREATURES");
       if (this.interactionPrompt) {
-        this.interactionPrompt.show({ x: this.poisonShroom.x, y: this.poisonShroom.y - 20 }, "E", "TALK");
+        this.interactionPrompt.show({ x: midX, y: midY - 20 }, "E", "TALK");
       }
     } else {
       this.hud.setStatus(
@@ -958,6 +1358,67 @@ export class CampoLunanScene extends Phaser.Scene {
         this.interactionPrompt.hide();
       }
     }
+
+    // Update Objective Compass Arrow
+    if (this.objectiveArrow && this.player && this.player.sprite) {
+      const activeCache = getCache() || {};
+      const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
+      const completedTutorial = activeCache.has_completed_tutorial;
+
+      let targetX = null;
+      let targetY = null;
+
+      if (completedTutorial) {
+        const grave1 = this.graveClusters?.find(c => c.isGrave1);
+        if (grave1) {
+          targetX = grave1.x;
+          targetY = grave1.y;
+        }
+      }
+
+      if (targetX !== null && targetY !== null) {
+        this.objectiveArrow.setVisible(true);
+        const px = this.player.sprite.x;
+        const py = this.player.sprite.y;
+        const angle = Phaser.Math.Angle.Between(px, py, targetX, targetY);
+        
+        const radius = 35;
+        this.objectiveArrow.x = px + Math.cos(angle) * radius;
+        this.objectiveArrow.y = py + Math.sin(angle) * radius;
+        this.objectiveArrow.rotation = angle;
+      } else {
+        this.objectiveArrow.setVisible(false);
+      }
+    }
+
     this.isNearGrave = nearGrave;
+  }
+
+  updateLumaObjective() {
+    if (!this.lumaGuidanceBox) return;
+
+    const activeCache = getCache() || {};
+    const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
+    const completedTutorial = activeCache.has_completed_tutorial;
+
+    if (completedTutorial) {
+      // Objective after completing tutorial
+      this.lumaGuidanceBox.update(
+        "Seek the Forgotten Graves & Restore Lost Souls",
+        "<em>\"Walk among the graves. Listen to those left behind... restore what has been scattered.\"</em>",
+        "ECHOES OF THE PAST"
+      );
+      this.lumaGuidanceBox.show();
+    } else if (talkedLuma1) {
+      // Objective after 1st Luma interaction (before tutorial)
+      this.lumaGuidanceBox.update(
+        "Find Luma at the Upper Pathway & Learn to Face Echoes",
+        "<em>\"Luma is waiting for you near the upper graveyard path...\"</em>",
+        "LESSON OF THE ECHOES"
+      );
+      this.lumaGuidanceBox.show();
+    } else {
+      this.lumaGuidanceBox.hide();
+    }
   }
 }

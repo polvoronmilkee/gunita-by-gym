@@ -6,9 +6,26 @@ const CACHE_KEY = "gunita_save";
  * @returns {Object|null}
  */
 export function getCache() {
+  if (window.isExplorationMode) {
+    return {
+      player_id: "explorer",
+      username: "Wanderer",
+      is_exploration_mode: true,
+      current_world: "Lunan",
+      current_area: "Campo Lunan",
+      position_x: 320,
+      position_y: 360,
+    };
+  }
   try {
     const data = localStorage.getItem(CACHE_KEY);
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+    const parsed = JSON.parse(data);
+    if (parsed && (parsed.is_exploration_mode || parsed.player_id === "explorer")) {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+    return parsed;
   } catch (e) {
     console.error("Failed to parse cached save:", e);
     return null;
@@ -20,6 +37,9 @@ export function getCache() {
  * @param {Object} data 
  */
 export function setCache(data) {
+  if (window.isExplorationMode || (data && (data.is_exploration_mode || data.player_id === "explorer"))) {
+    return;
+  }
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(data));
   } catch (e) {
