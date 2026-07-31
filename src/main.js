@@ -17,7 +17,7 @@ import { FamilyHomeScene } from "./scenes/FamilyHomeScene.js";
 import { LoadingScreen } from "./ui/LoadingScreen.js";
 import { MenuAudioController } from "./ui/MenuAudioController.js";
 import { getCache, setCache, clearCache, getAllSlots, deleteSlot, setActiveSlot } from "./save.js";
-import { connectAndUnlock } from "./utils/portalApi.js";
+import { authorizePortal, unlockPortalArtifact } from "./utils/portalApi.js";
 
 const menuAssetUrls = [
   "/src/assets/main-menu/main-menu-bg-purple.png",
@@ -414,14 +414,15 @@ connectPortalBtn?.addEventListener("click", async () => {
   if (title) title.textContent = "CONNECTING...";
   if (desc) desc.textContent = "Please authorize in the new tab";
   
-  // Unlock Artifact 1 (Vino Soul) at start
-  const GAME_ID_1 = "YOUR_GAME_ID_1_HERE"; 
-  const success = await connectAndUnlock(GAME_ID_1);
+  // Authorize session at start (Artifact is unlocked later during gameplay)
+  const GAME_ID_1 = "df3e2a27-c9eb-4816-8523-a762ab7e3003"; 
+  const success = await authorizePortal(GAME_ID_1);
   
   if (success) {
     localStorage.setItem("gunita_portal_authorized", "true");
     if (connectPortalBtn) connectPortalBtn.style.display = "none";
-    if (playBtn) playBtn.style.display = "flex";
+    if (continueBtn) continueBtn.style.display = "flex";
+    if (newBtn) newBtn.style.display = "flex";
   } else {
     if (title) title.textContent = "CONNECTION FAILED";
     if (desc) desc.textContent = "Click to try again";

@@ -614,6 +614,11 @@ export class TutorialBulletHell extends BaseBulletHellScene {
       setCache(cache);
     });
 
+    // Unlock GameOn Portal Artifact (Echo Vessel of Vino)
+    import("../utils/portalApi.js").then(({ unlockPortalArtifact }) => {
+      unlockPortalArtifact().catch(err => console.warn("Failed to unlock artifact:", err));
+    });
+
     this.tweens.add({
       targets: this.crystalEnemy,
       scaleX: 0,

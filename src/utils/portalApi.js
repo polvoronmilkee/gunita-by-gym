@@ -2,10 +2,9 @@
 // See GameOn Portal API Integration Guide for details.
 
 // Use Vite proxy for local dev, direct URL for production
-const isLocalDev = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-const isDevServer = isLocalDev && (window.location.port === '5173' || window.location.port === '3000' || window.location.port === '8080');
+const isLocalDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-export const API_BASE = isDevServer ? '/portal-api' : 'https://gameonportal.ph/api';
+export const API_BASE = isLocalDev ? '/portal-api' : 'https://gameonportal.ph/api';
 
 /**
  * Initiates the portal session, opens the browser, and polls for authorization.
