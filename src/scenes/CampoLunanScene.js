@@ -5,6 +5,7 @@ import { DialogueBox } from "../ui/DialogueBox.js";
 import { Player } from "../entities/Player.js";
 import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { MapOverlay } from "../ui/MapOverlay.js";
+import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
@@ -520,6 +521,10 @@ export class CampoLunanScene extends Phaser.Scene {
     const activeCache = getCache() || {};
     this.hasTalkedToLuma = activeCache.has_talked_to_luma || false;
 
+    // Create and configure LumaGuidanceBox for Campo Lunan objectives
+    this.lumaGuidanceBox = new LumaGuidanceBox();
+    this.updateLumaObjective();
+
     // Always create DialogueBox instance for Campo Lunan interactions
     this.dialogue = new DialogueBox(this);
     this.dialogue.hide();
@@ -670,6 +675,8 @@ export class CampoLunanScene extends Phaser.Scene {
                           const freshCache = getCache() || {};
                           freshCache.has_talked_to_luma = true;
                           setCache(freshCache);
+                          this.hasTalkedToLuma = true;
+                          this.updateLumaObjective();
                           this.saveProgress();
                         }
                       });
@@ -750,6 +757,11 @@ export class CampoLunanScene extends Phaser.Scene {
                   position_x: 1137,
                   position_y: 550,
                 });
+              }
+
+              if (this.lumaGuidanceBox) {
+                this.lumaGuidanceBox.destroy();
+                this.lumaGuidanceBox = null;
               }
 
               import("../ui/portalLoadingScreen.js").then(({ PortalLoadingScreen }) => {
@@ -975,6 +987,7 @@ export class CampoLunanScene extends Phaser.Scene {
                   const freshCache = getCache() || {};
                   freshCache.luma_second_appearance_done = true;
                   setCache(freshCache);
+                  this.updateLumaObjective();
                   this.saveProgress();
                 }
               });
@@ -1177,5 +1190,33 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     }
     this.isNearGrave = nearGrave;
+  }
+
+  updateLumaObjective() {
+    if (!this.lumaGuidanceBox) return;
+
+    const activeCache = getCache() || {};
+    const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
+    const talkedLuma2 = activeCache.luma_second_appearance_done || this.hasTriggeredLumaSecondAppearance;
+
+    if (talkedLuma2) {
+      // Objective after 2nd Luma interaction
+      this.lumaGuidanceBox.update(
+        "Seek the Forgotten Graves & Restore Lost Souls",
+        "<em>\"Walk among the graves. Listen to those left behind... restore what has been scattered.\"</em>",
+        "ECHOES OF THE PAST"
+      );
+      this.lumaGuidanceBox.show();
+    } else if (talkedLuma1) {
+      // Objective after 1st Luma interaction
+      this.lumaGuidanceBox.update(
+        "Explore Campo Lunan & Discover Your Purpose",
+        "<em>\"Listen closely to the whispers of this place... you will understand in time.\"</em>",
+        "AWAKENING PURPOSE"
+      );
+      this.lumaGuidanceBox.show();
+    } else {
+      this.lumaGuidanceBox.hide();
+    }
   }
 }
