@@ -34,6 +34,8 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.load.spritesheet("vino-moving-right", "src/assets/vino-spritesheets/vino-moving-right.png", { frameWidth: 208, frameHeight: 237 });
     this.load.spritesheet("vino-moving-down", "src/assets/vino-spritesheets/vino-moving-down.png", { frameWidth: 208, frameHeight: 237 });
     this.load.spritesheet("sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", { frameWidth: 40, frameHeight: 43 });
+    this.load.json("sick-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
+    this.load.json("sick-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
   }
 
   create(data) {
@@ -248,10 +250,15 @@ export class FamilyHomeScene extends Phaser.Scene {
 
 
 
-    // Advance dialogue sequence with E or SPACE
+    // Advance dialogue sequence with E or SPACE or start interaction
     const handleInteract = () => {
       if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
         this.dialogue.onComplete();
+        return;
+      }
+
+      if (!this.dialogueActive && this.isNearSickWife) {
+        this.talkToSickWife();
       }
     };
     this.input.keyboard.on("keydown-E", handleInteract);
@@ -288,10 +295,62 @@ export class FamilyHomeScene extends Phaser.Scene {
 
     this.player.update(this.cursors);
 
+    // Handle interaction with Sick Wife
+    if (this.sickWifeSprite && this.player && this.player.sprite) {
+      const dist = Phaser.Math.Distance.Between(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.sickWifeSprite.x,
+        this.sickWifeSprite.y
+      );
+
+      if (dist < 55) {
+        this.isNearSickWife = true;
+        this.interactionPrompt.show(this.sickWifeSprite, "E", "Talk to Sick Wife");
+      } else {
+        if (this.isNearSickWife) {
+          this.isNearSickWife = false;
+          this.interactionPrompt.hide();
+        }
+      }
+    }
+
     // Exit trigger if player walks near the bottom door area
     if (this.player.sprite.y > 1210) {
       this.exitFamilyHouse();
     }
+  }
+
+  getRandomVariant(cacheKey, fallback) {
+    const list = this.cache.json.get(cacheKey);
+    if (Array.isArray(list) && list.length > 0) {
+      const idx = Math.floor(Math.random() * list.length);
+      return list[idx];
+    }
+    return fallback;
+  }
+
+  talkToSickWife() {
+    this.dialogueActive = true;
+    if (this.player?.sprite?.body) {
+      this.player.sprite.body.setVelocity(0);
+      this.player.sprite.anims.stop();
+    }
+
+    const cache = getCache() || {};
+    const storyStage = cache.story_stage !== undefined ? cache.story_stage : 3;
+
+    let clueText = "";
+    if (storyStage === 3) {
+      clueText = this.getRandomVariant("sick-wife-clue", "Before every voyage... Tomas never forgot something precious.");
+      const freshCache = getCache() || {};
+      freshCache.unlocked_rosary_clue = true;
+      setCache(freshCache);
+    } else {
+      clueText = this.getRandomVariant("sick-wife-initial", "Every afternoon when the sun sets over the waves, I still glance at the pathway...");
+    }
+
+    this.startDialogueSequence([{ speaker: "Sick Wife", text: clueText }]);
   }
 
   exitFamilyHouse() {

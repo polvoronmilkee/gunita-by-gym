@@ -50,10 +50,10 @@
     },
     {
       "category": "neighbors",
-      "targetNpcs": ["npc-random-woman", "npc-old-wife"],
+      "targetNpcs": ["npc-random-woman", "npc-sick-wife"],
       "lines": [
         "Random Woman: Pahiram ng asin, Mare. The dried galunggong needs a little extra salt today.",
-        "Old Wife: Take whatever you need. Tomas always said neighbors share whatever is in the jar."
+        "Sick Wife: Take whatever you need. Tomas always said neighbors share whatever is in the jar."
       ]
     },
     {
@@ -66,10 +66,10 @@
     },
     {
       "category": "neighbors",
-      "targetNpcs": ["npc-old-wife", "npc-random-woman"],
+      "targetNpcs": ["npc-sick-wife", "npc-random-woman"],
       "lines": [
         "Random Woman: Manang, I made hot champorado for afternoon merienda. Have a bowl.",
-        "Old Wife: Maraming salamat, Mare. Warm food brings comfort to quiet homes."
+        "Sick Wife: Maraming salamat, Mare. Warm food brings comfort to quiet homes."
       ]
     },
     {

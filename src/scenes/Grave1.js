@@ -32,6 +32,8 @@ export class Grave1 extends Phaser.Scene {
     this.load.json("young-fisherman-clue", "src/assets/data/dialogues/grave1/young-fisherman/clue.json");
     this.load.json("old-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
     this.load.json("old-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
+    this.load.json("sick-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
+    this.load.json("sick-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
     this.load.json("young-daughter-initial", "src/assets/data/dialogues/grave1/young-daughter/initial.json");
     this.load.json("young-daughter-clue", "src/assets/data/dialogues/grave1/young-daughter/clue.json");
     this.load.json("random-woman-initial", "src/assets/data/dialogues/grave1/random-woman/initial.json");
@@ -96,6 +98,9 @@ export class Grave1 extends Phaser.Scene {
       this.load.spritesheet(`npc-${npc.key}`, `src/assets/grave1-elements/characters/${npc.file}`, {
         frameWidth: npc.fw, frameHeight: npc.fh
       });
+    });
+    this.load.spritesheet("npc-sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", {
+      frameWidth: 40, frameHeight: 43
     });
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
@@ -451,7 +456,8 @@ export class Grave1 extends Phaser.Scene {
     const characterNameMap = {
       "OLD-FISHERMAN": "old-fisherman",
       "YOUNG-FISHERMAN": "young-fisherman",
-      "OLD-WIFE": "old-wife",
+      "OLD-WIFE": "sick-wife",
+      "SICK-WIFE": "sick-wife",
       "OLD-DAUGHTER": "young-daughter",
       "SCHOOL-GIRL": "school-girl",
       "YOUNG-KID": "young-kid",
@@ -1094,9 +1100,9 @@ export class Grave1 extends Phaser.Scene {
         } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman") {
              const clueText = this.getRandomVariant("young-fisherman-clue", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
              this.spawnFragment(this.closestNpc, "Young Fisherman", clueText);
-        } else if (this.storyStage === 3 && npcKey === "npc-old-wife") {
-             const clueText = this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious.");
-             this.spawnFragment(this.closestNpc, "Old Wife", clueText);
+        } else if (this.storyStage === 3 && (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife")) {
+             const clueText = this.getRandomVariant("sick-wife-clue", this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious."));
+             this.spawnFragment(this.closestNpc, "Sick Wife", clueText);
         } else if (this.storyStage === 4 && npcKey === "npc-young-daughter") {
              const clueText = this.getRandomVariant("young-daughter-clue", "I made Papa a drawing... but I don't remember where I left it.");
              this.spawnFragment(this.closestNpc, "Daughter", clueText);
@@ -1106,7 +1112,7 @@ export class Grave1 extends Phaser.Scene {
 
              if (npcKey === "npc-old-fisherman") { speaker = "Old Fisherman"; cacheKey = "old-fisherman-initial"; }
              else if (npcKey === "npc-young-fisherman") { speaker = "Young Fisherman"; cacheKey = "young-fisherman-initial"; }
-             else if (npcKey === "npc-old-wife") { speaker = "Old Wife"; cacheKey = "old-wife-initial"; }
+             else if (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife") { speaker = "Sick Wife"; cacheKey = "sick-wife-initial"; }
              else if (npcKey === "npc-young-daughter") { speaker = "Daughter"; cacheKey = "young-daughter-initial"; }
              else if (npcKey === "npc-random-woman") { speaker = "Barangay Woman"; cacheKey = "random-woman-initial"; }
              else if (npcKey === "npc-random-guy") { speaker = "Villager"; cacheKey = "random-guy-before"; }
@@ -1872,10 +1878,10 @@ export class Grave1 extends Phaser.Scene {
       let targetKey = "";
       if (this.storyStage === 1) targetKey = "npc-old-fisherman";
       else if (this.storyStage === 2) targetKey = "npc-young-fisherman";
-      else if (this.storyStage === 3) targetKey = "npc-old-wife";
+      else if (this.storyStage === 3) targetKey = "npc-sick-wife";
       else if (this.storyStage === 4) targetKey = "npc-young-daughter";
       
-      const targetNpc = this.npcs?.getChildren().find(n => n.texture && n.texture.key === targetKey);
+      const targetNpc = this.npcs?.getChildren().find(n => n.texture && (n.texture.key === targetKey || (targetKey === "npc-sick-wife" && n.texture.key === "npc-old-wife")));
       
       if (targetNpc) {
         this.objectiveArrow.setVisible(true);
