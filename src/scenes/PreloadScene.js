@@ -48,6 +48,10 @@ export class PreloadScene extends Phaser.Scene {
       frameWidth: 138.67,
       frameHeight: 193.67,
     });
+    this.load.spritesheet("fragment-idle", "src/assets/grave1-elements/fragments/crystal_shard idle sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
+    this.load.spritesheet("fragment-litol-shards", "src/assets/grave1-elements/fragments/crystal_shard litol shards sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
+    this.load.spritesheet("fragment-bleed", "src/assets/grave1-elements/fragments/crystal_shard bleed sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
+    this.load.spritesheet("fragment-cracks", "src/assets/grave1-elements/fragments/crystal_shard cracks sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
   }
 
   create() {

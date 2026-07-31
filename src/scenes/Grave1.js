@@ -96,10 +96,6 @@ export class Grave1 extends Phaser.Scene {
         frameWidth: npc.fw, frameHeight: npc.fh
       });
     });
-    this.load.spritesheet("fragment-main", "src/assets/grave1-elements/fragment-main.png", {
-      frameWidth: 16,
-      frameHeight: 16
-    });
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
     // Load player animations sheets
@@ -324,10 +320,10 @@ export class Grave1 extends Phaser.Scene {
       }
     });
 
-    if (!this.anims.exists("fragment-anim")) {
+    if (!this.anims.exists("fragment-idle-anim")) {
       this.anims.create({
-        key: "fragment-anim",
-        frames: this.anims.generateFrameNumbers("fragment-main"),
+        key: "fragment-idle-anim",
+        frames: this.anims.generateFrameNumbers("fragment-idle"),
         frameRate: 6,
         repeat: -1
       });
@@ -1135,9 +1131,10 @@ export class Grave1 extends Phaser.Scene {
       { speaker: speaker, text: text }
     ], () => {
       const fragmentPos = this.getNearestLandCoordinate(npc.x + 50, npc.y + 50, this.map);
-      this.currentFragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-main");
+      this.currentFragment = this.physics.add.sprite(fragmentPos.x, fragmentPos.y, "fragment-idle");
+      this.currentFragment.setScale(32/64);
       this.currentFragment.setDepth(1);
-      this.currentFragment.play("fragment-anim");
+      this.currentFragment.play("fragment-idle-anim");
       
       // Update Luma Guidance for the spawned fragment
       this.updateLumaGuidance();

@@ -2,6 +2,9 @@ import "./lumaGuidanceBox.css";
 
 export class LumaGuidanceBox {
   constructor() {
+    // Clean up any existing instances in the DOM to prevent stacking bugs
+    document.querySelectorAll(".luma-guidance-container").forEach(el => el.remove());
+
     this.container = document.createElement("div");
     this.container.className = "luma-guidance-container";
 

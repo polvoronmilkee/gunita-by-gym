@@ -301,9 +301,9 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
   setCache({
-    player_id: "guest_account",
-    username: "Guest",
-    is_guest: true,
+    player_id: "explorer",
+    username: "Wanderer",
+    is_exploration_mode: true,
     current_world: "Lunan",
     current_area: "Campo Lunan",
     position_x: 320,

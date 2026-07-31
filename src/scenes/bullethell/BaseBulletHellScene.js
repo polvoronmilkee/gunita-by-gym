@@ -106,7 +106,7 @@ export class BaseBulletHellScene extends Phaser.Scene {
 
   preload() {
     if (!this.textures.exists("fragment-main")) {
-      this.load.spritesheet("fragment-main", "src/assets/fragment-main.png", {
+      this.load.spritesheet("fragment-main", "src/assets/grave1-elements/fragment-main.png", {
         frameWidth: 16,
         frameHeight: 16,
       });
@@ -333,20 +333,29 @@ export class BaseBulletHellScene extends Phaser.Scene {
     }
     this.updateCrystalHPUI();
 
-    this.crystalEnemy = this.add.sprite(centerX, 100, "fragment-main");
-    this.crystalEnemy.setScale(1.8);
+    const fragmentAnimKeys = [
+      { key: "fragment-idle", anim: "fragment-idle-anim" },
+      { key: "fragment-litol-shards", anim: "fragment-litol-shards-anim" },
+      { key: "fragment-bleed", anim: "fragment-bleed-anim" },
+      { key: "fragment-cracks", anim: "fragment-cracks-anim" }
+    ];
 
-    if (!this.anims.exists("fragment-anim") && this.textures.exists("fragment-main")) {
-      this.anims.create({
-        key: "fragment-anim",
-        frames: this.anims.generateFrameNumbers("fragment-main"),
-        frameRate: 6,
-        repeat: -1,
-      });
-    }
+    fragmentAnimKeys.forEach(({ key, anim }) => {
+      if (!this.anims.exists(anim) && this.textures.exists(key)) {
+        this.anims.create({
+          key: anim,
+          frames: this.anims.generateFrameNumbers(key),
+          frameRate: 6,
+          repeat: -1,
+        });
+      }
+    });
 
-    if (this.anims.exists("fragment-anim")) {
-      this.crystalEnemy.play("fragment-anim");
+    this.crystalEnemy = this.add.sprite(centerX, 100, "fragment-idle");
+    this.crystalEnemy.setScale(1.0);
+
+    if (this.anims.exists("fragment-idle-anim")) {
+      this.crystalEnemy.play("fragment-idle-anim");
     }
 
     this.crystalIdleTween = this.tweens.add({
@@ -384,6 +393,18 @@ export class BaseBulletHellScene extends Phaser.Scene {
       } else {
         this.crystalIcons[i].setTint(0x333333);
         this.crystalIcons[i].setAlpha(0.4);
+      }
+    }
+
+    if (this.crystalEnemy) {
+      if (this.crystalHP === 0) {
+        this.crystalEnemy.play("fragment-cracks-anim", true);
+      } else if (this.crystalHP === 1) {
+        this.crystalEnemy.play("fragment-bleed-anim", true);
+      } else if (this.crystalHP <= 3) {
+        this.crystalEnemy.play("fragment-litol-shards-anim", true);
+      } else {
+        this.crystalEnemy.play("fragment-idle-anim", true);
       }
     }
   }
@@ -1578,6 +1599,8 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.crystalAngryTween.pause();
     this.crystalEnemy.setTint(0xffffff);
 
+    this.clearTextAndTimers();
+
     this.tweens.add({
       targets: this.crystalEnemy,
       scaleX: 0,
@@ -1586,16 +1609,26 @@ export class BaseBulletHellScene extends Phaser.Scene {
       duration: 1000,
       ease: "Back.easeIn",
       onComplete: () => {
-        this.dialogueText.setText("The fragment is clear...").setVisible(true);
-        this.time.delayedCall(2500, () => {
-          this.dialogueText.setVisible(false);
-          if (this.onCompleteCallback) {
-            this.onCompleteCallback();
-          } else if (this.returnScene) {
-            if (this.audioManager) this.audioManager.stopMusic();
-            this.scene.stop();
-            this.scene.resume(this.returnScene);
-          }
+        this.dialogueText.setOrigin(0, 0);
+        this.dialogueText.setPosition(this.boxCenterX - this.boxWidth / 2 + 25, this.boxCenterY - 35);
+        this.dialogueText.setAlign("left");
+        this.dialogueText.setVisible(true);
+
+        this.typewriterDialogue("Vino: I remember this... it feels like waking from a dream.", () => {
+          this.time.delayedCall(2000, () => {
+            this.typewriterDialogue("[ A forgotten memory has been unsealed. ]", () => {
+              this.time.delayedCall(2500, () => {
+                this.dialogueText.setVisible(false);
+                if (this.onCompleteCallback) {
+                  this.onCompleteCallback();
+                } else if (this.returnScene) {
+                  if (this.audioManager) this.audioManager.stopMusic();
+                  this.scene.stop();
+                  this.scene.resume(this.returnScene);
+                }
+              });
+            });
+          });
         });
       }
     });

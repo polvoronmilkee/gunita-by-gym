@@ -339,6 +339,51 @@ export class CampoLunanScene extends Phaser.Scene {
       });
     }
 
+    this.graveClusters = [];
+    if (this.grave1Positions && this.grave1Positions.length > 0) {
+      this.grave1Positions.forEach(pos => {
+        let found = false;
+        for (let cluster of this.graveClusters) {
+          const dx = cluster.x - pos.x;
+          const dy = cluster.y - pos.y;
+          if (Math.sqrt(dx * dx + dy * dy) < 200) {
+            cluster.tiles.push(pos);
+            cluster.x = cluster.tiles.reduce((sum, t) => sum + t.x, 0) / cluster.tiles.length;
+            cluster.y = cluster.tiles.reduce((sum, t) => sum + t.y, 0) / cluster.tiles.length;
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          this.graveClusters.push({ x: pos.x, y: pos.y, tiles: [pos] });
+        }
+      });
+      
+      this.graveClusters.sort((a, b) => a.x - b.x);
+      
+      const mapCenterX = map.widthInPixels / 2;
+      let grave1Idx = -1;
+      let minDistRight = Infinity;
+      this.graveClusters.forEach((cluster, idx) => {
+        if (cluster.x > mapCenterX) {
+          const dist = cluster.x - mapCenterX;
+          if (dist < minDistRight) {
+            minDistRight = dist;
+            grave1Idx = idx;
+          }
+        }
+      });
+      
+      if (grave1Idx === -1 && this.graveClusters.length > 0) {
+        grave1Idx = Math.floor(this.graveClusters.length / 2); 
+      }
+      
+      this.graveClusters.forEach((cluster, idx) => {
+        cluster.isGrave1 = (idx === grave1Idx);
+        cluster.id = cluster.isGrave1 ? 1 : (idx < grave1Idx ? idx + 2 : idx + 1);
+      });
+    }
+
     //Load static map collisions from Tiled
     this.collisionGroup = this.physics.add.staticGroup();
     const collisionLayer =
@@ -525,6 +570,20 @@ export class CampoLunanScene extends Phaser.Scene {
     this.lumaGuidanceBox = new LumaGuidanceBox();
     this.updateLumaObjective();
 
+    // Objective Compass Arrow
+    this.objectiveArrow = this.add.graphics();
+    this.objectiveArrow.setDepth(15);
+    this.objectiveArrow.lineStyle(2, 0x6ee7b7, 1);
+    this.objectiveArrow.fillStyle(0x6ee7b7, 0.8);
+    this.objectiveArrow.beginPath();
+    this.objectiveArrow.moveTo(6, 0);
+    this.objectiveArrow.lineTo(-6, 4);
+    this.objectiveArrow.lineTo(-6, -4);
+    this.objectiveArrow.closePath();
+    this.objectiveArrow.fillPath();
+    this.objectiveArrow.strokePath();
+    this.objectiveArrow.setVisible(false);
+
     // Always create DialogueBox instance for Campo Lunan interactions
     this.dialogue = new DialogueBox(this);
     this.dialogue.hide();
@@ -703,11 +762,36 @@ export class CampoLunanScene extends Phaser.Scene {
         }
       }
 
+      if (!this.currentGraveCluster || !this.currentGraveCluster.isGrave1) {
+        const customGraves = {
+          2: { title: "Grave II\nSinulid ng Panahon (Threads of Time)", desc: "A memory of traditional weaving. (Cannot enter yet)" },
+          3: { title: "Grave III\nAng Huling Tinig (The Last Voice)", desc: "A memory of Philippine folklore and oral tradition. (Cannot enter yet)" },
+          4: { title: "Grave IV\nGinto at Asin (Gold and Salt)", desc: "A memory of regional trade and barter. (Cannot enter yet)" },
+          5: { title: "Grave V\nAng Pinunong Iniwan (The Abandoned King)", desc: "A memory of pre-colonial civilization and leadership. (Cannot enter yet)" },
+          6: { title: "Grave VI\nLihim ng Kalikasan (Secret of Nature)", desc: "A memory of indigenous farming and harmony with the land. (Cannot enter yet)" },
+          7: { title: "Grave VII\nAwit ng Bagani (Song of the Warrior)", desc: "A memory of traditional martial arts and defense. (Cannot enter yet)" },
+          8: { title: "Grave VIII\nSayaw ng Pagsamo (Dance of Supplication)", desc: "A memory of pre-colonial rituals and spirituality. (Cannot enter yet)" },
+        };
+        
+        const id = this.currentGraveCluster ? this.currentGraveCluster.id : 2;
+        const graveData = customGraves[id] || { title: `Grave ${id}\nUnknown Memory`, desc: "A forgotten memory waiting to be discovered. (Cannot enter yet)" };
+
+        this.dialogue.showText(
+          "Tombstone",
+          `${graveData.title}\n\n${graveData.desc}`,
+          () => {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        );
+        return;
+      }
+
       const cache = getCache();
-      if (cache?.is_guest || cache?.player_id === "guest_account") {
+      if (cache?.is_exploration_mode) {
         this.dialogue.showText(
           "Grave I",
-          "This Memory World is sealed for Guest accounts. Register a Codename in the Main Menu to enter World 1!",
+          "You are wandering Campo Lunan. Teleporting to Memory Worlds is disabled in this exploration mode.",
           () => {
             this.dialogue.hide();
             this.dialogueActive = false;
@@ -1115,21 +1199,21 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.player.update(this.cursors);
 
-    // Proximity check for Grave 1
     let nearGrave = false;
     let nearestDist = Infinity;
-    let closestGravePos = null;
-    if (this.grave1Positions && this.grave1Positions.length > 0) {
-      for (const pos of this.grave1Positions) {
+    let closestGraveCluster = null;
+    
+    if (this.graveClusters && this.graveClusters.length > 0) {
+      for (const cluster of this.graveClusters) {
         const dist = Phaser.Math.Distance.Between(
           this.player.sprite.x,
           this.player.sprite.y,
-          pos.x,
-          pos.y,
+          cluster.x,
+          cluster.y,
         );
         if (dist < nearestDist) {
           nearestDist = dist;
-          closestGravePos = pos;
+          closestGraveCluster = cluster;
         }
       }
     }
@@ -1170,11 +1254,16 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.isNearCreatures = distMid < 55 || distFrog < 45 || distShroom < 45;
 
-    if (nearestDist < 40) {
+    if (nearestDist < 80) {
       nearGrave = true;
-      this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S  GRAVE");
-      if (this.interactionPrompt && closestGravePos) {
-        this.interactionPrompt.show(closestGravePos, "E", "INSPECT GRAVE", -15);
+      this.currentGraveCluster = closestGraveCluster;
+      if (closestGraveCluster.isGrave1) {
+        this.hud.setStatus("PRESS [E] TO INSPECT THE LAST FISHERMAN'S GRAVE");
+      } else {
+        this.hud.setStatus(`PRESS [E] TO INSPECT GRAVE ${closestGraveCluster.id}`);
+      }
+      if (this.interactionPrompt && closestGraveCluster) {
+        this.interactionPrompt.show(closestGraveCluster, "E", "INSPECT GRAVE", -15);
       }
     } else if (this.isNearCreatures) {
       this.hud.setStatus("PRESS [E] TO TALK TO THE CREATURES");
@@ -1189,6 +1278,28 @@ export class CampoLunanScene extends Phaser.Scene {
         this.interactionPrompt.hide();
       }
     }
+
+    // Update Objective Compass Arrow
+    if (this.objectiveArrow && this.player && this.player.sprite) {
+      const activeCache = getCache() || {};
+      const talkedLuma2 = activeCache.luma_second_appearance_done || this.hasTriggeredLumaSecondAppearance;
+      const grave1 = this.graveClusters?.find(c => c.isGrave1);
+
+      if (talkedLuma2 && grave1) {
+        this.objectiveArrow.setVisible(true);
+        const px = this.player.sprite.x;
+        const py = this.player.sprite.y;
+        const angle = Phaser.Math.Angle.Between(px, py, grave1.x, grave1.y);
+        
+        const radius = 35;
+        this.objectiveArrow.x = px + Math.cos(angle) * radius;
+        this.objectiveArrow.y = py + Math.sin(angle) * radius;
+        this.objectiveArrow.rotation = angle;
+      } else {
+        this.objectiveArrow.setVisible(false);
+      }
+    }
+
     this.isNearGrave = nearGrave;
   }
 
