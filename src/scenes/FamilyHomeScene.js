@@ -232,6 +232,7 @@ export class FamilyHomeScene extends Phaser.Scene {
       onDashStart: () => this.audioManager.playDashSfx(),
     });
     this.player.sprite.setDepth(0);
+    this.player.sprite.setScale(0.25);
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.collider(this.player.sprite, this.collisionGroup);
@@ -242,7 +243,7 @@ export class FamilyHomeScene extends Phaser.Scene {
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
     CameraSystem.follow(this, this.player.sprite);
-    this.cameras.main.setZoom(3.5);
+    this.cameras.main.setZoom(2);
 
     // Escape or P opens pause menu
     this.input.keyboard.on("keydown-P", () => this.handlePause());
