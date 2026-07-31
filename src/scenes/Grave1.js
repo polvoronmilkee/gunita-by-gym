@@ -346,8 +346,11 @@ export class Grave1 extends Phaser.Scene {
         }
       }
     } else {
-      spawnX = cache.position_x;
-      spawnY = cache.position_y;
+      spawnX = cache.position_x !== null && cache.position_x !== undefined ? Number(cache.position_x) : 1137;
+      spawnY = cache.position_y !== null && cache.position_y !== undefined ? Number(cache.position_y) : 550;
+
+      if (isNaN(spawnX)) spawnX = 1137;
+      if (isNaN(spawnY)) spawnY = 550;
     }
 
     const safeSpawn = this.getNearestLandCoordinate(spawnX, spawnY, map);
@@ -1671,8 +1674,9 @@ export class Grave1 extends Phaser.Scene {
   }
 
   async saveProgress() {
+    if (window.isExplorationMode) return;
     const cache = getCache();
-    if (!cache || !cache.player_id || !this.player?.sprite) return;
+    if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
 
     const state = {
       current_world: "Lunan",

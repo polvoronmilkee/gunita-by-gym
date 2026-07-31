@@ -9,6 +9,7 @@ import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
+import { TransitionSystem } from "../systems/TransitionSystem.js";
 
 export class CampoLunanScene extends Phaser.Scene {
   constructor() {
@@ -285,17 +286,22 @@ export class CampoLunanScene extends Phaser.Scene {
     this.poisonShroom.setImmovable(true); // Prevents Vino from pushing it
 
     // Retrieve coordinates from local cache immediately, default to (1278, 1779)
-    const cache = getCache();
-    let spawnX =
-      cache && cache.position_x !== undefined ? cache.position_x : 1278;
-    let spawnY =
-      cache && cache.position_y !== undefined ? cache.position_y : 1779;
+    const cache = getCache() || {};
+    
+    if (!cache.has_completed_tutorial && !cache.has_talked_to_luma) {
+        cache.position_x = 1278;
+        cache.position_y = 1779;
+        setCache(cache);
+    }
 
-    // Sanitize spawn coordinates to prevent spawning inside map boundary walls
-    if (spawnY < 440) spawnY = 1779;
-    if (spawnX < 360) spawnX = 1278;
-    if (spawnX > 2180) spawnX = 1278;
-    if (spawnY > 1880) spawnY = 1779;
+    let spawnX =
+      cache.position_x !== undefined && cache.position_x !== null ? Number(cache.position_x) : 1278;
+    let spawnY =
+      cache.position_y !== undefined && cache.position_y !== null ? Number(cache.position_y) : 1779;
+
+    // Sanitize spawn coordinates to prevent spawning inside map boundary walls or crashing camera with NaN
+    if (isNaN(spawnX) || spawnX < 360 || spawnX > 2180) spawnX = 1278;
+    if (isNaN(spawnY) || spawnY < 440 || spawnY > 1880) spawnY = 1779;
 
     this.audioManager = new AudioManager(this, "campo-lunan");
 
@@ -405,7 +411,7 @@ export class CampoLunanScene extends Phaser.Scene {
     }
 
     // Background verify cache with Supabase
-    if (cache && cache.player_id) {
+    if (cache && cache.player_id && cache.has_completed_tutorial) {
       loadGameState(cache.player_id)
         .then((serverState) => {
           if (
@@ -570,6 +576,13 @@ export class CampoLunanScene extends Phaser.Scene {
     this.lumaGuidanceBox = new LumaGuidanceBox();
     this.updateLumaObjective();
 
+    // Check if returning after completing tutorial for the first time
+    if (activeCache.has_completed_tutorial && !activeCache.played_post_tutorial_dialogue) {
+      this.time.delayedCall(400, () => {
+        this.triggerPostTutorialSequence();
+      });
+    }
+
     // Objective Compass Arrow
     this.objectiveArrow = this.add.graphics();
     this.objectiveArrow.setDepth(15);
@@ -699,7 +712,7 @@ export class CampoLunanScene extends Phaser.Scene {
                   { speaker: "Luma", text: "Because... Campo Lunan needs someone who can still hear the *echoes*." },
                   { speaker: "Vino", text: "I don't understand." },
                   { speaker: "Luma", text: "You will, Vino. *In time.*" },
-                  { speaker: "Vino", text: "Hoy, wait lang!" },
+                  { speaker: "Vino", text: "Hoy, wait lang!" }
                 ];
 
                 let stepB = 0;
@@ -749,6 +762,36 @@ export class CampoLunanScene extends Phaser.Scene {
         };
         runPartA();
       });
+    } else if (this.hasTalkedToLuma && !activeCache.has_completed_tutorial) {
+      // Spawn persistent glowing Luma NPC at upper pathway until tutorial is finished
+      const targetX = 1410;
+      const targetY = 1074;
+      this.luma2PersistentSprite = this.physics.add.sprite(targetX, targetY, "luma-idle");
+      this.luma2PersistentSprite.setScale(0.3);
+      this.luma2PersistentSprite.setDepth(this.luma2PersistentSprite.y);
+      this.luma2PersistentSprite.setImmovable(true);
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      this.luma2PersistentSprite.play("luma-idle-anim");
+      if (this.cameras.main.postFX) {
+        const glow = this.luma2PersistentSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+        this.tweens.add({
+          targets: glow,
+          outerStrength: 1.3,
+          innerStrength: 0.9,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+      this.physics.add.collider(this.player.sprite, this.luma2PersistentSprite);
     } else {
       this.dialogueActive = false;
     }
@@ -917,14 +960,10 @@ export class CampoLunanScene extends Phaser.Scene {
       runStep();
     };
 
-    // Luma Second Appearance (TMJ Object ID 68)
-    const luma68Obj = charsLayer?.objects?.find((o) => o.id === 68 || o.name === "luma");
-
-    const luma2TargetX = luma68Obj ? luma68Obj.x : 1410;
-    const luma2TargetY = luma68Obj ? luma68Obj.y : 1074;
+    // Luma Second Appearance (Upper Pathway ID 68)
+    const luma2TargetX = 1410;
+    const luma2TargetY = 1074;
     this.luma2Pos = { x: luma2TargetX, y: luma2TargetY };
-
-    this.hasTriggeredLumaSecondAppearance = activeCache.luma_second_appearance_done || false;
 
     this.triggerLumaSecondAppearance = () => {
       if (this.hasTriggeredLumaSecondAppearance) return;
@@ -935,14 +974,131 @@ export class CampoLunanScene extends Phaser.Scene {
         this.player.sprite.anims.stop();
       }
 
-      // Create Luma sprite (initially hidden) at target position
-      const luma2Sprite = this.physics.add.sprite(luma2TargetX, luma2TargetY, "luma-idle");
+      const luma2Sprite = this.luma2PersistentSprite || this.physics.add.sprite(luma2TargetX, luma2TargetY, "luma-idle");
       luma2Sprite.setScale(0.3);
       luma2Sprite.setDepth(luma2Sprite.y);
-      luma2Sprite.setImmovable(true);
-      luma2Sprite.setVisible(false);
-      luma2Sprite.setAlpha(0);
 
+      // Camera shake & sound effect
+      this.cameras.main.shake(350, 0.004);
+      if (this.audioManager) {
+        this.audioManager.playLumaSwishSfx();
+      }
+
+      const lumaSecondDialogues = [
+        { speaker: "Vino", text: "This place..." },
+        { speaker: "Vino", text: "It feels..." },
+        { speaker: "Vino", text: "Broken." },
+        { speaker: "Luma", text: "It wasn't always." },
+        { speaker: "Luma", text: "There was a time when every lantern burned brightly." },
+        { speaker: "Luma", text: "Every grave carried a name." },
+        { speaker: "Luma", text: "And every soul found peace." },
+        { speaker: "Vino", text: "What happened?" },
+        { speaker: "Luma", text: "..." },
+        { speaker: "Luma", text: "Memories were forgotten." },
+        { speaker: "Luma", text: "When a story disappears..." },
+        { speaker: "Luma", text: "So does the soul." },
+        { speaker: "Vino", text: "Can they be saved?" },
+        { speaker: "Luma", text: "They can. But not by force. Only by remembering." },
+        { speaker: "Vino", text: "What do I have to do?" },
+        { speaker: "Luma", text: "A soul's memory is shattered into glowing glass fragments." },
+        { speaker: "Luma", text: "To save a soul, you must break its glass seals and restore its scattered fragments." },
+        { speaker: "Luma", text: "Here... let me show you how to face a fragment." }
+      ];
+
+      let step = 0;
+      const runDialogue = () => {
+        if (step < lumaSecondDialogues.length) {
+          const current = lumaSecondDialogues[step];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            step++;
+            runDialogue();
+          });
+        } else {
+          this.dialogue.hide();
+          this.dialogueActive = false;
+
+          if (this.audioManager) {
+            this.audioManager.playLumaSwishSfx();
+          }
+
+          // Create practice fragment sprite
+          if (!this.anims.exists("fragment-idle-anim")) {
+            this.anims.create({
+              key: "fragment-idle-anim",
+              frames: this.anims.generateFrameNumbers("fragment-idle"),
+              frameRate: 6,
+              repeat: -1,
+            });
+          }
+
+          const fragment = this.add.sprite(luma2TargetX - 35, luma2TargetY + 15, "fragment-idle");
+          fragment.setScale(0);
+          fragment.setDepth(luma2Sprite.y + 1);
+          fragment.play("fragment-idle-anim");
+
+          this.tweens.add({
+            targets: fragment,
+            scaleX: 32 / 64,
+            scaleY: 32 / 64,
+            duration: 800,
+            ease: "Back.easeOut"
+          });
+
+          // Play shattered glass transition & auto-dive into tutorial!
+          this.time.delayedCall(800, () => {
+            TransitionSystem.shatteredGlassTransition(this, () => {
+              if (this.audioManager) this.audioManager.stopMusic();
+              if (this.lumaGuidanceBox) this.lumaGuidanceBox.hide();
+              if (this.interactionPrompt) this.interactionPrompt.hide();
+              if (this.hud) this.hud.setPauseVisible(false);
+              if (this.objectiveArrow) this.objectiveArrow.setVisible(false);
+
+              this.scene.pause();
+              this.scene.launch("tutorial-bullet-hell", {
+                returnScene: "CampoLunanScene",
+                onComplete: () => {
+                  const cache = getCache() || {};
+                  cache.has_completed_tutorial = true;
+                  setCache(cache);
+
+                  this.scene.stop("tutorial-bullet-hell");
+                  this.scene.resume("CampoLunanScene");
+                  if (this.luma2PersistentSprite) this.luma2PersistentSprite.destroy();
+                  if (fragment) fragment.destroy();
+                  if (this.hud) this.hud.setPauseVisible(true);
+                  if (this.lumaGuidanceBox) this.lumaGuidanceBox.show();
+                  this.triggerPostTutorialSequence();
+                }
+              });
+            });
+          });
+        }
+      };
+      runDialogue();
+    };
+
+
+
+
+
+    this.triggerPostTutorialSequence = () => {
+      const activeCache = getCache() || {};
+      if (activeCache.played_post_tutorial_dialogue) return;
+      activeCache.played_post_tutorial_dialogue = true;
+      setCache(activeCache);
+
+      this.dialogueActive = true;
+      if (this.player?.sprite?.body) {
+        this.player.sprite.body.setVelocity(0);
+        this.player.sprite.anims.stop();
+      }
+
+      const px = this.player?.sprite?.x || 1410;
+      const py = this.player?.sprite?.y || 1074;
+
+      const postLuma = this.physics.add.sprite(px + 36, py - 40, "luma-idle");
+      postLuma.setScale(0.3);
+      postLuma.setDepth(postLuma.y);
       if (!this.anims.exists("luma-idle-anim")) {
         this.anims.create({
           key: "luma-idle-anim",
@@ -951,134 +1107,47 @@ export class CampoLunanScene extends Phaser.Scene {
           repeat: -1
         });
       }
-      luma2Sprite.play("luma-idle-anim");
+      postLuma.play("luma-idle-anim");
 
-      // Glowing effect
-      if (this.cameras.main.postFX) {
-        const glow = luma2Sprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
-        this.tweens.add({
-          targets: glow,
-          outerStrength: 1.3,
-          innerStrength: 0.9,
-          duration: 1200,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut"
-        });
-      }
+      const postTutorialDialogues = [
+        { speaker: "Luma", text: "Well done, Vino. You now know how to shatter the glass seals and restore a soul's memory." },
+        { speaker: "Luma", text: "Now, walk among the forgotten graves. Listen to those left behind... restore what has been scattered." }
+      ];
 
-      // Camera shake & sound effect
-      this.cameras.main.shake(350, 0.004);
-      if (this.audioManager) {
-        if (typeof this.audioManager.playLumaSwishSfx === "function") {
-          this.audioManager.playLumaSwishSfx();
-        } else if (typeof this.audioManager.playLumaSwish === "function") {
-          this.audioManager.playLumaSwish();
-        }
-      }
+      let postStep = 0;
+      const runPostDialogue = () => {
+        if (postStep < postTutorialDialogues.length) {
+          const current = postTutorialDialogues[postStep];
+          this.dialogue.showText(current.speaker, current.text, () => {
+            postStep++;
+            runPostDialogue();
+          });
+        } else {
+          this.dialogue.hide();
+          this.dialogueActive = false;
 
-      // Crystal spark particles gathering
-      if (!this.textures.exists("crystal-spark")) {
-        const g = this.make.graphics({ x: 0, y: 0 });
-        g.fillStyle(0xffffff, 1);
-        g.fillRect(0, 0, 4, 4);
-        g.generateTexture("crystal-spark", 4, 4);
-        g.destroy();
-      }
-
-      const emitter = this.add.particles(luma2TargetX, luma2TargetY, "crystal-spark", {
-        speed: { min: 15, max: 50 },
-        angle: { min: 0, max: 360 },
-        scale: { start: 1.5, end: 0 },
-        alpha: { start: 0.8, end: 0 },
-        tint: [0x50c0ff, 0xbc80ff, 0xffffff],
-        lifespan: 1200,
-        quantity: 3,
-        frequency: 45,
-        maxParticles: 35,
-        blendMode: "SCREEN"
-      });
-      emitter.setDepth(luma2Sprite.y + 1);
-
-      // Fade in Luma
-      luma2Sprite.setVisible(true);
-      this.tweens.add({
-        targets: luma2Sprite,
-        alpha: 1,
-        duration: 1500,
-        onComplete: () => {
-          emitter.destroy();
-
-          const lumaSecondDialogues = [
-            { speaker: "Vino", text: "This place..." },
-            { speaker: "Vino", text: "It feels..." },
-            { speaker: "Vino", text: "Broken." },
-            { speaker: "Luma", text: "It wasn't always." },
-            { speaker: "Luma", text: "There was a time when every lantern burned brightly." },
-            { speaker: "Luma", text: "Every grave carried a name." },
-            { speaker: "Luma", text: "And every soul found peace." },
-            { speaker: "Vino", text: "What happened?" },
-            { speaker: "Luma", text: "..." },
-            { speaker: "Luma", text: "Memories were forgotten." },
-            { speaker: "Luma", text: "When a story disappears..." },
-            { speaker: "Luma", text: "So does the soul." },
-            { speaker: "Vino", text: "Can they be saved?" },
-            { speaker: "Luma", text: "They can." },
-            { speaker: "Luma", text: "But not by force." },
-            { speaker: "Luma", text: "Only by remembering." },
-            { speaker: "Vino", text: "What do I have to do?" },
-            { speaker: "Luma", text: "Walk among the graves." },
-            { speaker: "Luma", text: "Listen to those left behind." },
-            { speaker: "Luma", text: "Restore what has been scattered." },
-            { speaker: "Luma", text: "When enough memories return..." },
-            { speaker: "Luma", text: "The soul will remember its own name." },
-            { speaker: "Vino", text: "And then?" },
-            { speaker: "Luma", text: "They may finally rest." },
-            { speaker: "Vino", text: "Have you done this before?" },
-            { speaker: "Luma", text: "..." },
-            { speaker: "Luma", text: "For longer than I care to remember." }
-          ];
-
-          let step = 0;
-          const runDialogue = () => {
-            if (step < lumaSecondDialogues.length) {
-              const current = lumaSecondDialogues[step];
-              this.dialogue.showText(current.speaker, current.text, () => {
-                step++;
-                runDialogue();
-              });
-            } else {
-              // Dialogue complete: sound FX & fade out
-              this.dialogue.hide();
-              this.dialogueActive = false;
-
-              if (this.audioManager) {
-                if (typeof this.audioManager.playLumaSwishSfx === "function") {
-                  this.audioManager.playLumaSwishSfx();
-                } else if (typeof this.audioManager.playLumaSwish === "function") {
-                  this.audioManager.playLumaSwish();
-                }
-              }
-
-              this.tweens.add({
-                targets: luma2Sprite,
-                alpha: 0,
-                duration: 1600,
-                onComplete: () => {
-                  luma2Sprite.destroy();
-
-                  this.hasTriggeredLumaSecondAppearance = true;
-                  const freshCache = getCache() || {};
-                  freshCache.luma_second_appearance_done = true;
-                  setCache(freshCache);
-                  this.updateLumaObjective();
-                  this.saveProgress();
-                }
-              });
+          if (this.audioManager) {
+            if (typeof this.audioManager.playLumaSwishSfx === "function") {
+              this.audioManager.playLumaSwishSfx();
+            } else if (typeof this.audioManager.playLumaSwish === "function") {
+              this.audioManager.playLumaSwish();
             }
-          };
-          runDialogue();
+          }
+
+          this.tweens.add({
+            targets: postLuma,
+            alpha: 0,
+            duration: 1400,
+            onComplete: () => {
+              postLuma.destroy();
+              this.updateLumaObjective();
+            }
+          });
         }
+      };
+
+      this.time.delayedCall(400, () => {
+        runPostDialogue();
       });
     };
 
@@ -1086,6 +1155,8 @@ export class CampoLunanScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-E", () => {
       if (this.dialogueActive) {
         this.dialogue.onComplete();
+      } else if (this.isNearLuma2) {
+        this.triggerLumaSecondAppearance();
       } else if (this.isNearGrave) {
         triggerGraveDialogue();
       } else if (this.isNearCreatures) {
@@ -1110,12 +1181,22 @@ export class CampoLunanScene extends Phaser.Scene {
       }
     });
 
+    this.events.on("resume", () => {
+      this.cameras.main.fadeIn(300, 0, 0, 0);
+      if (this.transitionFadeBlack) {
+        this.transitionFadeBlack.destroy();
+        this.transitionFadeBlack = null;
+      }
+    });
+
+    this.cameras.main.fadeIn(500, 0, 0, 0);
     this.game.events.emit("game-ready");
   }
 
   async saveProgress() {
+    if (window.isExplorationMode) return;
     const cache = getCache();
-    if (!cache || !cache.player_id || !this.player?.sprite) return;
+    if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
 
     const state = {
       current_world: "Lunan",
@@ -1247,12 +1328,11 @@ export class CampoLunanScene extends Phaser.Scene {
       this.luma2Pos.y,
     ) : Infinity;
 
-    if (distLuma2 < 60 && !this.hasTriggeredLumaSecondAppearance) {
+    const currentCache = getCache() || {};
+    if (distLuma2 < 100 && !currentCache.has_completed_tutorial && !this.hasTriggeredLumaSecondAppearance) {
       this.triggerLumaSecondAppearance();
       return;
     }
-
-    this.isNearCreatures = distMid < 55 || distFrog < 45 || distShroom < 45;
 
     if (nearestDist < 80) {
       nearGrave = true;
@@ -1282,14 +1362,25 @@ export class CampoLunanScene extends Phaser.Scene {
     // Update Objective Compass Arrow
     if (this.objectiveArrow && this.player && this.player.sprite) {
       const activeCache = getCache() || {};
-      const talkedLuma2 = activeCache.luma_second_appearance_done || this.hasTriggeredLumaSecondAppearance;
-      const grave1 = this.graveClusters?.find(c => c.isGrave1);
+      const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
+      const completedTutorial = activeCache.has_completed_tutorial;
 
-      if (talkedLuma2 && grave1) {
+      let targetX = null;
+      let targetY = null;
+
+      if (completedTutorial) {
+        const grave1 = this.graveClusters?.find(c => c.isGrave1);
+        if (grave1) {
+          targetX = grave1.x;
+          targetY = grave1.y;
+        }
+      }
+
+      if (targetX !== null && targetY !== null) {
         this.objectiveArrow.setVisible(true);
         const px = this.player.sprite.x;
         const py = this.player.sprite.y;
-        const angle = Phaser.Math.Angle.Between(px, py, grave1.x, grave1.y);
+        const angle = Phaser.Math.Angle.Between(px, py, targetX, targetY);
         
         const radius = 35;
         this.objectiveArrow.x = px + Math.cos(angle) * radius;
@@ -1308,10 +1399,10 @@ export class CampoLunanScene extends Phaser.Scene {
 
     const activeCache = getCache() || {};
     const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
-    const talkedLuma2 = activeCache.luma_second_appearance_done || this.hasTriggeredLumaSecondAppearance;
+    const completedTutorial = activeCache.has_completed_tutorial;
 
-    if (talkedLuma2) {
-      // Objective after 2nd Luma interaction
+    if (completedTutorial) {
+      // Objective after completing tutorial
       this.lumaGuidanceBox.update(
         "Seek the Forgotten Graves & Restore Lost Souls",
         "<em>\"Walk among the graves. Listen to those left behind... restore what has been scattered.\"</em>",
@@ -1319,11 +1410,11 @@ export class CampoLunanScene extends Phaser.Scene {
       );
       this.lumaGuidanceBox.show();
     } else if (talkedLuma1) {
-      // Objective after 1st Luma interaction
+      // Objective after 1st Luma interaction (before tutorial)
       this.lumaGuidanceBox.update(
-        "Explore Campo Lunan & Discover Your Purpose",
-        "<em>\"Listen closely to the whispers of this place... you will understand in time.\"</em>",
-        "AWAKENING PURPOSE"
+        "Find Luma at the Upper Pathway & Learn to Face Echoes",
+        "<em>\"Luma is waiting for you near the upper graveyard path...\"</em>",
+        "LESSON OF THE ECHOES"
       );
       this.lumaGuidanceBox.show();
     } else {

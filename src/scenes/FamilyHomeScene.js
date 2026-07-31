@@ -377,8 +377,9 @@ export class FamilyHomeScene extends Phaser.Scene {
   }
 
   async saveProgress() {
+    if (window.isExplorationMode) return;
     const cache = getCache();
-    if (!cache || !cache.player_id || !this.player?.sprite) return;
+    if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
 
     const state = {
       current_world: "Lunan",

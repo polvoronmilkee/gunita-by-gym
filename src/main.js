@@ -254,6 +254,7 @@ function startGame(initialScene, loadingOptions = {}) {
 
 window.startGunitaGame = startGame;
 window.returnToGunitaMenu = () => {
+  window.isExplorationMode = false;
   loadingScreen.setContent({
     title: "RETURNING",
     subtitle: "BACK TO MAIN MENU",
@@ -300,15 +301,7 @@ document.getElementById("enter-campo-lunan")?.addEventListener("click", () => {
 });
 
 document.getElementById("tale-untold")?.addEventListener("click", () => {
-  setCache({
-    player_id: "explorer",
-    username: "Wanderer",
-    is_exploration_mode: true,
-    current_world: "Lunan",
-    current_area: "Campo Lunan",
-    position_x: 320,
-    position_y: 360,
-  });
+  window.isExplorationMode = true;
   startGame("CampoLunanScene");
 });
 
@@ -444,8 +437,9 @@ continueConfirmBtn?.addEventListener("click", async () => {
       inventory_id: player.inventory_id,
       current_world: state.current_world || "Lunan",
       current_area: state.current_area || "Campo Lunan",
-      position_x: state.position_x !== undefined ? state.position_x : 320,
-      position_y: state.position_y !== undefined ? state.position_y : 360,
+      position_x: state.has_completed_tutorial && state.position_x !== undefined ? state.position_x : 1278,
+      position_y: state.has_completed_tutorial && state.position_y !== undefined ? state.position_y : 1779,
+      has_completed_tutorial: state.has_completed_tutorial || false,
     });
 
     hideContinueModal();

@@ -584,6 +584,46 @@ export class TutorialBulletHell extends BaseBulletHellScene {
     });
   }
 
+  victorySequence() {
+    this.cleanupProjectiles();
+    this.state = "VICTORY";
+    if (this.soul) {
+      this.soul.clear();
+      this.soul.destroy();
+      this.soul = null;
+    }
+
+    this.crystalIdleTween?.pause();
+    this.crystalAngryTween?.pause();
+    this.crystalEnemy?.setTint(0xffffff);
+
+    this.clearTextAndTimers();
+
+    import("../save.js").then(({ getCache, setCache }) => {
+      const cache = getCache() || {};
+      cache.has_completed_tutorial = true;
+      setCache(cache);
+    });
+
+    this.tweens.add({
+      targets: this.crystalEnemy,
+      scaleX: 0,
+      scaleY: 0,
+      alpha: 0,
+      duration: 1000,
+      ease: "Back.easeIn",
+      onComplete: () => {
+        if (this.audioManager) this.audioManager.stopMusic();
+        if (this.onCompleteCallback) {
+          this.onCompleteCallback();
+        } else {
+          this.scene.stop();
+          this.scene.resume("CampoLunanScene");
+        }
+      }
+    });
+  }
+
   updateCustomPatterns(timeSec, dtSec) {
     // Dynamic speech bubble removed from here, drawn in showLumaDialogue instead
   }
