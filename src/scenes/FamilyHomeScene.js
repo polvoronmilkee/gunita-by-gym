@@ -33,6 +33,7 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.load.spritesheet("vino-moving-left", "src/assets/vino-spritesheets/vino-moving-left.png", { frameWidth: 208, frameHeight: 237 });
     this.load.spritesheet("vino-moving-right", "src/assets/vino-spritesheets/vino-moving-right.png", { frameWidth: 208, frameHeight: 237 });
     this.load.spritesheet("vino-moving-down", "src/assets/vino-spritesheets/vino-moving-down.png", { frameWidth: 208, frameHeight: 237 });
+    this.load.spritesheet("sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", { frameWidth: 40, frameHeight: 43 });
   }
 
   create(data) {
@@ -125,7 +126,20 @@ export class FamilyHomeScene extends Phaser.Scene {
     const collisionLayer = map.getObjectLayer("Object Layer 1");
     if (collisionLayer && collisionLayer.objects) {
       collisionLayer.objects.forEach((obj) => {
-        if (obj.width && obj.height) {
+        if (obj.id === 53 || obj.name === "sick-wife") {
+          this.sickWifeSprite = this.physics.add.sprite(obj.x + (obj.width || 0) / 2, obj.y - (obj.height || 0) / 2, "sick-wife");
+          this.sickWifeSprite.setDepth(this.sickWifeSprite.y);
+          this.sickWifeSprite.setImmovable(true);
+          if (!this.anims.exists("sick-wife-idle")) {
+            this.anims.create({
+              key: "sick-wife-idle",
+              frames: this.anims.generateFrameNumbers("sick-wife", { start: 6, end: 7 }),
+              frameRate: 5,
+              repeat: -1
+            });
+          }
+          this.sickWifeSprite.play("sick-wife-idle");
+        } else if (obj.width && obj.height) {
           const rect = this.add.rectangle(
             obj.x + obj.width / 2,
             obj.y + obj.height / 2,
@@ -134,6 +148,26 @@ export class FamilyHomeScene extends Phaser.Scene {
           );
           this.physics.add.existing(rect, true);
           this.collisionGroup.add(rect);
+        }
+      });
+    }
+
+    const charsLayer = map.getObjectLayer("chars");
+    if (charsLayer && charsLayer.objects) {
+      charsLayer.objects.forEach((obj) => {
+        if (obj.id === 53 || obj.name === "sick-wife") {
+          this.sickWifeSprite = this.physics.add.sprite(obj.x + (obj.width || 0) / 2, obj.y - (obj.height || 0) / 2, "sick-wife");
+          this.sickWifeSprite.setDepth(this.sickWifeSprite.y);
+          this.sickWifeSprite.setImmovable(true);
+          if (!this.anims.exists("sick-wife-idle")) {
+            this.anims.create({
+              key: "sick-wife-idle",
+              frames: this.anims.generateFrameNumbers("sick-wife", { start: 6, end: 7 }),
+              frameRate: 5,
+              repeat: -1
+            });
+          }
+          this.sickWifeSprite.play("sick-wife-idle");
         }
       });
     }
@@ -199,6 +233,9 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
 
     this.physics.add.collider(this.player.sprite, this.collisionGroup);
+    if (this.sickWifeSprite) {
+      this.physics.add.collider(this.player.sprite, this.sickWifeSprite);
+    }
 
     CameraSystem.configureMainCamera(this, this.worldWidth, this.worldHeight);
     this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
