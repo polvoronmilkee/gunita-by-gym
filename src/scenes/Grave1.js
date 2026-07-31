@@ -1731,9 +1731,9 @@ export class Grave1 extends Phaser.Scene {
         this.audioManager?.stopRainThunder();
       }
 
-      // Smooth Darkening Transition for Scary Forest Effect (ID 512)
+      // Smooth Darkening Transition for Scary Forest Effect (ID 512) and Wasteland (ID 509)
       if (this.forestDarkOverlay) {
-        const targetAlpha = inForest ? 0.72 : 0;
+        const targetAlpha = (inForest || inWasteland) ? 0.72 : 0;
         this.forestDarkOverlay.alpha = Phaser.Math.Linear(this.forestDarkOverlay.alpha, targetAlpha, 0.05);
       }
 
