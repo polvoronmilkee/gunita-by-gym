@@ -1412,7 +1412,7 @@ export class Grave1 extends Phaser.Scene {
           { speaker: "Luma", text: "Our first journey begins here." },
           { speaker: "Vino", text: "This place feels... empty." },
           { speaker: "Luma", text: "Memories fade from their edges first. We mustn't let them disappear." },
-          { speaker: "Luma", text: "Head north-west. An old fisherman waits at the Eastern Pier." },
+          { speaker: "Luma", text: "Head north-west. An old fisherman waits at the North Eastern Pier." },
           { speaker: "Vino", text: "Got it. I'll find him." },
           { speaker: "Luma", text: "Listen more than you speak, Vino... Every memory has something to teach." },
           { speaker: "Luma", text: "...And Vino." },
@@ -1550,7 +1550,7 @@ export class Grave1 extends Phaser.Scene {
     } else {
       // Objective 1 (Entering the Memory)
       title = "LUMA'S GUIDANCE";
-      objective = "Reach the Eastern Pier.";
+      objective = "Reach the North Eastern Pier.";
       hint = "An old fisherman waits at the<br/>Fishing Dock. Listen before<br/>you search.";
     }
 
