@@ -99,12 +99,29 @@ export class Grave1 extends Phaser.Scene {
         frameWidth: npc.fw, frameHeight: npc.fh
       });
     });
-    this.load.spritesheet("npc-sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", {
-      frameWidth: 40, frameHeight: 43
+    const newNpcList = [
+      { key: "man-mowing", file: "man-mowing.png", fw: 40, fh: 43 },
+      { key: "man-mowing-2", file: "man-mowing-2.png", fw: 40, fh: 43 },
+      { key: "man-searching", file: "man-searching.png", fw: 40, fh: 43 },
+      { key: "man-talking", file: "man-talking.png", fw: 40, fh: 43 },
+      { key: "mang-tomas", file: "mang-tomas.png", fw: 40, fh: 43 },
+      { key: "sick-wife", file: "sick-wife.png", fw: 40, fh: 43 },
+      { key: "woman-picking-flowers", file: "woman-picking-flowers.png", fw: 40, fh: 43 },
+      { key: "woman-searching", file: "woman-searching.png", fw: 40, fh: 43 },
+      { key: "woman-thinking", file: "woman-thinking.png", fw: 40, fh: 43 },
+      { key: "woman-with-broom", file: "woman-with-broom.png", fw: 40, fh: 43 },
+    ];
+    newNpcList.forEach(npc => {
+      this.load.spritesheet(`npc-${npc.key}`, `src/assets/grave1-v2/more-characters/${npc.file}`, {
+        frameWidth: npc.fw, frameHeight: npc.fh
+      });
     });
-    this.load.spritesheet("npc-man-mowing", "src/assets/grave1-v2/more-characters/man-mowing.png", {
-      frameWidth: 40, frameHeight: 43
-    });
+    if (!this.textures.exists("luma-idle")) {
+      this.load.spritesheet("luma-idle", "src/assets/luma-idle-spritesheet.png", {
+        frameWidth: 200,
+        frameHeight: 200,
+      });
+    }
     this.load.image("fish-basket", "src/assets/grave1-elements/fragments-uncovered/fish-basket.png");
 
     // Load player animations sheets
@@ -468,7 +485,29 @@ export class Grave1 extends Phaser.Scene {
       "npc-RANDOM-WOMAN": "random-woman",
       "npc-DEBT-COLLECTOR": "debt-collector",
       "npc-SICK-WFE": "sick-wife",
-      "man-mowing": "man-mowing"
+      "man-mowing": "man-mowing",
+      "man-mowing-2": "man-mowing-2",
+      "man-searching": "man-searching",
+      "man-talking": "man-talking",
+      "mang-tomas": "mang-tomas",
+      "sick-wife": "sick-wife",
+      "woman-picking-flowers": "woman-picking-flowers",
+      "woman-searching": "woman-searching",
+      "woman-thinking": "woman-thinking",
+      "woman-with-broom": "woman-with-broom",
+    };
+
+    const newNpcFrameCounts = {
+      "man-mowing": 3,
+      "man-mowing-2": 3,
+      "man-searching": 4,
+      "man-talking": 4,
+      "mang-tomas": 16,
+      "sick-wife": 8,
+      "woman-picking-flowers": 3,
+      "woman-searching": 3,
+      "woman-thinking": 4,
+      "woman-with-broom": 3,
     };
 
     // Get CHARS_SPAWNS layer from map
@@ -476,71 +515,74 @@ export class Grave1 extends Phaser.Scene {
     
     if (charsSpawnLayer && charsSpawnLayer.objects) {
       charsSpawnLayer.objects.forEach(obj => {
-        // Skip polygon objects, only process point objects
-        if (obj.polygon || !obj.point) {
+        // Skip polygon objects, non-point objects, or non-NPC markers
+        if (obj.polygon || !obj.point || obj.name === "vino-start" || obj.name === "luma-final-spawn" || obj.name === "FOREST-LUMA") {
           return;
         }
 
         const charName = obj.name;
-        const spriteKey = characterNameMap[charName];
+        const cleanedName = charName.replace(/-\d+$/, '');
+        let spriteKey = characterNameMap[charName] || characterNameMap[cleanedName] || cleanedName;
         
-        if (spriteKey) {
-              if (spriteKey === "man-mowing") return;
+        // Fallback if specific key like man-mowing-2 isn't preloaded
+        if (!this.textures.exists(`npc-${spriteKey}`) && this.textures.exists(`npc-${cleanedName}`)) {
+          spriteKey = cleanedName;
+        }
 
+        if (this.textures.exists(`npc-${spriteKey}`)) {
           const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
           const npc = this.npcs.create(pos.x, pos.y, `npc-${spriteKey}`);
           npc.setDepth(pos.y);
-          if (npc.body) {
-            npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
-            npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
-          }
 
-          const animKey = `npc-anim-${spriteKey}`;
-          if (!this.anims.exists(animKey)) {
-            this.anims.create({
-              key: animKey,
-              frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: 3 }),
-              frameRate: 4,
-              repeat: -1
-            });
+          const isNewCharacter = newNpcFrameCounts[spriteKey] !== undefined;
+
+          if (isNewCharacter) {
+            // Scale 0.8 so 40x43 sprites match standard 32x42 character sizes
+            npc.setScale(0.8);
+            if (npc.body) {
+              npc.body.setSize(npc.width * 0.7, npc.height * 0.4);
+              npc.body.setOffset(npc.width * 0.15, npc.height * 0.5);
+            }
+
+            const frameCount = newNpcFrameCounts[spriteKey];
+            const animKey = `npc-anim-${spriteKey}`;
+            if (!this.anims.exists(animKey)) {
+              let startFrame = 0;
+              let endFrame = frameCount - 1;
+              if (spriteKey === "sick-wife") {
+                startFrame = 6;
+                endFrame = 7;
+              }
+              this.anims.create({
+                key: animKey,
+                frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: startFrame, end: endFrame }),
+                frameRate: 4,
+                repeat: -1
+              });
+            }
+            npc.play(animKey);
+          } else {
+            if (npc.body) {
+              npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
+              npc.body.setOffset(npc.width * 0.15, npc.height * 0.5);
+            }
+
+            const animKey = `npc-anim-${spriteKey}`;
+            if (!this.anims.exists(animKey)) {
+              this.anims.create({
+                key: animKey,
+                frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: 0, end: 3 }),
+                frameRate: 4,
+                repeat: -1
+              });
+            }
+            npc.setFrame(0);
           }
-          npc.setFrame(0); // Set to default frame (face down) instead of spinning
         } else {
           console.warn(`Unknown character name in CHARS_SPAWNS: ${charName}`);
         }
       });
     }
-
-    // Explicitly spawn man-mowing at ID 517 only
-    const spawnedIds = new Set();
-    const mapObjects = map.objects || [];
-    mapObjects.forEach(layer => {
-      if (layer && layer.objects) {
-        layer.objects.forEach(obj => {
-          if (obj.id === 517 && !spawnedIds.has(obj.id)) {
-            spawnedIds.add(obj.id);
-            const pos = this.getNearestLandCoordinate(obj.x, obj.y, map);
-            const npc = this.npcs.create(pos.x, pos.y, "npc-man-mowing");
-            npc.setDepth(pos.y);
-            if (npc.body) {
-              npc.body.setSize(npc.width * 0.8, npc.height * 0.5);
-              npc.body.setOffset(npc.width * 0.1, npc.height * 0.5);
-            }
-
-            const animKey = "npc-anim-man-mowing";
-            if (!this.anims.exists(animKey)) {
-              this.anims.create({
-                key: animKey,
-                frames: this.anims.generateFrameNumbers("npc-man-mowing", { start: 0, end: 2 }),
-                frameRate: 5,
-                repeat: -1
-              });
-            }
-            npc.play(animKey);
-          }
-        });
-      }
-    });
 
     this.physics.add.collider(this.player.sprite, this.npcs);
     
@@ -976,9 +1018,9 @@ export class Grave1 extends Phaser.Scene {
     // Advance dialogue with key down events
     const handleInteract = () => {
       if (this.scene.isPaused()) return;
-      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
-        this.dialogue.onComplete();
-      } else if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
+      if (this.dialogueActive) return;
+
+      if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
         let riddleData, artifactKey, dialogueText, sceneKey, bgKey;
         if (this.storyStage === 1) {
           riddleData = this.cache.json.get("riddle-fish-basket");
@@ -1381,28 +1423,38 @@ export class Grave1 extends Phaser.Scene {
     }
     this.dialogue.hide();
 
-    const spawnX = this.player.sprite.x;
-    const spawnY = this.player.sprite.y;
+    try {
+      const spawnX = this.player.sprite.x;
+      const spawnY = this.player.sprite.y;
 
-    const lumaLand = this.getNearestLandCoordinate(spawnX + 36, spawnY - 30, this.map);
+      const lumaLand = this.getNearestLandCoordinate(spawnX + 36, spawnY - 30, this.map);
 
-    // Create Luma sprite (initially hidden/invisible) near Vino (matches Campo Lunan positioning)
-    this.lumaSprite = this.physics.add.sprite(lumaLand.x, lumaLand.y, "luma-idle");
-    this.lumaSprite.setScale(0.3); // matches Vino's scale/proportion
-    this.lumaSprite.setDepth(this.lumaSprite.y);
-    this.lumaSprite.setImmovable(true);
-    this.lumaSprite.setVisible(false);
-    this.lumaSprite.setAlpha(0);
+      // Create Luma sprite (initially hidden/invisible) near Vino (matches Campo Lunan positioning)
+      this.lumaSprite = this.physics.add.sprite(lumaLand.x, lumaLand.y, "luma-idle");
+      this.lumaSprite.setScale(0.3); // matches Vino's scale/proportion
+      this.lumaSprite.setDepth(this.lumaSprite.y);
+      this.lumaSprite.setImmovable(true);
+      this.lumaSprite.setVisible(false);
+      this.lumaSprite.setAlpha(0);
 
-    if (!this.anims.exists("luma-idle-anim")) {
-      this.anims.create({
-        key: "luma-idle-anim",
-        frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
-        frameRate: 5,
-        repeat: -1
-      });
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      this.lumaSprite.play("luma-idle-anim");
+    } catch (err) {
+      console.warn("Failed to create Luma intro sprite:", err);
+      this.dialogueActive = false;
+      if (this.lumaGuidanceBox) {
+        this.lumaGuidanceBox.show();
+        this.updateLumaGuidance();
+      }
+      return;
     }
-    this.lumaSprite.play("luma-idle-anim");
 
     // Add purple glowing effect to Luma (similar to Campo Lunan)
     if (this.cameras.main.postFX) {
@@ -1475,45 +1527,36 @@ export class Grave1 extends Phaser.Scene {
           { speaker: "Vino", text: "...I'll remember that." }
         ];
 
-        let step = 0;
-        const runDialogueStep = () => {
-          if (step < forestIntroDialogues.length) {
-            const current = forestIntroDialogues[step];
-            this.dialogue.showText(current.speaker, current.text, () => {
-              step++;
-              runDialogueStep();
-            });
-          } else {
-            // Dialogue complete: hide dialogue box, play sound, fade out Luma
-            this.dialogue.hide();
+        this.startDialogueSequence(forestIntroDialogues, () => {
+          this.dialogueActive = false;
 
-            if (this.audioManager) {
-              if (typeof this.audioManager.playLumaSwishSfx === "function") {
-                this.audioManager.playLumaSwishSfx();
-              } else if (typeof this.audioManager.playLumaSwish === "function") {
-                this.audioManager.playLumaSwish();
-              }
+          if (this.audioManager) {
+            if (typeof this.audioManager.playLumaSwishSfx === "function") {
+              this.audioManager.playLumaSwishSfx();
+            } else if (typeof this.audioManager.playLumaSwish === "function") {
+              this.audioManager.playLumaSwish();
             }
+          }
 
+          if (this.lumaSprite) {
             this.tweens.add({
               targets: this.lumaSprite,
               alpha: 0,
               duration: 1600,
               onComplete: () => {
-                this.lumaSprite.destroy();
-                this.dialogueActive = false;
-
-                // Show objective box
-                if (this.lumaGuidanceBox) {
-                  this.lumaGuidanceBox.show();
-                  this.updateLumaGuidance();
+                if (this.lumaSprite) {
+                  this.lumaSprite.destroy();
+                  this.lumaSprite = null;
                 }
               }
             });
           }
-        };
 
-        runDialogueStep();
+          if (this.lumaGuidanceBox) {
+            this.lumaGuidanceBox.show();
+            this.updateLumaGuidance();
+          }
+        });
       }
     });
   }
