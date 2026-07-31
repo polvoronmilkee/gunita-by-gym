@@ -11,6 +11,17 @@
   }
 }
 
+@keyframes shellGlow {
+0%,100%{
+box-shadow:
+0 0 30px rgba(181,127,238,.45),
+0 0 60px rgba(181,127,238,.22),
+0 0 90px rgba(45,212,191,.12),
+0 30px 80px rgba(0,0,0,.7);
+}
+  
+}
+
 @keyframes valueShine{
 
 0%{left:-70%;}
@@ -114,8 +125,9 @@ transform:rotate(360deg);
   padding: 32px 30px 28px 30px;
   color: #ecefff;
   font-family: 'VT323', monospace;
-  animation: artifactModalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  /* animation: artifactModalFadeIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; */
   overflow: hidden;
+  animation: shellGlow 4s ease-in-out infinite;
 }
 
 .artifact-modal-card::before {
