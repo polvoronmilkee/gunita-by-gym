@@ -11,6 +11,7 @@ import characterData from "../data/characters.json";
 import { AudioManager } from "../utils/audioManager.js";
 import { TransitionSystem } from "../systems/TransitionSystem.js";
 import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
+import { showArtifactClaimModal as displayArtifactClaimModal } from "../ui/ArtifactClaimModal.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -149,14 +150,24 @@ export class Grave1 extends Phaser.Scene {
   }
 
   create(data) {
-    // Hide and destroy portal loading screen if passed from previous scene
+    // Hide and destroy portal loading screen if passed from previous scene or left in DOM
+    const removeLoadingScreens = () => {
+      document.querySelectorAll(".gunita-portal-loading-screen").forEach(el => {
+        el.classList.add("hidden");
+        setTimeout(() => el.remove(), 400);
+      });
+    };
+
     if (data && data.loadingScreen) {
       setTimeout(() => {
         data.loadingScreen.hide();
         setTimeout(() => {
           data.loadingScreen.destroy();
-        }, 400); // Wait for CSS transition
-      }, 1000); // Wait a bit after scene is created before hiding
+          removeLoadingScreens();
+        }, 400);
+      }, 500);
+    } else {
+      removeLoadingScreens();
     }
 
     // Intercept Tiled map data to inline external TSX tileset metadata at runtime
@@ -1897,158 +1908,22 @@ export class Grave1 extends Phaser.Scene {
     console.log("[Grave1] showArtifactClaimModal called with artifactKey:", artifactKey);
     this.dialogueActive = true;
     
-    const modalBg = document.createElement("div");
-    modalBg.style.position = "fixed";
-    modalBg.style.top = "0";
-    modalBg.style.left = "0";
-    modalBg.style.width = "100vw";
-    modalBg.style.height = "100vh";
-    modalBg.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
-    modalBg.style.display = "flex";
-    modalBg.style.justifyContent = "center";
-    modalBg.style.alignItems = "center";
-    modalBg.style.zIndex = "9999999";
-    modalBg.style.backdropFilter = "blur(12px)";
-    modalBg.style.fontFamily = "'VT323', monospace";
-    modalBg.style.pointerEvents = "auto";
-    
-    const modalContent = document.createElement("div");
-    modalContent.style.backgroundColor = "rgba(20, 23, 43, 0.95)"; // dark-panel
-    modalContent.style.border = "3px solid #8b5dff"; // purple-secondary
-    modalContent.style.padding = "40px";
-    modalContent.style.borderRadius = "16px";
-    modalContent.style.textAlign = "center";
-    modalContent.style.boxShadow = "0 0 30px rgba(139, 93, 255, 0.5), inset 0 0 20px rgba(74, 234, 255, 0.1)";
-    modalContent.style.maxWidth = "550px";
-    modalContent.style.animation = "fadeInScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
-    
-    const title = document.createElement("h1");
-    title.style.color = "#ffd96b"; // gold-accent
-    title.style.margin = "0 0 25px 0";
-    title.style.textTransform = "uppercase";
-    title.style.fontSize = "36px";
-    title.style.textShadow = "0 0 15px #ffd96b, 0 4px 4px rgba(0,0,0,0.6)";
-    title.textContent = `${artifactKey.replace(/-/g, ' ')} CLAIMED!`;
-    
-    const imgContainer = document.createElement("div");
-    imgContainer.style.width = "180px";
-    imgContainer.style.height = "180px";
-    imgContainer.style.margin = "0 auto 25px auto";
-    imgContainer.style.display = "flex";
-    imgContainer.style.alignItems = "center";
-    imgContainer.style.justifyContent = "center";
-    imgContainer.style.background = "radial-gradient(circle, rgba(139, 93, 255, 0.3) 0%, rgba(10, 10, 20, 0.8) 75%)";
-    imgContainer.style.border = "2px dashed rgba(102, 230, 255, 0.5)";
-    imgContainer.style.borderRadius = "12px";
-    imgContainer.style.boxShadow = "inset 0 0 20px rgba(0,0,0,0.8), 0 0 20px rgba(102, 230, 255, 0.25)";
-
-    const img = document.createElement("img");
-    let imageSrc = `src/assets/grave1-elements/fragments-uncovered/${artifactKey}.png`;
-    if (artifactKey === 'weather-warning-flag') imageSrc = `src/assets/grave1-elements/fragments-uncovered/weather-flag-warning.png`;
-    img.src = imageSrc;
-    img.style.width = "130px";
-    img.style.height = "130px";
-    img.style.objectFit = "contain";
-    img.style.imageRendering = "pixelated";
-    img.style.imageRendering = "-moz-crisp-edges";
-    img.style.imageRendering = "crisp-edges";
-    img.style.filter = "drop-shadow(0 6px 12px rgba(0, 0, 0, 0.85))";
-    imgContainer.appendChild(img);
-    
-    const descriptions = {
-      "red-flag": "A torn piece of red fabric. It feels heavy with the memory of a distant warning.",
-      "fish-basket": "An old woven basket. The smell of the sea and echoes of a storm linger within.",
-      "rosary": "A wooden rosary, worn smooth by years of desperate prayer.",
-      "daughters-drawing": "A child's drawing, faded but preserved with immense love and grief."
-    };
-    
-    const desc = document.createElement("p");
-    desc.style.color = "#ecefff";
-    desc.style.fontSize = "22px";
-    desc.style.lineHeight = "1.6";
-    desc.style.margin = "0 0 40px 0";
-    desc.style.textShadow = "0 2px 4px rgba(0,0,0,0.8)";
-    desc.textContent = descriptions[artifactKey] || "An old memory artifact.";
-    
-    const continueBtn = document.createElement("button");
-    continueBtn.textContent = "CONTINUE";
-    continueBtn.style.padding = "12px 40px";
-    continueBtn.style.fontSize = "24px";
-    continueBtn.style.fontFamily = "'VT323', monospace";
-    continueBtn.style.backgroundColor = "transparent";
-    continueBtn.style.color = "#ecefff";
-    continueBtn.style.border = "2px solid #66e6ff"; // cyan-primary
-    continueBtn.style.borderRadius = "8px";
-    continueBtn.style.cursor = "pointer";
-    continueBtn.style.transition = "all 0.3s ease";
-    continueBtn.style.textShadow = "0 0 8px rgba(102, 230, 255, 0.5)";
-    continueBtn.style.boxShadow = "0 0 10px rgba(102, 230, 255, 0.2)";
-    
-    continueBtn.addEventListener("mouseover", () => {
-      continueBtn.style.backgroundColor = "rgba(102, 230, 255, 0.2)";
-      continueBtn.style.boxShadow = "0 0 20px rgba(102, 230, 255, 0.6)";
-      continueBtn.style.transform = "translateY(-2px)";
-    });
-    continueBtn.addEventListener("mouseout", () => {
-      continueBtn.style.backgroundColor = "transparent";
-      continueBtn.style.boxShadow = "0 0 10px rgba(102, 230, 255, 0.2)";
-      continueBtn.style.transform = "translateY(0)";
-    });
-    
-    const keydownHandler = (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        continueBtn.click();
-      }
-    };
-    document.addEventListener("keydown", keydownHandler);
-
-    continueBtn.addEventListener("click", () => {
-      document.removeEventListener("keydown", keydownHandler);
-      try {
-        if (this.audioManager) {
-          this.audioManager.playButtonSfx?.();
-        }
-      } catch (e) {
-        console.warn("Audio playButtonSfx error:", e);
-      }
-      if (modalBg && modalBg.parentNode) {
-        modalBg.parentNode.removeChild(modalBg);
-      }
-      this.dialogueActive = false;
-      if (onContinue) onContinue();
-    });
-    
-    modalContent.appendChild(title);
-    modalContent.appendChild(imgContainer);
-    modalContent.appendChild(desc);
-    modalContent.appendChild(continueBtn);
-    modalBg.appendChild(modalContent);
-    document.body.appendChild(modalBg);
-
-    if (!document.getElementById("modal-keyframes")) {
-      const style = document.createElement("style");
-      style.id = "modal-keyframes";
-      style.textContent = `
-        @keyframes fadeInScale {
-          0% { opacity: 0; transform: scale(0.9); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-      `;
-      document.head.appendChild(style);
-    }
-    
     try {
-      if (this.audioManager) {
-        if (typeof this.audioManager.playLumaSwishSfx === "function") {
-          this.audioManager.playLumaSwishSfx();
-        } else if (typeof this.audioManager.playLumaSwish === "function") {
-          this.audioManager.playLumaSwish();
-        }
+      if (this.audioManager && typeof this.audioManager.playLumaSwishSfx === "function") {
+        this.audioManager.playLumaSwishSfx();
       }
     } catch (e) {
-      console.warn("Could not play modal audio:", e);
+      console.warn("Audio playLumaSwishSfx error:", e);
     }
+
+    displayArtifactClaimModal(
+      artifactKey,
+      () => {
+        this.dialogueActive = false;
+        if (onContinue) onContinue();
+      },
+      this.audioManager
+    );
   }
 
   startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey, sceneKey) {

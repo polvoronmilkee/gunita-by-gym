@@ -2,12 +2,29 @@ import { getCache, setCache } from "../save.js";
 
 const API_BASE_URL = "http://localhost:3000";
 
-// Internal helper to check if server is reachable
+let isOnlineCache = null;
+let lastCheckTime = 0;
+
+// Internal helper to check if server is reachable (with 600ms timeout & cache)
 async function isServerOnline() {
+  const now = Date.now();
+  if (isOnlineCache !== null && (now - lastCheckTime < 5000)) {
+    return isOnlineCache;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 600);
+
   try {
-    const response = await fetch(`${API_BASE_URL}/`, { method: "GET" });
+    const response = await fetch(`${API_BASE_URL}/`, { method: "GET", signal: controller.signal });
+    clearTimeout(timeoutId);
+    isOnlineCache = response.ok;
+    lastCheckTime = now;
     return response.ok;
   } catch (err) {
+    clearTimeout(timeoutId);
+    isOnlineCache = false;
+    lastCheckTime = now;
     return false;
   }
 }
