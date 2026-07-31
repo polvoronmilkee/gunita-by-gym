@@ -39,11 +39,11 @@ export class PreloadScene extends Phaser.Scene {
     }
     this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
     this.load.image("bg-daughters-drawing", "src/assets/grave1-elements/bullet-scenes/daughters-drawing.png");
-    this.load.spritesheet("rain", "src/assets/grave1-v2/rain.png", {
+    this.load.spritesheet("rain", "src/assets/grave1-v2/rain-new-sprite.png", {
       frameWidth: 64,
       frameHeight: 64,
     });
-    this.load.image("rain-tile", "src/assets/grave1-v2/rain.png");
+    this.load.image("rain-tile", "src/assets/grave1-v2/rain-new-sprite.png");
     this.load.spritesheet("luma-idle", "src/assets/luma-idle-spritesheet.png", {
       frameWidth: 138.67,
       frameHeight: 193.67,

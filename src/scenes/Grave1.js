@@ -50,11 +50,11 @@ export class Grave1 extends Phaser.Scene {
     this.load.image('rosary', 'src/assets/grave1-elements/fragments-uncovered/rosary.png');
     this.load.image('daughters-drawing', 'src/assets/grave1-elements/fragments-uncovered/daughters-drawing.png');
     this.load.json('final-riddle', 'src/assets/data/dialogues/grave-1-final-riddle/final-riddle.json');
-    this.load.spritesheet('rain', 'src/assets/grave1-v2/rain.png', {
+    this.load.spritesheet('rain', 'src/assets/grave1-v2/rain-new-sprite.png', {
       frameWidth: 64,
       frameHeight: 64,
     });
-    this.load.image('rain-tile', 'src/assets/grave1-v2/rain.png');
+    this.load.image('rain-tile', 'src/assets/grave1-v2/rain-new-sprite.png');
 
     // Mappings for grave1-v2 tilesets
     const mappings = {
