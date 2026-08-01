@@ -59,6 +59,10 @@ export const AUDIO_SETTINGS = {
       path: new URL("../assets/sounds/music/GAMEPLAY_TUTORIAL.mp3", import.meta.url).href,
     },
     {
+      key: "forgotten-town",
+      path: new URL("../assets/sounds/music/forgotten_town.mp3", import.meta.url).href,
+    },
+    {
       key: "finale-fisherman",
       path: new URL("../assets/sounds/music/FINALESONGV2_fishermans_last_goodbye.mp3", import.meta.url).href,
     },

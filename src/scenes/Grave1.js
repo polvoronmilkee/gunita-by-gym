@@ -2144,11 +2144,25 @@ export class Grave1 extends Phaser.Scene {
         this.player.sprite.y
       );
 
-      // Rain and Thunder Audio SFX triggering when player is inside the Wasteland (ID 509) or Forest (ID 512)
+      // Rain and Thunder Audio SFX and Music switching when player is inside the Wasteland (ID 509) or Forest (ID 512)
       if (inWasteland || inForest) {
         this.audioManager?.playRainThunder();
+        
+        if (inForest) {
+          if (this.audioManager?.currentTrackKey !== "forest-2") {
+            this.audioManager?.playTrack("forest-2");
+          }
+        } else if (inWasteland) {
+          if (this.audioManager?.currentTrackKey !== "forgotten-town") {
+            this.audioManager?.playTrack("forgotten-town");
+          }
+        }
       } else {
         this.audioManager?.stopRainThunder();
+        
+        if (this.audioManager?.currentTrackKey !== "village-v1") {
+          this.audioManager?.playTrack("village-v1");
+        }
       }
 
       // Smooth Darkening Transition for Scary Forest Effect (ID 512)
@@ -2481,7 +2495,7 @@ export class Grave1 extends Phaser.Scene {
               if (this.physics && typeof this.physics.resume === 'function') {
                 this.physics.resume();
               }
-              this.audioManager?.playTrack("village-v1");
+              // Intentionally removed hardcoded playTrack
           },
           onComplete: () => {
               this.dialogueActive = false;
@@ -2507,7 +2521,7 @@ export class Grave1 extends Phaser.Scene {
               if (this.physics && typeof this.physics.resume === 'function') {
                 this.physics.resume();
               }
-              this.audioManager?.playTrack("village-v1");
+              // Intentionally removed hardcoded playTrack
               setTimeout(() => {
                 try {
                   onCorrect();
@@ -2527,12 +2541,22 @@ export class Grave1 extends Phaser.Scene {
               if (this.lumaGuidanceBox) {
                 this.lumaGuidanceBox.show();
               }
+              if (this.interactionPrompt) {
+                this.interactionPrompt.hide();
+              }
+              if (this.hud) {
+                this.hud.setPauseVisible(true);
+              }
+              if (this.transitionFadeBlack) {
+                this.transitionFadeBlack.destroy();
+                this.transitionFadeBlack = null;
+              }
               if (this.physics && typeof this.physics.resume === 'function') {
                 this.physics.resume();
               }
               this.scene.stop(activeScene);
               this.scene.resume();
-              this.audioManager?.playTrack("village-v1");
+              // Intentionally removed hardcoded playTrack
               
               const cache = getCache();
               if (cache && cache.player_id) {

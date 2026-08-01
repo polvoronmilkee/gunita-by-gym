@@ -68,6 +68,10 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.isPaused = false;
     this.soulColor = this.getSoulColor(); 
     this.soulRadius = 6;
+    
+    // Clear references to prevent crashes on scene restart
+    this.crystalEnemy = null;
+    this.soul = null;
   }
 
   // --- Methods meant to be overridden by children ---

@@ -22,6 +22,10 @@ export class TransitionSystem {
     scene.physics.pause();
     scene.sound.stopAll();
 
+    if (scene.textures.exists('screen-snapshot')) {
+      scene.textures.remove('screen-snapshot');
+    }
+
     if (!scene.textures.exists('crystal-spark')) {
       const g = scene.make.graphics({ x: 0, y: 0 });
       g.fillStyle(0xffffff, 1);
