@@ -177,6 +177,7 @@ export class Grave1 extends Phaser.Scene {
   }
 
   create(data) {
+    this.dialogue = null;
     // Hide and destroy portal loading screen if passed from previous scene or left in DOM
     const removeLoadingScreens = () => {
       document.querySelectorAll(".gunita-portal-loading-screen").forEach(el => {

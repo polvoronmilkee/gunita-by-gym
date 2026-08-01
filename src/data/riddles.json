@@ -566,1989 +566,1989 @@
   ],
   "fragment-red-warning-flag": [
     {
-      "question": "I dance in gales without moving my feet. Crimson in shade, I warn of dark waters ahead.",
+      "question": "I blow hard and make the trees sway.",
       "choices": [
-        "A) Warning Flag",
-        "B) Signal Flare",
-        "C) Buoy Beacon",
-        "D) Lighthouse Beam"
+        "Wind",
+        "Rain",
+        "Sun",
+        "Snow"
       ],
-      "answer": "A) Warning Flag",
+      "answer": "Wind",
       "difficulty": "easy"
     },
     {
-      "question": "I fall in heavy sheets from black skies, blurring the sea line from the shore.",
+      "question": "I fall in drops from the clouds to the earth.",
       "choices": [
-        "A) Sea Mist",
-        "B) Rain Squall",
-        "C) Ocean Spray",
-        "D) Cloud Veil"
+        "Rain",
+        "Snow",
+        "Hail",
+        "Wind"
       ],
-      "answer": "B) Rain Squall",
+      "answer": "Rain",
       "difficulty": "easy"
     },
     {
-      "question": "I flash bright silver across storm clouds before thunder speaks.",
+      "question": "I am a flash of bright light in the sky during a storm.",
       "choices": [
-        "A) Beacon Light",
-        "B) Signal Flare",
-        "C) Lightning Bolt",
-        "D) Solar Glare"
+        "Lightning",
+        "Thunder",
+        "Cloud",
+        "Sun"
       ],
-      "answer": "C) Lightning Bolt",
+      "answer": "Lightning",
       "difficulty": "easy"
     },
     {
-      "question": "I am the ocean's roaring voice echoing across the shore when winds turn wild.",
+      "question": "I am the loud boom that follows the bright flash.",
       "choices": [
-        "A) Tide Roar",
-        "B) Crashing Wave",
-        "C) Wind Howl",
-        "D) Thunder Peal"
+        "Thunder",
+        "Lightning",
+        "Wind",
+        "Rain"
       ],
-      "answer": "D) Thunder Peal",
+      "answer": "Thunder",
       "difficulty": "easy"
     },
     {
-      "question": "I loom heavy and black above the harbor, holding torrential waters within.",
+      "question": "I am a dark, fluffy mass in the sky that brings the rain.",
       "choices": [
-        "A) Storm Cloud",
-        "B) Sea Fog",
-        "C) Smoke Plume",
-        "D) Night Shade"
+        "Storm Cloud",
+        "Sun",
+        "Moon",
+        "Star"
       ],
-      "answer": "A) Storm Cloud",
+      "answer": "Storm Cloud",
       "difficulty": "easy"
     },
     {
-      "question": "I am a bright red marker raised high on the pier so no captain sails into danger.",
+      "question": "I am a tall, spinning funnel of wind that touches the ground.",
       "choices": [
-        "A) Signal Buoy",
-        "B) Gale Banner",
-        "C) Lighthouse",
-        "D) Beacon Fire"
+        "Tornado",
+        "Hurricane",
+        "Blizzard",
+        "Tsunami"
       ],
-      "answer": "B) Gale Banner",
+      "answer": "Tornado",
       "difficulty": "easy"
     },
     {
-      "question": "I flutter on the mast to show sailors which direction the wind blows.",
+      "question": "I am a massive spinning storm over the ocean.",
       "choices": [
-        "A) Safety Rope",
-        "B) Cloth Sail",
-        "C) Wind Pennant",
-        "D) Storm Flag"
+        "Hurricane",
+        "Tornado",
+        "Blizzard",
+        "Drought"
       ],
-      "answer": "C) Wind Pennant",
+      "answer": "Hurricane",
       "difficulty": "easy"
     },
     {
-      "question": "I sound a loud warning across the foggy shore when visibility is lost.",
+      "question": "I am the color of danger and the warning flag.",
       "choices": [
-        "A) Harbor Gong",
-        "B) Church Bell",
-        "C) Ship Horn",
-        "D) Fog Siren"
+        "Red",
+        "Green",
+        "Blue",
+        "Yellow"
       ],
-      "answer": "D) Fog Siren",
+      "answer": "Red",
       "difficulty": "easy"
     },
     {
-      "question": "I am sea water driven over docks and river banks by storm winds.",
+      "question": "I am a cloth on a pole used to send a signal.",
       "choices": [
-        "A) Storm Surge",
-        "B) Riptide",
-        "C) High Tide",
-        "D) Sea Swell"
+        "Flag",
+        "Shirt",
+        "Sail",
+        "Kite"
       ],
-      "answer": "A) Storm Surge",
+      "answer": "Flag",
       "difficulty": "easy"
     },
     {
-      "question": "I am a sturdy haven on land where sailors wait until the gale passes.",
+      "question": "I am a loud siren that warns the town of danger.",
       "choices": [
-        "A) Harbor Dock",
-        "B) Stone Shelter",
-        "C) Wooden Pier",
-        "D) Sea Fortress"
+        "Alarm",
+        "Bell",
+        "Whistle",
+        "Horn"
       ],
-      "answer": "B) Stone Shelter",
+      "answer": "Alarm",
       "difficulty": "easy"
     },
     {
-      "question": "I open above your head to ward off falling sea rain.",
+      "question": "When water rises too high and covers the streets.",
       "choices": [
-        "A) Tarpaulins",
-        "B) Canvas Sail",
-        "C) Rain Shield",
-        "D) Storm Hood"
+        "Flood",
+        "Drought",
+        "Fire",
+        "Earthquake"
       ],
-      "answer": "C) Rain Shield",
+      "answer": "Flood",
       "difficulty": "easy"
     },
     {
-      "question": "I am white foam surging against coastal rocks as winds pick up.",
+      "question": "I am frozen rain that falls as hard ice balls.",
       "choices": [
-        "A) Spray Mist",
-        "B) Sea Current",
-        "C) Tidal Stream",
-        "D) Ocean Breaker"
+        "Hail",
+        "Snow",
+        "Sleet",
+        "Rain"
       ],
-      "answer": "D) Ocean Breaker",
+      "answer": "Hail",
       "difficulty": "easy"
     },
     {
-      "question": "I float over dangerous reefs, ringing a bell with every passing wave.",
+      "question": "I am an area meant to keep you safe from the storm.",
       "choices": [
-        "A) Bell Buoy",
-        "B) Mooring Post",
-        "C) Floating Dock",
-        "D) Sea Marker"
+        "Shelter",
+        "Boat",
+        "Tree",
+        "Field"
       ],
-      "answer": "A) Bell Buoy",
+      "answer": "Shelter",
       "difficulty": "easy"
     },
     {
-      "question": "I am a sudden violent gust of wind sweeping down from storm clouds.",
+      "question": "I block the sun and make the day dark.",
       "choices": [
-        "A) Sea Breeze",
-        "B) Wind Squall",
-        "C) Draft Current",
-        "D) Air Flow"
+        "Cloud",
+        "Bird",
+        "Plane",
+        "Kite"
       ],
-      "answer": "B) Wind Squall",
+      "answer": "Cloud",
       "difficulty": "easy"
     },
     {
-      "question": "I am a dense gray blanket over the sea that hides the horizon.",
+      "question": "You hold me over your head to stay dry.",
       "choices": [
-        "A) Smoke Veil",
-        "B) Dark Cloud",
-        "C) Sea Fog",
-        "D) Haze Layer"
+        "Umbrella",
+        "Hat",
+        "Coat",
+        "Shield"
       ],
-      "answer": "C) Sea Fog",
+      "answer": "Umbrella",
       "difficulty": "easy"
     },
     {
-      "question": "I have no wings, yet I fly on the mast. I have no tongue, yet my red color screams danger.",
+      "question": "I am red and fly without wings. When I dance, the fishermen stay home.",
       "choices": [
-        "A) Signal Canvas",
-        "B) Ship Banner",
-        "C) Safety Kites",
-        "D) Warning Flag"
+        "A Kite",
+        "A Bird",
+        "A Warning Flag",
+        "A Lantern"
       ],
-      "answer": "D) Warning Flag",
+      "answer": "A Warning Flag",
       "difficulty": "medium"
     },
     {
-      "question": "I am woven with thousands of knots. Cast deep to catch life, I return heavy.",
+      "question": "I am a color that means stop, danger, and passion. I am flying high on the pier.",
       "choices": [
-        "A) Fishing Net",
-        "B) Mooring Rope",
-        "C) Cargo Mesh",
-        "D) Haul Line"
+        "Red",
+        "Black",
+        "Yellow",
+        "White"
       ],
-      "answer": "A) Fishing Net",
+      "answer": "Red",
       "difficulty": "medium"
     },
     {
-      "question": "I am a roaring ocean tempest that turns calm waters into towering white caps.",
+      "question": "I cry without eyes, I fly without wings. Wherever I go, darkness follows.",
       "choices": [
-        "A) Riptide",
-        "B) Sea Gale",
-        "C) Whirlpool",
-        "D) Tidal Surge"
+        "A Cloud",
+        "The Wind",
+        "A Storm",
+        "A Bird"
       ],
-      "answer": "B) Sea Gale",
+      "answer": "A Cloud",
       "difficulty": "medium"
     },
     {
-      "question": "I stand tall on sharp cliffs, shining a turning beam so ships avoid rocks.",
+      "question": "I have an eye but cannot see. I spin but am not a top.",
       "choices": [
-        "A) Beacon Fire",
-        "B) Watchtower",
-        "C) Lighthouse",
-        "D) Signal Post"
+        "A Hurricane",
+        "A Needle",
+        "A Tornado",
+        "A Wheel"
       ],
-      "answer": "C) Lighthouse",
+      "answer": "A Hurricane",
       "difficulty": "medium"
     },
     {
-      "question": "I am an invisible gale pushing against sails and tearing at rigging.",
+      "question": "I am a drummer without drums, crashing in the sky.",
       "choices": [
-        "A) Air Stream",
-        "B) Draft Current",
-        "C) Sea Breeze",
-        "D) Headwind"
+        "Thunder",
+        "Lightning",
+        "Hail",
+        "Rain"
       ],
-      "answer": "D) Headwind",
+      "answer": "Thunder",
       "difficulty": "medium"
     },
     {
-      "question": "I am the eerie calm region right at the middle of a swirling hurricane.",
+      "question": "I am a bright jagged line drawn by nature's hand.",
       "choices": [
-        "A) Eye of Storm",
-        "B) Vortex Core",
-        "C) Sea Center",
-        "D) Wind Void"
+        "Lightning",
+        "A River",
+        "A Mountain",
+        "A Crack"
       ],
-      "answer": "A) Eye of Storm",
+      "answer": "Lightning",
       "difficulty": "medium"
     },
     {
-      "question": "I am a stone barrier erected along the coast to absorb crashing waves.",
+      "question": "I fall but never break, I weep but have no eyes.",
       "choices": [
-        "A) Breakwater",
-        "B) Seawall",
-        "C) Stone Pier",
-        "D) Harbor Mole"
+        "Rain",
+        "Night",
+        "A Leaf",
+        "A Shadow"
       ],
-      "answer": "B) Seawall",
+      "answer": "Rain",
       "difficulty": "medium"
     },
     {
-      "question": "I am coarse bags stacked along doorways to keep rising floodwaters out.",
+      "question": "I am invisible, but you can feel my push. I can be a breeze or a beast.",
       "choices": [
-        "A) Stone Blocks",
-        "B) Earthen Dikes",
-        "C) Sandbags",
-        "D) Wood Barriers"
+        "Wind",
+        "Gravity",
+        "Time",
+        "Fear"
       ],
-      "answer": "C) Sandbags",
+      "answer": "Wind",
       "difficulty": "medium"
     },
     {
-      "question": "I am sea level rising suddenly above high tide during severe tropical storms.",
+      "question": "I am a mountain of water that swallows the shore.",
       "choices": [
-        "A) Sea Inflow",
-        "B) Tsunami Wave",
-        "C) Tidal Crest",
-        "D) Storm Surge"
+        "A Tsunami",
+        "A Wave",
+        "A Tide",
+        "A Flood"
       ],
-      "answer": "D) Storm Surge",
+      "answer": "A Tsunami",
       "difficulty": "medium"
     },
     {
-      "question": "I am moving people away from low coastal shores before a typhoon hits.",
+      "question": "I am the cold stones falling from a summer sky.",
       "choices": [
-        "A) Evacuation",
-        "B) Coastal Guard",
-        "C) Retreat Line",
-        "D) Shelter Move"
+        "Hail",
+        "Snow",
+        "Rain",
+        "Meteors"
       ],
-      "answer": "A) Evacuation",
+      "answer": "Hail",
       "difficulty": "medium"
     },
     {
-      "question": "I am dark skies split by lightning, accompanied by torrential downpours.",
+      "question": "I am a spinning dancer that touches the sky and the earth.",
       "choices": [
-        "A) Squall Line",
-        "B) Thunderstorm",
-        "C) Typhoon Eye",
-        "D) Cloud Burst"
+        "A Tornado",
+        "A Hurricane",
+        "A Kite",
+        "A Cloud"
       ],
-      "answer": "B) Thunderstorm",
+      "answer": "A Tornado",
       "difficulty": "medium"
     },
     {
-      "question": "I am a swirling funnel of wind spinning over ocean waters.",
+      "question": "I am the calmest place in the most violent storm.",
       "choices": [
-        "A) Sea Vortex",
-        "B) Whirlpool",
-        "C) Waterspout",
-        "D) Air Eddy"
+        "The Eye",
+        "The Center",
+        "The Ground",
+        "The Edge"
       ],
-      "answer": "C) Waterspout",
+      "answer": "The Eye",
       "difficulty": "medium"
     },
     {
-      "question": "I am frozen pelting ice falling from severe storm clouds onto decks.",
+      "question": "I am a warning that is heard but never seen.",
       "choices": [
-        "A) Ice Flakes",
-        "B) Sleet Drops",
-        "C) Sea Spray",
-        "D) Hail Pellets"
+        "A Siren",
+        "A Flag",
+        "A Light",
+        "A Cloud"
       ],
-      "answer": "D) Hail Pellets",
+      "answer": "A Siren",
       "difficulty": "medium"
     },
     {
-      "question": "I am thick coastal mist reducing sea visibility to less than one cable.",
+      "question": "I am the rising water that forgets where the ocean ends.",
       "choices": [
-        "A) Dense Fog",
-        "B) Haze Layer",
-        "C) Smoke Veil",
-        "D) Cloud Cover"
+        "A Flood",
+        "A Tide",
+        "A Wave",
+        "A Storm"
       ],
-      "answer": "A) Dense Fog",
+      "answer": "A Flood",
       "difficulty": "medium"
     },
     {
-      "question": "I am a red warning cloth flying on the pier: no vessel may depart.",
+      "question": "I am a blanket of gray that hides the sun and brings the gloom.",
       "choices": [
-        "A) Red Pennant",
-        "B) Storm Banner",
-        "C) Danger Flag",
-        "D) Gale Signal"
+        "Fog",
+        "Smoke",
+        "A Cloud",
+        "Night"
       ],
-      "answer": "B) Storm Banner",
+      "answer": "Fog",
       "difficulty": "medium"
     },
     {
-      "question": "I am red as blood, waving in gales. Heed my silence or sea will claim your hull.",
+      "question": "I warn of the reaper's scythe disguised as rolling waves. I am a bloody cloth on a wooden mast.",
       "choices": [
-        "A) Lighthouse Beam",
-        "B) Signal Flare",
-        "C) Red Warning Flag",
-        "D) Buoy Light"
+        "A Warning Flag",
+        "A Pirate Flag",
+        "A Sail",
+        "A Cape"
       ],
-      "answer": "C) Red Warning Flag",
+      "answer": "A Warning Flag",
       "difficulty": "hard"
     },
     {
-      "question": "I am a strong underwater current pulling swimmers away from the beach.",
+      "question": "I am the silence before the fury, the breath held before the scream.",
       "choices": [
-        "A) Tidal Stream",
-        "B) Undertow",
-        "C) Sea Drag",
-        "D) Riptide"
+        "The Calm",
+        "The Eye",
+        "The Dark",
+        "The Wind"
       ],
-      "answer": "D) Riptide",
+      "answer": "The Calm",
       "difficulty": "hard"
     },
     {
-      "question": "I am a narrow band of fierce thunderstorms advancing ahead of a cold front.",
+      "question": "I am nature's wrath wrapped in a spiral, born over warm waters.",
       "choices": [
-        "A) Squall Line",
-        "B) Front Wall",
-        "C) Vortex Band",
-        "D) Gale Line"
+        "A Cyclone",
+        "A Tornado",
+        "A Whirlpool",
+        "A Cloud"
       ],
-      "answer": "A) Squall Line",
+      "answer": "A Cyclone",
       "difficulty": "hard"
     },
     {
-      "question": "I am the dense wall of violent winds directly enclosing a hurricane's eye.",
+      "question": "I am the thief that steals the shore, inch by inch, storm by storm.",
       "choices": [
-        "A) Front Boundary",
-        "B) Eyewall",
-        "C) Vortex Edge",
-        "D) Squall Ring"
+        "Erosion",
+        "The Tide",
+        "A Wave",
+        "The Wind"
       ],
-      "answer": "B) Eyewall",
+      "answer": "Erosion",
       "difficulty": "hard"
     },
     {
-      "question": "I am a rapid drop in atmospheric pressure signalling an approaching gale.",
+      "question": "I am a flash of anger, striking the earth with blinding speed.",
       "choices": [
-        "A) Tide Surge",
-        "B) Wind Shift",
-        "C) Barometer Fall",
-        "D) Pressure Drop"
+        "Lightning",
+        "A Meteor",
+        "An Arrow",
+        "A Thought"
       ],
-      "answer": "C) Barometer Fall",
+      "answer": "Lightning",
       "difficulty": "hard"
     },
     {
-      "question": "I am heavy ocean swells arriving long before local storm winds blow.",
+      "question": "I am the voice of the storm, roaring without a throat.",
       "choices": [
-        "A) Deep Drag",
-        "B) Surge Wave",
-        "C) Tidal Crest",
-        "D) Ground Swell"
+        "Thunder",
+        "The Wind",
+        "The Ocean",
+        "A Siren"
       ],
-      "answer": "D) Ground Swell",
+      "answer": "Thunder",
       "difficulty": "hard"
     },
     {
-      "question": "I am a rotating sea vortex formed where opposing currents collide.",
+      "question": "I am the tears of the sky, washing away the sins of the earth.",
       "choices": [
-        "A) Whirlpool",
-        "B) Waterspout",
-        "C) Eddy Current",
-        "D) Riptide"
+        "Rain",
+        "Snow",
+        "Dew",
+        "Fog"
       ],
-      "answer": "A) Whirlpool",
+      "answer": "Rain",
       "difficulty": "hard"
     },
     {
-      "question": "I am silent flashes in distant clouds warning of a storm beyond the horizon.",
+      "question": "I am a ghost that haunts the coast, swallowing ships in a white embrace.",
       "choices": [
-        "A) Sheet Flash",
-        "B) Heat Lightning",
-        "C) Sky Glow",
-        "D) Cloud Glare"
+        "Fog",
+        "A Wave",
+        "A Cloud",
+        "A Monster"
       ],
-      "answer": "B) Heat Lightning",
+      "answer": "Fog",
       "difficulty": "hard"
     },
     {
-      "question": "I am a stone haven built inside the bay where boats anchor safely.",
+      "question": "I am the invisible hand that tears the sails and snaps the mast.",
       "choices": [
-        "A) Stone Dock",
-        "B) Breakwater",
-        "C) Harbor Haven",
-        "D) Anchor Point"
+        "The Gale",
+        "The Ocean",
+        "The Captain",
+        "Time"
       ],
-      "answer": "C) Harbor Haven",
+      "answer": "The Gale",
       "difficulty": "hard"
     },
     {
-      "question": "I am white foam torn off high waves by gale force winds across the ocean.",
+      "question": "I am the warning ignored by the proud, leading them to a watery grave.",
       "choices": [
-        "A) Wave Spray",
-        "B) Sea Spray",
-        "C) Breaker Foam",
-        "D) Spindrift"
+        "The Red Flag",
+        "The Siren",
+        "The Clouds",
+        "The Waves"
       ],
-      "answer": "D) Spindrift",
+      "answer": "The Red Flag",
       "difficulty": "hard"
     },
     {
-      "question": "I am a massive tropical cyclone forming over warm Pacific waters.",
+      "question": "I am a sudden drop in the air, a heavy pressure that signals doom.",
       "choices": [
-        "A) Typhoon",
-        "B) Supercell",
-        "C) Monsoon",
-        "D) Squall"
+        "A Barometer Drop",
+        "A Microburst",
+        "A Cloud",
+        "A Wave"
       ],
-      "answer": "A) Typhoon",
+      "answer": "A Barometer Drop",
       "difficulty": "hard"
     },
     {
-      "question": "I am seasonal winds bringing months of endless torrential downpours.",
+      "question": "I am the line drawn in the sky, where the cold meets the warm in violent clash.",
       "choices": [
-        "A) Trade Winds",
-        "B) Monsoon",
-        "C) Sea Breeze",
-        "D) Gale Stream"
+        "A Squall Line",
+        "A Rainbow",
+        "A Cloud",
+        "A Horizon"
       ],
-      "answer": "B) Monsoon",
+      "answer": "A Squall Line",
       "difficulty": "hard"
     },
     {
-      "question": "I am the sheltered port every vessel seeks when barometers plunge.",
+      "question": "I am the churning chaos beneath the surface, waiting to pull you down.",
       "choices": [
-        "A) Inner Pier",
-        "B) Anchor Bay",
-        "C) Safe Harbor",
-        "D) Dock Haven"
+        "An Undertow",
+        "A Whirlpool",
+        "A Monster",
+        "A Net"
       ],
-      "answer": "C) Safe Harbor",
+      "answer": "An Undertow",
       "difficulty": "hard"
     },
     {
-      "question": "I am the red cloth of caution flying at dawn: ignore me at your peril.",
+      "question": "I am the memory of a storm that never truly ended in the fisherman's heart.",
       "choices": [
-        "A) Danger Flag",
-        "B) Signal Cloth",
-        "C) Red Pennant",
-        "D) Warning Banner"
+        "Grief",
+        "Fear",
+        "Regret",
+        "Love"
       ],
-      "answer": "D) Warning Banner",
+      "answer": "Grief",
       "difficulty": "hard"
     },
     {
-      "question": "I am the memory of a devastating tempest preserved in village lore.",
+      "question": "I am the crimson herald of tragedy, fluttering uselessly as he sailed away.",
       "choices": [
-        "A) Storm Lesson",
-        "B) Sea Legend",
-        "C) Grave Memory",
-        "D) Echo Warning"
+        "The Warning Flag",
+        "His Heart",
+        "A Bird",
+        "The Sun"
       ],
-      "answer": "A) Storm Lesson",
+      "answer": "The Warning Flag",
       "difficulty": "hard"
     }
   ],
   "fragment-rosary": [
     {
-      "question": "I am wooden beads strung together on a cord, held while whispering prayers.",
+      "question": "I am a small round object on a string used for counting.",
       "choices": [
-        "A) Rosary Beads",
-        "B) Prayer Rope",
-        "C) Beaded Chain",
-        "D) Wooden Loop"
+        "Bead",
+        "Marble",
+        "Stone",
+        "Coin"
       ],
-      "answer": "A) Rosary Beads",
+      "answer": "Bead",
       "difficulty": "easy"
     },
     {
-      "question": "I am two wooden pieces joining at right angles, a sacred symbol of faith.",
+      "question": "I am the shape of two intersecting lines, a symbol of faith.",
       "choices": [
-        "A) Altar Star",
-        "B) Holy Cross",
-        "C) Wooden Frame",
-        "D) Prayer Mark"
+        "Cross",
+        "Star",
+        "Circle",
+        "Square"
       ],
-      "answer": "B) Holy Cross",
+      "answer": "Cross",
       "difficulty": "easy"
     },
     {
-      "question": "I am quiet words spoken from a devout heart toward heaven.",
+      "question": "I am the quiet words spoken from the heart to the heavens.",
       "choices": [
-        "A) Whisper",
-        "B) Hymn Verse",
-        "C) Silent Prayer",
-        "D) Vow"
+        "Prayer",
+        "Song",
+        "Poem",
+        "Speech"
       ],
-      "answer": "C) Silent Prayer",
+      "answer": "Prayer",
       "difficulty": "easy"
     },
     {
-      "question": "I am a sacred stone house where villagers gather every Sunday to worship.",
+      "question": "I am a building where people gather to worship and pray.",
       "choices": [
-        "A) Sanctuary",
-        "B) Chapel Hall",
-        "C) Prayer Room",
-        "D) Village Church"
+        "Church",
+        "School",
+        "House",
+        "Store"
       ],
-      "answer": "D) Village Church",
+      "answer": "Church",
       "difficulty": "easy"
     },
     {
-      "question": "I am a small wax flame lit in front of holy statues in memory of loved ones.",
+      "question": "I am a small flame on a wax stick lit in remembrance.",
       "choices": [
-        "A) Prayer Candle",
-        "B) Votive Light",
-        "C) Match Flame",
-        "D) Lantern"
+        "Candle",
+        "Torch",
+        "Match",
+        "Fire"
       ],
-      "answer": "A) Prayer Candle",
+      "answer": "Candle",
       "difficulty": "easy"
     },
     {
-      "question": "I am a holy book of scriptures kept on altars and read during mass.",
+      "question": "I am the holy book containing ancient scripture.",
       "choices": [
-        "A) Prayer Book",
-        "B) Holy Bible",
-        "C) Hymnal",
-        "D) Scripture"
+        "Bible",
+        "Journal",
+        "Novel",
+        "Dictionary"
       ],
-      "answer": "B) Holy Bible",
+      "answer": "Bible",
       "difficulty": "easy"
     },
     {
-      "question": "I am a celestial guardian with white wings protecting weary souls.",
+      "question": "I have wings and a halo, serving as a messenger from above.",
       "choices": [
-        "A) Sanctuary",
-        "B) Spirit Guide",
-        "C) Holy Angel",
-        "D) Grace"
+        "Angel",
+        "Bird",
+        "Cloud",
+        "Star"
       ],
-      "answer": "C) Holy Angel",
+      "answer": "Angel",
       "difficulty": "easy"
     },
     {
-      "question": "I am honored as Mother of Grace in decades of rosary prayers.",
+      "question": "I am the mother figure highly honored in the rosary.",
       "choices": [
-        "A) Grace",
-        "B) Saint Mother",
-        "C) Holy Queen",
-        "D) Virgin Mary"
+        "Mary",
+        "Eve",
+        "Sarah",
+        "Ruth"
       ],
-      "answer": "D) Virgin Mary",
+      "answer": "Mary",
       "difficulty": "easy"
     },
     {
-      "question": "I am the strong thread holding fifty-three wooden beads in a sacred loop.",
+      "question": "I am the string that binds the beads together.",
       "choices": [
-        "A) Rosary Cord",
-        "B) Prayer String",
-        "C) Thread Chain",
-        "D) Bead Wire"
+        "Chain",
+        "Rope",
+        "Thread",
+        "Wire"
       ],
-      "answer": "A) Rosary Cord",
+      "answer": "Chain",
       "difficulty": "easy"
     },
     {
-      "question": "I am bending your knees upon wooden pews in quiet reverence.",
+      "question": "I am the act of bending down on one or both knees in reverence.",
       "choices": [
-        "A) Bowing",
-        "B) Kneeling",
-        "C) Prostrating",
-        "D) Genuflecting"
+        "Kneeling",
+        "Bowing",
+        "Standing",
+        "Sitting"
       ],
-      "answer": "B) Kneeling",
+      "answer": "Kneeling",
       "difficulty": "easy"
     },
     {
-      "question": "I am a sacred song sung by choir voices during Sunday worship.",
+      "question": "I am a sacred song or hymn sung in worship.",
       "choices": [
-        "A) Chant",
-        "B) Psalm Verse",
-        "C) Church Hymn",
-        "D) Lullaby"
+        "Psalm",
+        "Poem",
+        "Chant",
+        "Lullaby"
       ],
-      "answer": "C) Church Hymn",
+      "answer": "Psalm",
       "difficulty": "easy"
     },
     {
-      "question": "I am the day of rest and prayer when church bells ring across town.",
+      "question": "I am the day of the week usually reserved for rest and worship.",
       "choices": [
-        "A) Feast Day",
-        "B) Sabbath",
-        "C) Holy Day",
-        "D) Sunday Mass"
+        "Sunday",
+        "Monday",
+        "Friday",
+        "Saturday"
       ],
-      "answer": "D) Sunday Mass",
+      "answer": "Sunday",
       "difficulty": "easy"
     },
     {
-      "question": "I am the immortal spirit inside you that outlasts mortal life.",
+      "question": "I am the spiritual part of a person, enduring beyond the body.",
       "choices": [
-        "A) Human Soul",
-        "B) Sacred Heart",
-        "C) Inner Spirit",
-        "D) Grace"
+        "Soul",
+        "Mind",
+        "Heart",
+        "Brain"
       ],
-      "answer": "A) Human Soul",
+      "answer": "Soul",
       "difficulty": "easy"
     },
     {
-      "question": "I am fragrant smoke rising from a censer during solemn prayer.",
+      "question": "I am the sweet-smelling smoke burned during holy ceremonies.",
       "choices": [
-        "A) Altar Smoke",
-        "B) Sacred Incense",
-        "C) Perfume Vane",
-        "D) Holy Vapor"
+        "Incense",
+        "Perfume",
+        "Smoke",
+        "Dust"
       ],
-      "answer": "B) Sacred Incense",
+      "answer": "Incense",
       "difficulty": "easy"
     },
     {
-      "question": "I am a ringing metal bell high in the tower calling people to mass.",
+      "question": "I am the ringing metal object that calls people to mass.",
       "choices": [
-        "A) Altar Bell",
-        "B) Tower Chime",
-        "C) Church Bell",
-        "D) Gong"
+        "Bell",
+        "Chime",
+        "Gong",
+        "Whistle"
       ],
-      "answer": "C) Church Bell",
+      "answer": "Bell",
       "difficulty": "easy"
     },
     {
-      "question": "I am ten wooden beads grouped together, marked by an Our Father prayer.",
+      "question": "I am a string of fifty-three tears, held tightly when fear is near.",
       "choices": [
-        "A) Decade Loop",
-        "B) Bead Group",
-        "C) Prayer Set",
-        "D) Rosary Decade"
+        "A Necklace",
+        "A Rosary",
+        "A Chain",
+        "A Bracelet"
       ],
-      "answer": "D) Rosary Decade",
+      "answer": "A Rosary",
       "difficulty": "medium"
     },
     {
-      "question": "I am the medal piece joining the loop of beads to the dangling cross.",
+      "question": "I have a cross but no intersection. I have beads but I am not worn for beauty.",
       "choices": [
-        "A) Centerpiece",
-        "B) Rosary Clasp",
-        "C) Medal Knot",
-        "D) Chain Joiner"
+        "A Rosary",
+        "A Crown",
+        "An Amulet",
+        "A Ring"
       ],
-      "answer": "A) Centerpiece",
+      "answer": "A Rosary",
       "difficulty": "medium"
     },
     {
-      "question": "I am sacred events in holy history meditated upon during the rosary.",
+      "question": "I am spoken in silence, heard by the sky, and felt in the heart.",
       "choices": [
-        "A) Gospels",
-        "B) Mysteries",
-        "C) Parables",
-        "D) Scriptures"
+        "A Secret",
+        "A Prayer",
+        "A Wish",
+        "A Thought"
       ],
-      "answer": "B) Mysteries",
+      "answer": "A Prayer",
       "difficulty": "medium"
     },
     {
-      "question": "I am a stone font containing holy water at the church entrance.",
+      "question": "I am the only thing you can keep after giving it to someone else.",
       "choices": [
-        "A) Baptismal",
-        "B) Water Basin",
-        "C) Holy Font",
-        "D) Blessing Cup"
+        "Your Word",
+        "A Secret",
+        "A Gift",
+        "A Promise"
       ],
-      "answer": "C) Holy Font",
+      "answer": "Your Word",
       "difficulty": "medium"
     },
     {
-      "question": "I am a golden cup holding sacramental wine during mass.",
+      "question": "I am invisible, yet I can comfort the grieving and calm the storm.",
       "choices": [
-        "A) Vessel",
-        "B) Sacred Goblet",
-        "C) Communion Cup",
-        "D) Holy Chalice"
+        "Faith",
+        "A Hug",
+        "Time",
+        "Silence"
       ],
-      "answer": "D) Holy Chalice",
+      "answer": "Faith",
       "difficulty": "medium"
     },
     {
-      "question": "I am a quiet family altar decorated with flowers and candles.",
+      "question": "I am a circle with no end, made of tiny wooden spheres.",
       "choices": [
-        "A) Home Shrine",
-        "B) Prayer Table",
-        "C) Altar Nook",
-        "D) Sanctuary"
+        "A Rosary",
+        "A Ring",
+        "A Wheel",
+        "A Halo"
       ],
-      "answer": "A) Home Shrine",
+      "answer": "A Rosary",
       "difficulty": "medium"
     },
     {
-      "question": "I am the elevated wooden lectern where priests read holy scripture.",
+      "question": "I have two arms but cannot hug, I stand tall but cannot walk.",
       "choices": [
-        "A) Altar Desk",
-        "B) Pulpit Stand",
-        "C) Lectern",
-        "D) Pew Lectern"
+        "A Tree",
+        "A Cross",
+        "A Statue",
+        "A Priest"
       ],
-      "answer": "B) Pulpit Stand",
+      "answer": "A Cross",
       "difficulty": "medium"
     },
     {
-      "question": "I am long wooden benches lining church aisles for worshippers.",
+      "question": "I am broken to be shared, I am eaten but not for hunger.",
       "choices": [
-        "A) Prayer Seats",
-        "B) Altar Benches",
-        "C) Church Pews",
-        "D) Chairs"
+        "Bread",
+        "A Secret",
+        "A Promise",
+        "A Heart"
       ],
-      "answer": "C) Church Pews",
+      "answer": "Bread",
       "difficulty": "medium"
     },
     {
-      "question": "I am a holy person recognized for lives of exceptional virtue and devotion.",
+      "question": "I am a house where people whisper, but nobody is asleep.",
       "choices": [
-        "A) Devotee",
-        "B) Priest",
-        "C) Blessed Monk",
-        "D) Holy Saint"
+        "A Library",
+        "A Church",
+        "A Hospital",
+        "A Theater"
       ],
-      "answer": "D) Holy Saint",
+      "answer": "A Church",
       "difficulty": "medium"
     },
     {
-      "question": "I am a long journey taken on foot to visit a holy shrine.",
+      "question": "I am lit in the dark, I weep wax, and I burn for hope.",
       "choices": [
-        "A) Pilgrimage",
-        "B) Sacred Walk",
-        "C) Holy Quest",
-        "D) Exodus"
+        "A Candle",
+        "A Match",
+        "A Torch",
+        "A Star"
       ],
-      "answer": "A) Pilgrimage",
+      "answer": "A Candle",
       "difficulty": "medium"
     },
     {
-      "question": "I am abstaining from food to humble the body and focus on prayer.",
+      "question": "I am the sound that calls the faithful, ringing across the town.",
       "choices": [
-        "A) Holy Abstinence",
-        "B) Spiritual Fast",
-        "C) Fasting",
-        "D) Penance"
+        "A Bell",
+        "A Siren",
+        "A Choir",
+        "A Horn"
       ],
-      "answer": "B) Spiritual Fast",
+      "answer": "A Bell",
       "difficulty": "medium"
     },
     {
-      "question": "I am prayers and acts done to make amends for wrongdoings.",
+      "question": "I am worn by a priest but have no sleeves, no buttons, and no collar.",
       "choices": [
-        "A) Repentance",
-        "B) Confession",
-        "C) Holy Penance",
-        "D) Atonement"
+        "A Stole",
+        "A Chasuble",
+        "A Cross",
+        "A Rosary"
       ],
-      "answer": "C) Holy Penance",
+      "answer": "A Stole",
       "difficulty": "medium"
     },
     {
-      "question": "I am a grand cathedral featuring stained glass and tall spires.",
+      "question": "I wash away sins without soap. I am pure but can be found in rivers.",
       "choices": [
-        "A) Abbey",
-        "B) Basilica",
-        "C) Great Parish",
-        "D) Cathedral"
+        "Holy Water",
+        "Tears",
+        "Rain",
+        "Time"
       ],
-      "answer": "D) Cathedral",
+      "answer": "Holy Water",
       "difficulty": "medium"
     },
     {
-      "question": "I am a tranquil sanctuary where monks live under sacred vows.",
+      "question": "I am a book with many chapters, but only one Author.",
       "choices": [
-        "A) Monastery",
-        "B) Convent",
-        "C) Hermitage",
-        "D) Abbey"
+        "The Bible",
+        "A Novel",
+        "A Diary",
+        "A History"
       ],
-      "answer": "A) Monastery",
+      "answer": "The Bible",
       "difficulty": "medium"
     },
     {
-      "question": "I am sacred white linen robes worn by clergy during service.",
+      "question": "I am a gesture made of up, down, left, right.",
       "choices": [
-        "A) Altar Robes",
-        "B) Vestments",
-        "C) Chasuble",
-        "D) Tunic"
+        "Sign of the Cross",
+        "A Wave",
+        "A Dance",
+        "A Bow"
       ],
-      "answer": "B) Vestments",
+      "answer": "Sign of the Cross",
       "difficulty": "medium"
     },
     {
-      "question": "I weigh nothing in hand, yet I hold a sailor's spirit steady in a gale.",
+      "question": "I am a chain that sets you free, binding your hands to set your soul loose.",
       "choices": [
-        "A) Sacred Vow",
-        "B) Inner Hope",
-        "C) Faith in Prayer",
-        "D) Divine Grace"
+        "A Rosary",
+        "A Promise",
+        "A Prayer",
+        "Faith"
       ],
-      "answer": "C) Faith in Prayer",
+      "answer": "A Rosary",
       "difficulty": "hard"
     },
     {
-      "question": "I hold no gold or silver, yet a fisherman clings to me above all wealth.",
+      "question": "I am a path you walk with your fingers, ascending to heaven without leaving your chair.",
       "choices": [
-        "A) Altar Keepsake",
-        "B) Holy Cross",
-        "C) Prayer Cord",
-        "D) Rosary Beads"
+        "A Rosary",
+        "A Book",
+        "A Map",
+        "A Piano"
       ],
-      "answer": "D) Rosary Beads",
+      "answer": "A Rosary",
       "difficulty": "hard"
     },
     {
-      "question": "I am clutched in weathered hands when ocean waves threaten the boat.",
+      "question": "I am whispered in desperation, shouted in joy, and held in silence.",
       "choices": [
-        "A) Prayer Rosary",
-        "B) Anchor Chain",
-        "C) Safety Line",
-        "D) Crucifix"
+        "A Name",
+        "A Prayer",
+        "A Secret",
+        "A Song"
       ],
-      "answer": "A) Prayer Rosary",
+      "answer": "A Prayer",
       "difficulty": "hard"
     },
     {
-      "question": "I have no voice, yet fifty-three wooden beads speak my plea to heaven.",
+      "question": "I am a sacrifice that costs nothing but demands everything.",
       "choices": [
-        "A) Silent Hymn",
-        "B) Rosary Prayer",
-        "C) Altar Vow",
-        "D) Soul Echo"
+        "Love",
+        "Faith",
+        "Devotion",
+        "Time"
       ],
-      "answer": "B) Rosary Prayer",
+      "answer": "Devotion",
       "difficulty": "hard"
     },
     {
-      "question": "I am a spiritual shield forged of prayer, not steel or iron.",
+      "question": "I am a king who wore a crown of thorns and died on a tree.",
       "choices": [
-        "A) Holy Grace",
-        "B) Rosary Shield",
-        "C) Devout Faith",
-        "D) Divine Vow"
+        "Jesus",
+        "A Martyr",
+        "A Saint",
+        "A Prophet"
       ],
-      "answer": "C) Devout Faith",
+      "answer": "Jesus",
       "difficulty": "hard"
     },
     {
-      "question": "I am a quiet shrine in a fisherman's home where prayers are said for his return.",
+      "question": "I am a mother who wept for her son, revered by those who hold the beads.",
       "choices": [
-        "A) Holy Corner",
-        "B) Home Shrine",
-        "C) Prayer Nook",
-        "D) Family Altar"
+        "Mary",
+        "Eve",
+        "Sarah",
+        "Anna"
       ],
-      "answer": "D) Family Altar",
+      "answer": "Mary",
       "difficulty": "hard"
     },
     {
-      "question": "I am a wooden crucifix mounted over the doorway to protect the house.",
+      "question": "I am the unseen armor worn by the fisherman when he faces the tempest.",
       "choices": [
-        "A) Door Crucifix",
-        "B) Holy Rosary",
-        "C) Sacred Icon",
-        "D) Altar Cross"
+        "Faith",
+        "Courage",
+        "Hope",
+        "Love"
       ],
-      "answer": "A) Door Crucifix",
+      "answer": "Faith",
       "difficulty": "hard"
     },
     {
-      "question": "I am a mother's whispered blessing given to a son heading out to sea.",
+      "question": "I am a mystery contemplated in five parts, repeating like the tides.",
       "choices": [
-        "A) Rosary Gift",
-        "B) Mother's Prayer",
-        "C) Parting Vow",
-        "D) Sacred Wish"
+        "The Rosary",
+        "The Ocean",
+        "A Dream",
+        "Life"
       ],
-      "answer": "B) Mother's Prayer",
+      "answer": "The Rosary",
       "difficulty": "hard"
     },
     {
-      "question": "I am spiritual light upon a string guiding lost souls through dark tides.",
+      "question": "I am a flame that cannot be blown out by the wind, for I burn within.",
       "choices": [
-        "A) Holy Ray",
-        "B) Faith Beacon",
-        "C) Rosary Light",
-        "D) Grace Light"
+        "A Soul",
+        "Hope",
+        "Love",
+        "Faith"
       ],
-      "answer": "C) Rosary Light",
+      "answer": "A Soul",
       "difficulty": "hard"
     },
     {
-      "question": "I am fifty-three steps of prayer leading a troubled soul to peace.",
+      "question": "I am the only weight that makes a heavy heart feel lighter.",
       "choices": [
-        "A) Faith Steps",
-        "B) Prayer Ladder",
-        "C) Sacred Way",
-        "D) Rosary Path"
+        "Forgiveness",
+        "A Tear",
+        "A Promise",
+        "A Prayer"
       ],
-      "answer": "D) Rosary Path",
+      "answer": "Forgiveness",
       "difficulty": "hard"
     },
     {
-      "question": "I am an ancient devotion taught by mothers to children over generations.",
+      "question": "I am given freely but often taken for granted until the storm arrives.",
       "choices": [
-        "A) Holy Rosary",
-        "B) Family Vow",
-        "C) Faith Legend",
-        "D) Prayer Custom"
+        "Grace",
+        "Mercy",
+        "Time",
+        "Peace"
       ],
-      "answer": "A) Holy Rosary",
+      "answer": "Grace",
       "difficulty": "hard"
     },
     {
-      "question": "I am whispering words of faith into howling ocean gales.",
+      "question": "I am a knot that cannot be untied, connecting heaven to earth.",
       "choices": [
-        "A) Storm Plea",
-        "B) Sea Prayer",
-        "C) Silent Wish",
-        "D) Ocean Vow"
+        "A Prayer",
+        "A Soul",
+        "A Promise",
+        "Love"
       ],
-      "answer": "B) Sea Prayer",
+      "answer": "A Prayer",
       "difficulty": "hard"
     },
     {
-      "question": "I am a worn wooden cross smooth from decades of reverent touches.",
+      "question": "I am a silent conversation where only one voice speaks aloud.",
       "choices": [
-        "A) Relic",
-        "B) Rosary Cross",
-        "C) Worn Crucifix",
-        "D) Keepsake"
+        "Prayer",
+        "Thinking",
+        "Reading",
+        "Dreaming"
       ],
-      "answer": "C) Worn Crucifix",
+      "answer": "Prayer",
       "difficulty": "hard"
     },
     {
-      "question": "I am divine tranquility settling upon a heart after sincere prayer.",
+      "question": "I am the sanctuary found not in a building, but in a folded pair of hands.",
       "choices": [
-        "A) Heart Calm",
-        "B) Quiet Rest",
-        "C) Divine Grace",
-        "D) Sacred Peace"
+        "Peace",
+        "Church",
+        "Faith",
+        "Hope"
       ],
-      "answer": "D) Sacred Peace",
+      "answer": "Peace",
       "difficulty": "hard"
     },
     {
-      "question": "I am the memory of a wife holding her rosary while waiting on shore.",
+      "question": "I am the anchor of the soul, dropping deep when the surface is chaotic.",
       "choices": [
-        "A) Wife's Devotion",
-        "B) Faith Memory",
-        "C) Silent Hope",
-        "D) Wife's Vow"
+        "Hope",
+        "Faith",
+        "Love",
+        "Prayer"
       ],
-      "answer": "A) Wife's Devotion",
+      "answer": "Hope",
       "difficulty": "hard"
     }
   ],
   "fragment-fish-basket": [
     {
-      "question": "I am woven with small gaps to carry fish while ocean water drains out.",
+      "question": "I have holes but I hold a catch. I am tossed into the sea to bring food back.",
       "choices": [
-        "A) Fish Basket",
-        "B) Water Bucket",
-        "C) Storage Box",
-        "D) Wooden Tub"
+        "Fishing Net",
+        "Bucket",
+        "Sieve",
+        "Bowl"
       ],
-      "answer": "A) Fish Basket",
+      "answer": "Fishing Net",
       "difficulty": "easy"
     },
     {
-      "question": "I swim in deep sea waters with silver scales and fins.",
+      "question": "I am sharp and shiny, disguised with a snack to trick the unwary.",
       "choices": [
-        "A) Sea Turtle",
-        "B) Ocean Fish",
-        "C) Hermit Crab",
-        "D) Seagull"
+        "Fishing Hook",
+        "Spear",
+        "Knife",
+        "Anchor"
       ],
-      "answer": "B) Ocean Fish",
+      "answer": "Fishing Hook",
       "difficulty": "easy"
     },
     {
-      "question": "I am a sharp curved metal pin baited with food to catch fish.",
+      "question": "I am the tasty treat that hides the trap beneath.",
       "choices": [
-        "A) Fillet Knife",
-        "B) Iron Spear",
-        "C) Fishing Hook",
-        "D) Harpoon"
+        "Bait",
+        "Kelp",
+        "Coral",
+        "Sand"
       ],
-      "answer": "C) Fishing Hook",
+      "answer": "Bait",
       "difficulty": "easy"
     },
     {
-      "question": "I am food put on a hook to tempt hungry ocean fish.",
+      "question": "I am a wooden vessel that dances on the waves.",
       "choices": [
-        "A) Shell Bit",
-        "B) Sea Kelp",
-        "C) Beach Sand",
-        "D) Fishing Bait"
+        "Boat",
+        "Log",
+        "Bridge",
+        "Pier"
       ],
-      "answer": "D) Fishing Bait",
+      "answer": "Boat",
       "difficulty": "easy"
     },
     {
-      "question": "I am a small wooden boat rowed out to ocean fishing spots.",
+      "question": "I am heavy and sink to the bottom to keep you in place.",
       "choices": [
-        "A) Fishing Boat",
-        "B) Bamboo Raft",
-        "C) Cargo Vessel",
-        "D) Canoe"
+        "Anchor",
+        "Stone",
+        "Weight",
+        "Chain"
       ],
-      "answer": "A) Fishing Boat",
+      "answer": "Anchor",
       "difficulty": "easy"
     },
     {
-      "question": "I am a heavy iron weight dropped to hold a boat in place.",
+      "question": "I catch the wind to push the boat forward.",
       "choices": [
-        "A) Mooring Stone",
-        "B) Sea Anchor",
-        "C) Iron Chain",
-        "D) Lead Weight"
+        "Sail",
+        "Flag",
+        "Kite",
+        "Net"
       ],
-      "answer": "B) Sea Anchor",
+      "answer": "Sail",
       "difficulty": "easy"
     },
     {
-      "question": "I am a canvas sheet catching wind to propel boats across water.",
+      "question": "You hold my handle and push the water to move along.",
       "choices": [
-        "A) Deck Canvas",
-        "B) Signal Flag",
-        "C) Boat Sail",
-        "D) Cloth Banner"
+        "Oar",
+        "Stick",
+        "Pole",
+        "Rudder"
       ],
-      "answer": "C) Boat Sail",
+      "answer": "Oar",
       "difficulty": "easy"
     },
     {
-      "question": "I am a wooden paddle pushed against sea water to row forward.",
+      "question": "I breathe water instead of air and swim all day.",
       "choices": [
-        "A) Deck Plank",
-        "B) Rudder Blade",
-        "C) Boat Pole",
-        "D) Wooden Oar"
+        "Fish",
+        "Crab",
+        "Turtle",
+        "Bird"
       ],
-      "answer": "D) Wooden Oar",
+      "answer": "Fish",
       "difficulty": "easy"
     },
     {
-      "question": "I walk sideways on beach sand and possess two sharp pinchers.",
+      "question": "I walk sideways and have pinchers for hands.",
       "choices": [
-        "A) Beach Crab",
-        "B) Sea Shrimp",
-        "C) Rock Lobster",
-        "D) Clam Shell"
+        "Crab",
+        "Lobster",
+        "Shrimp",
+        "Clam"
       ],
-      "answer": "A) Beach Crab",
+      "answer": "Crab",
       "difficulty": "easy"
     },
     {
-      "question": "I am a hard colorful shell collected along the sandy shoreline.",
+      "question": "I am a hard house found on the beach. You can hold me to your ear.",
       "choices": [
-        "A) Beach Rock",
-        "B) Seashell",
-        "C) Sea Pebble",
-        "D) Coral Piece"
+        "Shell",
+        "Rock",
+        "Glass",
+        "Wood"
       ],
-      "answer": "B) Seashell",
+      "answer": "Shell",
       "difficulty": "easy"
     },
     {
-      "question": "I am fine golden grains covering the shore where waves land.",
+      "question": "I am made of tiny grains and meet the ocean at the shore.",
       "choices": [
-        "A) Sea Dust",
-        "B) Coastal Mud",
-        "C) Beach Sand",
-        "D) Silt Soil"
+        "Sand",
+        "Dirt",
+        "Mud",
+        "Dust"
       ],
-      "answer": "C) Beach Sand",
+      "answer": "Sand",
       "difficulty": "easy"
     },
     {
-      "question": "I am ocean water rolling onto the beach in foaming crests.",
+      "question": "I crash onto the shore but I am not broken.",
       "choices": [
-        "A) Surge Pool",
-        "B) Tidal Current",
-        "C) Sea Stream",
-        "D) Coastal Wave"
+        "Wave",
+        "Rock",
+        "Boat",
+        "Wind"
       ],
-      "answer": "D) Coastal Wave",
+      "answer": "Wave",
       "difficulty": "easy"
     },
     {
-      "question": "I am a lustrous white pearl found inside an oyster shell.",
+      "question": "I am a shiny treasure hidden inside an oyster.",
       "choices": [
-        "A) Ocean Pearl",
-        "B) Silver Coin",
-        "C) Gem Stone",
-        "D) Glass Bead"
+        "Pearl",
+        "Coin",
+        "Gem",
+        "Diamond"
       ],
-      "answer": "A) Ocean Pearl",
+      "answer": "Pearl",
       "difficulty": "easy"
     },
     {
-      "question": "I am a tall coastal tower shining light for boats at night.",
+      "question": "I am a tall tower that shines a light to guide sailors.",
       "choices": [
-        "A) Beacon Post",
-        "B) Lighthouse",
-        "C) Deck Torch",
-        "D) Shore Signal"
+        "Lighthouse",
+        "Beacon",
+        "Torch",
+        "Star"
       ],
-      "answer": "B) Lighthouse",
+      "answer": "Lighthouse",
       "difficulty": "easy"
     },
     {
-      "question": "I am the vast blue saltwater expanse covering most of earth.",
+      "question": "I am vast, blue, and full of salt.",
       "choices": [
-        "A) Island Lake",
-        "B) Coastal River",
-        "C) Deep Ocean",
-        "D) Bay Pond"
+        "Ocean",
+        "River",
+        "Lake",
+        "Pond"
       ],
-      "answer": "C) Deep Ocean",
+      "answer": "Ocean",
       "difficulty": "easy"
     },
     {
-      "question": "I am woven from bamboo strips to carry daily sea catches on back.",
+      "question": "I have holes in my top, my bottom, and my sides, but I can still hold the ocean's bounty. What am I?",
       "choices": [
-        "A) Bamboo Box",
-        "B) Woven Sack",
-        "C) Harvest Crate",
-        "D) Fish Basket"
+        "A Net",
+        "A Sponge",
+        "A Fish Basket",
+        "A Boat"
       ],
-      "answer": "D) Fish Basket",
+      "answer": "A Fish Basket",
       "difficulty": "medium"
     },
     {
-      "question": "I rise and fall twice daily under the gravitational pull of the moon.",
+      "question": "I can be caught without hands, and I can be cooked without fire (in some places), but I cannot live without water. What am I?",
       "choices": [
-        "A) Sea Tide",
-        "B) Ocean Wave",
-        "C) Coastal Drift",
-        "D) Sea Wind"
+        "A Fish",
+        "A Wave",
+        "A Dream",
+        "A Seaweed"
       ],
-      "answer": "A) Sea Tide",
+      "answer": "A Fish",
       "difficulty": "medium"
     },
     {
-      "question": "I am a steady stream of water flowing through ocean deeps.",
+      "question": "I have scales but cannot weigh. I have a mouth but cannot speak. What am I?",
       "choices": [
-        "A) Tidal Surge",
-        "B) Sea Current",
-        "C) Coastal Wave",
-        "D) Sea Drift"
+        "A Mermaid",
+        "A Fish",
+        "A Snake",
+        "A Dragon"
       ],
-      "answer": "B) Sea Current",
+      "answer": "A Fish",
       "difficulty": "medium"
     },
     {
-      "question": "I am a magnetic navigation tool whose needle points north.",
+      "question": "I have a bed but never sleep, I have a mouth but never eat. I run but have no legs.",
       "choices": [
-        "A) Astrolabe",
-        "B) Nautical Map",
-        "C) Compass",
-        "D) Sun Clock"
+        "A River",
+        "A Cloud",
+        "A Fish",
+        "A Net"
       ],
-      "answer": "C) Compass",
+      "answer": "A River",
       "difficulty": "medium"
     },
     {
-      "question": "I am a wooden pier extending into water where boats dock.",
+      "question": "I drink the ocean but remain thirsty. I float on water but die on land. What am I?",
       "choices": [
-        "A) Harbor Ramp",
-        "B) Deck Dock",
-        "C) Wharf Platform",
-        "D) Fisher Pier"
+        "A Boat",
+        "A Fish",
+        "A Fisherman",
+        "A Sail"
       ],
-      "answer": "D) Fisher Pier",
+      "answer": "A Boat",
       "difficulty": "medium"
     },
     {
-      "question": "I am green underwater plants swaying in coastal currents.",
+      "question": "I am a bridge built over water, yet no one walks upon me unless they wish to sink.",
       "choices": [
-        "A) Seaweed",
-        "B) Kelp Beds",
-        "C) Sea Moss",
-        "D) Ocean Grass"
+        "A Pier",
+        "A Net",
+        "A Shadow",
+        "A Wave"
       ],
-      "answer": "A) Seaweed",
+      "answer": "A Shadow",
       "difficulty": "medium"
     },
     {
-      "question": "I am colorful coral reefs supporting diverse marine life.",
+      "question": "What kind of band never plays music, but is often found by the sea?",
       "choices": [
-        "A) Sea Rock",
-        "B) Coral Reef",
-        "C) Sandbar",
-        "D) Island Shelf"
+        "A Headband",
+        "A Sandband",
+        "A Wristband",
+        "A Flock"
       ],
-      "answer": "B) Coral Reef",
+      "answer": "A Flock",
       "difficulty": "medium"
     },
     {
-      "question": "I am a white sea bird diving into waves to snatch fish.",
+      "question": "I am always hungry, but if you give me water, I die.",
       "choices": [
-        "A) Sea Eagle",
-        "B) Pelican",
-        "C) Seagull",
-        "D) Heron"
+        "Fire",
+        "Fish",
+        "Salt",
+        "Sand"
       ],
-      "answer": "C) Seagull",
+      "answer": "Fire",
       "difficulty": "medium"
     },
     {
-      "question": "I am smooth weathered wood washed onto beaches by tides.",
+      "question": "The more of me you take, the more you leave behind on the beach.",
       "choices": [
-        "A) Tree Branch",
-        "B) Log Timber",
-        "C) Plank Board",
-        "D) Driftwood"
+        "Sand",
+        "Footprints",
+        "Shells",
+        "Water"
       ],
-      "answer": "D) Driftwood",
+      "answer": "Footprints",
       "difficulty": "medium"
     },
     {
-      "question": "I am a floating buoy anchored over fishing areas.",
+      "question": "I fall from the sky but never hit the ground. I weep over the ocean.",
       "choices": [
-        "A) Signal Buoy",
-        "B) Float Marker",
-        "C) Sea Raft",
-        "D) Dock Beacon"
+        "A Star",
+        "A Raindrop",
+        "A Cloud",
+        "A Bird"
       ],
-      "answer": "A) Signal Buoy",
+      "answer": "A Raindrop",
       "difficulty": "medium"
     },
     {
-      "question": "I am a sea creature with five radial arms resting on ocean sand.",
+      "question": "I have an eye but cannot see the storm that circles me.",
       "choices": [
-        "A) Octopus",
-        "B) Starfish",
-        "C) Sea Squid",
-        "D) Urchin"
+        "A Hurricane",
+        "A Needle",
+        "A Fish",
+        "A Net"
       ],
-      "answer": "B) Starfish",
+      "answer": "A Hurricane",
       "difficulty": "medium"
     },
     {
-      "question": "I am flexible silver scales covering a fish's body.",
+      "question": "I am thrown away when you want to use me, and pulled in when you're done.",
       "choices": [
-        "A) Fin Blades",
-        "B) Sea Shell",
-        "C) Fish Scales",
-        "D) Fish Skin"
+        "An Anchor",
+        "A Net",
+        "A Bait",
+        "A Line"
       ],
-      "answer": "C) Fish Scales",
+      "answer": "An Anchor",
       "difficulty": "medium"
     },
     {
-      "question": "I am respiratory slits on a fish used to extract oxygen from water.",
+      "question": "You can hold me in a basket, but you can't hold me in your hands. What am I?",
       "choices": [
-        "A) Fish Mouth",
-        "B) Fin Vanes",
-        "C) Tail Fluke",
-        "D) Fish Gills"
+        "Water",
+        "Wind",
+        "A Shadow",
+        "A Fish"
       ],
-      "answer": "D) Fish Gills",
+      "answer": "Water",
       "difficulty": "medium"
     },
     {
-      "question": "I am a sea bird with a pouch under my beak for fish catches.",
+      "question": "I am the only thing you can break just by naming me.",
       "choices": [
-        "A) Pelican",
-        "B) Seagull",
-        "C) Stork",
-        "D) Heron"
+        "Silence",
+        "Glass",
+        "A Wave",
+        "A Promise"
       ],
-      "answer": "A) Pelican",
+      "answer": "Silence",
       "difficulty": "medium"
     },
     {
-      "question": "I am heavy rubber boots worn by fishermen in surf.",
+      "question": "I run along the shore but never move. I separate land from sea.",
       "choices": [
-        "A) Deck Shoes",
-        "B) Fisher Boots",
-        "C) Sea Sandals",
-        "D) Waders"
+        "A Wave",
+        "A Beach",
+        "A Coastline",
+        "A Net"
       ],
-      "answer": "B) Fisher Boots",
+      "answer": "A Coastline",
       "difficulty": "medium"
     },
     {
-      "question": "I let water drain out through gaps, but hold every fish caught.",
+      "question": "A fisherman caught me, but he couldn't see me. He brought me home, but couldn't eat me. What am I?",
       "choices": [
-        "A) Catch Net",
-        "B) Water Bucket",
-        "C) Fish Basket",
-        "D) Fish Trap"
+        "A Cold",
+        "A Memory",
+        "A Secret",
+        "A Ghost"
       ],
-      "answer": "C) Fish Basket",
+      "answer": "A Cold",
       "difficulty": "hard"
     },
     {
-      "question": "I am light when rowed out at dawn, but heavy with food at dusk.",
+      "question": "I am a vessel with no bottom, yet I hold the ocean's treasures.",
       "choices": [
-        "A) Haul Cart",
-        "B) Harvest Sack",
-        "C) Fisher Boat",
-        "D) Fish Basket"
+        "A Net",
+        "A Ring",
+        "A Story",
+        "A Heart"
       ],
-      "answer": "D) Fish Basket",
+      "answer": "A Ring",
       "difficulty": "hard"
     },
     {
-      "question": "I hold no gold, yet after hours at sea I contain a family's meals.",
+      "question": "I am lighter than a feather, yet not even the strongest fisherman can hold me for long.",
       "choices": [
-        "A) Fish Basket",
-        "B) Sea Chest",
-        "C) Leather Pouch",
-        "D) Deck Box"
+        "His Breath",
+        "A Shadow",
+        "A Thought",
+        "A Wave"
       ],
-      "answer": "A) Fish Basket",
+      "answer": "His Breath",
       "difficulty": "hard"
     },
     {
-      "question": "I am woven with patient skill from split bamboo and rattan.",
+      "question": "You feed me to live, but I take life to survive. I am cast out, but reeled back in.",
       "choices": [
-        "A) Floor Mat",
-        "B) Woven Basket",
-        "C) Bamboo Screen",
-        "D) Rattan Hat"
+        "A Hook",
+        "A Net",
+        "A Lie",
+        "Bait"
       ],
-      "answer": "B) Woven Basket",
+      "answer": "Bait",
       "difficulty": "hard"
     },
     {
-      "question": "I rest on wet boat decks, filled with fresh silvery catch.",
+      "question": "I am full of holes, yet I am woven tight enough to trap a life.",
       "choices": [
-        "A) Storage Crate",
-        "B) Fish Bucket",
-        "C) Catch Basket",
-        "D) Catch Barrel"
+        "A Net",
+        "A Trap",
+        "A Basket",
+        "A Web"
       ],
-      "answer": "C) Catch Basket",
+      "answer": "A Net",
       "difficulty": "hard"
     },
     {
-      "question": "I am the honest labor of pulling living food from deep waters.",
+      "question": "I have no voice, but I roar. I have no hands, but I drag men down.",
       "choices": [
-        "A) Sailing",
-        "B) Farming",
-        "C) Coastal Trade",
-        "D) Fisher's Trade"
+        "The Sea",
+        "The Wind",
+        "The Storm",
+        "A Monster"
       ],
-      "answer": "D) Fisher's Trade",
+      "answer": "The Sea",
       "difficulty": "hard"
     },
     {
-      "question": "I am cool morning air blowing across sea before sunrise.",
+      "question": "I am born in the deep, rise to the surface, and die on the shore.",
       "choices": [
-        "A) Dawn Breeze",
-        "B) Sea Mist",
-        "C) Shore Draft",
-        "D) Gale Wind"
+        "A Fish",
+        "A Wave",
+        "A Bubble",
+        "A Shell"
       ],
-      "answer": "A) Dawn Breeze",
+      "answer": "A Wave",
       "difficulty": "hard"
     },
     {
-      "question": "I am a simple basket crafted from nature without metal parts.",
+      "question": "I dance without feet, I weep without eyes. The fisherman curses my name.",
       "choices": [
-        "A) Iron Trap",
-        "B) Bamboo Basket",
-        "C) Net Sack",
-        "D) Deck Box"
+        "A Storm",
+        "A Ghost",
+        "A Shadow",
+        "The Wind"
       ],
-      "answer": "B) Bamboo Basket",
+      "answer": "A Storm",
       "difficulty": "hard"
     },
     {
-      "question": "I am the sea bounty brought home to feed hungry children.",
+      "question": "I am not alive, but I grow. I have no lungs, but I need air. Water kills me.",
       "choices": [
-        "A) Fish Bounty",
-        "B) Sea Gold",
-        "C) Ocean Harvest",
-        "D) Coast Crop"
+        "A Flame",
+        "A Cloud",
+        "Rust",
+        "Salt"
       ],
-      "answer": "C) Ocean Harvest",
+      "answer": "A Flame",
       "difficulty": "hard"
     },
     {
-      "question": "I rest beside the dock while a weary fisherman ties up his boat.",
+      "question": "I speak without a mouth and hear without ears. I have no body, but I come alive with the wind.",
       "choices": [
-        "A) Fisher Boot",
-        "B) Boat Oar",
-        "C) Dock Rope",
-        "D) Fish Basket"
+        "An Echo",
+        "A Sail",
+        "A Chime",
+        "A Wave"
       ],
-      "answer": "D) Fish Basket",
+      "answer": "An Echo",
       "difficulty": "hard"
     },
     {
-      "question": "I am the fresh salty scent of fish caught from deep ocean waters.",
+      "question": "I build up castles, I tear down mountains. I make some blind, I help others see.",
       "choices": [
-        "A) Sea Catch",
-        "B) Brine Mist",
-        "C) Ocean Spray",
-        "D) Salt Air"
+        "Sand",
+        "Water",
+        "Time",
+        "Wind"
       ],
-      "answer": "A) Sea Catch",
+      "answer": "Sand",
       "difficulty": "hard"
     },
     {
-      "question": "I am woven tight enough for fish, loose enough for sea water.",
+      "question": "I am invisible, but I can make the ocean rise and fall.",
       "choices": [
-        "A) Mesh Netting",
-        "B) Fish Basket",
-        "C) Slatted Crate",
-        "D) Coarse Sieve"
+        "The Moon",
+        "The Wind",
+        "Gravity",
+        "A God"
       ],
-      "answer": "B) Fish Basket",
+      "answer": "The Moon",
       "difficulty": "hard"
     },
     {
-      "question": "I am a simple basket holding a father's daily labor and pride.",
+      "question": "I am a thread that binds the sea to the shore, but I vanish when you touch me.",
       "choices": [
-        "A) Storage Trunk",
-        "B) Gift Crate",
-        "C) Fisher Basket",
-        "D) Haul Sack"
+        "Foam",
+        "Mist",
+        "A Shadow",
+        "A Line"
       ],
-      "answer": "C) Fisher Basket",
+      "answer": "Foam",
       "difficulty": "hard"
     },
     {
-      "question": "I am carried on shoulders from the boat to the village market.",
+      "question": "The fisherman trusts me with his life, though I am made of nothing but dead trees.",
       "choices": [
-        "A) Sea Tub",
-        "B) Cargo Haul",
-        "C) Deck Trunk",
-        "D) Fish Basket"
+        "His Boat",
+        "His Oars",
+        "His Basket",
+        "His House"
       ],
-      "answer": "D) Fish Basket",
+      "answer": "His Boat",
       "difficulty": "hard"
     },
     {
-      "question": "I am the memory of a father providing food for his family.",
+      "question": "I am the silent thief that steals the colors from the sea when night falls.",
       "choices": [
-        "A) Father's Duty",
-        "B) Sea Legend",
-        "C) Coast Tale",
-        "D) Fisher Legacy"
+        "Darkness",
+        "The Moon",
+        "A Shadow",
+        "Fog"
       ],
-      "answer": "A) Father's Duty",
+      "answer": "Darkness",
       "difficulty": "hard"
     }
   ],
   "fragment-daughters-drawing": [
     {
-      "question": "I am a colorful arc of seven colors appearing after rain.",
+      "question": "I have many colors and appear after the rain.",
       "choices": [
-        "A) Rainbow",
-        "B) Sunlight",
-        "C) Storm Cloud",
-        "D) Star Arc"
+        "Rainbow",
+        "Sun",
+        "Cloud",
+        "Star"
       ],
-      "answer": "A) Rainbow",
+      "answer": "Rainbow",
       "difficulty": "easy"
     },
     {
-      "question": "I am a wooden pencil filled with lead used to sketch pictures.",
+      "question": "I am used to make marks on paper, filled with lead or colors.",
       "choices": [
-        "A) Ink Pen",
-        "B) Pencil",
-        "C) Paint Brush",
-        "D) Crayon"
+        "Pencil",
+        "Brush",
+        "Eraser",
+        "Chalk"
       ],
-      "answer": "B) Pencil",
+      "answer": "Pencil",
       "difficulty": "easy"
     },
     {
-      "question": "I am a sheet of paper covered in colorful wax drawings.",
+      "question": "I hold the paint before it goes on the canvas.",
       "choices": [
-        "A) Letter Note",
-        "B) Story Book",
-        "C) Child Drawing",
-        "D) Greeting Card"
+        "Palette",
+        "Easel",
+        "Cup",
+        "Tray"
       ],
-      "answer": "C) Child Drawing",
+      "answer": "Palette",
       "difficulty": "easy"
     },
     {
-      "question": "I am a soft brush dipped in watercolor paint to create art.",
+      "question": "I am a picture you make by dragging colors across paper.",
       "choices": [
-        "A) Hair Comb",
-        "B) Drawing Pen",
-        "C) Chalk Stick",
-        "D) Paintbrush"
+        "Drawing",
+        "Sculpture",
+        "Song",
+        "Dance"
       ],
-      "answer": "D) Paintbrush",
+      "answer": "Drawing",
       "difficulty": "easy"
     },
     {
-      "question": "I am a rubber eraser that rubs away unintended pencil lines.",
+      "question": "I have soft bristles and love to swim in paint.",
       "choices": [
-        "A) Rubber Eraser",
-        "B) Cloth Wipe",
-        "C) Sponge",
-        "D) Paper Towel"
+        "Paintbrush",
+        "Comb",
+        "Broom",
+        "Mop"
       ],
-      "answer": "A) Rubber Eraser",
+      "answer": "Paintbrush",
       "difficulty": "easy"
     },
     {
-      "question": "I am a waxy stick of bright color used by young children.",
+      "question": "I make your mistakes vanish without a trace.",
       "choices": [
-        "A) Ink Marker",
-        "B) Crayon Stick",
-        "C) Pencil Lead",
-        "D) Chalk Piece"
+        "Eraser",
+        "Whiteout",
+        "Water",
+        "Cloth"
       ],
-      "answer": "B) Crayon Stick",
+      "answer": "Eraser",
       "difficulty": "easy"
     },
     {
-      "question": "I am the bright yellow color used to draw the morning sun.",
+      "question": "I am a waxy stick of bright colors children love to use.",
       "choices": [
-        "A) Blue Crayon",
-        "B) Red Crayon",
-        "C) Yellow Crayon",
-        "D) Green Crayon"
+        "Crayon",
+        "Marker",
+        "Chalk",
+        "Pen"
       ],
-      "answer": "C) Yellow Crayon",
+      "answer": "Crayon",
       "difficulty": "easy"
     },
     {
-      "question": "I am the fresh green color used to draw grass and trees.",
+      "question": "I am the color of the sun and a happy smiling face.",
       "choices": [
-        "A) Yellow Crayon",
-        "B) Blue Crayon",
-        "C) Red Crayon",
-        "D) Green Crayon"
+        "Yellow",
+        "Blue",
+        "Red",
+        "Green"
       ],
-      "answer": "D) Green Crayon",
+      "answer": "Yellow",
       "difficulty": "easy"
     },
     {
-      "question": "I am the deep blue color used to draw the sea and sky.",
+      "question": "I am the color of the grass where children run and play.",
       "choices": [
-        "A) Blue Crayon",
-        "B) Green Crayon",
-        "C) Red Crayon",
-        "D) Yellow Crayon"
+        "Green",
+        "Blue",
+        "Red",
+        "Yellow"
       ],
-      "answer": "A) Blue Crayon",
+      "answer": "Green",
       "difficulty": "easy"
     },
     {
-      "question": "I am the bright red color used to draw hearts and love.",
+      "question": "I am the color of the sky on a clear day.",
       "choices": [
-        "A) Blue Crayon",
-        "B) Red Crayon",
-        "C) Green Crayon",
-        "D) Yellow Crayon"
+        "Blue",
+        "Green",
+        "Red",
+        "Yellow"
       ],
-      "answer": "B) Red Crayon",
+      "answer": "Blue",
       "difficulty": "easy"
     },
     {
-      "question": "I am a wooden picture frame holding a drawing on the wall.",
+      "question": "I am the color of an apple or a loving heart.",
       "choices": [
-        "A) Window Glass",
-        "B) Wall Mirror",
-        "C) Picture Frame",
-        "D) Door Frame"
+        "Red",
+        "Green",
+        "Blue",
+        "Yellow"
       ],
-      "answer": "C) Picture Frame",
+      "answer": "Red",
       "difficulty": "easy"
     },
     {
-      "question": "I am a simple round shape drawn in yellow for the sun.",
+      "question": "You put me in a frame and hang me on a wall.",
       "choices": [
-        "A) Straight Line",
-        "B) Square Box",
-        "C) Star Shape",
-        "D) Sun Circle"
+        "Picture",
+        "Mirror",
+        "Window",
+        "Door"
       ],
-      "answer": "D) Sun Circle",
+      "answer": "Picture",
       "difficulty": "easy"
     },
     {
-      "question": "I am white paper folded into a toy boat that floats.",
+      "question": "I am a simple line that closes to make a round face.",
       "choices": [
-        "A) Paper Boat",
-        "B) Paper Plane",
-        "C) Kite Box",
-        "D) Paper Card"
+        "Circle",
+        "Square",
+        "Triangle",
+        "Line"
       ],
-      "answer": "A) Paper Boat",
+      "answer": "Circle",
       "difficulty": "easy"
     },
     {
-      "question": "I am an ink pen leaving dark lines on white paper.",
+      "question": "I am folded into an airplane to fly across the room.",
       "choices": [
-        "A) Lead Pencil",
-        "B) Ink Pen",
-        "C) Wax Crayon",
-        "D) Chalk Stick"
+        "Paper",
+        "Cardboard",
+        "Cloth",
+        "Plastic"
       ],
-      "answer": "B) Ink Pen",
+      "answer": "Paper",
       "difficulty": "easy"
     },
     {
-      "question": "I am a smiley face drawn in crayon in a picture corner.",
+      "question": "I am a stick that leaves a trail of ink.",
       "choices": [
-        "A) Sun Circle",
-        "B) Star Mark",
-        "C) Smiley Face",
-        "D) Heart Shape"
+        "Pen",
+        "Pencil",
+        "Brush",
+        "Crayon"
       ],
-      "answer": "C) Smiley Face",
+      "answer": "Pen",
       "difficulty": "easy"
     },
     {
-      "question": "I am a small wooden easel holding drawing paper steady.",
+      "question": "I am drawn but have no pen. I fall but never break. What am I?",
       "choices": [
-        "A) Picture Frame",
-        "B) Art Desk",
-        "C) Pencil Box",
-        "D) Wooden Easel"
+        "A Tear",
+        "A Picture",
+        "A Line",
+        "A Shadow"
       ],
-      "answer": "D) Wooden Easel",
+      "answer": "A Tear",
       "difficulty": "medium"
     },
     {
-      "question": "I am a simple child's sketch of a beloved father's face.",
+      "question": "I have colors but no paint, I appear after the storm but have no physical form.",
       "choices": [
-        "A) Child Portrait",
-        "B) Sea Map",
-        "C) Diagram",
-        "D) Landscape"
+        "A Rainbow",
+        "A Memory",
+        "A Dream",
+        "A Reflection"
       ],
-      "answer": "A) Child Portrait",
+      "answer": "A Rainbow",
       "difficulty": "medium"
     },
     {
-      "question": "I am colorful wax melted onto paper in childish art.",
+      "question": "I am a stick of colored wax that children love to press on paper.",
       "choices": [
-        "A) Water Paint",
-        "B) Crayon Sketch",
-        "C) Ink Wash",
-        "D) Chalk Art"
+        "A Crayon",
+        "A Pencil",
+        "A Marker",
+        "A Chalk"
       ],
-      "answer": "B) Crayon Sketch",
+      "answer": "A Crayon",
       "difficulty": "medium"
     },
     {
-      "question": "I am a dark figure drawn against a bright yellow sun.",
+      "question": "I have a heart of lead but I leave a trail of graphite.",
       "choices": [
-        "A) Pencil Sketch",
-        "B) Shadow Line",
-        "C) Stick Figure",
-        "D) Doodle"
+        "A Pencil",
+        "A Pen",
+        "A Crayon",
+        "A Bullet"
       ],
-      "answer": "C) Stick Figure",
+      "answer": "A Pencil",
       "difficulty": "medium"
     },
     {
-      "question": "I am a child's drawing of a boat sailing on blue ocean waves.",
+      "question": "I am a blank canvas waiting for a child's imagination.",
       "choices": [
-        "A) Pencil Draft",
-        "B) Sea Map",
-        "C) Landscape",
-        "D) Boat Drawing"
+        "Paper",
+        "A Wall",
+        "A Mind",
+        "A Dream"
       ],
-      "answer": "D) Boat Drawing",
+      "answer": "Paper",
       "difficulty": "medium"
     },
     {
-      "question": "I am playful doodles drawn in the margins of paper.",
+      "question": "I am the color of the sun in a child's drawing.",
       "choices": [
-        "A) Margin Doodles",
-        "B) Pencil Notes",
-        "C) Letters",
-        "D) Ink Lines"
+        "Yellow",
+        "Red",
+        "Blue",
+        "Green"
       ],
-      "answer": "A) Margin Doodles",
+      "answer": "Yellow",
       "difficulty": "medium"
     },
     {
-      "question": "I am a quick pencil sketch made before coloring with crayons.",
+      "question": "I am a portrait of a family, drawn with stick figures.",
       "choices": [
-        "A) Drawing",
-        "B) Pencil Draft",
-        "C) Paper Note",
-        "D) Sketch Line"
+        "A Drawing",
+        "A Photograph",
+        "A Memory",
+        "A Mirror"
       ],
-      "answer": "B) Pencil Draft",
+      "answer": "A Drawing",
       "difficulty": "medium"
     },
     {
-      "question": "I am mixing red and yellow wax crayons to create orange.",
+      "question": "I am the lines that separate the sky from the sea on a piece of paper.",
       "choices": [
-        "A) Green Color",
-        "B) Purple Color",
-        "C) Orange Color",
-        "D) Brown Color"
+        "The Horizon",
+        "A Border",
+        "A Frame",
+        "A Shadow"
       ],
-      "answer": "C) Orange Color",
+      "answer": "The Horizon",
       "difficulty": "medium"
     },
     {
-      "question": "I am mixing blue and red wax crayons to create purple.",
+      "question": "I am a picture meant to capture a moment, but I am made of memories, not ink.",
       "choices": [
-        "A) Brown Color",
-        "B) Green Color",
-        "C) Orange Color",
-        "D) Purple Color"
+        "A Memory",
+        "A Photograph",
+        "A Painting",
+        "A Dream"
       ],
-      "answer": "D) Purple Color",
+      "answer": "A Memory",
       "difficulty": "medium"
     },
     {
-      "question": "I am shading paper softly to make drawn shapes look 3D.",
+      "question": "I make mistakes disappear with a gentle rub.",
       "choices": [
-        "A) Pencil Shading",
-        "B) Outlining",
-        "C) Erasing Line",
-        "D) Tracing"
+        "An Eraser",
+        "A Cloth",
+        "Time",
+        "Water"
       ],
-      "answer": "A) Pencil Shading",
+      "answer": "An Eraser",
       "difficulty": "medium"
     },
     {
-      "question": "I am soft colored pastels smudged gently onto paper.",
+      "question": "I am a house drawn with a triangle roof and square windows.",
       "choices": [
-        "A) Wax Crayons",
-        "B) Soft Pastels",
-        "C) Chalk Sticks",
-        "D) Paints"
+        "A Home",
+        "A Castle",
+        "A Boat",
+        "A Box"
       ],
-      "answer": "B) Soft Pastels",
+      "answer": "A Home",
       "difficulty": "medium"
     },
     {
-      "question": "I am dark charcoal sticks used for deep black shadows.",
+      "question": "I am the act of making a picture using a pencil or crayon.",
       "choices": [
-        "A) Black Ink",
-        "B) Graphite Lead",
-        "C) Charcoal Stick",
-        "D) Soft Lead"
+        "Drawing",
+        "Painting",
+        "Writing",
+        "Dreaming"
       ],
-      "answer": "C) Charcoal Stick",
+      "answer": "Drawing",
       "difficulty": "medium"
     },
     {
-      "question": "I am a child's art kit filled with wax crayons and paper.",
+      "question": "I am a frame that holds a precious memory on the wall.",
       "choices": [
-        "A) Drawing Bag",
-        "B) Art Box",
-        "C) Pencil Case",
-        "D) Crayon Set"
+        "A Picture Frame",
+        "A Window",
+        "A Mirror",
+        "A Door"
       ],
-      "answer": "D) Crayon Set",
+      "answer": "A Picture Frame",
       "difficulty": "medium"
     },
     {
-      "question": "I am a little paper boat floating in rain water.",
+      "question": "I am the color of the ocean in a child's eyes.",
       "choices": [
-        "A) Paper Boat",
-        "B) Paper Kite",
-        "C) Card Box",
-        "D) Paper Note"
+        "Blue",
+        "Green",
+        "Gray",
+        "Black"
       ],
-      "answer": "A) Paper Boat",
+      "answer": "Blue",
       "difficulty": "medium"
     },
     {
-      "question": "I am a red heart drawn on paper to show a child's love.",
+      "question": "I am a gift created by small hands to warm a father's heart.",
       "choices": [
-        "A) Crayon Star",
-        "B) Drawn Heart",
-        "C) Paper Flower",
-        "D) Yellow Sun"
+        "A Drawing",
+        "A Toy",
+        "A Hug",
+        "A Song"
       ],
-      "answer": "B) Drawn Heart",
+      "answer": "A Drawing",
       "difficulty": "medium"
     },
     {
-      "question": "I am wax and paper drawn with love by little hands.",
+      "question": "I am a fragile piece of paper that holds a love stronger than the storm.",
       "choices": [
-        "A) Paper Card",
-        "B) Letter Note",
-        "C) Daughter's Art",
-        "D) Story Book"
+        "A Child's Drawing",
+        "A Letter",
+        "A Map",
+        "A Contract"
       ],
-      "answer": "C) Daughter's Art",
+      "answer": "A Child's Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I show a tiny boat with two stick figures on blue ocean waves.",
+      "question": "I am a smiling sun that shone even when the real sky turned black.",
       "choices": [
-        "A) Story Text",
-        "B) Sea Map",
-        "C) Oil Painting",
-        "D) Family Sketch"
+        "A Drawn Sun",
+        "A Memory",
+        "Hope",
+        "A Lantern"
       ],
-      "answer": "D) Family Sketch",
+      "answer": "A Drawn Sun",
       "difficulty": "hard"
     },
     {
-      "question": "I am a bright yellow sun drawn at the top of a paper page.",
+      "question": "I am an imperfect sketch, but to a father, I am a masterpiece.",
       "choices": [
-        "A) Crayoned Sun",
-        "B) Golden Star",
-        "C) Yellow Coin",
-        "D) Lighthouse Light"
+        "A Daughter's Art",
+        "A Memory",
+        "A Dream",
+        "A Flaw"
       ],
-      "answer": "A) Crayoned Sun",
+      "answer": "A Daughter's Art",
       "difficulty": "hard"
     },
     {
-      "question": "I hold childish smiles that ocean water cannot wash away.",
+      "question": "I am wax colors melted into a promise of safe return.",
       "choices": [
-        "A) Wall Mirror",
-        "B) Paper Memory",
-        "C) Photograph",
-        "D) Glass Frame"
+        "A Drawing",
+        "A Candle",
+        "A Seal",
+        "A Secret"
       ],
-      "answer": "B) Paper Memory",
+      "answer": "A Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am simple stick figures holding hands beside a blue ocean.",
+      "question": "I am the innocence captured in crude lines and bright colors.",
       "choices": [
-        "A) Sketch Marks",
-        "B) Doodle Lines",
-        "C) Stick Figures",
-        "D) Pencil Figures"
+        "Childhood Art",
+        "A Memory",
+        "A Dream",
+        "A Story"
       ],
-      "answer": "C) Stick Figures",
+      "answer": "Childhood Art",
       "difficulty": "hard"
     },
     {
-      "question": "I tear easily if pulled, yet I hold a daughter's whole heart.",
+      "question": "I am a visual anchor that kept a drowning man holding on.",
       "choices": [
-        "A) Cotton Cloth",
-        "B) Silk Ribbon",
-        "C) Tree Leaf",
-        "D) Paper Keepsake"
+        "The Drawing",
+        "A Rope",
+        "A Rock",
+        "A Prayer"
       ],
-      "answer": "D) Paper Keepsake",
+      "answer": "The Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a drawing tucked into a fisherman's coat for warmth at sea.",
+      "question": "I am an image of a boat that never sinks, drawn on dry land.",
       "choices": [
-        "A) Daughter's Gift",
-        "B) Letter Note",
-        "C) Photograph",
-        "D) Paper Card"
+        "A Paper Boat",
+        "A Memory",
+        "A Dream",
+        "A Wish"
       ],
-      "answer": "A) Daughter's Gift",
+      "answer": "A Paper Boat",
       "difficulty": "hard"
     },
     {
-      "question": "I am wax crayon colors that keep memories bright forever.",
+      "question": "I am a piece of a child's soul, folded and kept in a pocket.",
       "choices": [
-        "A) Water Paint",
-        "B) Crayon Colors",
-        "C) Black Ink",
-        "D) Soft Chalk"
+        "A Drawing",
+        "A Secret",
+        "A Tear",
+        "A Promise"
       ],
-      "answer": "B) Crayon Colors",
+      "answer": "A Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a paper sun that shines even during dark ocean storms.",
+      "question": "I am the only sun that shines in the dark depths of Campo Lunan.",
       "choices": [
-        "A) Beacon Ray",
-        "B) Lantern Light",
-        "C) Drawn Sun",
-        "D) Moon Light"
+        "The Drawn Sun",
+        "The Luma",
+        "A Memory",
+        "A Crystal"
       ],
-      "answer": "C) Drawn Sun",
+      "answer": "The Drawn Sun",
       "difficulty": "hard"
     },
     {
-      "question": "I am crude crayon lines drawn with love, worth more than gold.",
+      "question": "I am a silent plea rendered in crayon: Come back to us.",
       "choices": [
-        "A) Story Book",
-        "B) Nautical Map",
-        "C) Written Letter",
-        "D) Child's Drawing"
+        "A Daughter's Art",
+        "A Prayer",
+        "A Letter",
+        "A Tear"
       ],
-      "answer": "D) Child's Drawing",
+      "answer": "A Daughter's Art",
       "difficulty": "hard"
     },
     {
-      "question": "I am a daughter's wish written in wax: Come home safe, Papa!",
+      "question": "I am the purest form of art, untainted by skill but overflowing with love.",
       "choices": [
-        "A) Drawn Wish",
-        "B) Letter Note",
-        "C) Prayer Vow",
-        "D) Silent Plea"
+        "A Child's Drawing",
+        "A Memory",
+        "A Dream",
+        "A Song"
       ],
-      "answer": "A) Drawn Wish",
+      "answer": "A Child's Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a colorful paper treasure kept on a wooden shelf.",
+      "question": "I am a memory preserved not in the mind, but on a crumpled page.",
       "choices": [
-        "A) Story Book",
-        "B) Paper Treasure",
-        "C) Gift Box",
-        "D) Child Toy"
+        "A Drawing",
+        "A Photograph",
+        "A Diary",
+        "A Letter"
       ],
-      "answer": "B) Paper Treasure",
+      "answer": "A Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a crayon drawing of a blue ocean and a happy home.",
+      "question": "I am a symbol of what was lost to the sea, found among the fragments.",
       "choices": [
-        "A) Landscape Art",
-        "B) Sea Map",
-        "C) Home Picture",
-        "D) Pencil Sketch"
+        "The Drawing",
+        "The Boat",
+        "The Net",
+        "The Rosary"
       ],
-      "answer": "C) Home Picture",
+      "answer": "The Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am the innocence of a child's love drawn on white paper.",
+      "question": "I am a tiny world created by a child, where the ocean is always blue and safe.",
       "choices": [
-        "A) Drawn Memory",
-        "B) Paper Story",
-        "C) Child Song",
-        "D) Child's Love"
+        "The Drawing",
+        "A Dream",
+        "A Memory",
+        "A Story"
       ],
-      "answer": "D) Child's Love",
+      "answer": "The Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am the memory of a young daughter waiting at the pier.",
+      "question": "I am the enduring warmth of a family, captured in wax and paper.",
       "choices": [
-        "A) Daughter's Love",
-        "B) Waiting Hope",
-        "C) Child Prayer",
-        "D) Grave Memory"
+        "A Daughter's Art",
+        "A Photograph",
+        "A Fire",
+        "A Memory"
       ],
-      "answer": "A) Daughter's Love",
+      "answer": "A Daughter's Art",
       "difficulty": "hard"
     }
   ]

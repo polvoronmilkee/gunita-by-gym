@@ -164,7 +164,8 @@ export class DialogueBox {
 
     if (portraitSrc) {
       this.portraitImg.src = portraitSrc;
-      this.portraitFrame.style.display = "flex";
+      // Portraits disabled per user request
+      this.portraitFrame.style.display = "none";
     } else {
       this.portraitFrame.style.display = "none";
     }

@@ -536,6 +536,7 @@ export class FamilyHomeScene extends Phaser.Scene {
 
   exitFamilyHouse() {
     this.dialogueActive = true;
+    this.isExiting = true;
     if (this.player && this.player.sprite && this.player.sprite.body) {
       this.player.sprite.body.setVelocity(0);
       this.player.sprite.anims.stop();
@@ -654,7 +655,7 @@ export class FamilyHomeScene extends Phaser.Scene {
   }
 
   async saveProgress(forceBackendSave = false) {
-    if (window.isExplorationMode) return;
+    if (this.isExiting || window.isExplorationMode) return;
     const cache = getCache();
     if (!cache || !cache.player_id || cache.is_exploration_mode || cache.player_id === "explorer" || !this.player?.sprite) return;
 
