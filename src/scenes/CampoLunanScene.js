@@ -287,11 +287,11 @@ export class CampoLunanScene extends Phaser.Scene {
 
     // Retrieve coordinates from local cache immediately, default to (1278, 1779)
     const cache = getCache() || {};
-    
+
     if (!cache.has_completed_tutorial && !cache.has_talked_to_luma) {
-        cache.position_x = 1278;
-        cache.position_y = 1779;
-        setCache(cache);
+      cache.position_x = 1278;
+      cache.position_y = 1779;
+      setCache(cache);
     }
 
     let spawnX =
@@ -353,9 +353,11 @@ export class CampoLunanScene extends Phaser.Scene {
           const dx = cluster.x - pos.x;
           const dy = cluster.y - pos.y;
           if (Math.sqrt(dx * dx + dy * dy) < 200) {
+            // Optimize O(1) running average instead of O(N) reduce
+            const newLen = cluster.tiles.length + 1;
+            cluster.x = (cluster.x * cluster.tiles.length + pos.x) / newLen;
+            cluster.y = (cluster.y * cluster.tiles.length + pos.y) / newLen;
             cluster.tiles.push(pos);
-            cluster.x = cluster.tiles.reduce((sum, t) => sum + t.x, 0) / cluster.tiles.length;
-            cluster.y = cluster.tiles.reduce((sum, t) => sum + t.y, 0) / cluster.tiles.length;
             found = true;
             break;
           }
@@ -364,9 +366,9 @@ export class CampoLunanScene extends Phaser.Scene {
           this.graveClusters.push({ x: pos.x, y: pos.y, tiles: [pos] });
         }
       });
-      
+
       this.graveClusters.sort((a, b) => a.x - b.x);
-      
+
       const mapCenterX = map.widthInPixels / 2;
       let grave1Idx = -1;
       let minDistRight = Infinity;
@@ -379,11 +381,11 @@ export class CampoLunanScene extends Phaser.Scene {
           }
         }
       });
-      
+
       if (grave1Idx === -1 && this.graveClusters.length > 0) {
-        grave1Idx = Math.floor(this.graveClusters.length / 2); 
+        grave1Idx = Math.floor(this.graveClusters.length / 2);
       }
-      
+
       this.graveClusters.forEach((cluster, idx) => {
         cluster.isGrave1 = (idx === grave1Idx);
         cluster.id = cluster.isGrave1 ? 1 : (idx < grave1Idx ? idx + 2 : idx + 1);
@@ -815,7 +817,7 @@ export class CampoLunanScene extends Phaser.Scene {
           7: { title: "Grave VII\nAwit ng Bagani (Song of the Warrior)", desc: "A memory of traditional martial arts and defense. (Cannot enter yet)" },
           8: { title: "Grave VIII\nSayaw ng Pagsamo (Dance of Supplication)", desc: "A memory of pre-colonial rituals and spirituality. (Cannot enter yet)" },
         };
-        
+
         const id = this.currentGraveCluster ? this.currentGraveCluster.id : 2;
         const graveData = customGraves[id] || { title: `Grave ${id}\nUnknown Memory`, desc: "A forgotten memory waiting to be discovered. (Cannot enter yet)" };
 
@@ -897,7 +899,7 @@ export class CampoLunanScene extends Phaser.Scene {
                   subtitle: "Entering Memory",
                   hint: "Crossing the veil between Campo Lunan and forgotten memories..."
                 });
-                
+
                 setTimeout(() => {
                   import("../systems/TransitionSystem.js").then(
                     ({ TransitionSystem }) => {
@@ -1089,7 +1091,7 @@ export class CampoLunanScene extends Phaser.Scene {
         this.player.sprite.body.setVelocity(0);
         this.player.sprite.anims.stop();
       }
-      
+
       TransitionSystem.shatteredGlassTransition(this, () => {
         if (this.audioManager) this.audioManager.stopMusic();
         if (this.lumaGuidanceBox) this.lumaGuidanceBox.hide();
@@ -1243,7 +1245,7 @@ export class CampoLunanScene extends Phaser.Scene {
     // During intro tutorial sequence, don't blindly autosave coordinates to backend
     // to avoid spam, unless a manual forceBackendSave (like dialogue finish) is called.
     if (!cache.has_completed_tutorial && !forceBackendSave) {
-      return; 
+      return;
     }
 
     const state = {
@@ -1270,7 +1272,7 @@ export class CampoLunanScene extends Phaser.Scene {
 
     // Skip backend API call if nothing changed, to throttle network requests
     if (!forceBackendSave && !hasStateChanged) {
-      return; 
+      return;
     }
 
     if (this.isSaving) return; // Prevent overlapping API calls
@@ -1350,7 +1352,7 @@ export class CampoLunanScene extends Phaser.Scene {
     let nearGrave = false;
     let nearestDist = Infinity;
     let closestGraveCluster = null;
-    
+
     if (this.graveClusters && this.graveClusters.length > 0) {
       for (const cluster of this.graveClusters) {
         const dist = Phaser.Math.Distance.Between(
@@ -1469,7 +1471,7 @@ export class CampoLunanScene extends Phaser.Scene {
         const px = this.player.sprite.x;
         const py = this.player.sprite.y;
         const angle = Phaser.Math.Angle.Between(px, py, targetX, targetY);
-        
+
         const radius = 35;
         this.objectiveArrow.x = px + Math.cos(angle) * radius;
         this.objectiveArrow.y = py + Math.sin(angle) * radius;

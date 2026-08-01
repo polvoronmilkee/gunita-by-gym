@@ -37,6 +37,12 @@ export class PreloadScene extends Phaser.Scene {
         AUDIO_SETTINGS.sfx.lumaSwish.path,
       );
     }
+    this.load.image("decor2", "src/assets/grave1-v2/TilesetHouse.png");
+    this.load.image("stonepath-tileset", "src/assets/grave1-v2/Road2_ground.png");
+    this.load.image("decor3", "src/assets/grave1-v2/decor3.png");
+    this.load.image("supplies", "src/assets/grave1-v2/Supplies.png");
+    this.load.image("broken-houses", "src/assets/grave1-v2/broken houses.png");
+    this.load.image("TilesetElement", "src/assets/grave1-v2/TilesetElement.png");
     this.load.image("bg-fish-basket", "src/assets/grave1-elements/bullet-scenes/fish-basket.png");
     this.load.image("bg-daughters-drawing", "src/assets/grave1-elements/bullet-scenes/daughters-drawing.png");
     this.load.spritesheet("rain", "src/assets/grave1-v2/rain-new-sprite.png", {

@@ -215,12 +215,15 @@ export class Grave1 extends Phaser.Scene {
       "broken-houses": "broken houses.png"
     };
 
+    // Remove the 3rd duplicate decor3 (Index 13) to prevent it from overlapping the 2nd decor3's GID range
+    mapData.tilesets = mapData.tilesets.filter((ts, index) => !(ts.name === "decor3" && index === 13));
+
     mapData.tilesets = mapData.tilesets.map((ts, index) => {
       let name = ts.name || "";
       if (ts.source) {
         name = ts.source.substring(ts.source.lastIndexOf("/") + 1).replace(".tsx", "");
       }
-      const frameName = mappings[name] || (name + ".png");
+      let frameName = mappings[name] || (name + ".png");
 
       const texture = this.textures.get(frameName);
       let imgW = 32, imgH = 32;
@@ -272,7 +275,7 @@ export class Grave1 extends Phaser.Scene {
       const newTs = {
         ...ts,
         firstgid: ts.firstgid,
-        name: name,
+        name: name + "_" + index, // Fix duplicate name bug
         image: finalFrameName,
         imagewidth: imgW,
         imageheight: imgH,
@@ -490,6 +493,7 @@ export class Grave1 extends Phaser.Scene {
       "man-searching": "man-searching",
       "man-talking": "man-talking",
       "mang-tomas": "mang-tomas",
+      "mang-tomas-final": "mang-tomas",
       "sick-wife": "sick-wife",
       "woman-picking-flowers": "woman-picking-flowers",
       "woman-searching": "woman-searching",
@@ -547,12 +551,16 @@ export class Grave1 extends Phaser.Scene {
             const frameCount = newNpcFrameCounts[spriteKey];
             const animKey = `npc-anim-${spriteKey}`;
             if (!this.anims.exists(animKey)) {
+              const tex = this.textures.get(`npc-${spriteKey}`);
+              const actualFrames = tex ? tex.frameTotal - 1 : frameCount;
               let startFrame = 0;
-              let endFrame = frameCount - 1;
+              let endFrame = Math.min(frameCount - 1, actualFrames - 1);
+
               if (spriteKey === "sick-wife") {
-                startFrame = 6;
-                endFrame = 7;
+                startFrame = Math.max(0, actualFrames - 2);
+                endFrame = Math.max(0, actualFrames - 1);
               }
+              
               this.anims.create({
                 key: animKey,
                 frames: this.anims.generateFrameNumbers(`npc-${spriteKey}`, { start: startFrame, end: endFrame }),
@@ -733,12 +741,14 @@ export class Grave1 extends Phaser.Scene {
 
     // --- DYNAMIC WASTELAND / RAIN SYSTEM FROM TILED MAP (ID 509 / "Wasteland") ---
     if (!this.anims.exists("rain-fall")) {
+      const tex = this.textures.get("rain");
+      const maxFrame = tex ? tex.frameTotal - 2 : 23; 
       this.anims.create({
         key: "rain-fall",
-        frames: this.anims.generateFrameNumbers("rain", { start: 0, end: 23 }),
+        frames: this.anims.generateFrameNumbers("rain", { start: 0, end: Math.max(0, maxFrame) }),
         frameRate: 16,
         repeat: -1,
-      });
+      }); 
     }
 
     let wastelandObj = null;
@@ -1018,8 +1028,10 @@ export class Grave1 extends Phaser.Scene {
     // Advance dialogue with key down events
     const handleInteract = () => {
       if (this.scene.isPaused()) return;
-      if (this.dialogueActive) return;
-
+      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
+        this.dialogue.onComplete();
+        return;
+      }
       if (!this.dialogueActive && this.currentFragment && Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y) < 60) {
         let riddleData, artifactKey, dialogueText, sceneKey, bgKey;
         if (this.storyStage === 1) {
@@ -1423,10 +1435,10 @@ export class Grave1 extends Phaser.Scene {
     }
     this.dialogue.hide();
 
-    try {
-      const spawnX = this.player.sprite.x;
-      const spawnY = this.player.sprite.y;
+    let spawnX = this.player.sprite.x;
+    let spawnY = this.player.sprite.y;
 
+    try {
       const lumaLand = this.getNearestLandCoordinate(spawnX + 36, spawnY - 30, this.map);
 
       // Create Luma sprite (initially hidden/invisible) near Vino (matches Campo Lunan positioning)
