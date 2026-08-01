@@ -1326,9 +1326,15 @@ export class Grave1 extends Phaser.Scene {
           dialogueText = "Correct! The crystal becomes a child's Drawing.";
           sceneKey = "fragment-daughters-drawing";
           bgKey = "bg-daughters-drawing";
+        } else if (this.storyStage === 5) {
+          riddleData = { riddles: [] };
+          artifactKey = "final-artifact";
+          dialogueText = "Correct! The final memory is unlocked.";
+          sceneKey = "final-boss-fisherman";
+          bgKey = "bg-final-conclusion";
         }
 
-        const riddlesToPass = riddleData.riddles || riddleData;
+        const riddlesToPass = (riddleData && riddleData.riddles) ? riddleData.riddles : riddleData;
         this.startFragmentChallenge(riddlesToPass, () => {
           console.log("[Grave1] onCorrect fired for artifactKey:", artifactKey);
           if (this.currentFragment) {
@@ -1351,6 +1357,11 @@ export class Grave1 extends Phaser.Scene {
             this.savePosition();
           } catch (e) {
             console.warn("Failed to save position:", e);
+          }
+
+          if (this.storyStage === 5) {
+            this.startFinalRiddleSequence();
+            return;
           }
 
           this.showArtifactClaimModal(artifactKey, () => {
@@ -1446,8 +1457,14 @@ export class Grave1 extends Phaser.Scene {
         }
 
         if (this.storyStage === 5 && npcKey === "npc-mang-tomas") {
-             const clueText = this.getRandomVariant("mang-tomas-clue", "The final memory awaits. Will you listen?");
-             this.spawnFragment(this.closestNpc, "Mang Tomas", clueText);
+             this.startDialogueSequence([
+               { speaker: "Mang Tomas", text: "I... I am losing the pieces of my story..." },
+               { speaker: "Mang Tomas", text: "My memories... my very soul... they are becoming fragmented." },
+               { speaker: "Mang Tomas", text: "Please... you must help me remember before the fog takes me completely." }
+             ], () => {
+               this.spawnFragment(this.closestNpc, "Mang Tomas", "The final memory awaits. Will you listen?");
+             });
+             return;
         } else if (this.storyStage === 5) {
              const compText = this.getRandomVariant("random-guy-completed", "The sea is calm now. We remember Mang Tomas.");
              this.startDialogueSequence([{ speaker: "Villager", text: compText }]);
@@ -1857,6 +1874,11 @@ export class Grave1 extends Phaser.Scene {
       title = "LUMA'S FAREWELL";
       objective = "Objective Complete";
       hint = "Mang Tomas' story has been<br/>remembered once more.<br/><br/>The sea may forget footprints,<br/>but it never forgets the lives<br/>that sailed upon it.";
+    } else if (this.storyStage === 5 && this.currentFragment && this.currentFragment.active) {
+      // Objective 15.5 (Save Mang Tomas' Soul)
+      title = "LUMA'S REFLECTION";
+      objective = "Save Mang Tomas' Soul";
+      hint = "Restore his final fragmented memory.";
     } else if (this.inFinalRiddle) {
       // Objective 15 (Final Riddle Active)
       title = "LUMA'S REFLECTION";
@@ -2445,9 +2467,6 @@ export class Grave1 extends Phaser.Scene {
               setTimeout(() => {
                 try {
                   onCorrect();
-                  if (activeScene === "final-boss-fisherman") {
-                    this.showFinalArtifactButton();
-                  }
                 } catch (err) {
                   console.error("Error in onCorrect:", err);
                   this.dialogueActive = false;
@@ -2481,47 +2500,7 @@ export class Grave1 extends Phaser.Scene {
     });
   }
 
-  showFinalArtifactButton() {
-    const btn = document.createElement("button");
-    btn.className = "memory-tablet";
-    btn.style.position = "fixed";
-    btn.style.top = "50%";
-    btn.style.left = "50%";
-    btn.style.transform = "translate(-50%, -50%)";
-    btn.style.zIndex = "9999";
-    btn.style.boxShadow = "0 0 20px rgba(45, 212, 191, 0.5)";
-    
-    btn.innerHTML = `
-      <div class="tablet-icon">🏆</div>
-      <div class="tablet-content">
-        <span class="tablet-title" id="final-artifact-title">CLAIM FINAL ARTIFACT</span>
-        <span class="tablet-desc" id="final-artifact-desc">Connect to GameOn to claim</span>
-      </div>
-    `;
-
-    btn.onclick = async () => {
-      const title = document.getElementById("final-artifact-title");
-      const desc = document.getElementById("final-artifact-desc");
-      if (title) title.textContent = "CONNECTING...";
-      if (desc) desc.textContent = "Please authorize in the new tab";
-      
-      const GAME_ID_2 = "YOUR_GAME_ID_2_HERE";
-      const success = await connectAndUnlock(GAME_ID_2);
-      
-      if (success) {
-        if (title) title.textContent = "ARTIFACT CLAIMED!";
-        if (desc) desc.textContent = "Congratulations!";
-        setTimeout(() => {
-          btn.remove();
-        }, 3000);
-      } else {
-        if (title) title.textContent = "CONNECTION FAILED";
-        if (desc) desc.textContent = "Click to try again";
-      }
-    };
-
-    document.body.appendChild(btn);
-  }
+        // showFinalArtifactButton removed
 
   enterFamilyHouse() {
     this.dialogueActive = true;
