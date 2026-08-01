@@ -1196,7 +1196,9 @@ export class CampoLunanScene extends Phaser.Scene {
     // Keyboard bindings for dialogue & interaction
     this.input.keyboard.on("keydown-E", () => {
       if (this.dialogueActive) {
-        this.dialogue.onComplete();
+        if (this.dialogue && typeof this.dialogue.onComplete === "function") {
+          this.dialogue.onComplete();
+        }
       } else if (this.isNearTutorialFragment) {
         this.reenterTutorial();
       } else if (this.isNearLuma2) {
@@ -1210,7 +1212,9 @@ export class CampoLunanScene extends Phaser.Scene {
 
     this.input.keyboard.on("keydown-SPACE", () => {
       if (this.dialogueActive) {
-        this.dialogue.onComplete();
+        if (this.dialogue && typeof this.dialogue.onComplete === "function") {
+          this.dialogue.onComplete();
+        }
       }
     });
 
