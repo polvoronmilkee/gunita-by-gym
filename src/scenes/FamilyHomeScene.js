@@ -7,6 +7,9 @@ import { InteractionPrompt } from "../ui/InteractionPrompt.js";
 import { getCache, setCache } from "../save.js";
 import { saveGameState, loadGameState, syncOfflineData } from "../utils/api.js";
 import { AudioManager } from "../utils/audioManager.js";
+import { TransitionSystem } from "../systems/TransitionSystem.js";
+import { showArtifactClaimModal as displayArtifactClaimModal } from "../ui/ArtifactClaimModal.js";
+import { addInventoryItem } from "../utils/api.js";
 
 export class FamilyHomeScene extends Phaser.Scene {
   constructor() {
@@ -36,6 +39,8 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.load.spritesheet("sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", { frameWidth: 40, frameHeight: 43 });
     this.load.json("sick-wife-initial", "src/assets/data/dialogues/grave1/old-wife/initial.json");
     this.load.json("sick-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
+    this.load.json("riddle-rosary", "src/assets/data/dialogues/fragments-riddles/rosary.json");
+    this.load.image("bg-rosary", "src/assets/grave1-elements/bullet-scenes/rosary.png");
   }
 
   create(data) {
@@ -54,6 +59,15 @@ export class FamilyHomeScene extends Phaser.Scene {
       }, 300); // Wait a bit after scene is created before hiding
     } else {
       this.playIntroDialogue();
+    }
+
+    if (!this.anims.exists("fragment-idle-anim")) {
+      this.anims.create({
+        key: "fragment-idle-anim",
+        frames: this.anims.generateFrameNumbers("fragment-idle"),
+        frameRate: 6,
+        repeat: -1
+      });
     }
 
     const mapData = this.cache.json.get("family-home-map");
@@ -249,22 +263,46 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.input.keyboard.on("keydown-P", () => this.handlePause());
     this.input.keyboard.on("keydown-ESC", () => this.handlePause());
 
+    this.input.keyboard.on("keydown-E", () => {
+      if (this.scene.isPaused()) return;
+      if (this.dialogueActive) return;
 
-
-    // Advance dialogue sequence with E or SPACE or start interaction
-    const handleInteract = () => {
-      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
-        this.dialogue.onComplete();
-        return;
+      if (this.currentFragment && this.currentFragment.active) {
+        const distToFragment = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y);
+        if (distToFragment < 60) {
+          const riddleData = this.cache.json.get("riddle-rosary") || {};
+          this.startFragmentChallenge(riddleData, () => {
+            if (this.currentFragment) {
+              this.currentFragment.destroy();
+              this.currentFragment = null;
+            }
+            try {
+              const cache = getCache();
+              const inventoryId = cache ? (cache.inventory_id || cache.player_id) : "local_unknown";
+              addInventoryItem(inventoryId, "rosary", "memory_fragment");
+            } catch (e) {
+              console.warn("Failed to add inventory item:", e);
+            }
+            this.showArtifactClaimModal("rosary", () => {
+              this.dialogueActive = false;
+            });
+          }, () => {
+            this.startDialogueSequence([{ speaker: "Vino", text: "That answer doesn't seem right... I should try again." }]);
+          }, "bg-rosary", "fragment-rosary");
+          return; // ensure we don't also trigger sick wife
+        }
       }
 
-      if (!this.dialogueActive && this.isNearSickWife) {
+      if (this.isNearSickWife) {
         this.talkToSickWife();
       }
-    };
-    this.input.keyboard.on("keydown-E", handleInteract);
-    this.input.keyboard.on("keydown-SPACE", handleInteract);
+    });
 
+    this.input.keyboard.on("keydown-SPACE", () => {
+      if (this.dialogueActive && this.dialogue && typeof this.dialogue.onComplete === 'function') {
+        this.dialogue.onComplete();
+      }
+    });
     this.input.keyboard.on("keydown-BACKSPACE", async () => {
       await this.saveProgress();
       window.returnToGunitaMenu?.();
@@ -307,13 +345,25 @@ export class FamilyHomeScene extends Phaser.Scene {
 
       if (dist < 55) {
         this.isNearSickWife = true;
-        this.interactionPrompt.show(this.sickWifeSprite, "E", "Talk to Sick Wife");
       } else {
         if (this.isNearSickWife) {
           this.isNearSickWife = false;
-          this.interactionPrompt.hide();
         }
       }
+    }
+
+    // Handle interaction with Fragment
+    if (this.currentFragment && this.currentFragment.active) {
+      const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, this.currentFragment.x, this.currentFragment.y);
+      if (dist < 60) {
+        if (this.interactionPrompt) this.interactionPrompt.show(this.currentFragment, "E", "SOLVE RIDDLE");
+      } else if (!this.isNearSickWife && this.interactionPrompt) {
+        this.interactionPrompt.hide();
+      }
+    } else if (this.isNearSickWife && this.interactionPrompt) {
+      this.interactionPrompt.show(this.sickWifeSprite, "E", "Talk to Sick Wife");
+    } else if (this.interactionPrompt) {
+      this.interactionPrompt.hide();
     }
 
     // Exit trigger if player walks near the bottom door area
@@ -344,14 +394,120 @@ export class FamilyHomeScene extends Phaser.Scene {
     let clueText = "";
     if (storyStage === 3) {
       clueText = this.getRandomVariant("sick-wife-clue", "Before every voyage... Tomas never forgot something precious.");
-      const freshCache = getCache() || {};
-      freshCache.unlocked_rosary_clue = true;
-      setCache(freshCache);
+      this.spawnFragment(this.sickWifeSprite, "Sick Wife", clueText);
     } else {
       clueText = this.getRandomVariant("sick-wife-initial", "Every afternoon when the sun sets over the waves, I still glance at the pathway...");
+      this.startDialogueSequence([{ speaker: "Sick Wife", text: clueText }]);
+    }
+  }
+
+  spawnFragment(npc, speaker, text) {
+    if (this.currentFragment || this.currentArtifact) {
+      this.startDialogueSequence([{ speaker: speaker, text: text }]);
+      return;
+    }
+    this.startDialogueSequence([
+      { speaker: speaker, text: text }
+    ], () => {
+      this.currentFragment = this.physics.add.sprite(npc.x, npc.y + 60, "fragment-idle");
+      this.currentFragment.setScale(32/64);
+      this.currentFragment.setDepth(this.currentFragment.y);
+      this.currentFragment.play("fragment-idle-anim");
+      
+      this.startDialogueSequence([
+        { speaker: "Vino", text: "A glowing memory fragment has materialized nearby! Let me inspect it." }
+      ]);
+    });
+  }
+
+  startFragmentChallenge(riddleData, onCorrect, onIncorrect, bgKey, sceneKey) {
+    this.dialogueActive = true;
+    if (this.interactionPrompt) this.interactionPrompt.hide();
+    if (this.player?.sprite?.body) {
+      this.player.sprite.body.setVelocity(0);
+      if (this.player.sprite.anims.isPlaying) this.player.sprite.anims.stop();
     }
 
-    this.startDialogueSequence([{ speaker: "Sick Wife", text: clueText }]);
+    const activeScene = sceneKey || 'fragment-rosary';
+    const soulName = "The Faithful Soul";
+    const dodgeLines = [
+      "Faith will guide you through the storm...",
+      "Hold onto your prayers.",
+      "Do not lose hope in the dark."
+    ];
+
+    TransitionSystem.shatteredGlassTransition(this, () => {
+      if (this.audioManager) this.audioManager.stopMusic();
+      if (this.interactionPrompt) this.interactionPrompt.hide();
+      if (this.hud) this.hud.setPauseVisible(false);
+      if (this.dialogue) {
+        this.dialogue.destroy();
+        this.dialogue = null;
+      }
+      this.scene.pause();
+      this.scene.launch(activeScene, {
+          riddleData: riddleData,
+          soulName: soulName,
+          dodgeLines: dodgeLines,
+          bgKey: bgKey,
+          onExit: () => {
+              this.dialogueActive = false;
+              if (this.interactionPrompt) this.interactionPrompt.hide();
+              if (this.audioManager) {
+                 this.audioManager.stopMusic();
+                 this.audioManager.playTrack("village-v1");
+              }
+              if (this.hud) this.hud.setPauseVisible(true);
+              this.scene.stop(activeScene);
+              this.scene.resume();
+          },
+          onComplete: () => {
+              console.log("[FamilyHomeScene] Fragment completed.");
+              this.dialogueActive = false;
+              if (this.currentFragment) {
+                  this.currentFragment.destroy();
+                  this.currentFragment = null;
+              }
+              if (this.interactionPrompt) this.interactionPrompt.hide();
+              if (this.audioManager) {
+                 this.audioManager.stopMusic();
+                 this.audioManager.playTrack("village-v1");
+              }
+              if (this.hud) this.hud.setPauseVisible(true);
+              this.scene.stop(activeScene);
+              this.scene.resume();
+              if (onCorrect) onCorrect();
+          },
+          onDeath: () => {
+              console.log("[FamilyHomeScene] Fragment failed.");
+              this.dialogueActive = false;
+              if (this.interactionPrompt) this.interactionPrompt.hide();
+              if (this.audioManager) {
+                 this.audioManager.stopMusic();
+                 this.audioManager.playTrack("village-v1");
+              }
+              if (this.hud) this.hud.setPauseVisible(true);
+              this.scene.stop(activeScene);
+              this.scene.resume();
+              if (onIncorrect) onIncorrect();
+          }
+      });
+      // CRITICAL: FamilyHomeScene is higher in the scene list than the fragment scenes.
+      // We MUST bring the fragment scene to the top, otherwise it will render UNDERNEATH FamilyHomeScene.
+      this.scene.bringToTop(activeScene);
+    });
+  }
+
+  showArtifactClaimModal(artifactKey, onContinue) {
+    this.dialogueActive = true;
+    displayArtifactClaimModal(artifactKey, () => {
+      // Advance storyStage locally just like Grave1 does
+      const cache = getCache() || {};
+      const currentStage = cache.story_stage || 1;
+      setCache({ ...cache, story_stage: currentStage + 1 });
+      this.dialogueActive = false;
+      if (onContinue) onContinue();
+    }, this.audioManager);
   }
 
   exitFamilyHouse() {

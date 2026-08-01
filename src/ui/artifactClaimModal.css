@@ -95,6 +95,7 @@ transform:rotate(360deg);
   left: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 99999;
   /* background: radial-gradient(circle at center, rgba(16, 14, 30, 0.88) 0%, rgba(5, 4, 12, 0.96) 100%); */
   backdrop-filter: blur(12px);
   display: flex;

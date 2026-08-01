@@ -28,6 +28,23 @@ export class BaseBulletHellScene extends Phaser.Scene {
       this.riddleList = [...jsonRiddles];
     }
 
+    if (!this.riddleList || this.riddleList.length === 0) {
+      const keyMap = {
+        "fragment-rosary": "riddle-rosary",
+        "fragment-fish-basket": "riddle-fish-basket",
+        "fragment-red-warning-flag": "riddle-weather-warning-flag",
+        "fragment-daughters-drawing": "riddle-daughters-drawing",
+        "final-boss-fisherman": "riddle-final-boss"
+      };
+      const cacheKey = keyMap[sceneKey];
+      if (cacheKey && this.cache.json.exists(cacheKey)) {
+        const cData = this.cache.json.get(cacheKey);
+        if (cData && cData.riddles && Array.isArray(cData.riddles)) {
+          this.riddleList = cData.riddles;
+        }
+      }
+    }
+
     this.remainingRiddles = Phaser.Utils.Array.Shuffle([...this.riddleList]);
     this.currentRiddle = null;
     this.recentRiddles = [];

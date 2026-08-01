@@ -431,7 +431,8 @@ export class Grave1 extends Phaser.Scene {
     if (collisionGroup && collisionGroup.objects) {
       collisionGroup.objects.forEach((obj) => {
         // Skip Wasteland (ID 509) & Forest darkens (ID 512) region objects so they don't create solid collision walls
-        if (obj.id === 509 || obj.id === 512 || (obj.name && (obj.name.toLowerCase() === "wasteland" || obj.name.toLowerCase() === "forest-darkens"))) {
+        // Also skip ID 444 (horizontal box blocking the bridge)
+        if (obj.id === 509 || obj.id === 512 || obj.id === 444 || (obj.name && (obj.name.toLowerCase() === "wasteland" || obj.name.toLowerCase() === "forest-darkens"))) {
           return;
         }
 
@@ -525,6 +526,10 @@ export class Grave1 extends Phaser.Scene {
         }
 
         const charName = obj.name;
+        // Skip these characters since they are spawned manually or moved to another scene
+        if (charName === "sick-wife" || charName === "young-daughter" || charName === "daughter" || charName === "mang-tomas" || charName === "npc-debt-collector" || charName === "npc-young-daughter" || charName === "npc-daughter" || charName === "OLD-DAUGHTER") {
+          return;
+        }
         const cleanedName = charName.replace(/-\d+$/, '');
         let spriteKey = characterNameMap[charName] || characterNameMap[cleanedName] || cleanedName;
         
@@ -592,13 +597,87 @@ export class Grave1 extends Phaser.Scene {
       });
     }
 
+    // Manually spawn Daughter at new location (2118, 1180)
+    const daughterNpc = this.npcs.create(2118, 1180, "npc-daughter");
+    daughterNpc.setDepth(1180);
+    daughterNpc.setScale(0.8);
+    daughterNpc.body.setSize(daughterNpc.width * 0.7, daughterNpc.height * 0.4);
+    daughterNpc.body.setOffset(daughterNpc.width * 0.15, daughterNpc.height * 0.5);
+    if (!this.anims.exists("npc-anim-daughter")) {
+      this.anims.create({
+        key: "npc-anim-daughter",
+        frames: this.anims.generateFrameNumbers("npc-daughter", { start: 0, end: 2 }),
+        frameRate: 4,
+        repeat: -1
+      });
+    }
+    daughterNpc.play("npc-anim-daughter");
+    daughterNpc.textureKey = "npc-daughter"; // Add a custom property so collision code can identify her key
+
+    // Manually spawn Mang Tomas at new location (2127, 3749)
+    const mangTomasNpc = this.npcs.create(2127, 3749, "npc-mang-tomas");
+    mangTomasNpc.setDepth(3749);
+    mangTomasNpc.setScale(0.8);
+    mangTomasNpc.body.setSize(mangTomasNpc.width * 0.7, mangTomasNpc.height * 0.4);
+    mangTomasNpc.body.setOffset(mangTomasNpc.width * 0.15, mangTomasNpc.height * 0.5);
+    if (!this.anims.exists("npc-anim-mang-tomas")) {
+      this.anims.create({
+        key: "npc-anim-mang-tomas",
+        frames: this.anims.generateFrameNumbers("npc-mang-tomas", { start: 0, end: 3 }),
+        frameRate: 4,
+        repeat: -1
+      });
+    }
+    mangTomasNpc.play("npc-anim-mang-tomas");
+    mangTomasNpc.textureKey = "npc-mang-tomas"; // Add a custom property so collision code can identify his key
+
+    // Manually spawn Old Fisherman and Young Fisherman since CHARS_SPAWNS was wiped in Tiled
+    const oldFisherman = this.npcs.create(625, 518, "npc-old-fisherman");
+    oldFisherman.setDepth(518);
+    oldFisherman.setScale(0.8);
+    oldFisherman.textureKey = "npc-old-fisherman";
+    if (!this.anims.exists("anim-old-fisherman")) {
+        this.anims.create({
+            key: "anim-old-fisherman",
+            frames: this.anims.generateFrameNumbers("npc-old-fisherman", { start: 0, end: 3 }),
+            frameRate: 4, repeat: -1
+        });
+    }
+    oldFisherman.play("anim-old-fisherman");
+
+    const youngFisherman = this.npcs.create(3281, 2082, "npc-young-fisherman");
+    youngFisherman.setDepth(2082);
+    youngFisherman.setScale(0.8);
+    youngFisherman.textureKey = "npc-young-fisherman";
+    if (!this.anims.exists("anim-young-fisherman")) {
+        this.anims.create({
+            key: "anim-young-fisherman",
+            frames: this.anims.generateFrameNumbers("npc-young-fisherman", { start: 0, end: 3 }),
+            frameRate: 4, repeat: -1
+        });
+    }
+    youngFisherman.play("anim-young-fisherman");
+
     this.physics.add.collider(this.player.sprite, this.npcs);
     
     // Create progression blocker towards the Northern Path
-    this.storyBlocker = this.physics.add.staticImage(3615, 2061, null).setSize(200, 50).setVisible(false);
-    this.physics.add.collider(this.player.sprite, this.storyBlocker);
+    // Disable storyBlocker for testing so the player can cross the bridge
+    // this.storyBlocker = this.physics.add.staticImage(3615, 2061, null).setSize(200, 50).setVisible(false);
+    // this.physics.add.collider(this.player.sprite, this.storyBlocker);
     
     this.storyStage = 1;
+    if (cache && cache.inventory) {
+      if (cache.inventory.includes("daughters-drawing")) {
+        this.storyStage = 5;
+      } else if (cache.inventory.includes("rosary")) {
+        this.storyStage = 4;
+      } else if (cache.inventory.includes("weather-warning-flag")) {
+        this.storyStage = 3;
+      } else if (cache.inventory.includes("fish-basket")) {
+        this.storyStage = 2;
+      }
+    }
+    
     this.currentFragment = null;
     this.currentArtifactKey = null;
     this.map = map;
@@ -632,18 +711,6 @@ export class Grave1 extends Phaser.Scene {
           if (items && Array.isArray(items)) {
             const keys = items.map(item => item.item_key);
             console.log("Loaded inventory items:", keys);
-            if (keys.includes("daughters-drawing")) {
-              this.storyStage = 5;
-            } else if (keys.includes("rosary")) {
-              this.storyStage = 4;
-            } else if (keys.includes("weather-warning-flag")) {
-              this.storyStage = 3;
-            } else if (keys.includes("fish-basket")) {
-              this.storyStage = 2;
-            } else {
-              this.storyStage = 1;
-            }
-            console.log("Reconstructed storyStage from inventory:", this.storyStage);
             
             // Sync loaded items into local cache so they persist across sessions for blocker checks
             const freshCache = getCache();
@@ -775,6 +842,84 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
+    if (!wastelandObj) {
+      wastelandObj = {
+        x: 1568,
+        y: 3840,
+        polygon: [
+          { "x": 0, "y": 0 },
+          { "x": 0, "y": -1568 },
+          { "x": 96, "y": -1568 },
+          { "x": 96, "y": -1536 },
+          { "x": 160, "y": -1536 },
+          { "x": 160, "y": -1504 },
+          { "x": 384, "y": -1504 },
+          { "x": 384, "y": -1472 },
+          { "x": 480, "y": -1472 },
+          { "x": 480, "y": -1440 },
+          { "x": 512, "y": -1440 },
+          { "x": 512, "y": -1408 },
+          { "x": 608, "y": -1408 },
+          { "x": 608, "y": -1376 },
+          { "x": 736, "y": -1376 },
+          { "x": 736, "y": -1344 },
+          { "x": 832, "y": -1344 },
+          { "x": 832, "y": -1312 },
+          { "x": 928, "y": -1312 },
+          { "x": 928, "y": -1280 },
+          { "x": 1024, "y": -1280 },
+          { "x": 1024, "y": -1248 },
+          { "x": 1088, "y": -1248 },
+          { "x": 1088, "y": -1216 },
+          { "x": 1152, "y": -1216 },
+          { "x": 1152, "y": -1184 },
+          { "x": 1248, "y": -1184 },
+          { "x": 1248, "y": -1152 },
+          { "x": 1344, "y": -1152 },
+          { "x": 1344, "y": -1120 },
+          { "x": 1440, "y": -1120 },
+          { "x": 1440, "y": -1088 },
+          { "x": 1504, "y": -1088 },
+          { "x": 1504, "y": -1056 },
+          { "x": 1600, "y": -1056 },
+          { "x": 1600, "y": -1024 },
+          { "x": 1728, "y": -1024 },
+          { "x": 1728, "y": -1056 },
+          { "x": 1824, "y": -1056 },
+          { "x": 1824, "y": -1088 },
+          { "x": 1920, "y": -1088 },
+          { "x": 1920, "y": -1120 },
+          { "x": 2016, "y": -1120 },
+          { "x": 2016, "y": -1152 },
+          { "x": 2112, "y": -1152 },
+          { "x": 2112, "y": -1184 },
+          { "x": 2208, "y": -1184 },
+          { "x": 2208, "y": -1216 },
+          { "x": 2304, "y": -1216 },
+          { "x": 2304, "y": -1248 },
+          { "x": 2368, "y": -1248 },
+          { "x": 2368, "y": -1280 },
+          { "x": 2464, "y": -1280 },
+          { "x": 2464, "y": -1312 },
+          { "x": 2560, "y": -1312 },
+          { "x": 2560, "y": -1344 },
+          { "x": 2656, "y": -1344 },
+          { "x": 2656, "y": -1376 },
+          { "x": 2720, "y": -1376 },
+          { "x": 2720, "y": -1344 },
+          { "x": 2752, "y": -1344 },
+          { "x": 2752, "y": -1312 },
+          { "x": 2816, "y": -1312 },
+          { "x": 2816, "y": -1280 },
+          { "x": 2848, "y": -1280 },
+          { "x": 2848, "y": -1216 },
+          { "x": 2848, "y": -1248 },
+          { "x": 2912, "y": -1248 },
+          { "x": 2912, "y": 0 }
+        ]
+      };
+    }
+
     if (wastelandObj && wastelandObj.polygon && wastelandObj.polygon.length > 0) {
       const originX = wastelandObj.x;
       const originY = wastelandObj.y;
@@ -854,6 +999,128 @@ export class Grave1 extends Phaser.Scene {
           }
         }
       }
+    }
+
+    if (!forestObj) {
+      forestObj = {
+        x: 0,
+        y: 3680,
+        polygon: [
+          { "x": 0, "y": 0 },
+          { "x": 64, "y": 0 },
+          { "x": 64, "y": -32 },
+          { "x": 96, "y": -32 },
+          { "x": 96, "y": -64 },
+          { "x": 192, "y": -64 },
+          { "x": 192, "y": -96 },
+          { "x": 256, "y": -96 },
+          { "x": 256, "y": -128 },
+          { "x": 352, "y": -128 },
+          { "x": 352, "y": -168 },
+          { "x": 368, "y": -168 },
+          { "x": 376, "y": -176 },
+          { "x": 376, "y": -192 },
+          { "x": 448, "y": -192 },
+          { "x": 448, "y": -224 },
+          { "x": 512, "y": -224 },
+          { "x": 512, "y": -256 },
+          { "x": 576, "y": -256 },
+          { "x": 576, "y": -288 },
+          { "x": 640, "y": -288 },
+          { "x": 640, "y": -320 },
+          { "x": 704, "y": -320 },
+          { "x": 704, "y": -352 },
+          { "x": 736, "y": -352 },
+          { "x": 736, "y": -384 },
+          { "x": 768, "y": -384 },
+          { "x": 768, "y": -416 },
+          { "x": 800, "y": -416 },
+          { "x": 800, "y": -448 },
+          { "x": 832, "y": -448 },
+          { "x": 832, "y": -480 },
+          { "x": 864, "y": -480 },
+          { "x": 864, "y": -512 },
+          { "x": 896, "y": -512 },
+          { "x": 896, "y": -576 },
+          { "x": 928, "y": -576 },
+          { "x": 928, "y": -608 },
+          { "x": 960, "y": -608 },
+          { "x": 960, "y": -672 },
+          { "x": 992, "y": -672 },
+          { "x": 992, "y": -704 },
+          { "x": 1024, "y": -704 },
+          { "x": 1024, "y": -736 },
+          { "x": 1056, "y": -736 },
+          { "x": 1056, "y": -768 },
+          { "x": 1088, "y": -768 },
+          { "x": 1088, "y": -832 },
+          { "x": 1120, "y": -832 },
+          { "x": 1120, "y": -864 },
+          { "x": 1152, "y": -864 },
+          { "x": 1152, "y": -896 },
+          { "x": 1184, "y": -896 },
+          { "x": 1184, "y": -928 },
+          { "x": 1216, "y": -896 },
+          { "x": 1216, "y": -992 },
+          { "x": 1248, "y": -992 },
+          { "x": 1248, "y": -1024 },
+          { "x": 1280, "y": -1024 },
+          { "x": 1280, "y": -1056 },
+          { "x": 1312, "y": -1056 },
+          { "x": 1312, "y": -1344 },
+          { "x": 1280, "y": -1344 },
+          { "x": 1280, "y": -1568 },
+          { "x": 1248, "y": -1568 },
+          { "x": 1248, "y": -1664 },
+          { "x": 1216, "y": -1664 },
+          { "x": 1216, "y": -1728 },
+          { "x": 1184, "y": -1728 },
+          { "x": 1184, "y": -1792 },
+          { "x": 1152, "y": -1792 },
+          { "x": 1152, "y": -1920 },
+          { "x": 1151.909, "y": -1938.909 },
+          { "x": 1100, "y": -1940.5 },
+          { "x": 1090, "y": -1946.75 },
+          { "x": 1095.272, "y": -1960.818 },
+          { "x": 1100.909, "y": -1967.363 },
+          { "x": 1100.909, "y": -1980.181 },
+          { "x": 1091.875, "y": -1984.5 },
+          { "x": 1093, "y": -2004.909 },
+          { "x": 1101.454, "y": -2012.545 },
+          { "x": 1108.545, "y": -2004 },
+          { "x": 1152.545, "y": -2004.363 },
+          { "x": 1152, "y": -2016 },
+          { "x": 1120, "y": -2016 },
+          { "x": 1120, "y": -2080 },
+          { "x": 1024, "y": -2080 },
+          { "x": 1024, "y": -2176 },
+          { "x": 928, "y": -2176 },
+          { "x": 928, "y": -2240 },
+          { "x": 864, "y": -2240 },
+          { "x": 832, "y": -2272 },
+          { "x": 768, "y": -2272 },
+          { "x": 768, "y": -2304 },
+          { "x": 704, "y": -2304 },
+          { "x": 672, "y": -2304 },
+          { "x": 672, "y": -2336 },
+          { "x": 576, "y": -2336 },
+          { "x": 480, "y": -2336 },
+          { "x": 448, "y": -2368 },
+          { "x": 416, "y": -2368 },
+          { "x": 416, "y": -2400 },
+          { "x": 352, "y": -2400 },
+          { "x": 352, "y": -2432 },
+          { "x": 320, "y": -2432 },
+          { "x": 320, "y": -2464 },
+          { "x": 256, "y": -2464 },
+          { "x": 256, "y": -2496 },
+          { "x": 192, "y": -2496 },
+          { "x": 192, "y": -2528 },
+          { "x": 96, "y": -2528 },
+          { "x": 96, "y": -2560 },
+          { "x": 0, "y": -2560 }
+        ]
+      };
     }
 
     if (forestObj && forestObj.polygon && forestObj.polygon.length > 0) {
@@ -983,11 +1250,12 @@ export class Grave1 extends Phaser.Scene {
     this.objectiveArrow.setDepth(15);
     this.objectiveArrow.lineStyle(2, 0x6ee7b7, 1);
     this.objectiveArrow.fillStyle(0x6ee7b7, 0.8);
-    // Draw a simple triangle pointing right
+    // Draw a clear chevron/dart pointing right
     this.objectiveArrow.beginPath();
-    this.objectiveArrow.moveTo(6, 0);
-    this.objectiveArrow.lineTo(-6, 4);
-    this.objectiveArrow.lineTo(-6, -4);
+    this.objectiveArrow.moveTo(12, 0); // Tip
+    this.objectiveArrow.lineTo(-8, 8); // Bottom wing
+    this.objectiveArrow.lineTo(-4, 0); // Inner indent
+    this.objectiveArrow.lineTo(-8, -8); // Top wing
     this.objectiveArrow.closePath();
     this.objectiveArrow.fillPath();
     this.objectiveArrow.strokePath();
@@ -1177,7 +1445,10 @@ export class Grave1 extends Phaser.Scene {
           }
         }
 
-        if (this.storyStage === 5) {
+        if (this.storyStage === 5 && npcKey === "npc-mang-tomas") {
+             const clueText = this.getRandomVariant("mang-tomas-clue", "The final memory awaits. Will you listen?");
+             this.spawnFragment(this.closestNpc, "Mang Tomas", clueText);
+        } else if (this.storyStage === 5) {
              const compText = this.getRandomVariant("random-guy-completed", "The sea is calm now. We remember Mang Tomas.");
              this.startDialogueSequence([{ speaker: "Villager", text: compText }]);
              return;
@@ -1192,7 +1463,7 @@ export class Grave1 extends Phaser.Scene {
         } else if (this.storyStage === 3 && (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife")) {
              const clueText = this.getRandomVariant("sick-wife-clue", this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious."));
              this.spawnFragment(this.closestNpc, "Sick Wife", clueText);
-        } else if (this.storyStage === 4 && npcKey === "npc-young-daughter") {
+        } else if (this.storyStage === 4 && (npcKey === "npc-young-daughter" || npcKey === "npc-daughter")) {
              const clueText = this.getRandomVariant("young-daughter-clue", "I made Papa a drawing... but I don't remember where I left it.");
              this.spawnFragment(this.closestNpc, "Daughter", clueText);
         } else {
@@ -1202,7 +1473,8 @@ export class Grave1 extends Phaser.Scene {
              if (npcKey === "npc-old-fisherman") { speaker = "Old Fisherman"; cacheKey = "old-fisherman-initial"; }
              else if (npcKey === "npc-young-fisherman") { speaker = "Young Fisherman"; cacheKey = "young-fisherman-initial"; }
              else if (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife") { speaker = "Sick Wife"; cacheKey = "sick-wife-initial"; }
-             else if (npcKey === "npc-young-daughter") { speaker = "Daughter"; cacheKey = "young-daughter-initial"; }
+             else if (npcKey === "npc-young-daughter" || npcKey === "npc-daughter") { speaker = "Daughter"; cacheKey = "young-daughter-initial"; }
+             else if (npcKey === "npc-mang-tomas") { speaker = "Mang Tomas"; cacheKey = "mang-tomas-initial"; }
              else if (npcKey === "npc-random-woman") { speaker = "Barangay Woman"; cacheKey = "random-woman-initial"; }
              else if (npcKey === "npc-random-guy") { speaker = "Villager"; cacheKey = "random-guy-before"; }
              else if (npcKey === "npc-young-kid") { speaker = "Young Boy"; cacheKey = "young-boy-initial"; }
@@ -1593,8 +1865,8 @@ export class Grave1 extends Phaser.Scene {
     } else if (this.storyStage === 5) {
       // Objective 14 (Reflect on story after 4th artifact)
       title = "LUMA'S REFLECTION";
-      objective = "Reflect on Mang Tomas'<br/>story.";
-      hint = "A restored memory is only<br/>complete when its lesson<br/>is understood.";
+      objective = "Find Mang Tomas.";
+      hint = "He can be found in the lighthouse<br/>of the abandoned village.";
     } else if (this.currentArtifactKey === "daughters-drawing") {
       // Objective 13 (Drawing restored on floor)
       title = "LUMA'S OBSERVATION";
@@ -1609,7 +1881,7 @@ export class Grave1 extends Phaser.Scene {
       // Objective 11 (Find Daughter)
       title = "LUMA'S OBSERVATION";
       objective = "Find Mang Tomas'<br/>daughter.";
-      hint = "Children remember with<br/>their hearts before their<br/>words.";
+      hint = "She can be found in the<br/>play ground.";
     } else if (this.currentArtifactKey === "rosary") {
       // Objective 10 (Rosary restored on floor)
       title = "LUMA'S OBSERVATION";
@@ -1624,7 +1896,7 @@ export class Grave1 extends Phaser.Scene {
       // Objective 8 (Speak with Mang Tomas' wife)
       title = "LUMA'S OBSERVATION";
       objective = "Speak with Mang Tomas'<br/>wife.";
-      hint = "The heart remembers what<br/>the mind forgets. She is home.";
+      hint = "She is in the family home.<br/>Go find her.";
     } else if (this.currentArtifactKey === "weather-warning-flag") {
       // Objective 7 (Warning Flag restored on floor)
       title = "LUMA'S OBSERVATION";
@@ -1964,20 +2236,37 @@ export class Grave1 extends Phaser.Scene {
     this.player.update(this.cursors);
     
     // Update Objective Compass Arrow
-    if (this.objectiveArrow && this.player && this.player.sprite && this.storyStage >= 1 && this.storyStage <= 4) {
-      let targetKey = "";
-      if (this.storyStage === 1) targetKey = "npc-old-fisherman";
-      else if (this.storyStage === 2) targetKey = "npc-young-fisherman";
-      else if (this.storyStage === 3) targetKey = "npc-sick-wife";
-      else if (this.storyStage === 4) targetKey = "npc-young-daughter";
+    if (this.objectiveArrow && this.player && this.player.sprite && this.storyStage >= 1 && this.storyStage <= 5) {
+      let targetX = null;
+      let targetY = null;
       
-      const targetNpc = this.npcs?.getChildren().find(n => n.texture && (n.texture.key === targetKey || (targetKey === "npc-sick-wife" && n.texture.key === "npc-old-wife")));
+      if (this.currentFragment && this.currentFragment.active) {
+        targetX = this.currentFragment.x;
+        targetY = this.currentFragment.y;
+      } else {
+        if (this.storyStage === 1) {
+          const npc = this.npcs?.getChildren().find(n => n.textureKey === "npc-old-fisherman" || n.texture?.key === "npc-old-fisherman");
+          if (npc) { targetX = npc.x; targetY = npc.y; }
+        } else if (this.storyStage === 2) {
+          const npc = this.npcs?.getChildren().find(n => n.textureKey === "npc-young-fisherman" || n.texture?.key === "npc-young-fisherman");
+          if (npc) { targetX = npc.x; targetY = npc.y; }
+        } else if (this.storyStage === 3) {
+          targetX = 3044; // Family Home door X
+          targetY = 320;  // Family Home door Y
+        } else if (this.storyStage === 4) {
+          const npc = this.npcs?.getChildren().find(n => n.textureKey === "npc-daughter" || n.texture?.key === "npc-daughter" || n.textureKey === "npc-young-daughter");
+          if (npc) { targetX = npc.x; targetY = npc.y; }
+        } else if (this.storyStage === 5) {
+          const npc = this.npcs?.getChildren().find(n => n.textureKey === "npc-mang-tomas" || n.texture?.key === "npc-mang-tomas");
+          if (npc) { targetX = npc.x; targetY = npc.y; }
+        }
+      }
       
-      if (targetNpc) {
+      if (targetX !== null && targetY !== null) {
         this.objectiveArrow.setVisible(true);
         const px = this.player.sprite.x;
         const py = this.player.sprite.y;
-        const angle = Phaser.Math.Angle.Between(px, py, targetNpc.x, targetNpc.y);
+        const angle = Phaser.Math.Angle.Between(px, py, targetX, targetY);
         
         const radius = 35;
         this.objectiveArrow.x = px + Math.cos(angle) * radius;
@@ -2130,6 +2419,10 @@ export class Grave1 extends Phaser.Scene {
           },
           onComplete: () => {
               this.dialogueActive = false;
+              if (this.currentFragment) {
+                  this.currentFragment.destroy();
+                  this.currentFragment = null;
+              }
               if (this.lumaGuidanceBox) {
                 this.lumaGuidanceBox.show();
               }

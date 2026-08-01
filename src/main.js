@@ -231,6 +231,7 @@ function renderSaveSlots(mode = currentModalMode) {
           () => {
             setActiveSlot(slot.slotIndex);
             setCache({
+              player_id: "local_user",
               current_world: "Lunan",
               current_area: "Campo Lunan",
               position_x: 320,

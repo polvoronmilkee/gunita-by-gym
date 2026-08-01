@@ -156,7 +156,13 @@ export function showArtifactClaimModal(artifactKey, onContinue, audioManager = n
     }
   };
 
+  let canClose = false;
+  setTimeout(() => {
+    canClose = true;
+  }, 1500);
+
   const handleContinue = () => {
+    if (!canClose) return;
     try {
       if (audioManager && typeof audioManager.playButtonSfx === "function") {
         audioManager.playButtonSfx();

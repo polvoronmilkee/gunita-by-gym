@@ -75,6 +75,16 @@ export function getCache() {
     return null;
   }
 
+  if (parsed && !parsed.player_id) {
+    parsed.player_id = "local_user";
+    try {
+      const activeSlotKey = getSlotKey(getActiveSlot());
+      localStorage.setItem(activeSlotKey, JSON.stringify(parsed));
+    } catch (e) {
+      console.error("Failed to auto-repair slot with player_id:", e);
+    }
+  }
+
   if (parsed && (parsed.is_exploration_mode || parsed.player_id === "explorer")) {
     const activeSlotKey = getSlotKey(getActiveSlot());
     localStorage.removeItem(activeSlotKey);

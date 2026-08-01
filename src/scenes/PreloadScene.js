@@ -58,6 +58,11 @@ export class PreloadScene extends Phaser.Scene {
     this.load.spritesheet("fragment-litol-shards", "src/assets/grave1-elements/fragments/crystal_shard litol shards sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet("fragment-bleed", "src/assets/grave1-elements/fragments/crystal_shard bleed sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet("fragment-cracks", "src/assets/grave1-elements/fragments/crystal_shard cracks sprite sheet.png", { frameWidth: 64, frameHeight: 64 });
+    
+    // New Character Spritesheets
+    this.load.spritesheet("npc-mang-tomas", "src/assets/grave1-v2/more-characters/mang-tomas.png", { frameWidth: 40, frameHeight: 43 });
+    this.load.spritesheet("npc-sick-wife", "src/assets/grave1-v2/more-characters/sick-wife.png", { frameWidth: 40, frameHeight: 43 });
+    this.load.spritesheet("npc-daughter", "src/assets/grave1-v2/more-characters/daughter.png", { frameWidth: 36, frameHeight: 35 });
   }
 
   create() {

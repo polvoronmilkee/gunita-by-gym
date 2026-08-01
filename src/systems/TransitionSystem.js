@@ -184,24 +184,15 @@ export class TransitionSystem {
             scene.transitionFadeBlack = fadeBlack;
             if (onComplete) onComplete();
 
-            // Fade out and destroy transition fadeBlack so resuming scene is never stuck on black
-            scene.tweens.add({
-              targets: fadeBlack,
-              alpha: 0,
-              duration: 400,
-              delay: 300,
-              onComplete: () => {
-                if (fadeBlack && fadeBlack.active) {
-                  fadeBlack.destroy();
-                }
-                if (scene.transitionFadeBlack === fadeBlack) {
-                  scene.transitionFadeBlack = null;
-                }
-                if (scene.physics && typeof scene.physics.resume === 'function') {
-                  scene.physics.resume();
-                }
+            // Destroy transition fadeBlack after short delay using setTimeout so it doesn't freeze when scene is paused
+            setTimeout(() => {
+              if (fadeBlack && fadeBlack.active) {
+                fadeBlack.destroy();
               }
-            });
+              if (scene.transitionFadeBlack === fadeBlack) {
+                scene.transitionFadeBlack = null;
+              }
+            }, 200);
           }
         });
       }
