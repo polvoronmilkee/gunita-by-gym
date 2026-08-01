@@ -16,6 +16,26 @@ export class CampoLunanScene extends Phaser.Scene {
     super("CampoLunanScene");
   }
 
+  init(data) {
+    this.initData = data || {};
+    // Ensure any leftover loading screens from previous transitions are destroyed
+    const removeLoadingScreens = () => {
+      const screens = document.querySelectorAll('.portal-loading-overlay');
+      screens.forEach(screen => screen.remove());
+    };
+    
+    if (data && data.loadingScreen) {
+      if (typeof data.loadingScreen.hide === 'function') {
+        data.loadingScreen.hide();
+      } else if (typeof data.loadingScreen.destroy === 'function') {
+        data.loadingScreen.destroy();
+      }
+      removeLoadingScreens();
+    } else {
+      removeLoadingScreens();
+    }
+  }
+
   preload() {
     this.load.json(
       "campo-lunan-map",
@@ -390,6 +410,15 @@ export class CampoLunanScene extends Phaser.Scene {
         cluster.isGrave1 = (idx === grave1Idx);
         cluster.id = cluster.isGrave1 ? 1 : (idx < grave1Idx ? idx + 2 : idx + 1);
       });
+
+      // If Grave 1 is completed, apply the restored visual effect
+      const cache = getCache() || {};
+      if (cache.grave_1_completed) {
+        const grave1 = this.graveClusters.find(c => c.isGrave1);
+        if (grave1) {
+          // Intentionally left blank to remove effects on Mang Tomas grave
+        }
+      }
     }
 
     //Load static map collisions from Tiled
@@ -845,6 +874,35 @@ export class CampoLunanScene extends Phaser.Scene {
         return;
       }
 
+      if (cache?.grave_1_completed) {
+        let step = 0;
+        const steps = [
+          {
+            speaker: "Grave I",
+            text: "Ang Huling Mangingisda\nThe Last Fisherman",
+          },
+          {
+            speaker: "Memory",
+            text: "His memories have been saved and restored. The sea remembers him now.",
+          }
+        ];
+        
+        const runRestoredDialogue = () => {
+          if (step < steps.length) {
+            const current = steps[step];
+            this.dialogue.showText(current.speaker, current.text, () => {
+              step++;
+              runRestoredDialogue();
+            });
+          } else {
+            this.dialogue.hide();
+            this.dialogueActive = false;
+          }
+        };
+        runRestoredDialogue();
+        return;
+      }
+
       let step = 0;
       const steps = [
         {
@@ -1070,6 +1128,7 @@ export class CampoLunanScene extends Phaser.Scene {
 
                   this.scene.stop("tutorial-bullet-hell");
                   this.scene.resume("CampoLunanScene");
+                  this.physics.resume();
                   if (this.luma2PersistentSprite) this.luma2PersistentSprite.destroy();
                   if (this.tutorialFragment) this.tutorialFragment.destroy();
                   if (this.hud) this.hud.setPauseVisible(true);
@@ -1109,6 +1168,7 @@ export class CampoLunanScene extends Phaser.Scene {
 
             this.scene.stop("tutorial-bullet-hell");
             this.scene.resume("CampoLunanScene");
+            this.physics.resume();
             if (this.luma2PersistentSprite) this.luma2PersistentSprite.destroy();
             if (this.tutorialFragment) this.tutorialFragment.destroy();
             if (this.hud) this.hud.setPauseVisible(true);
@@ -1262,6 +1322,7 @@ export class CampoLunanScene extends Phaser.Scene {
       has_talked_to_luma: cache.has_talked_to_luma || false,
       has_completed_tutorial: cache.has_completed_tutorial || false,
       played_post_tutorial_dialogue: cache.played_post_tutorial_dialogue || false,
+      grave_1_completed: cache.grave_1_completed || false,
       essence: cache.essence !== undefined ? cache.essence : 5,
     };
 
@@ -1463,10 +1524,12 @@ export class CampoLunanScene extends Phaser.Scene {
       let targetY = null;
 
       if (completedTutorial) {
-        const grave1 = this.graveClusters?.find(c => c.isGrave1);
-        if (grave1) {
-          targetX = grave1.x;
-          targetY = grave1.y;
+        if (!activeCache.grave_1_completed) {
+          const grave1 = this.graveClusters?.find(c => c.isGrave1);
+          if (grave1) {
+            targetX = grave1.x;
+            targetY = grave1.y;
+          }
         }
       }
 
@@ -1495,7 +1558,14 @@ export class CampoLunanScene extends Phaser.Scene {
     const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
     const completedTutorial = activeCache.has_completed_tutorial;
 
-    if (completedTutorial) {
+    if (activeCache.grave_1_completed) {
+      this.lumaGuidanceBox.update(
+        "Mang Tomas' Soul is at Peace",
+        "<em>\"Explore freely. More graves await in future chapters...\"</em>",
+        "ECHOES RESTORED"
+      );
+      this.lumaGuidanceBox.show();
+    } else if (completedTutorial) {
       // Objective after completing tutorial
       this.lumaGuidanceBox.update(
         "Seek the Forgotten Graves & Restore Lost Souls",

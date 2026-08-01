@@ -13,6 +13,7 @@ import { TransitionSystem } from "../systems/TransitionSystem.js";
 import { LumaGuidanceBox } from "../ui/LumaGuidanceBox.js";
 import { showArtifactClaimModal as displayArtifactClaimModal } from "../ui/ArtifactClaimModal.js";
 import { connectAndUnlock } from "../utils/portalApi.js";
+import { investigationPhases } from "../data/investigationData.js";
 
 export class Grave1 extends Phaser.Scene {
   constructor() {
@@ -101,7 +102,6 @@ export class Grave1 extends Phaser.Scene {
     });
     const newNpcList = [
       { key: "man-mowing", file: "man-mowing.png", fw: 40, fh: 43 },
-      { key: "man-mowing-2", file: "man-mowing-2.png", fw: 40, fh: 43 },
       { key: "man-searching", file: "man-searching.png", fw: 40, fh: 43 },
       { key: "man-talking", file: "man-talking.png", fw: 40, fh: 43 },
       { key: "mang-tomas", file: "mang-tomas.png", fw: 40, fh: 43 },
@@ -110,6 +110,11 @@ export class Grave1 extends Phaser.Scene {
       { key: "woman-searching", file: "woman-searching.png", fw: 40, fh: 43 },
       { key: "woman-thinking", file: "woman-thinking.png", fw: 40, fh: 43 },
       { key: "woman-with-broom", file: "woman-with-broom.png", fw: 40, fh: 43 },
+      { key: "boy-jumping-front", file: "boy-jumping-front.png", fw: 35, fh: 36 },
+      { key: "boy-waving-front", file: "boy-waving-front.png", fw: 35, fh: 36 },
+      { key: "girl-jumping-front", file: "girl-jumping-front.png", fw: 36, fh: 35 },
+      { key: "girl-waving-front", file: "girl-waving-front.png", fw: 35, fh: 36 },
+      { key: "villager-woman", file: "villager-woman.png", fw: 40, fh: 43 },
     ];
     newNpcList.forEach(npc => {
       this.load.spritesheet(`npc-${npc.key}`, `src/assets/grave1-v2/more-characters/${npc.file}`, {
@@ -513,6 +518,11 @@ export class Grave1 extends Phaser.Scene {
       "woman-searching": 3,
       "woman-thinking": 4,
       "woman-with-broom": 3,
+      "boy-jumping-front": 4,
+      "boy-waving-front": 4,
+      "girl-jumping-front": 4,
+      "girl-waving-front": 4,
+      "villager-woman": 4,
     };
 
     // Get CHARS_SPAWNS layer from map
@@ -603,15 +613,7 @@ export class Grave1 extends Phaser.Scene {
     daughterNpc.setScale(0.8);
     daughterNpc.body.setSize(daughterNpc.width * 0.7, daughterNpc.height * 0.4);
     daughterNpc.body.setOffset(daughterNpc.width * 0.15, daughterNpc.height * 0.5);
-    if (!this.anims.exists("npc-anim-daughter")) {
-      this.anims.create({
-        key: "npc-anim-daughter",
-        frames: this.anims.generateFrameNumbers("npc-daughter", { start: 0, end: 2 }),
-        frameRate: 4,
-        repeat: -1
-      });
-    }
-    daughterNpc.play("npc-anim-daughter");
+    daughterNpc.setFrame(0);
     daughterNpc.textureKey = "npc-daughter"; // Add a custom property so collision code can identify her key
 
     // Manually spawn Mang Tomas at new location (2127, 3749)
@@ -620,43 +622,32 @@ export class Grave1 extends Phaser.Scene {
     mangTomasNpc.setScale(0.8);
     mangTomasNpc.body.setSize(mangTomasNpc.width * 0.7, mangTomasNpc.height * 0.4);
     mangTomasNpc.body.setOffset(mangTomasNpc.width * 0.15, mangTomasNpc.height * 0.5);
-    if (!this.anims.exists("npc-anim-mang-tomas")) {
-      this.anims.create({
-        key: "npc-anim-mang-tomas",
-        frames: this.anims.generateFrameNumbers("npc-mang-tomas", { start: 0, end: 3 }),
-        frameRate: 4,
-        repeat: -1
-      });
-    }
-    mangTomasNpc.play("npc-anim-mang-tomas");
+    mangTomasNpc.setImmovable(true);
+    mangTomasNpc.setFrame(0);
     mangTomasNpc.textureKey = "npc-mang-tomas"; // Add a custom property so collision code can identify his key
 
     // Manually spawn Old Fisherman and Young Fisherman since CHARS_SPAWNS was wiped in Tiled
     const oldFisherman = this.npcs.create(625, 518, "npc-old-fisherman");
     oldFisherman.setDepth(518);
     oldFisherman.setScale(0.8);
-    oldFisherman.textureKey = "npc-old-fisherman";
-    if (!this.anims.exists("anim-old-fisherman")) {
-        this.anims.create({
-            key: "anim-old-fisherman",
-            frames: this.anims.generateFrameNumbers("npc-old-fisherman", { start: 0, end: 3 }),
-            frameRate: 4, repeat: -1
-        });
+    if (oldFisherman.body) {
+      oldFisherman.body.setSize(oldFisherman.width * 0.7, oldFisherman.height * 0.4);
+      oldFisherman.body.setOffset(oldFisherman.width * 0.15, oldFisherman.height * 0.5);
+      oldFisherman.setImmovable(true);
     }
-    oldFisherman.play("anim-old-fisherman");
+    oldFisherman.textureKey = "npc-old-fisherman";
+    oldFisherman.setFrame(0);
 
     const youngFisherman = this.npcs.create(3281, 2082, "npc-young-fisherman");
     youngFisherman.setDepth(2082);
     youngFisherman.setScale(0.8);
-    youngFisherman.textureKey = "npc-young-fisherman";
-    if (!this.anims.exists("anim-young-fisherman")) {
-        this.anims.create({
-            key: "anim-young-fisherman",
-            frames: this.anims.generateFrameNumbers("npc-young-fisherman", { start: 0, end: 3 }),
-            frameRate: 4, repeat: -1
-        });
+    if (youngFisherman.body) {
+      youngFisherman.body.setSize(youngFisherman.width * 0.7, youngFisherman.height * 0.4);
+      youngFisherman.body.setOffset(youngFisherman.width * 0.15, youngFisherman.height * 0.5);
+      youngFisherman.setImmovable(true);
     }
-    youngFisherman.play("anim-young-fisherman");
+    youngFisherman.textureKey = "npc-young-fisherman";
+    youngFisherman.setFrame(0);
 
     this.physics.add.collider(this.player.sprite, this.npcs);
     
@@ -680,7 +671,11 @@ export class Grave1 extends Phaser.Scene {
     
     this.currentFragment = null;
     this.currentArtifactKey = null;
+    this.investigationComplete = cache && cache.investigation_complete ? cache.investigation_complete : [];
+    this.investigationPhase = !this.investigationComplete.includes(this.storyStage);
+    this.clueNpcsGroup = this.add.group();
     this.map = map;
+    this.spawnInvestigationNpcs();
 
     // Sync database position if available (skip if it's a new game to prevent snapping to old saved coordinates)
     // Sync database position and reconstruct progress based on inventory
@@ -1221,6 +1216,19 @@ export class Grave1 extends Phaser.Scene {
     this.minimapPlayerDot.setDepth(1000);
     this.cameras.main.ignore(this.minimapPlayerDot);
 
+    this.investigationCircle = this.add.graphics();
+    this.investigationCircle.setDepth(999);
+    this.investigationCircle.setVisible(false);
+    this.cameras.main.ignore(this.investigationCircle);
+    this.tweens.add({
+      targets: this.investigationCircle,
+      alpha: 0.3,
+      duration: 1000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
     this.input.keyboard.on("keydown-TAB", (event) => {
       event.preventDefault();
       if (!this.minimapCamera.visible) {
@@ -1354,13 +1362,13 @@ export class Grave1 extends Phaser.Scene {
           }
 
           try {
-            this.savePosition();
+            this.saveProgress();
           } catch (e) {
-            console.warn("Failed to save position:", e);
+            console.warn("Failed to save progress:", e);
           }
 
           if (this.storyStage === 5) {
-            this.startFinalRiddleSequence();
+            this.showFinalEndingModal();
             return;
           }
 
@@ -1386,17 +1394,17 @@ export class Grave1 extends Phaser.Scene {
                 
                 this.startDialogueSequence(steps, () => {
                     this.storyStage++;
+                    this.investigationPhase = !this.investigationComplete.includes(this.storyStage);
+                    this.spawnInvestigationNpcs();
                     this.updateLumaGuidance();
-                    if (this.storyStage === 5) {
-                        this.startFinalRiddleSequence();
-                    }
+                    // Do nothing here, let the player walk to Mang Tomas
                 });
             } else {
                 this.storyStage++;
+                this.investigationPhase = !this.investigationComplete.includes(this.storyStage);
+                this.spawnInvestigationNpcs();
                 this.updateLumaGuidance();
-                if (this.storyStage === 5) {
-                    this.startFinalRiddleSequence();
-                }
+                // Do nothing here, let the player walk to Mang Tomas
             }
           });
         }, () => {
@@ -1406,6 +1414,30 @@ export class Grave1 extends Phaser.Scene {
         this.enterFamilyHouse();
       } else if (!this.dialogueActive && this.nearNpc) {
         const npc = this.closestNpc;
+
+        // --- CLUE NPC LOGIC ---
+        if (npc.clueData && this.investigationPhase) {
+          const clue = npc.clueData;
+          const dialogueSteps = [{ speaker: clue.speaker, text: clue.dialogue }];
+          
+          this.startDialogueSequence(dialogueSteps, () => {
+            if (clue.isCorrect) {
+              this.investigationPhase = false;
+              if (this.investigationComplete) {
+                this.investigationComplete.push(this.storyStage);
+                const currentCache = getCache() || {};
+                currentCache.investigation_complete = this.investigationComplete;
+                setCache(currentCache);
+              }
+              this.startDialogueSequence([{ speaker: "Luma", text: "Now we know where to look. Let's go!" }], () => {
+                 this.updateLumaGuidance();
+              });
+            }
+          });
+          return;
+        }
+        // --- END CLUE NPC LOGIC ---
+
         const npcKey = npc.texture.key;
 
         // Stop spinning and face the player (Vino)
@@ -1456,7 +1488,7 @@ export class Grave1 extends Phaser.Scene {
           }
         }
 
-        if (this.storyStage === 5 && npcKey === "npc-mang-tomas") {
+        if (this.storyStage === 5 && npcKey === "npc-mang-tomas" && !this.investigationPhase) {
              this.startDialogueSequence([
                { speaker: "Mang Tomas", text: "I... I am losing the pieces of my story..." },
                { speaker: "Mang Tomas", text: "My memories... my very soul... they are becoming fragmented." },
@@ -1465,22 +1497,22 @@ export class Grave1 extends Phaser.Scene {
                this.spawnFragment(this.closestNpc, "Mang Tomas", "The final memory awaits. Will you listen?");
              });
              return;
-        } else if (this.storyStage === 5) {
+        } else if (this.storyStage === 5 && npcKey !== "npc-mang-tomas") {
              const compText = this.getRandomVariant("random-guy-completed", "The sea is calm now. We remember Mang Tomas.");
              this.startDialogueSequence([{ speaker: "Villager", text: compText }]);
              return;
         }
 
-        if (this.storyStage === 1 && npcKey === "npc-old-fisherman") {
+        if (this.storyStage === 1 && npcKey === "npc-old-fisherman" && !this.investigationPhase) {
              const clueText = this.getRandomVariant("old-fisherman-clue", "Always respect the sea, my friend. It gives, but it also takes.");
              this.spawnFragment(this.closestNpc, "Old Fisherman", clueText);
-        } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman") {
+        } else if (this.storyStage === 2 && npcKey === "npc-young-fisherman" && !this.investigationPhase) {
              const clueText = this.getRandomVariant("young-fisherman-clue", "Everyone remembers the storm... I only remember seeing something red waving near the shore.");
              this.spawnFragment(this.closestNpc, "Young Fisherman", clueText);
-        } else if (this.storyStage === 3 && (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife")) {
+        } else if (this.storyStage === 3 && (npcKey === "npc-old-wife" || npcKey === "npc-sick-wife") && !this.investigationPhase) {
              const clueText = this.getRandomVariant("sick-wife-clue", this.getRandomVariant("old-wife-clue", "Before every voyage... Tomas never forgot something precious."));
              this.spawnFragment(this.closestNpc, "Sick Wife", clueText);
-        } else if (this.storyStage === 4 && (npcKey === "npc-young-daughter" || npcKey === "npc-daughter")) {
+        } else if (this.storyStage === 4 && (npcKey === "npc-young-daughter" || npcKey === "npc-daughter") && !this.investigationPhase) {
              const clueText = this.getRandomVariant("young-daughter-clue", "I made Papa a drawing... but I don't remember where I left it.");
              this.spawnFragment(this.closestNpc, "Daughter", clueText);
         } else {
@@ -1583,6 +1615,8 @@ export class Grave1 extends Phaser.Scene {
       this.lumaGuidanceBox.show();
     }
     this.updateLumaGuidance();
+    
+    // Stop player movement
     this.dialogueActive = true;
     if (this.player && this.player.sprite && this.player.sprite.body) {
       this.player.sprite.body.setVelocity(0);
@@ -1591,123 +1625,50 @@ export class Grave1 extends Phaser.Scene {
       }
     }
 
-    const modalBg = document.createElement("div");
-    modalBg.style.position = "absolute";
-    modalBg.style.top = "0";
-    modalBg.style.left = "0";
-    modalBg.style.width = "100%";
-    modalBg.style.height = "100%";
-    modalBg.style.background = "radial-gradient(circle, rgba(20,10,35,0.95) 0%, rgba(5,5,10,0.98) 100%)";
-    modalBg.style.zIndex = "2000";
-    modalBg.style.display = "flex";
-    modalBg.style.justifyContent = "center";
-    modalBg.style.alignItems = "center";
-    modalBg.style.fontFamily = "'Press Start 2P', monospace";
-    modalBg.style.color = "#ffffff";
-    modalBg.style.padding = "20px";
-    modalBg.style.boxSizing = "border-box";
+    const endingDialogue = [
+      { speaker: "Mang Tomas", text: "You have remembered me... not as a hero, but as a man who loved his family and the sea." },
+      { speaker: "Luma", text: "His soul can finally rest. The echoes are at peace." },
+      { speaker: "Vino", text: "I will never forget you, Mang Tomas. Your story will live on." },
+      { speaker: "Luma", text: "And so will ours, Vino. Every memory we carry forward is a gift to the future." },
+      { speaker: "Luma", text: "Farewell, Vino. Until the next forgotten soul calls out..." }
+    ];
 
-    const contentBox = document.createElement("div");
-    contentBox.style.maxWidth = "600px";
-    contentBox.style.background = "rgba(15, 10, 25, 0.85)";
-    contentBox.style.border = "4px solid #b07eff";
-    contentBox.style.borderRadius = "8px";
-    contentBox.style.padding = "30px";
-    contentBox.style.boxShadow = "0 0 25px rgba(176, 126, 255, 0.4)";
-    contentBox.style.display = "flex";
-    contentBox.style.flexDirection = "column";
-    contentBox.style.alignItems = "center";
-    contentBox.style.textAlign = "center";
-    contentBox.style.gap = "20px";
+    this.startDialogueSequence(endingDialogue, async () => {
+      // Update cache
+      const cache = getCache() || {};
+      setCache({ 
+        ...cache, 
+        grave_1_completed: true, 
+        current_area: "Campo Lunan",
+        position_x: 1276,
+        position_y: 993
+      });
+      await this.saveProgress(true);
 
-    const trophy = document.createElement("div");
-    trophy.style.fontSize = "40px";
-    trophy.style.animation = "bounce 1.5s infinite alternate";
-    trophy.textContent = "🏆";
-    contentBox.appendChild(trophy);
+      // Launch credits overlay
+      import("../ui/CreditsScreen.js").then(({ CreditsScreen }) => {
+        const credits = new CreditsScreen({
+          audioManager: this.audioManager,
+          onFinished: () => {
+            // Transition back to Campo Lunan automatically
+            import("../ui/portalLoadingScreen.js").then(({ PortalLoadingScreen }) => {
+              const loadingScreen = new PortalLoadingScreen({
+                title: "CAMPO LUNAN",
+                subtitle: "Returning to the Village",
+                hint: "Mang Tomas' soul is at peace."
+              });
 
-    const styleSheet = document.createElement("style");
-    styleSheet.type = "text/css";
-    styleSheet.innerText = `
-      @keyframes bounce {
-        from { transform: translateY(0px); }
-        to { transform: translateY(-10px); }
-      }
-    `;
-    document.head.appendChild(styleSheet);
-
-    const title = document.createElement("h1");
-    title.style.fontSize = "16px";
-    title.style.color = "#b07eff";
-    title.style.textShadow = "0 0 10px rgba(176,126,255,0.8)";
-    title.style.margin = "0";
-    title.textContent = "CONGRATULATIONS, VINO!";
-    contentBox.appendChild(title);
-
-    const subtitle = document.createElement("h2");
-    subtitle.style.fontSize = "10px";
-    subtitle.style.color = "#4be3ac";
-    subtitle.style.margin = "0";
-    subtitle.textContent = "You have given justice to Mang Tomas' death!";
-    contentBox.appendChild(subtitle);
-
-    const message = document.createElement("p");
-    message.style.fontSize = "9px";
-    message.style.lineHeight = "1.8";
-    message.style.color = "#dddddd";
-    message.style.textAlign = "justify";
-    message.style.margin = "0";
-    message.innerHTML = `
-      Mang Tomas was not just a fisherman; he was a husband, a father, and a man of deep faith. 
-      In the face of a devastating storm, he put the safety of others before himself. 
-      <br/><br/>
-      His legacy teaches us the value of <strong>Bayanihan</strong> (communal unity), 
-      <strong>Pakikipagkapwa-tao</strong> (shared empathy), and the enduring power of family. 
-      Through your journey, you have reminded the village that the true measure of a person's life 
-      is not in fame or wealth, but in the love and sacrifice they leave behind.
-    `;
-    contentBox.appendChild(message);
-
-    const returnBtn = document.createElement("button");
-    returnBtn.textContent = "RETURN TO MENU";
-    returnBtn.style.background = "#4be3ac";
-    returnBtn.style.color = "#000000";
-    returnBtn.style.border = "none";
-    returnBtn.style.padding = "12px 25px";
-    returnBtn.style.fontSize = "10px";
-    returnBtn.style.fontFamily = "'Press Start 2P', monospace";
-    returnBtn.style.cursor = "pointer";
-    returnBtn.style.borderRadius = "4px";
-    returnBtn.style.boxShadow = "0 4px 0px #2a9b73";
-    returnBtn.style.transition = "transform 0.1s";
-
-    returnBtn.addEventListener("mouseenter", () => {
-      returnBtn.style.background = "#6effcb";
+              setTimeout(() => {
+                import("../systems/TransitionSystem.js").then(({ TransitionSystem }) => {
+                  TransitionSystem.fadeToScene(this, "CampoLunanScene", { loadingScreen });
+                });
+              }, 1800);
+            });
+          }
+        });
+        credits.start();
+      });
     });
-    returnBtn.addEventListener("mouseleave", () => {
-      returnBtn.style.background = "#4be3ac";
-    });
-    returnBtn.addEventListener("mousedown", () => {
-      returnBtn.style.transform = "translateY(2px)";
-      returnBtn.style.boxShadow = "0 2px 0px #2a9b73";
-    });
-    returnBtn.addEventListener("mouseup", () => {
-      returnBtn.style.transform = "translateY(0px)";
-      returnBtn.style.boxShadow = "0 4px 0px #2a9b73";
-    });
-
-    returnBtn.addEventListener("click", async () => {
-      modalBg.remove();
-      this.dialogueActive = false;
-      await this.saveProgress();
-      window.returnToGunitaMenu?.();
-    });
-
-    contentBox.appendChild(returnBtn);
-    modalBg.appendChild(contentBox);
-
-    const container = document.getElementById("game-container") || document.body;
-    container.appendChild(modalBg);
   }
 
   playLumaIntroCutscene() {
@@ -1862,6 +1823,52 @@ export class Grave1 extends Phaser.Scene {
     });
   }
 
+  spawnInvestigationNpcs() {
+    if (!this.clueNpcsGroup) return;
+    this.clueNpcsGroup.clear(true, true);
+
+    if (!this.investigationPhase) return;
+
+    const phaseData = investigationPhases[this.storyStage];
+    if (!phaseData) return;
+
+    const center = phaseData.areaCenter;
+
+    phaseData.clueNpcs.forEach(clue => {
+      const spawnX = center.x + (clue.offsetX || 0);
+      const spawnY = center.y + (clue.offsetY || 0);
+
+      const npc = this.physics.add.sprite(spawnX, spawnY, `npc-${clue.key}`);
+      npc.setDepth(spawnY);
+      npc.setScale(0.8);
+      npc.setImmovable(true);
+      
+      if (npc.body) {
+        npc.body.setSize(npc.width * 0.7, npc.height * 0.4);
+        npc.body.setOffset(npc.width * 0.15, npc.height * 0.5);
+      }
+      
+      this.clueNpcsGroup.add(npc);
+      
+      if (this.anims.exists(`npc-anim-${clue.key}`)) {
+        npc.play(`npc-anim-${clue.key}`);
+      } else {
+        const animKey = `npc-anim-clue-${clue.key}`;
+        if (!this.anims.exists(animKey)) {
+          this.anims.create({
+            key: animKey,
+            frames: this.anims.generateFrameNumbers(`npc-${clue.key}`),
+            frameRate: 4,
+            repeat: -1
+          });
+        }
+        npc.play(animKey);
+      }
+      
+      npc.clueData = clue;
+    });
+  }
+
   updateLumaGuidance() {
     if (!this.lumaGuidanceBox) return;
 
@@ -1874,6 +1881,11 @@ export class Grave1 extends Phaser.Scene {
       title = "LUMA'S FAREWELL";
       objective = "Objective Complete";
       hint = "Mang Tomas' story has been<br/>remembered once more.<br/><br/>The sea may forget footprints,<br/>but it never forgets the lives<br/>that sailed upon it.";
+    } else if (this.investigationPhase && investigationPhases[this.storyStage]) {
+      const phaseData = investigationPhases[this.storyStage];
+      title = "LUMA'S GUIDANCE";
+      objective = phaseData.objective;
+      hint = phaseData.hint;
     } else if (this.storyStage === 5 && this.currentFragment && this.currentFragment.active) {
       // Objective 15.5 (Save Mang Tomas' Soul)
       title = "LUMA'S REFLECTION";
@@ -2170,6 +2182,17 @@ export class Grave1 extends Phaser.Scene {
         this.mapOverlay?.updateLocation(this.player.sprite.x, this.player.sprite.y);
       }
 
+      if (this.investigationPhase && investigationPhases[this.storyStage]) {
+        const phaseData = investigationPhases[this.storyStage];
+        const center = phaseData.areaCenter;
+        this.investigationCircle.setVisible(true);
+        this.investigationCircle.clear();
+        this.investigationCircle.fillStyle(0xffff00, 1);
+        this.investigationCircle.fillCircle(center.x, center.y, phaseData.areaRadius);
+      } else if (this.investigationCircle) {
+        this.investigationCircle.setVisible(false);
+      }
+
       if (!this.lastExploredChunksSize || this.exploredChunks.size !== this.lastExploredChunksSize) {
         this.lastExploredChunksSize = this.exploredChunks.size;
         this.minimapFow.clear();
@@ -2203,6 +2226,17 @@ export class Grave1 extends Phaser.Scene {
 
     if (this.npcs) {
       this.npcs.getChildren().forEach(npc => {
+        const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, npc.x, npc.y);
+        if (dist < minDist) {
+          minDist = dist;
+          closestNpc = npc;
+          nearNpc = true;
+        }
+      });
+    }
+
+    if (this.investigationPhase && this.clueNpcsGroup) {
+      this.clueNpcsGroup.getChildren().forEach(npc => {
         const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, npc.x, npc.y);
         if (dist < minDist) {
           minDist = dist;
@@ -2261,10 +2295,20 @@ export class Grave1 extends Phaser.Scene {
     if (this.objectiveArrow && this.player && this.player.sprite && this.storyStage >= 1 && this.storyStage <= 5) {
       let targetX = null;
       let targetY = null;
+      let hideArrow = false;
       
       if (this.currentFragment && this.currentFragment.active) {
         targetX = this.currentFragment.x;
         targetY = this.currentFragment.y;
+      } else if (this.investigationPhase && investigationPhases[this.storyStage]) {
+        const phaseData = investigationPhases[this.storyStage];
+        targetX = phaseData.areaCenter.x;
+        targetY = phaseData.areaCenter.y;
+        
+        const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, targetX, targetY);
+        if (dist <= phaseData.areaRadius) {
+          hideArrow = true;
+        }
       } else {
         if (this.storyStage === 1) {
           const npc = this.npcs?.getChildren().find(n => n.textureKey === "npc-old-fisherman" || n.texture?.key === "npc-old-fisherman");
@@ -2284,7 +2328,7 @@ export class Grave1 extends Phaser.Scene {
         }
       }
       
-      if (targetX !== null && targetY !== null) {
+      if (targetX !== null && targetY !== null && !hideArrow) {
         this.objectiveArrow.setVisible(true);
         const px = this.player.sprite.x;
         const py = this.player.sprite.y;

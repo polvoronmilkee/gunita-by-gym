@@ -444,10 +444,6 @@ newBtn?.addEventListener("click", () => {
   showSaveModal("new");
 });
 
-document.getElementById("tale-untold")?.addEventListener("click", () => {
-  window.isExplorationMode = true;
-  startGame("CampoLunanScene");
-});
 
 guideButton?.addEventListener("click", () => {
   showGuide();

@@ -1,0 +1,266 @@
+/* =============================================
+   CREDITS SCREEN OVERLAY
+   Movie-style auto-scrolling credits
+   ============================================= */
+
+.credits-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #000;
+  opacity: 0;
+  transition: opacity 1.5s ease-in;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'VT323', 'Press Start 2P', monospace;
+}
+
+.credits-overlay.visible {
+  opacity: 1;
+}
+
+/* ---- Thank You Splash ---- */
+.credits-thank-you {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+  z-index: 2;
+}
+
+.credits-thank-you.visible {
+  opacity: 1;
+}
+
+.credits-thank-you h1 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.4rem;
+  color: #b07eff;
+  text-shadow: 0 0 20px rgba(176, 126, 255, 0.7), 0 0 40px rgba(176, 126, 255, 0.3);
+  text-align: center;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.credits-thank-you p {
+  font-family: 'VT323', monospace;
+  font-size: 1.4rem;
+  color: #a0a0a0;
+  margin-top: 16px;
+  text-align: center;
+}
+
+/* ---- Scrolling Credits Container ---- */
+.credits-scroll-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 1.5s ease-in;
+  z-index: 1;
+}
+
+.credits-scroll-viewport.visible {
+  opacity: 1;
+}
+
+.credits-scroll-track {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 100vh;
+  padding-bottom: 60vh;
+  /* Animation is set dynamically in JS */
+}
+
+@keyframes credits-scroll-up {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(var(--scroll-distance));
+  }
+}
+
+/* ---- Credit Sections ---- */
+.credits-section {
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.credits-title-gunita {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 2.5rem;
+  color: #b07eff;
+  text-shadow:
+    0 0 15px rgba(176, 126, 255, 0.8),
+    0 0 30px rgba(176, 126, 255, 0.5),
+    0 0 60px rgba(176, 126, 255, 0.3);
+  margin: 0 0 12px 0;
+  letter-spacing: 6px;
+  animation: credits-glow-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes credits-glow-pulse {
+  from {
+    text-shadow:
+      0 0 15px rgba(176, 126, 255, 0.8),
+      0 0 30px rgba(176, 126, 255, 0.5);
+  }
+  to {
+    text-shadow:
+      0 0 25px rgba(176, 126, 255, 1),
+      0 0 50px rgba(176, 126, 255, 0.7),
+      0 0 80px rgba(176, 126, 255, 0.4);
+  }
+}
+
+.credits-subtitle {
+  font-family: 'VT323', monospace;
+  font-size: 1.6rem;
+  color: #4be3ac;
+  margin: 0 0 8px 0;
+  letter-spacing: 3px;
+}
+
+.credits-tagline {
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  color: #999;
+  font-style: italic;
+  margin: 0;
+}
+
+/* ---- Background Art Cards ---- */
+.credits-art-card {
+  width: 85%;
+  max-width: 500px;
+  margin: 30px auto;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(176, 126, 255, 0.3);
+  box-shadow: 0 0 20px rgba(176, 126, 255, 0.15);
+}
+
+.credits-art-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: brightness(0.85) contrast(1.1);
+}
+
+.credits-art-card .art-caption {
+  background: rgba(10, 5, 20, 0.9);
+  padding: 10px 16px;
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: #b07eff;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+/* ---- Team Member Cards ---- */
+.credits-team-header {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  color: #4be3ac;
+  text-shadow: 0 0 10px rgba(75, 227, 172, 0.5);
+  margin: 0 0 40px 0;
+  letter-spacing: 2px;
+}
+
+.credits-member {
+  margin-bottom: 40px;
+}
+
+.credits-member-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.85rem;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.credits-member-role {
+  font-family: 'VT323', monospace;
+  font-size: 1.3rem;
+  color: #b07eff;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* ---- Special Thanks ---- */
+.credits-thanks-header {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.85rem;
+  color: #4be3ac;
+  text-shadow: 0 0 10px rgba(75, 227, 172, 0.5);
+  margin: 0 0 24px 0;
+  letter-spacing: 2px;
+}
+
+.credits-thanks-item {
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  color: #cccccc;
+  margin: 0 0 12px 0;
+}
+
+/* ---- Final Message ---- */
+.credits-final {
+  margin-top: 40px;
+}
+
+.credits-final-msg {
+  font-family: 'VT323', monospace;
+  font-size: 1.5rem;
+  color: #ffffff;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  margin: 0 0 8px 0;
+}
+
+.credits-final-sub {
+  font-family: 'VT323', monospace;
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ---- Decorative Dividers ---- */
+.credits-divider {
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #b07eff, transparent);
+  margin: 20px auto;
+  border: none;
+}
+
+.credits-divider-wide {
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4be3ac44, transparent);
+  margin: 40px auto;
+  border: none;
+}

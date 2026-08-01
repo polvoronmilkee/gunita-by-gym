@@ -41,6 +41,7 @@ export class FamilyHomeScene extends Phaser.Scene {
     this.load.json("sick-wife-clue", "src/assets/data/dialogues/grave1/old-wife/clue.json");
     this.load.json("riddle-rosary", "src/assets/data/dialogues/fragments-riddles/rosary.json");
     this.load.image("bg-rosary", "src/assets/grave1-elements/bullet-scenes/rosary.png");
+    this.load.json("completed-rosary", "src/assets/data/dialogues/fragments-completed/rosary.json");
   }
 
   create(data) {
@@ -476,6 +477,9 @@ export class FamilyHomeScene extends Phaser.Scene {
               if (this.hud) this.hud.setPauseVisible(true);
               this.scene.stop(activeScene);
               this.scene.resume();
+              if (this.physics && typeof this.physics.resume === 'function') {
+                this.physics.resume();
+              }
               if (onCorrect) onCorrect();
           },
           onDeath: () => {
@@ -501,12 +505,32 @@ export class FamilyHomeScene extends Phaser.Scene {
   showArtifactClaimModal(artifactKey, onContinue) {
     this.dialogueActive = true;
     displayArtifactClaimModal(artifactKey, () => {
+      // Focus back to the game canvas so keyboard inputs aren't dropped
+      window.focus();
+      if (this.game && this.game.canvas) {
+        this.game.canvas.focus();
+      }
+      this.input.keyboard.resetKeys();
+
       // Advance storyStage locally just like Grave1 does
       const cache = getCache() || {};
       const currentStage = cache.story_stage || 1;
       setCache({ ...cache, story_stage: currentStage + 1 });
-      this.dialogueActive = false;
-      if (onContinue) onContinue();
+
+      let completedData = this.cache.json.get(`completed-${artifactKey}`);
+      if (completedData) {
+          const interactions = completedData.interactions;
+          const randomInteraction = interactions[Math.floor(Math.random() * interactions.length)];
+          const steps = randomInteraction.dialogues.map(text => ({ speaker: randomInteraction.speaker, text: text }));
+          
+          this.startDialogueSequence(steps, () => {
+              this.dialogueActive = false;
+              if (onContinue) onContinue();
+          });
+      } else {
+          this.dialogueActive = false;
+          if (onContinue) onContinue();
+      }
     }, this.audioManager);
   }
 
