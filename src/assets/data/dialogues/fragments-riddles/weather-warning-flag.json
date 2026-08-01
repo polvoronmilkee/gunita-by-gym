@@ -167,333 +167,333 @@
       "difficulty": "easy"
     },
     {
-      "question": "I am the calm, clear center of a spinning hurricane.",
+      "question": "I am red and fly without wings. When I dance, the fishermen stay home.",
       "choices": [
-        "Eye",
-        "Core",
-        "Heart",
-        "Vortex"
+        "A Kite",
+        "A Bird",
+        "A Warning Flag",
+        "A Lantern"
       ],
-      "answer": "Eye",
+      "answer": "A Warning Flag",
       "difficulty": "medium"
     },
     {
-      "question": "I am a tool that measures how much rain has fallen.",
+      "question": "I am a color that means stop, danger, and passion. I am flying high on the pier.",
       "choices": [
-        "Rain Gauge",
-        "Thermometer",
-        "Barometer",
-        "Compass"
+        "Red",
+        "Black",
+        "Yellow",
+        "White"
       ],
-      "answer": "Rain Gauge",
+      "answer": "Red",
       "difficulty": "medium"
     },
     {
-      "question": "I measure the speed of the blowing wind.",
+      "question": "I cry without eyes, I fly without wings. Wherever I go, darkness follows.",
       "choices": [
-        "Anemometer",
-        "Barometer",
-        "Thermometer",
-        "Seismograph"
+        "A Cloud",
+        "The Wind",
+        "A Storm",
+        "A Bird"
       ],
-      "answer": "Anemometer",
+      "answer": "A Cloud",
       "difficulty": "medium"
     },
     {
-      "question": "I measure the pressure of the air to predict the weather.",
+      "question": "I have an eye but cannot see. I spin but am not a top.",
       "choices": [
-        "Barometer",
-        "Anemometer",
-        "Thermometer",
-        "Hygrometer"
+        "A Hurricane",
+        "A Needle",
+        "A Tornado",
+        "A Wheel"
       ],
-      "answer": "Barometer",
+      "answer": "A Hurricane",
       "difficulty": "medium"
     },
     {
-      "question": "I measure the amount of moisture in the air.",
+      "question": "I am a drummer without drums, crashing in the sky.",
       "choices": [
-        "Hygrometer",
-        "Barometer",
-        "Anemometer",
-        "Thermometer"
+        "Thunder",
+        "Lightning",
+        "Hail",
+        "Rain"
       ],
-      "answer": "Hygrometer",
+      "answer": "Thunder",
       "difficulty": "medium"
     },
     {
-      "question": "I am a sudden, powerful forward movement of the sea driven by a storm.",
+      "question": "I am a bright jagged line drawn by nature's hand.",
       "choices": [
-        "Storm Surge",
-        "Tsunami",
-        "Tide",
-        "Wave"
+        "Lightning",
+        "A River",
+        "A Mountain",
+        "A Crack"
       ],
-      "answer": "Storm Surge",
+      "answer": "Lightning",
       "difficulty": "medium"
     },
     {
-      "question": "I am the loud wail heard across the coast when a storm approaches.",
+      "question": "I fall but never break, I weep but have no eyes.",
       "choices": [
-        "Siren",
-        "Bell",
-        "Horn",
-        "Whistle"
+        "Rain",
+        "Night",
+        "A Leaf",
+        "A Shadow"
       ],
-      "answer": "Siren",
+      "answer": "Rain",
       "difficulty": "medium"
     },
     {
-      "question": "I am an emergency radio channel used to broadcast warnings.",
+      "question": "I am invisible, but you can feel my push. I can be a breeze or a beast.",
       "choices": [
-        "Broadcast",
-        "Frequency",
-        "Channel",
-        "Signal"
+        "Wind",
+        "Gravity",
+        "Time",
+        "Fear"
       ],
-      "answer": "Broadcast",
+      "answer": "Wind",
       "difficulty": "medium"
     },
     {
-      "question": "I am a visual signal, raised high to tell boats to stay in port.",
+      "question": "I am a mountain of water that swallows the shore.",
       "choices": [
-        "Gale Warning Flag",
-        "White Flag",
-        "Jolly Roger",
-        "Pennant"
+        "A Tsunami",
+        "A Wave",
+        "A Tide",
+        "A Flood"
       ],
-      "answer": "Gale Warning Flag",
+      "answer": "A Tsunami",
       "difficulty": "medium"
     },
     {
-      "question": "I am the sudden, fierce burst of wind before the rain begins.",
+      "question": "I am the cold stones falling from a summer sky.",
       "choices": [
-        "Squall",
-        "Breeze",
-        "Gust",
-        "Draft"
+        "Hail",
+        "Snow",
+        "Rain",
+        "Meteors"
       ],
-      "answer": "Squall",
+      "answer": "Hail",
       "difficulty": "medium"
     },
     {
-      "question": "I am a wall built to hold back the rising floodwaters.",
+      "question": "I am a spinning dancer that touches the sky and the earth.",
       "choices": [
-        "Levee",
-        "Bridge",
-        "Pier",
-        "Dock"
+        "A Tornado",
+        "A Hurricane",
+        "A Kite",
+        "A Cloud"
       ],
-      "answer": "Levee",
+      "answer": "A Tornado",
       "difficulty": "medium"
     },
     {
-      "question": "I am bags filled with grit used to block water from entering homes.",
+      "question": "I am the calmest place in the most violent storm.",
       "choices": [
-        "Sandbags",
-        "Bricks",
-        "Wood",
-        "Stones"
+        "The Eye",
+        "The Center",
+        "The Ground",
+        "The Edge"
       ],
-      "answer": "Sandbags",
+      "answer": "The Eye",
       "difficulty": "medium"
     },
     {
-      "question": "I am the act of leaving a dangerous area for a safe one.",
+      "question": "I am a warning that is heard but never seen.",
       "choices": [
-        "Evacuation",
-        "Rescue",
-        "Shelter",
-        "Migration"
+        "A Siren",
+        "A Flag",
+        "A Light",
+        "A Cloud"
       ],
-      "answer": "Evacuation",
+      "answer": "A Siren",
       "difficulty": "medium"
     },
     {
-      "question": "I am a temporary loss of electricity caused by a storm.",
+      "question": "I am the rising water that forgets where the ocean ends.",
       "choices": [
-        "Blackout",
-        "Outage",
-        "Short",
-        "Surge"
+        "A Flood",
+        "A Tide",
+        "A Wave",
+        "A Storm"
       ],
-      "answer": "Blackout",
+      "answer": "A Flood",
       "difficulty": "medium"
     },
     {
-      "question": "I am a massive wave caused by an underwater quake, not the wind.",
+      "question": "I am a blanket of gray that hides the sun and brings the gloom.",
       "choices": [
-        "Tsunami",
-        "Tide",
-        "Surge",
-        "Ripple"
+        "Fog",
+        "Smoke",
+        "A Cloud",
+        "Night"
       ],
-      "answer": "Tsunami",
+      "answer": "Fog",
       "difficulty": "medium"
     },
     {
-      "question": "I am the spiraling wind pattern caused by the Earth's rotation.",
+      "question": "I warn of the reaper's scythe disguised as rolling waves. I am a bloody cloth on a wooden mast.",
       "choices": [
-        "Coriolis Effect",
-        "Vortex",
-        "Cyclone",
-        "Eddy"
+        "A Warning Flag",
+        "A Pirate Flag",
+        "A Sail",
+        "A Cape"
       ],
-      "answer": "Coriolis Effect",
+      "answer": "A Warning Flag",
       "difficulty": "hard"
     },
     {
-      "question": "I am a severe tropical cyclone originating in the northwestern Pacific.",
+      "question": "I am the silence before the fury, the breath held before the scream.",
       "choices": [
-        "Typhoon",
-        "Hurricane",
-        "Monsoon",
-        "Willy-Willy"
+        "The Calm",
+        "The Eye",
+        "The Dark",
+        "The Wind"
       ],
-      "answer": "Typhoon",
+      "answer": "The Calm",
       "difficulty": "hard"
     },
     {
-      "question": "I am a seasonal wind that brings heavy rains to South Asia.",
+      "question": "I am nature's wrath wrapped in a spiral, born over warm waters.",
       "choices": [
-        "Monsoon",
-        "Trade Wind",
-        "Jet Stream",
-        "Squall"
+        "A Cyclone",
+        "A Tornado",
+        "A Whirlpool",
+        "A Cloud"
       ],
-      "answer": "Monsoon",
+      "answer": "A Cyclone",
       "difficulty": "hard"
     },
     {
-      "question": "I am a sudden, localized downdraft that causes severe wind shear.",
+      "question": "I am the thief that steals the shore, inch by inch, storm by storm.",
       "choices": [
-        "Microburst",
-        "Tornado",
-        "Waterspout",
-        "Squall"
+        "Erosion",
+        "The Tide",
+        "A Wave",
+        "The Wind"
       ],
-      "answer": "Microburst",
+      "answer": "Erosion",
       "difficulty": "hard"
     },
     {
-      "question": "I am a tornado that forms over a body of water.",
+      "question": "I am a flash of anger, striking the earth with blinding speed.",
       "choices": [
-        "Waterspout",
-        "Whirlpool",
-        "Cyclone",
-        "Typhoon"
+        "Lightning",
+        "A Meteor",
+        "An Arrow",
+        "A Thought"
       ],
-      "answer": "Waterspout",
+      "answer": "Lightning",
       "difficulty": "hard"
     },
     {
-      "question": "I am the scale used to categorize hurricane wind speeds.",
+      "question": "I am the voice of the storm, roaring without a throat.",
       "choices": [
-        "Saffir-Simpson",
-        "Fujita",
-        "Richter",
-        "Beaufort"
+        "Thunder",
+        "The Wind",
+        "The Ocean",
+        "A Siren"
       ],
-      "answer": "Saffir-Simpson",
+      "answer": "Thunder",
       "difficulty": "hard"
     },
     {
-      "question": "I am the scale used to categorize tornado damage intensity.",
+      "question": "I am the tears of the sky, washing away the sins of the earth.",
       "choices": [
-        "Fujita",
-        "Saffir-Simpson",
-        "Richter",
-        "Mercalli"
+        "Rain",
+        "Snow",
+        "Dew",
+        "Fog"
       ],
-      "answer": "Fujita",
+      "answer": "Rain",
       "difficulty": "hard"
     },
     {
-      "question": "I am the scale that relates wind speed to observed conditions at sea.",
+      "question": "I am a ghost that haunts the coast, swallowing ships in a white embrace.",
       "choices": [
-        "Beaufort",
-        "Saffir-Simpson",
-        "Fujita",
-        "Kelvin"
+        "Fog",
+        "A Wave",
+        "A Cloud",
+        "A Monster"
       ],
-      "answer": "Beaufort",
+      "answer": "Fog",
       "difficulty": "hard"
     },
     {
-      "question": "I am the line of intense thunderstorms advancing ahead of a cold front.",
+      "question": "I am the invisible hand that tears the sails and snaps the mast.",
       "choices": [
-        "Squall Line",
-        "Supercell",
-        "Derecho",
-        "Mesocyclone"
+        "The Gale",
+        "The Ocean",
+        "The Captain",
+        "Time"
       ],
-      "answer": "Squall Line",
+      "answer": "The Gale",
       "difficulty": "hard"
     },
     {
-      "question": "I am a widespread, long-lived, straight-line windstorm.",
+      "question": "I am the warning ignored by the proud, leading them to a watery grave.",
       "choices": [
-        "Derecho",
-        "Tornado",
-        "Hurricane",
-        "Typhoon"
+        "The Red Flag",
+        "The Siren",
+        "The Clouds",
+        "The Waves"
       ],
-      "answer": "Derecho",
+      "answer": "The Red Flag",
       "difficulty": "hard"
     },
     {
-      "question": "I am the rotating updraft deep within a severe thunderstorm.",
+      "question": "I am a sudden drop in the air, a heavy pressure that signals doom.",
       "choices": [
-        "Mesocyclone",
-        "Microburst",
-        "Vortex",
-        "Eye Wall"
+        "A Barometer Drop",
+        "A Microburst",
+        "A Cloud",
+        "A Wave"
       ],
-      "answer": "Mesocyclone",
+      "answer": "A Barometer Drop",
       "difficulty": "hard"
     },
     {
-      "question": "I am a highly organized thunderstorm capable of producing tornadoes.",
+      "question": "I am the line drawn in the sky, where the cold meets the warm in violent clash.",
       "choices": [
-        "Supercell",
-        "Squall Line",
-        "Cumulonimbus",
-        "Derecho"
+        "A Squall Line",
+        "A Rainbow",
+        "A Cloud",
+        "A Horizon"
       ],
-      "answer": "Supercell",
+      "answer": "A Squall Line",
       "difficulty": "hard"
     },
     {
-      "question": "I am the boundary where a cold air mass displaces a warm air mass.",
+      "question": "I am the churning chaos beneath the surface, waiting to pull you down.",
       "choices": [
-        "Cold Front",
-        "Warm Front",
-        "Occluded Front",
-        "Stationary Front"
+        "An Undertow",
+        "A Whirlpool",
+        "A Monster",
+        "A Net"
       ],
-      "answer": "Cold Front",
+      "answer": "An Undertow",
       "difficulty": "hard"
     },
     {
-      "question": "I am the ring of violent thunderstorms surrounding a hurricane's center.",
+      "question": "I am the memory of a storm that never truly ended in the fisherman's heart.",
       "choices": [
-        "Eye Wall",
-        "Rain Band",
-        "Mesocyclone",
-        "Vortex"
+        "Grief",
+        "Fear",
+        "Regret",
+        "Love"
       ],
-      "answer": "Eye Wall",
+      "answer": "Grief",
       "difficulty": "hard"
     },
     {
-      "question": "I am the term for the atmospheric pressure dropping rapidly.",
+      "question": "I am the crimson herald of tragedy, fluttering uselessly as he sailed away.",
       "choices": [
-        "Bombogenesis",
-        "Cyclogenesis",
-        "Depression",
-        "Sublimation"
+        "The Warning Flag",
+        "His Heart",
+        "A Bird",
+        "The Sun"
       ],
-      "answer": "Bombogenesis",
+      "answer": "The Warning Flag",
       "difficulty": "hard"
     }
   ]

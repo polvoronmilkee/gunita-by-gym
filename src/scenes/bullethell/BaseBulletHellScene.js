@@ -189,11 +189,6 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.selectedButtonIndex = 0;
 
     // Global pause and escape listeners (ESC triggers the escape confirmation modal)
-    this.cheatWin = () => {
-      this.crystalHP = 1;
-      this.updateCrystalHPUI();
-    };
-    this.input.keyboard.on('keydown-P', this.cheatWin, this);
     this.input.keyboard.on('keydown-ESC', this.showEscapeConfirmation, this);
 
     // Mount floating retro buttons (Pause ⏸ & Back ←) using gunita-pause-btn UI style
@@ -242,7 +237,6 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.game.events.emit("game-ready");
 
     this.events.once("shutdown", () => {
-      this.input.keyboard.off('keydown-P', this.cheatWin, this);
       this.input.keyboard.off('keydown-ESC', this.showEscapeConfirmation, this);
       if (this.pauseBtnDom) { this.pauseBtnDom.remove(); this.pauseBtnDom = null; }
       if (this.backBtnDom) { this.backBtnDom.remove(); this.backBtnDom = null; }

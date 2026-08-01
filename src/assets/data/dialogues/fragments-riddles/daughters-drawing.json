@@ -167,333 +167,333 @@
       "difficulty": "easy"
     },
     {
-      "question": "I am a three-legged stand that holds a painter's work.",
+      "question": "I am drawn but have no pen. I fall but never break. What am I?",
       "choices": [
-        "Easel",
-        "Tripod",
-        "Table",
-        "Stool"
+        "A Tear",
+        "A Picture",
+        "A Line",
+        "A Shadow"
       ],
-      "answer": "Easel",
+      "answer": "A Tear",
       "difficulty": "medium"
     },
     {
-      "question": "I am a sketch meant to capture a person's face.",
+      "question": "I have colors but no paint, I appear after the storm but have no physical form.",
       "choices": [
-        "Portrait",
-        "Landscape",
-        "Still Life",
-        "Mural"
+        "A Rainbow",
+        "A Memory",
+        "A Dream",
+        "A Reflection"
       ],
-      "answer": "Portrait",
+      "answer": "A Rainbow",
       "difficulty": "medium"
     },
     {
-      "question": "I am a thick liquid that turns into a permanent color layer.",
+      "question": "I am a stick of colored wax that children love to press on paper.",
       "choices": [
-        "Acrylic Paint",
-        "Water",
-        "Ink",
-        "Chalk"
+        "A Crayon",
+        "A Pencil",
+        "A Marker",
+        "A Chalk"
       ],
-      "answer": "Acrylic Paint",
+      "answer": "A Crayon",
       "difficulty": "medium"
     },
     {
-      "question": "I am the outline of a figure filled with solid black.",
+      "question": "I have a heart of lead but I leave a trail of graphite.",
       "choices": [
-        "Silhouette",
-        "Shadow",
-        "Sketch",
-        "Doodle"
+        "A Pencil",
+        "A Pen",
+        "A Crayon",
+        "A Bullet"
       ],
-      "answer": "Silhouette",
+      "answer": "A Pencil",
       "difficulty": "medium"
     },
     {
-      "question": "I am a drawing of mountains, trees, or a wide view.",
+      "question": "I am a blank canvas waiting for a child's imagination.",
       "choices": [
-        "Landscape",
-        "Portrait",
-        "Still Life",
-        "Mural"
-      ],
-      "answer": "Landscape",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am a messy, casual drawing done without much thought.",
-      "choices": [
-        "Doodle",
-        "Masterpiece",
-        "Blueprint",
-        "Draft"
-      ],
-      "answer": "Doodle",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am a rough drawing created to test a composition.",
-      "choices": [
-        "Sketch",
-        "Painting",
-        "Sculpture",
-        "Mural"
-      ],
-      "answer": "Sketch",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am the blending of colors to create smooth transitions.",
-      "choices": [
-        "Gradient",
-        "Outline",
-        "Shading",
-        "Contrast"
-      ],
-      "answer": "Gradient",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am the woven fabric stretched over a frame for painting.",
-      "choices": [
-        "Canvas",
         "Paper",
-        "Cardboard",
-        "Wood"
+        "A Wall",
+        "A Mind",
+        "A Dream"
       ],
-      "answer": "Canvas",
+      "answer": "Paper",
       "difficulty": "medium"
     },
     {
-      "question": "I am a massive painting applied directly to a wall.",
+      "question": "I am the color of the sun in a child's drawing.",
       "choices": [
-        "Mural",
-        "Portrait",
-        "Fresco",
-        "Graffiti"
+        "Yellow",
+        "Red",
+        "Blue",
+        "Green"
       ],
-      "answer": "Mural",
+      "answer": "Yellow",
       "difficulty": "medium"
     },
     {
-      "question": "I am created by mixing red and yellow together.",
+      "question": "I am a portrait of a family, drawn with stick figures.",
       "choices": [
-        "Orange",
-        "Purple",
+        "A Drawing",
+        "A Photograph",
+        "A Memory",
+        "A Mirror"
+      ],
+      "answer": "A Drawing",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the lines that separate the sky from the sea on a piece of paper.",
+      "choices": [
+        "The Horizon",
+        "A Border",
+        "A Frame",
+        "A Shadow"
+      ],
+      "answer": "The Horizon",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a picture meant to capture a moment, but I am made of memories, not ink.",
+      "choices": [
+        "A Memory",
+        "A Photograph",
+        "A Painting",
+        "A Dream"
+      ],
+      "answer": "A Memory",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I make mistakes disappear with a gentle rub.",
+      "choices": [
+        "An Eraser",
+        "A Cloth",
+        "Time",
+        "Water"
+      ],
+      "answer": "An Eraser",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a house drawn with a triangle roof and square windows.",
+      "choices": [
+        "A Home",
+        "A Castle",
+        "A Boat",
+        "A Box"
+      ],
+      "answer": "A Home",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the act of making a picture using a pencil or crayon.",
+      "choices": [
+        "Drawing",
+        "Painting",
+        "Writing",
+        "Dreaming"
+      ],
+      "answer": "Drawing",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am a frame that holds a precious memory on the wall.",
+      "choices": [
+        "A Picture Frame",
+        "A Window",
+        "A Mirror",
+        "A Door"
+      ],
+      "answer": "A Picture Frame",
+      "difficulty": "medium"
+    },
+    {
+      "question": "I am the color of the ocean in a child's eyes.",
+      "choices": [
+        "Blue",
         "Green",
-        "Brown"
+        "Gray",
+        "Black"
       ],
-      "answer": "Orange",
+      "answer": "Blue",
       "difficulty": "medium"
     },
     {
-      "question": "I am created by mixing blue and red together.",
+      "question": "I am a gift created by small hands to warm a father's heart.",
       "choices": [
-        "Purple",
-        "Green",
-        "Orange",
-        "Brown"
+        "A Drawing",
+        "A Toy",
+        "A Hug",
+        "A Song"
       ],
-      "answer": "Purple",
+      "answer": "A Drawing",
       "difficulty": "medium"
     },
     {
-      "question": "I am a technique using light and dark to create depth.",
+      "question": "I am a fragile piece of paper that holds a love stronger than the storm.",
       "choices": [
-        "Shading",
-        "Highlighting",
-        "Outlining",
-        "Erasing"
+        "A Child's Drawing",
+        "A Letter",
+        "A Map",
+        "A Contract"
       ],
-      "answer": "Shading",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am a stick of colored chalk used for soft, dusty art.",
-      "choices": [
-        "Pastel",
-        "Crayon",
-        "Charcoal",
-        "Marker"
-      ],
-      "answer": "Pastel",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am burned wood used for deep black sketching.",
-      "choices": [
-        "Charcoal",
-        "Graphite",
-        "Ink",
-        "Lead"
-      ],
-      "answer": "Charcoal",
-      "difficulty": "medium"
-    },
-    {
-      "question": "I am a painting done rapidly in watercolor on wet plaster.",
-      "choices": [
-        "Fresco",
-        "Mural",
-        "Mosaic",
-        "Canvas"
-      ],
-      "answer": "Fresco",
+      "answer": "A Child's Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am the technique of using small dots to form an image.",
+      "question": "I am a smiling sun that shone even when the real sky turned black.",
       "choices": [
-        "Pointillism",
-        "Cubism",
-        "Surrealism",
-        "Realism"
+        "A Drawn Sun",
+        "A Memory",
+        "Hope",
+        "A Lantern"
       ],
-      "answer": "Pointillism",
+      "answer": "A Drawn Sun",
       "difficulty": "hard"
     },
     {
-      "question": "I am a composition made by gluing various materials to a backing.",
+      "question": "I am an imperfect sketch, but to a father, I am a masterpiece.",
       "choices": [
-        "Collage",
-        "Montage",
-        "Mosaic",
-        "Fresco"
+        "A Daughter's Art",
+        "A Memory",
+        "A Dream",
+        "A Flaw"
       ],
-      "answer": "Collage",
+      "answer": "A Daughter's Art",
       "difficulty": "hard"
     },
     {
-      "question": "I am the dark pigment used in traditional wash painting.",
+      "question": "I am wax colors melted into a promise of safe return.",
       "choices": [
-        "India Ink",
-        "Charcoal",
-        "Graphite",
-        "Watercolor"
+        "A Drawing",
+        "A Candle",
+        "A Seal",
+        "A Secret"
       ],
-      "answer": "India Ink",
+      "answer": "A Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am the visual property that creates the illusion of 3D space.",
+      "question": "I am the innocence captured in crude lines and bright colors.",
       "choices": [
-        "Perspective",
-        "Proportion",
-        "Contrast",
-        "Hue"
+        "Childhood Art",
+        "A Memory",
+        "A Dream",
+        "A Story"
       ],
-      "answer": "Perspective",
+      "answer": "Childhood Art",
       "difficulty": "hard"
     },
     {
-      "question": "I am a color scheme using variations of a single hue.",
+      "question": "I am a visual anchor that kept a drowning man holding on.",
       "choices": [
-        "Monochromatic",
-        "Analogous",
-        "Complementary",
-        "Triadic"
+        "The Drawing",
+        "A Rope",
+        "A Rock",
+        "A Prayer"
       ],
-      "answer": "Monochromatic",
+      "answer": "The Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "We are colors opposite each other on the color wheel.",
+      "question": "I am an image of a boat that never sinks, drawn on dry land.",
       "choices": [
-        "Complementary",
-        "Primary",
-        "Secondary",
-        "Tertiary"
+        "A Paper Boat",
+        "A Memory",
+        "A Dream",
+        "A Wish"
       ],
-      "answer": "Complementary",
+      "answer": "A Paper Boat",
       "difficulty": "hard"
     },
     {
-      "question": "I am the pure state of a color, without tint or shade.",
+      "question": "I am a piece of a child's soul, folded and kept in a pocket.",
       "choices": [
-        "Hue",
-        "Saturation",
-        "Value",
-        "Tone"
+        "A Drawing",
+        "A Secret",
+        "A Tear",
+        "A Promise"
       ],
-      "answer": "Hue",
+      "answer": "A Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a hue mixed with white to make it lighter.",
+      "question": "I am the only sun that shines in the dark depths of Campo Lunan.",
       "choices": [
-        "Tint",
-        "Shade",
-        "Tone",
-        "Gradient"
+        "The Drawn Sun",
+        "The Luma",
+        "A Memory",
+        "A Crystal"
       ],
-      "answer": "Tint",
+      "answer": "The Drawn Sun",
       "difficulty": "hard"
     },
     {
-      "question": "I am a hue mixed with black to make it darker.",
+      "question": "I am a silent plea rendered in crayon: Come back to us.",
       "choices": [
-        "Shade",
-        "Tint",
-        "Tone",
-        "Gradient"
+        "A Daughter's Art",
+        "A Prayer",
+        "A Letter",
+        "A Tear"
       ],
-      "answer": "Shade",
+      "answer": "A Daughter's Art",
       "difficulty": "hard"
     },
     {
-      "question": "I am a picture made of small, colored pieces of glass or stone.",
+      "question": "I am the purest form of art, untainted by skill but overflowing with love.",
       "choices": [
-        "Mosaic",
-        "Collage",
-        "Fresco",
-        "Mural"
+        "A Child's Drawing",
+        "A Memory",
+        "A Dream",
+        "A Song"
       ],
-      "answer": "Mosaic",
+      "answer": "A Child's Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a technique of scraping through a layer to reveal the one beneath.",
+      "question": "I am a memory preserved not in the mind, but on a crumpled page.",
       "choices": [
-        "Sgraffito",
-        "Impasto",
-        "Glazing",
-        "Stippling"
+        "A Drawing",
+        "A Photograph",
+        "A Diary",
+        "A Letter"
       ],
-      "answer": "Sgraffito",
+      "answer": "A Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a thick application of paint that stands out from the surface.",
+      "question": "I am a symbol of what was lost to the sea, found among the fragments.",
       "choices": [
-        "Impasto",
-        "Glazing",
-        "Wash",
-        "Fresco"
+        "The Drawing",
+        "The Boat",
+        "The Net",
+        "The Rosary"
       ],
-      "answer": "Impasto",
+      "answer": "The Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am a transparent layer of paint applied over a dried layer.",
+      "question": "I am a tiny world created by a child, where the ocean is always blue and safe.",
       "choices": [
-        "Glazing",
-        "Impasto",
-        "Wash",
-        "Scumbling"
+        "The Drawing",
+        "A Dream",
+        "A Memory",
+        "A Story"
       ],
-      "answer": "Glazing",
+      "answer": "The Drawing",
       "difficulty": "hard"
     },
     {
-      "question": "I am the dry, stiff brush technique used to create texture.",
+      "question": "I am the enduring warmth of a family, captured in wax and paper.",
       "choices": [
-        "Scumbling",
-        "Glazing",
-        "Stippling",
-        "Washing"
+        "A Daughter's Art",
+        "A Photograph",
+        "A Fire",
+        "A Memory"
       ],
-      "answer": "Scumbling",
+      "answer": "A Daughter's Art",
       "difficulty": "hard"
     }
   ]

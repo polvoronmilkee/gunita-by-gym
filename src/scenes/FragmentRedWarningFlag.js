@@ -156,7 +156,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
   fireCircleBlast() {
     if (this.state !== "DODGE") return;
     const count = this.isDesperation ? 14 : 16;
-    const radius = 65;
+    const radius = 60;
     const centerX = this.crystalEnemy.x;
     const centerY = this.crystalEnemy.y;
     const ringBullets = [];
@@ -201,7 +201,7 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
       if (this.state !== "DODGE" || !this.soul) return;
       const targetX = this.soul.x;
       const targetY = this.soul.y;
-      const speed = this.isDesperation ? 180 : 165;
+      const speed = this.isDesperation ? 190 : 175;
 
       ringBullets.forEach(b => {
         if (this.bullets.includes(b)) {
@@ -646,8 +646,8 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
               if (exclText && exclText.active) exclText.destroy();
               if (this.state !== "DODGE") return;
 
-              const burstSpeed = desp ? 160 : 180;
-              const angles = [0, 60, 120, 180, 240, 300];
+              const burstSpeed = desp ? 185 : 180;
+              const angles = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
               angles.forEach(deg => {
                 const rad = Phaser.Math.DegToRad(deg);
                 this.bullets.push({
