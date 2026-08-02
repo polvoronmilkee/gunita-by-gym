@@ -416,7 +416,7 @@ connectPortalBtn?.addEventListener("click", async () => {
   if (desc) desc.textContent = "Please authorize in the new tab";
   
   // Authorize session at start (Artifact is unlocked later during gameplay)
-  const GAME_ID_1 = "df3e2a27-c9eb-4816-8523-a762ab7e3003"; 
+  const GAME_ID_1 = "32f9a1a7-d633-4aed-a871-6c8a1ad9d321"; 
   const success = await authorizePortal(GAME_ID_1);
   
   if (success) {

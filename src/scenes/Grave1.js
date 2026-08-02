@@ -1417,24 +1417,28 @@ export class Grave1 extends Phaser.Scene {
         const npc = this.closestNpc;
 
         // --- CLUE NPC LOGIC ---
-        if (npc.clueData && this.investigationPhase) {
+        if (npc.clueData) {
           const clue = npc.clueData;
-          const dialogueSteps = [{ speaker: clue.speaker, text: clue.dialogue }];
-          
-          this.startDialogueSequence(dialogueSteps, () => {
-            if (clue.isCorrect) {
-              this.investigationPhase = false;
-              if (this.investigationComplete) {
-                this.investigationComplete.push(this.storyStage);
-                const currentCache = getCache() || {};
-                currentCache.investigation_complete = this.investigationComplete;
-                setCache(currentCache);
+          if (this.investigationPhase && this.storyStage === npc.phaseId) {
+            const dialogueSteps = [{ speaker: clue.speaker, text: clue.dialogue }];
+            
+            this.startDialogueSequence(dialogueSteps, () => {
+              if (clue.isCorrect) {
+                this.investigationPhase = false;
+                if (this.investigationComplete) {
+                  this.investigationComplete.push(this.storyStage);
+                  const currentCache = getCache() || {};
+                  currentCache.investigation_complete = this.investigationComplete;
+                  setCache(currentCache);
+                }
+                this.startDialogueSequence([{ speaker: "Luma", text: "Now we know where to look. Let's go!" }], () => {
+                   this.updateLumaGuidance();
+                });
               }
-              this.startDialogueSequence([{ speaker: "Luma", text: "Now we know where to look. Let's go!" }], () => {
-                 this.updateLumaGuidance();
-              });
-            }
-          });
+            });
+          } else {
+            this.startDialogueSequence([{ speaker: clue.speaker, text: clue.defaultDialogue || "..." }]);
+          }
           return;
         }
         // --- END CLUE NPC LOGIC ---
@@ -1828,14 +1832,10 @@ export class Grave1 extends Phaser.Scene {
     if (!this.clueNpcsGroup) return;
     this.clueNpcsGroup.clear(true, true);
 
-    if (!this.investigationPhase) return;
+    Object.entries(investigationPhases).forEach(([phaseId, phaseData]) => {
+      const center = phaseData.areaCenter;
 
-    const phaseData = investigationPhases[this.storyStage];
-    if (!phaseData) return;
-
-    const center = phaseData.areaCenter;
-
-    phaseData.clueNpcs.forEach(clue => {
+      phaseData.clueNpcs.forEach(clue => {
       const spawnX = center.x + (clue.offsetX || 0);
       const spawnY = center.y + (clue.offsetY || 0);
 
@@ -1867,6 +1867,8 @@ export class Grave1 extends Phaser.Scene {
       }
       
       npc.clueData = clue;
+      npc.phaseId = parseInt(phaseId);
+    });
     });
   }
 
@@ -2250,7 +2252,7 @@ export class Grave1 extends Phaser.Scene {
       });
     }
 
-    if (this.investigationPhase && this.clueNpcsGroup) {
+    if (this.clueNpcsGroup) {
       this.clueNpcsGroup.getChildren().forEach(npc => {
         const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, npc.x, npc.y);
         if (dist < minDist) {

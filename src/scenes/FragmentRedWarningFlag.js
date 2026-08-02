@@ -119,12 +119,16 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
     const duration = desp ? 14000 : 10000;
     
     // Pattern 1: Circle Ring Blast
+    // Spawns a glowing vortex that telegraphs the attack. 
+    // Fires a large circular ring of bullets that home in on the player's position.
     // Tweak count, radius, formTime, and homingTurnSpeed parameters inside fireCircleBlast() to customize.
     if (patternId === 1) {
       for (let t = 0; t < duration; t += 2000) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireCircleBlast()));
       }
     // Pattern 2: Wave Grid
+    // Drops a cascading grid of bullets from the top of the arena.
+    // The bullets have a slight horizontal sway (sine wave) and bounce once off the walls.
     // Tweak baseSpeed, count, and spacing inside fireWaveGrid() to customize.
     } else if (patternId === 2) {
       const baseSpeed = desp ? 75 : 85;
@@ -135,16 +139,22 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
         speedInc += 20;
       }
     // Pattern 3: Sweeping Laser
+    // Spawns a thick laser that sweeps across half of the arena.
+    // The area flashes briefly before the laser activates, demanding quick positioning.
     // Tweak sweepDuration and warning time inside fireSingleLaserSweep() to customize.
     } else if (patternId === 3) {
       for (let t = 500; t < duration; t += 2400) {
         this.patternTimers.push(this.time.delayedCall(t, () => this.fireSweepingLaser()));
       }
     // Pattern 4: Thunder Splitter
+    // Drops vertical lasers that split the arena into sections.
+    // Forces the player to stay in tight lanes while dodging.
     // Tweak cycleDuration and laserLife inside fireThunderSplitter() to customize.
     } else if (patternId === 4) {
       this.fireThunderSplitter(duration);
     // Pattern 5: Spotlight Burst
+    // Targets the player with a tracking spotlight.
+    // After the spotlight locks on, it bursts into a dense cluster of fast-moving bullets.
     // Tweak count, bullet speed, and laser tracking inside fireSpotlightBurst() to customize.
     } else if (patternId === 5) {
       for (let t = 0; t < duration; t += 3000) {
@@ -523,8 +533,8 @@ export class FragmentRedWarningFlag extends BaseBulletHellScene {
         const spawnX = this.crystalEnemy.x;
         const spawnY = this.crystalEnemy.y;
         
-        const speed = this.isDesperation ? 100 : 90;
-        const radius = 16; 
+        const speed = this.isDesperation ? 110 : 125;
+        const radius = 14; 
         
         const createOrb = (xOffset) => {
           return {

@@ -628,6 +628,13 @@ export class CampoLunanScene extends Phaser.Scene {
     this.objectiveArrow.strokePath();
     this.objectiveArrow.setVisible(false);
 
+    // Luma Objective Area Circle (Minimap only)
+    this.lumaAreaCircle = this.add.graphics();
+    this.lumaAreaCircle.setDepth(999);
+    this.lumaAreaCircle.setVisible(false);
+    this.cameras.main.ignore(this.lumaAreaCircle);
+
+
     // Always create DialogueBox instance for Campo Lunan interactions
     this.dialogue = new DialogueBox(this);
     this.dialogue.hide();
@@ -793,36 +800,6 @@ export class CampoLunanScene extends Phaser.Scene {
         };
         runPartA();
       });
-    } else if (this.hasTalkedToLuma && !activeCache.has_completed_tutorial) {
-      // Spawn persistent glowing Luma NPC at upper pathway until tutorial is finished
-      const targetX = 1410;
-      const targetY = 1074;
-      this.luma2PersistentSprite = this.physics.add.sprite(targetX, targetY, "luma-idle");
-      this.luma2PersistentSprite.setScale(0.3);
-      this.luma2PersistentSprite.setDepth(this.luma2PersistentSprite.y);
-      this.luma2PersistentSprite.setImmovable(true);
-      if (!this.anims.exists("luma-idle-anim")) {
-        this.anims.create({
-          key: "luma-idle-anim",
-          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
-          frameRate: 5,
-          repeat: -1
-        });
-      }
-      this.luma2PersistentSprite.play("luma-idle-anim");
-      if (this.cameras.main.postFX) {
-        const glow = this.luma2PersistentSprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
-        this.tweens.add({
-          targets: glow,
-          outerStrength: 1.3,
-          innerStrength: 0.9,
-          duration: 1200,
-          yoyo: true,
-          repeat: -1,
-          ease: "Sine.easeInOut"
-        });
-      }
-      this.physics.add.collider(this.player.sprite, this.luma2PersistentSprite);
     } else {
       this.dialogueActive = false;
     }
@@ -1040,6 +1017,31 @@ export class CampoLunanScene extends Phaser.Scene {
       const luma2Sprite = this.luma2PersistentSprite;
       luma2Sprite.setScale(0.3);
       luma2Sprite.setDepth(luma2Sprite.y);
+      luma2Sprite.setImmovable(true);
+      
+      if (!this.anims.exists("luma-idle-anim")) {
+        this.anims.create({
+          key: "luma-idle-anim",
+          frames: this.anims.generateFrameNumbers("luma-idle", { start: 0, end: 3 }),
+          frameRate: 5,
+          repeat: -1
+        });
+      }
+      luma2Sprite.play("luma-idle-anim");
+      
+      if (this.cameras.main.postFX) {
+        const glow = luma2Sprite.preFX.addGlow(0xbc80ff, 0, 0, false, 0.1, 10);
+        this.tweens.add({
+          targets: glow,
+          outerStrength: 1.3,
+          innerStrength: 0.9,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: "Sine.easeInOut"
+        });
+      }
+      this.physics.add.collider(this.player.sprite, luma2Sprite);
 
       // Camera shake & sound effect
       this.cameras.main.shake(350, 0.004);
@@ -1372,6 +1374,21 @@ export class CampoLunanScene extends Phaser.Scene {
         );
       }
 
+      const activeCache = getCache() || {};
+      const talkedLuma1 = activeCache.has_talked_to_luma || this.hasTalkedToLuma;
+      const completedTutorial = activeCache.has_completed_tutorial;
+
+      if (this.lumaAreaCircle) {
+        if (talkedLuma1 && !completedTutorial) {
+          this.lumaAreaCircle.setVisible(true);
+          this.lumaAreaCircle.clear();
+          this.lumaAreaCircle.fillStyle(0xffff00, 1);
+          this.lumaAreaCircle.fillCircle(1306, 1077, 200);
+        } else {
+          this.lumaAreaCircle.setVisible(false);
+        }
+      }
+
       if (this.minimapPlayerDot && this.player && this.player.sprite) {
         this.minimapPlayerDot.clear();
         this.minimapPlayerDot.fillStyle(0x2dd4bf, 1);
@@ -1522,6 +1539,7 @@ export class CampoLunanScene extends Phaser.Scene {
 
       let targetX = null;
       let targetY = null;
+      let hideArrow = false;
 
       if (completedTutorial) {
         if (!activeCache.grave_1_completed) {
@@ -1531,9 +1549,18 @@ export class CampoLunanScene extends Phaser.Scene {
             targetY = grave1.y;
           }
         }
+      } else if (talkedLuma1 && !completedTutorial) {
+        // "Find Luma at the Upper Pathway"
+        targetX = 1306;
+        targetY = 1077;
+        
+        const dist = Phaser.Math.Distance.Between(this.player.sprite.x, this.player.sprite.y, targetX, targetY);
+        if (dist <= 200) {
+          hideArrow = true;
+        }
       }
 
-      if (targetX !== null && targetY !== null) {
+      if (targetX !== null && targetY !== null && !hideArrow) {
         this.objectiveArrow.setVisible(true);
         const px = this.player.sprite.x;
         const py = this.player.sprite.y;
