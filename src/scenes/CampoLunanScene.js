@@ -320,7 +320,7 @@ export class CampoLunanScene extends Phaser.Scene {
       cache.position_y !== undefined && cache.position_y !== null ? Number(cache.position_y) : 1779;
 
     // Sanitize spawn coordinates to prevent spawning inside map boundary walls or crashing camera with NaN
-    if (isNaN(spawnX) || spawnX < 360 || spawnX > 2180) spawnX = 1278;
+    if (isNaN(spawnX) || spawnX < 360 || spawnX > 2150) spawnX = 1278;
     if (isNaN(spawnY) || spawnY < 440 || spawnY > 1880) spawnY = 1779;
 
     this.audioManager = new AudioManager(this, "campo-lunan");

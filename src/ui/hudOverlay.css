@@ -3,7 +3,7 @@
 .gunita-pause-btn {
   position: absolute;
   top: 30px;
-  left: 140px;
+  left: clamp(20px, 10vw, 140px);
   z-index: 1000;
   appearance: none;
   background: #000000;

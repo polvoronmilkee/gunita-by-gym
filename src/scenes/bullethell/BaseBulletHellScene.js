@@ -191,6 +191,12 @@ export class BaseBulletHellScene extends Phaser.Scene {
     // Global pause and escape listeners (ESC triggers the escape confirmation modal)
     this.input.keyboard.on('keydown-ESC', this.showEscapeConfirmation, this);
 
+    // DEBUG: P key to instantly set crystal HP to 1
+    this.input.keyboard.on('keydown-P', () => {
+      this.crystalHP = 1;
+      this.updateRiddleText();
+    }, this);
+
     // Mount floating retro buttons (Pause ⏸ & Back ←) using gunita-pause-btn UI style
     const container = document.getElementById("game-container") || document.body;
 
@@ -199,22 +205,10 @@ export class BaseBulletHellScene extends Phaser.Scene {
     this.pauseBtnDom.className = "gunita-pause-btn";
     this.pauseBtnDom.textContent = "⏸";
     this.pauseBtnDom.title = "Pause / Escape";
-    this.pauseBtnDom.style.left = "140px";
+    this.pauseBtnDom.style.left = "clamp(20px, 10vw, 140px)";
     this.pauseBtnDom.style.top = "30px";
     this.pauseBtnDom.addEventListener("click", () => this.showEscapeConfirmation());
     container.appendChild(this.pauseBtnDom);
-
-    this.backBtnDom = document.createElement("button");
-    this.backBtnDom.type = "button";
-    this.backBtnDom.className = "gunita-pause-btn";
-    this.backBtnDom.textContent = "⮜";
-    this.backBtnDom.title = "Escape Fragmented Memory";
-    this.backBtnDom.style.left = "185px";
-    this.backBtnDom.style.top = "30px";
-    this.backBtnDom.addEventListener("click", () => this.showEscapeConfirmation());
-    if (this.scene.key !== "tutorial-bullet-hell") {
-      container.appendChild(this.backBtnDom);
-    }
 
 
 
@@ -238,8 +232,8 @@ export class BaseBulletHellScene extends Phaser.Scene {
 
     this.events.once("shutdown", () => {
       this.input.keyboard.off('keydown-ESC', this.showEscapeConfirmation, this);
+      this.input.keyboard.off('keydown-P');
       if (this.pauseBtnDom) { this.pauseBtnDom.remove(); this.pauseBtnDom = null; }
-      if (this.backBtnDom) { this.backBtnDom.remove(); this.backBtnDom = null; }
       if (this.currentEscapeOverlay) {
         this.currentEscapeOverlay.remove();
         this.currentEscapeOverlay = null;
